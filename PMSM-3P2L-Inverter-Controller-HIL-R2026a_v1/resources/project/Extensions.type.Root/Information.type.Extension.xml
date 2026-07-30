@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Info description="This reference example showcases model-in-the-loop (MIL) and hardware-in-the-loop (HIL) testing of field-oriented control (FOC) running on a F28379D LaunchPad™ development kit for C2000™ Delfino™ MCU by Texas Instruments. The motor drive consists of a three-phase two-level inverter and a Permanent Magnet Synchronous Motor (PMSM)."/>

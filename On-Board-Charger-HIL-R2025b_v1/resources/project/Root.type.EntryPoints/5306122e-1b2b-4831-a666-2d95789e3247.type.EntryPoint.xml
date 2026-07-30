@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Info File="SupportFiles/Scripts/OBCSystem_init.m" GroupUUID="default" Icon="" Name="OBCSystem_init" Type="StartUp" Visible="0">
+    <Extension Name="StartUpPrev" Value="b692f0ff-b5a6-4b39-818e-01aabe2cf042"/>
+</Info>
