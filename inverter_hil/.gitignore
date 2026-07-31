@@ -1,0 +1,9 @@
+# Inverter HIL generated products (source .slx/.sldd/.m files stay tracked)
+.simulink/
+slprj/
+*.slxc
+*_sg_rtw/
+*_grt_rtw/
+*_ert_rtw/
+build/inverter_hil/
+logs/inverter_hil/
