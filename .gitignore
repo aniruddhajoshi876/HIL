@@ -9,4 +9,8 @@ build/inverter_hil/
 logs/inverter_hil/
 examples/10.0.1.1/
 examples/tmp/
-examples/*.mldatx
+*.mldatx
+
+# Decision-16 spike products; regenerate with build_decision16_spike(true)
+spikes/decision16/decision16_spike.slx
+spikes/decision16/decision16_spike.sldd
