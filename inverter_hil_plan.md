@@ -40,7 +40,9 @@ The allocation and behavior in this plan were derived from:
 - The installed Speedgoat IO183 and IO614 documentation in this workspace.
 - [McGillFormulaElectric/MFE26-VC `todo` branch](https://github.com/McGillFormulaElectric/MFE26-VC/tree/todo), at commit
   `39ea8efd3fc4e88f76e876f94fb99d4adabb7749`, especially `sil/gui/main.cpp`,
-  `Core/Src/vcComms.cpp`, `Drivers/Device_Drivers/Inc/ephorus_driver.hpp`, and
+  `Core/Src/driverInputs.cpp`, `Core/Src/vcComms.cpp`,
+  `Core/Inc/FreeRTOSConfig.h`, `Drivers/Device_Drivers/Inc/ephorus_driver.hpp`,
+  `Drivers/Device_Drivers/Src/ephorus_driver.cpp`, and
   `sil/registry/profiles/ephorus.md`.
 - MathWorks Simulink Real-Time documentation for tunable parameters,
   `slrealtime.Target.setparam/getparam`, real-time instruments, and App Designer
@@ -72,14 +74,30 @@ brake channels shown in the schematic.
 | A8 | Analog Input 02 | VCU -> HIL | `5V_THROTTLE_2` | 86 | Harness tap required | Monitor throttle-2 sensor rail |
 | A9 | Analog Input 03 | VCU -> HIL | `5V_BP_1` | 84 | Harness tap required | Monitor brake-1 sensor rail |
 | A10 | Analog Input 04 | VCU -> HIL | `5V_BP_2` | 82 | Harness tap required | Monitor brake-2 sensor rail |
-| A11-A14 | Analog Inputs 05-08 | Not used in baseline | Reserved | - | - | Future analog monitoring/fault feedback |
+| A11-A14 | Analog Inputs 05-08 | Not used in single-ended baseline | Reserved for differential rail returns | - | Harness tap required | Preserve four-channel differential option |
 | A15 | 0 V | Not used in baseline | Target-machine 0 V | - | - | Use only if required by an externally powered interface |
 | A16 | +5 V | Not used in baseline | Target-machine +5 V | - | - | Do not use as a pedal supply without a current/ground review |
 | A17 | Analog Ground | Spare reference | Sensor ground | - | Harness ground | Spare analog reference |
 
-Configure AI01-AI04 for single-ended 0-5 V rail monitoring after the harness-tap
-and ground strategy are approved. These measurements permit later ratiometric
-pedal emulation without changing the IO183 connector allocation.
+The baseline configures AI01-AI04 for single-ended 0-5 V rail monitoring after
+the harness-tap and ground strategy are approved. In differential mode, however,
+A7-A14 become four fixed pin pairs; the A7-A10 single-ended assignment consumes
+the pins that form differential channels 1 and 2. Preserve the alternative
+allocation below until the ground-offset measurement establishes which mode to
+use:
+
+| VCU rail | Single-ended baseline | Differential channel | Differential pins |
+|---|---|---|---|
+| `5V_THROTTLE_1` | A7 / AI01 | AI01 | A8 (+), A7 (-) |
+| `5V_THROTTLE_2` | A8 / AI02 | AI02 | A10 (+), A9 (-) |
+| `5V_BP_1` | A9 / AI03 | AI03 | A12 (+), A11 (-) |
+| `5V_BP_2` | A10 / AI04 | AI04 | A14 (+), A13 (-) |
+
+Build each rail tap with two conductors, one rail signal and one local sensor
+return, even if the baseline initially terminates the returns at the common
+IO183 analog ground. Do not allocate A11-A14 to unrelated signals until the
+single-ended-versus-differential decision is closed. These measurements permit
+later ratiometric pedal emulation without rebuilding the harness.
 
 All four IO183 analog outputs are consumed by the redundant brake/throttle
 channels. J2 also exposes `ANA_IN_4`, `ANA_IN_1`, `ANA_IN_3`, and `ANA_IN_2` on
@@ -214,8 +232,10 @@ Configuration:
 - Monitor CAN write status, receive overrun, error warning, and bus-off status.
 - Keep an independent last-valid-command timestamp, timeout state, and decoder
   result for each inverter.
-- Accept the VCU firmware's current sequential command timing: the `todo` branch
-  queues inverter 1-4 control frames with approximately 1 ms between frames.
+- Accept the VCU firmware's current sequential command timing: at pinned `todo`
+  commit `39ea8efd...`, the active `queueControlAll` path calls `osDelay(1)`
+  between inverter 1-4 frames and `configTICK_RATE_HZ` is 1000, producing
+  approximately 1 ms inter-frame spacing.
 
 The real Ephorus supplies split CAN termination, but the IO614 has no internal
 termination and the test-board schematic shows no 120 ohm CAN resistor. Replacing
@@ -245,7 +265,7 @@ changes.
 | byte 0 bit 0 | Boolean | Enable inverter |
 | byte 0 bit 1 | Boolean | Reset error |
 | byte 0 bit 2 | Boolean | ASC allowed |
-| byte 0 bit 3 | Boolean | Current-control mode; reject or fault because it is not for vehicle use |
+| byte 0 bit 3 | Boolean | Current-control mode; unsupported by this vehicle HIL and handled by the refusal policy below |
 | byte 0 bits 4-7 and byte 1 | Reserved | Must be ignored on receive and zero in generated test vectors |
 | bytes 2-3 | signed int16, 1 RPM/bit | Speed setpoint |
 | bytes 4-5 | signed int16, ambiguous 1/256 or 1/512 Nm/bit | Positive torque limit; scale is blocking item below |
@@ -277,6 +297,30 @@ to the current VCU's 1/256 assumption, because mirroring the DUT could hide the
 factor-of-two error the HIL is intended to detect. Closed-loop hardware tests and
 final known-vector approval remain blocked until the profile is resolved.
 
+The outbound actual-torque and torque-setpoint fields are signed 12-bit values
+at 1/32 Nm/count, giving a range of -64 to +63 31/32 Nm. Matching that status
+range makes 1/512 Nm/count more plausible for the inbound 16-bit limits, but it
+is supporting evidence only; it does not override the inbound table's explicit
+1/256 unit column.
+
+#### 4.1.2 Unsupported current-control-mode policy
+
+Current-control mode is documented only for test-bench operation and must not be
+used in the vehicle. The basic HIL will therefore catch a VCU command with byte 0
+bit 3 set instead of silently approximating a mode it does not implement:
+
+- Decode and log the complete frame, retain its raw values, and refresh command
+  age because the CAN frame itself is syntactically valid.
+- Set `unsupported_current_mode`, mark the affected inverter not ready, force its
+  normal torque and Id/Iq commands to zero, and refuse Idle-to-Drive.
+- If asserted while already in Drive, leave Drive for Idle on the next model
+  sample and fail the active scenario visibly.
+- Clear the diagnostic after a valid command arrives with current-control mode
+  false; normal Drive entry conditions must then be satisfied again.
+- Do not report the physical inverter's CAN Error state solely because of this
+  bit. Refusing Drive is an intentional HIL policy until real hardware behavior
+  is captured or documented.
+
 Each decoder instance will retain its own last valid command, record its own
 timestamp, reject wrong-DLC frames, and expose raw and engineering-unit values
 for logging. A missing command for one inverter must not make the other three
@@ -304,14 +348,15 @@ Every 3X3 frame carries that inverter's state, ready and derating flags,
 maximum permitted output current, actual torque, torque setpoint, motor
 temperature, and power-switch temperature.
 
-Motor-temperature encoding is a separate blocking ambiguity. Table 6.13 states
-a 12-bit field at signed 1/8 C/count with a range of -100 C to +155 C; signed
-12-bit 1/8 spans -256 C to +255.875 C. An alternative unsigned 12-bit value at
-1/16 C/count with a -100 C offset spans -100 C to +155.9375 C and matches the
-printed endpoints closely. The current VCU decodes signed 1/8, but that does not
-prove the inverter encoding. Retain raw counts, display both interpretations,
-and resolve the field using a physical status frame at a known temperature or
-vendor clarification before hardware-ready status packing.
+Use signed 1/8 C/count for motor temperature. Table 6.13 marks this field with a
+leading +/- like the other signed quantities, while unsigned temperature and
+voltage fields have no sign marker. Its printed -100 C to +155 C range has no
+fractional full-scale endpoint and is therefore treated as the usable sensor
+window inside the wider signed 12-bit representation. An unsigned 1/16 C/count
+value with a -100 C offset happens to approximate the endpoints, but neither
+that offset nor that encoding is documented. Retain the raw 12-bit count and
+verify signed 1/8 against a physical status frame at a known temperature; this
+capture is required evidence but is not a blocking protocol-profile choice.
 
 Every 3X5 frame carries that inverter's Id setpoint/actual, Iq setpoint/actual,
 and actual motor speed.
@@ -324,13 +369,13 @@ General status ID `0x400` carries:
 - Independent DC-link-above-minimum flags for both pairs.
 - Mirrors of Control Enable and Control Disable.
 
-DC-link encoding is also blocking rather than a rounding correction. Table 6.13
-assigns 16 bits and 1/64 V/count, which reaches 1023 63/64 V, but its printed
-1023 15/16 V endpoint is exactly the full scale of 14 bits at 1/16 V/count.
-Both interpretations reach approximately 1024 V, so inverter voltage rating does
-not distinguish them. The current VCU decodes 1/64, but the HIL will retain raw
-counts, display both 1/64 and 1/16 interpretations, and lock the profile only
-after a known-voltage physical CAN capture or vendor clarification.
+Use 1/64 V/count for both DC-link fields. Table 6.13 assigns all 16 bits to each
+field, and 65535 counts at 1/64 V/count reaches 1023 63/64 V, matching the
+printed integer endpoint of 1023. The alternative 1/16 V/count reaches
+4095 15/16 V and matches the printed endpoint only by discarding two stated
+bits. The isolated `15/16` fraction is treated as a table copy error for
+`63/64`. Retain raw counts and verify 1/64 against a known-voltage physical CAN
+capture, but do not block the protocol profile on this fraction typo.
 
 All frames will use the exact bit positions and only the verified scalings from
 Ephorus tables 6.11-6.13. Packing and unpacking will use integer and bitwise
@@ -400,8 +445,11 @@ evaluated independently for each inverter:
   during the 0-200 ms interval, with Iq and torque forced to zero after 100 us.
   If Control Enable remains low for more than 200 ms, Error latches; retaining
   Drive during that interval keeps the datasheet's Drive-only timer reachable.
-  Control Disable high removes normal control; the baseline state policy is to
-  leave Drive for Idle without inventing a Control Disable Error timer.
+  Control Disable high removes normal control. The provisional baseline state
+  policy is to leave Drive for Idle on the next model sample without inventing a
+  Control Disable Error timer. The datasheet defines torque removal after more
+  than 100 us but does not define the reported state transition, so this policy
+  remains an explicit capture item in section 10.
 - DC-link voltage above 700 V or below -10 V always latches Error. Dropping below
   the configured minimum blocks Idle-to-Drive and, if already in Drive, latches
   Error for both inverters sharing that DC-link pair.
@@ -592,11 +640,12 @@ Calibration and plant parameters will be separate from operator commands:
   limits, and slew rates. Runtime tuning is permitted only in Idle or while the
   application is paused unless a test explicitly allows otherwise.
 
-Protocol constants such as inbound torque LSB, DC-link LSB, and motor-temperature
-encoding are versioned build-time data. The GUI displays all unresolved
-interpretations but cannot change the active hardware profile with `setparam`
-while running. Any unresolved blocking field prevents hardware-ready application
-status.
+Protocol constants are versioned build-time data and cannot be changed with
+`setparam` while running. Inbound torque retains explicit 1/256 and 1/512
+profiles until resolved. DC-link voltage uses 1/64 V/count and motor temperature
+uses signed 1/8 C/count while retaining raw counts for verification captures.
+The GUI displays the unresolved torque interpretation, and that single blocking
+field prevents hardware-ready application status.
 
 Before the nested paths in this table become an implementation dependency, build
 a minimal application for the exact Simulink Real-Time release and prove that
@@ -665,9 +714,11 @@ at commit `39ea8efd...`:
 - Four compact inverter panels labeled `INV1` through `INV4`, each showing
   provisional corner label, state, ready, command age, torque command/actual,
   speed, Id/Iq, temperatures, derating, and active fault.
-- Until all blocking encodings are physically verified, the CAN view shows raw
-  counts, both candidate engineering values for torque, DC-link voltage, and
-  motor temperature, plus a persistent red `PROTOCOL SCALES UNVERIFIED` banner.
+- Until the inbound torque scale is physically verified, the CAN view shows raw
+  torque counts, both candidate torque values, and a persistent red
+  `TORQUE SCALE UNVERIFIED` banner. DC-link and motor-temperature rows show their
+  raw counts beside the selected 1/64 V and signed 1/8 C values with a quieter
+  `CAPTURE PENDING` status until each known-value check is recorded.
 - Output-pin cards for `VC_SD_OUT`, `MAIN_EN_OUT`, `PRECH_EN_OUT`,
   `INV_CTRL_EN`, and `INV_CTRL_DIS`, labeled with TP6, TP7, TP8, TP9, and TP10
   respectively and using ON/OFF text plus color so state is never conveyed by
@@ -706,9 +757,10 @@ single commit. Each commit should contain one coherent behavior and its tests or
 documentation.
 
 Vendor questions and physical CAN captures should start immediately but must not
-block host-only work. Parts 1-37 use raw counts and explicit dual-interpretation
-profiles. Part 38 locks the verified protocol profile and gates hardware-ready
-status; only Part 39 may sign off the connected bench.
+block host-only work. Parts 1-37 retain raw counts for all disputed table entries
+and use explicit dual-interpretation profiles only for inbound torque. Part 38
+resolves that blocking torque scale and locks the hardware protocol profile;
+only Part 39 may sign off the connected bench.
 
 | Part | Deliverable | Suggested commit |
 |---:|---|---|
@@ -723,19 +775,19 @@ status; only Part 39 may sign off the connected bench.
 | 9 | TP6-TP10 IO183 monitoring and polarity diagnostics | `feat(io183): monitor VCU control outputs` |
 | 10 | IO614 setup, queue drain, and CAN diagnostics | `feat(io614): add VCU CAN transport` |
 | 11 | Raw decoding for all four control IDs with independent ages | `feat(can): decode raw Ephorus commands` |
-| 12 | Dual torque/DC-link/motor-temperature interpretations | `feat(can): expose Ephorus scale candidates` |
+| 12 | Dual inbound-torque interpretations plus raw DC-link and motor-temperature observability | `feat(can): expose Ephorus torque candidates` |
 | 13 | Bit-exact raw decoder and timeout tests | `test(can): verify Ephorus control decoding` |
 | 14 | Idle, Drive, Error, and Config Error core transitions | `feat(model): add Ephorus state machine` |
 | 15 | Command, position, and control-pin timing behavior | `feat(model): add inverter safety timing` |
 | 16 | Reset wait, recurrence backoff, and recovery conditions | `feat(model): add inverter reset backoff` |
 | 17 | Electrical, current, tracking, measurement, and thermal faults | `feat(model): add inverter fault causes` |
 | 18 | Switch/motor derating and current/torque limiting | `feat(model): add inverter derating` |
-| 19 | ASC entry conjunction and unsupported-mode diagnostics | `feat(model): guard unsupported ASC entry` |
+| 19 | ASC entry conjunction plus unsupported ASC/current-mode diagnostics | `feat(model): guard unsupported inverter modes` |
 | 20 | Instantiate and prove isolation of all four inverter channels | `feat(model): expand Ephorus model to four channels` |
 | 21 | Four independent motor/load plants | `feat(model): add four motor load plants` |
 | 22 | Four thermal and current-estimation plants | `feat(model): add inverter thermal outputs` |
-| 23 | Pack 3X3/3X5 status for all four channels in both candidate profiles | `feat(can): pack eight inverter status frames` |
-| 24 | Pack pairwise DC-link/general `0x400` in both candidate profiles | `feat(can): add Ephorus general status` |
+| 23 | Pack 3X3/3X5 status for all four channels using signed 1/8 C motor temperature | `feat(can): pack eight inverter status frames` |
+| 24 | Pack pairwise DC-link/general `0x400` using 1/64 V DC-link scaling | `feat(can): add Ephorus general status` |
 | 25 | Bit-exact nine-frame tests and cross-channel isolation | `test(can): verify all Ephorus status frames` |
 | 26 | Per-channel, shared, and Config Error scope fault injection | `feat(model): add inverter fault injection` |
 | 27 | Target observability and instrument signal contract | `feat(hil): expose runtime observations` |
@@ -743,13 +795,13 @@ status; only Part 39 may sign off the connected bench.
 | 29 | Runtime throttle, brake, and digital controls | `feat(gui): add live VCU input controls` |
 | 30 | VCU state strip, transition guards, and TP6-TP10 outputs | `feat(gui): add VCU state dashboard` |
 | 31 | Four inverter status/control panels | `feat(gui): add quad inverter view` |
-| 32 | Raw and dual-interpreted TX/RX CAN tables and measured rates | `feat(gui): add CAN traffic monitor` |
+| 32 | Raw CAN tables, dual-interpreted torque, capture status, and measured rates | `feat(gui): add CAN traffic monitor` |
 | 33 | Fault/scenario controls, heartbeat, and safe fallback | `feat(gui): add fault controls and heartbeat` |
 | 34 | Session logging and requested/applied audit trail | `feat(gui): add HIL session logging` |
 | 35 | MIL and host API integration tests | `test(hil): cover runtime parameter workflow` |
 | 36 | IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
 | 37 | Record J3 isolation, output levels, grounds, and conditioning measurements | `docs(hil): record IO preflight measurements` |
-| 38 | Resolve all blocking encodings and lock the hardware protocol profile | `docs(can): resolve Ephorus protocol scaling` |
+| 38 | Resolve the blocking inbound torque scale and lock the hardware protocol profile | `docs(can): resolve Ephorus torque scaling` |
 | 39 | Connected-bench checklist and measured electrical signoff | `docs(hil): record inverter HIL bench verification` |
 
 Commit rules:
@@ -782,9 +834,10 @@ Commit rules:
   circuit; record the required conditioning and resulting IO183 voltage.
 - Confirm CAN channel, CAN1 wiring, baud rate, termination, and the four-channel
   corner mapping.
-- Resolve torque, DC-link, and motor-temperature encodings using real-inverter
-  captures or vendor clarification and record the raw known vectors in the
-  repository.
+- Resolve the inbound torque scale using a paired known command and `3X3`
+  response or vendor clarification. Confirm 1/64 V DC-link and signed 1/8 C
+  motor-temperature decoding using known-value `0x400` and `3X3` captures, and
+  record all raw known vectors in the repository.
 - Validate all four control decoders and all nine status packers using
   hand-calculated payloads.
 
@@ -820,10 +873,11 @@ Commit rules:
   responses after regen is implemented in the VCU. Until then, the GUI must show
   the current firmware's zero negative-torque limits without faking regen.
 - Simultaneous brake/throttle tests VCU arbitration without direct HIL intervention.
-- Firmware-regression cases cover the current `todo` behavior: more than 20%
-  disagreement between APPS channels is implausible; brake and throttle both at
-  or above 25% latch torque cut; torque remains cut until throttle is at or below
-  5%. These are firmware behavior tests, not a claim of rule compliance.
+- Firmware-regression cases cover behavior verified directly at pinned `todo`
+  commit `39ea8efd...` in `Core/Src/driverInputs.cpp`: more than 20% disagreement
+  between APPS channels is implausible; brake and throttle both at or above 25%
+  latch torque cut; torque remains cut until throttle is at or below 5%. These
+  are firmware behavior tests, not a claim of rule compliance.
 - Record that the current firmware has the brake-channel cross-check disabled
   because brake sensor 2 is marked faulty; add an expected-failure test so that
   enabling the second-channel check later cannot pass unnoticed.
@@ -854,23 +908,38 @@ Commit rules:
 - `ASC allowed = true` by itself does not change Drive or torque. The
   `unsupported_asc_entry` diagnostic appears only when speed, control-enable,
   discharge, and connected-state entry conditions are simultaneously satisfied.
+- A command with current-control mode set refreshes command age but raises
+  `unsupported_current_mode`, forces torque and Id/Iq to zero, refuses Drive,
+  and fails the scenario. Clearing the bit removes the diagnostic but still
+  requires all normal Drive-entry conditions; this policy must not set the CAN
+  Error state solely because bit 3 was asserted.
+- Control Disable high removes torque at the modeled greater-than-100 us
+  boundary and reports Idle on the next model sample under the provisional
+  baseline policy. Keep this expected state separate from the verified timing
+  requirement so a future physical capture can change it without weakening the
+  torque-removal test.
 - Config Error ignores CAN reset and clears only after a modeled power cycle with
   valid mandatory configuration. Until physical behavior is known, tests cover
   both per-inverter and unit-wide Config Error reporting profiles.
 - Known-vector tests retain raw torque, DC-link, and motor-temperature counts and
-  verify both candidate engineering interpretations without a silent default.
+  verify both inbound torque interpretations, 1/64 V DC-link decoding, and
+  signed 1/8 C motor-temperature decoding without discarding raw values.
 - Swapping any two status IDs is detected by the cross-channel isolation test.
 - CAN bus-off, receive overrun, and transmit-queue failures are visible in logging.
 
 ## 10. Open decisions and hardware-ready gates
 
 1. Blocking for connected bench use: whether inbound torque fields use 1/256 or
-   1/512 Nm/count, DC-link fields use 1/64 or 1/16 V/count, and motor temperature
-   uses signed 1/8 C/count or unsigned 1/16 C/count with a -100 C offset. Record
-   raw physical known vectors before locking the hardware protocol profile.
+   1/512 Nm/count. Resolve it with vendor clarification or a capture containing
+   the known inbound command and corresponding `3X3` torque response before
+   locking the hardware protocol profile. Also record non-blocking known-voltage
+   `0x400` and known-temperature `3X3` captures to confirm the selected 1/64 V
+   and signed 1/8 C status decodings.
 2. Pedal channel released/pressed voltages, channel correlation, valid windows,
    and whether the fixed ADC calibration is acceptable across actual VCU sensor
-   rail and ground variation. Add harness taps for all four reserved rail monitors.
+   rail and ground variation. Select single-ended or differential IO183 rail
+   measurement after measuring ground offset; build every rail tap with signal
+   and local-return conductors so all four differential pairs A7-A14 remain usable.
 3. Current firmware APPS/brake behavior versus the applicable 2026 competition
    rules, including the intentionally disabled brake-2 plausibility check.
 4. Electrical level, output type, active polarity, and inactive state for every
@@ -880,23 +949,33 @@ Commit rules:
    Ephorus inverter 1-4 to FL/FR/RL/RR.
 6. Existing CAN termination on the VCU/test board after the split-terminated
    Ephorus is removed.
-7. Nominal DC-link voltage and configured minimum threshold after its field
-   encoding is resolved.
+7. Nominal DC-link voltage and configured minimum threshold; confirm the selected
+   1/64 V decoding during the known-voltage capture.
 8. Per-corner motor torque constants, inertias, drag/load, torque limits, speed
    limits, and desired positive/negative torque slew rates.
 9. Configured motor-temperature derating/shutdown values and ASC speed threshold.
-10. Whether Config Error is per inverter or unit-wide on the physical 4x unit.
-11. Whether exact 100 us hardware-control-pin and 350 us position-timeout timing
+10. Physical Ephorus behavior when current-control mode is requested. Until it is
+   documented or captured, retain the deliberate HIL policy of refusing Drive,
+   forcing zero torque/current, and raising `unsupported_current_mode` without
+   reporting CAN Error solely because bit 3 is set.
+11. Whether Control Disable high reports Idle, retains Drive while torque is
+   zero, or follows another physical state transition. Immediate Idle is the
+   provisional HIL policy; the greater-than-100 us torque-removal requirement is
+   independent and remains enforced.
+12. Whether Config Error is per inverter or unit-wide on the physical 4x unit.
+13. Whether exact 100 us hardware-control-pin and 350 us position-timeout timing
    is required; if so, use a faster task or dedicated hardware path instead of
    the proposed 1 ms reaction.
-12. Whether the exact Simulink Real-Time release supports independent field-level
+14. Whether the exact Simulink Real-Time release supports independent field-level
    `setparam` updates. If not, use separately tunable scalar parameters.
-13. Exact IO183/IO614 physical revisions, target-computer name,
+15. Exact IO183/IO614 physical revisions, target-computer name,
    MATLAB/Simulink Real-Time release, expected MLDATX deployment policy, and
    whether the GUI must support more than one Speedgoat.
-14. Which GUI controls are allowed during Drive versus Idle/stopped operation.
+16. Which GUI controls are allowed during Drive versus Idle/stopped operation.
 
-Host-only model and GUI work may proceed with explicit candidate profiles, but
-the GUI must remain visibly `UNVERIFIED` and the connected-bench gate stays closed
-until the applicable items above are resolved. No Simulink artifacts are created
-as part of this planning phase.
+Host-only model and GUI work may proceed with explicit torque candidate profiles,
+but the GUI must remain visibly `TORQUE SCALE UNVERIFIED` and the connected-bench
+gate stays closed until the applicable items above are resolved. DC-link and
+motor-temperature capture checks remain visible verification evidence without
+blocking the profile. No Simulink artifacts are created as part of this planning
+phase.
