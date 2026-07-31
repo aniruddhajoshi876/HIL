@@ -1,0 +1,315 @@
+classdef TestGuiFormatting < matlab.unittest.TestCase
+    methods (TestClassSetup)
+        function addWorkspaceToPath(testCase)
+            testCase.applyFixture(matlab.unittest.fixtures.PathFixture( ...
+                TestGuiFormatting.workspaceRoot()));
+        end
+    end
+
+    methods (Test)
+        function torqueCountsShowBothCandidateScales(testCase)
+            text = inverterhilgui.formatTorqueCandidates(8192);
+
+            testCase.verifyTrue(text.hasData);
+            testCase.verifyEqual(text.raw, '8192');
+            testCase.verifyEqual(text.nm256, '32.000');
+            testCase.verifyEqual(text.nm512, '16.000');
+            testCase.verifySubstring(text.summary, '1/256');
+            testCase.verifySubstring(text.summary, '1/512');
+            testCase.verifySubstring(text.summary, '8192');
+
+            negative = inverterhilgui.formatTorqueCandidates(-8192);
+            testCase.verifyEqual(negative.nm256, '-32.000');
+            testCase.verifyEqual(negative.nm512, '-16.000');
+
+            endpoints = inverterhilgui.formatTorqueCandidates(32767);
+            testCase.verifyEqual(endpoints.nm512, '63.998');
+            testCase.verifyEqual(endpoints.nm256, '127.996');
+        end
+
+        function torqueFormattingShowsDashesWithoutData(testCase)
+            invalid = {NaN, Inf, [], 0.5, 40000, -40000, 'x', complex(1, 1)};
+            for index = 1:numel(invalid)
+                text = inverterhilgui.formatTorqueCandidates(invalid{index});
+                testCase.verifyFalse(text.hasData, sprintf('%d', index));
+                testCase.verifyEqual(text.raw, '--');
+                testCase.verifyEqual(text.nm256, '--');
+                testCase.verifyEqual(text.nm512, '--');
+                testCase.verifyEqual(text.summary, '--');
+            end
+        end
+
+        function measurementsCarryRawCountsAndCaptureStatus(testCase)
+            text = inverterhilgui.formatMeasurement(400.5, 25632, 'V', true);
+
+            testCase.verifyTrue(text.hasData);
+            testCase.verifyEqual(text.value, '400.500 V');
+            testCase.verifyEqual(text.raw, '25632');
+            testCase.verifyEqual(text.status, 'CAPTURE PENDING');
+            testCase.verifySubstring(text.combined, '25632');
+            testCase.verifySubstring(text.combined, 'CAPTURE PENDING');
+
+            quiet = inverterhilgui.formatMeasurement(37.25, 298, 'C', false);
+            testCase.verifyEmpty(quiet.status);
+            testCase.verifyEqual(quiet.combined, '37.250 C (298 cnt)');
+
+            blank = inverterhilgui.formatMeasurement(NaN, NaN, 'V', true);
+            testCase.verifyFalse(blank.hasData);
+            testCase.verifyEqual(blank.combined, '--');
+            testCase.verifyEqual(blank.value, '--');
+        end
+
+        function pinStateIsTextPlusColourNeverColourAlone(testCase)
+            theme = inverterhilgui.guiTheme();
+
+            on = inverterhilgui.formatPinState(true);
+            testCase.verifyEqual(on.text, 'ON');
+            testCase.verifyTrue(on.known);
+            testCase.verifyEqual(on.color, theme.color.healthy);
+
+            off = inverterhilgui.formatPinState(false);
+            testCase.verifyEqual(off.text, 'OFF');
+            testCase.verifyTrue(off.known);
+            testCase.verifyNotEqual(off.color, on.color);
+
+            unknown = {[], NaN, 2, -1, 'on', [true true], complex(1, 1)};
+            for index = 1:numel(unknown)
+                display = inverterhilgui.formatPinState(unknown{index});
+                testCase.verifyFalse(display.known, sprintf('%d', index));
+                testCase.verifyEqual(display.text, '--');
+            end
+
+            % Text alone must distinguish every state.
+            texts = {on.text, off.text, '--'};
+            testCase.verifyEqual(numel(unique(texts)), 3);
+        end
+
+        function transitionGuardsCoverEveryRequiredCondition(testCase)
+            snapshot = struct( ...
+                'mainButton', true, ...
+                'brakePercent', 35, ...
+                'dcLink12V', 400, ...
+                'dcLink34V', 120, ...
+                'plausibilityOk', false);
+            guards = inverterhilgui.evaluateTransitionGuards(snapshot, ...
+                struct('brakePercent', 20, 'dcLinkMinimumV', 350));
+
+            testCase.verifyEqual(numel(guards), 5);
+            names = {guards.name};
+            testCase.verifyEqual(names, {'Main button', 'Brake threshold', ...
+                'DC-link pair 1/2', 'DC-link pair 3/4', ...
+                'Driver-input plausibility'});
+            testCase.verifyTrue(guards(1).pass);
+            testCase.verifyTrue(guards(2).pass);
+            testCase.verifyEqual(guards(2).actual, '35.0 %');
+            testCase.verifyEqual(guards(2).required, '>= 20.0 %');
+            testCase.verifyTrue(guards(3).pass);
+            testCase.verifyFalse(guards(4).pass);
+            testCase.verifyEqual(guards(4).actual, '120.0 V');
+            testCase.verifyFalse(guards(5).pass);
+            testCase.verifyTrue(all([guards.known]));
+        end
+
+        function unknownGuardsAreNeverShownAsPassing(testCase)
+            guards = inverterhilgui.evaluateTransitionGuards( ...
+                inverterhilgui.blankTelemetry().guards, struct());
+
+            testCase.verifyEqual(numel(guards), 5);
+            testCase.verifyFalse(any([guards.pass]));
+            testCase.verifyFalse(any([guards.known]));
+            for index = 1:numel(guards)
+                testCase.verifyEqual(guards(index).actual, '--');
+            end
+
+            malformed = inverterhilgui.evaluateTransitionGuards(42, struct());
+            testCase.verifyEqual(numel(malformed), 5);
+            testCase.verifyFalse(any([malformed.pass]));
+        end
+
+        function inverterPanelsDoNotLeakBetweenChannels(testCase)
+            snapshot = inverterhilgui.blankTelemetry();
+            snapshot.inverter(2).state = 'DRIVE';
+            snapshot.inverter(2).ready = true;
+            snapshot.inverter(2).commandAgeS = 0.004;
+            snapshot.inverter(2).torqueCommandRaw = 8192;
+            snapshot.inverter(2).torqueActualRaw = -4096;
+            snapshot.inverter(2).speedRpm = 2500;
+            snapshot.inverter(2).idSetpointA = 10;
+            snapshot.inverter(2).idActualA = 9.5;
+            snapshot.inverter(2).motorTemperatureC = 55.5;
+            snapshot.inverter(2).motorTemperatureRaw = 444;
+            snapshot.inverter(2).derating = true;
+            snapshot.inverter(2).activeFault = 'OVERTEMP';
+
+            populated = inverterhilgui.formatInverterPanel(snapshot, 2);
+            testCase.verifyEqual(populated.title, 'INV2');
+            testCase.verifyEqual(populated.corner, 'UNVERIFIED');
+            testCase.verifyEqual(populated.state, 'DRIVE');
+            testCase.verifyEqual(populated.ready, 'READY');
+            testCase.verifyEqual(populated.commandAge, '0.004 s');
+            testCase.verifySubstring(populated.torqueCommand, '32.000');
+            testCase.verifySubstring(populated.torqueCommand, '16.000');
+            testCase.verifySubstring(populated.torqueActual, '-8.000');
+            testCase.verifyEqual(populated.speed, '2500 rpm');
+            testCase.verifyEqual(populated.idCurrent, '10.0 / 9.5 A');
+            testCase.verifySubstring(populated.motorTemperature, '444');
+            testCase.verifySubstring(populated.motorTemperature, ...
+                'CAPTURE PENDING');
+            testCase.verifyEqual(populated.derating, 'ACTIVE');
+            testCase.verifyEqual(populated.activeFault, 'OVERTEMP');
+
+            for channel = [1 3 4]
+                other = inverterhilgui.formatInverterPanel(snapshot, channel);
+                testCase.verifyEqual(other.title, sprintf('INV%d', channel));
+                testCase.verifyEqual(other.corner, 'UNVERIFIED');
+                testCase.verifyEqual(other.state, '--');
+                testCase.verifyEqual(other.torqueCommand, '--');
+                testCase.verifyEqual(other.speed, '--');
+                testCase.verifyEqual(other.motorTemperature, '--');
+                testCase.verifyEqual(other.activeFault, 'NONE');
+                testCase.verifyFalse(other.hasData);
+            end
+
+            bad = inverterhilgui.formatInverterPanel(snapshot, 5);
+            testCase.verifyEqual(bad.title, '--');
+            testCase.verifyFalse(bad.hasData);
+        end
+
+        function cornerLabelsStayUnverified(testCase)
+            snapshot = inverterhilgui.blankTelemetry();
+            for channel = 1:4
+                panel = inverterhilgui.formatInverterPanel(snapshot, channel);
+                testCase.verifyEqual(panel.corner, 'UNVERIFIED');
+                testCase.verifyEqual(panel.title, sprintf('INV%d', channel));
+            end
+        end
+
+        function canRatesAreMeasuredNotAssumed(testCase)
+            observation = struct( ...
+                'id', uint32(hex2dec('186')), ...
+                'name', 'CTRL INV1', ...
+                'signal', 'torque limit +', ...
+                'value', '8192 cnt', ...
+                'timestampsS', 0:0.005:0.05, ...
+                'lastChangeS', 0.05);
+            rows = inverterhilgui.canRowModel(observation, 0.052);
+
+            testCase.verifyEqual(numel(rows), 1);
+            testCase.verifyEqual(rows(1).id, '0x186');
+            testCase.verifyEqual(rows(1).rateHz, 200, 'RelTol', 1e-9);
+            testCase.verifyEqual(rows(1).rate, '200.0 Hz');
+            testCase.verifyEqual(rows(1).live, 'LIVE');
+            testCase.verifyTrue(rows(1).highlight);
+
+            slow = observation;
+            slow.timestampsS = 0:0.02:0.1;
+            slowRows = inverterhilgui.canRowModel(slow, 0.101);
+            testCase.verifyEqual(slowRows(1).rateHz, 50, 'RelTol', 1e-9);
+
+            single = observation;
+            single.timestampsS = 0.05;
+            singleRows = inverterhilgui.canRowModel(single, 0.052);
+            testCase.verifyEqual(singleRows(1).rate, '--', ...
+                'A single timestamp cannot imply the 5 ms nominal rate.');
+            testCase.verifyEqual(singleRows(1).rateHz, NaN);
+        end
+
+        function canRowsMarkStaleAndUnchangedTraffic(testCase)
+            observation = struct( ...
+                'id', uint32(hex2dec('400')), 'name', 'GENERAL', ...
+                'signal', 'dc link 1/2', 'value', '400.0 V', ...
+                'timestampsS', 10:0.005:10.05, 'lastChangeS', 9.0);
+
+            fresh = inverterhilgui.canRowModel(observation, 10.052);
+            testCase.verifyEqual(fresh(1).live, 'LIVE');
+            testCase.verifyFalse(fresh(1).highlight, ...
+                'An old payload change must not stay highlighted.');
+
+            recent = observation;
+            recent.lastChangeS = 10.05;
+            testCase.verifyTrue( ...
+                inverterhilgui.canRowModel(recent, 10.052).highlight);
+
+            stale = inverterhilgui.canRowModel(observation, 15.0);
+            testCase.verifyEqual(stale(1).live, 'STALE');
+            testCase.verifyFalse(stale(1).highlight);
+        end
+
+        function blankCanObservationsRenderAsNoData(testCase)
+            snapshot = inverterhilgui.blankTelemetry();
+            rows = inverterhilgui.canRowModel(snapshot.can.rx, 1.0);
+
+            testCase.verifyEqual(numel(rows), 4);
+            expectedIds = {'0x186', '0x196', '0x1A6', '0x1B6'};
+            for index = 1:numel(rows)
+                testCase.verifyEqual(rows(index).id, expectedIds{index});
+                testCase.verifyEqual(rows(index).live, 'NO DATA');
+                testCase.verifyEqual(rows(index).rate, '--');
+                testCase.verifyEqual(rows(index).value, '--');
+                testCase.verifyFalse(rows(index).highlight);
+            end
+
+            txRows = inverterhilgui.canRowModel(snapshot.can.tx, 1.0);
+            testCase.verifyEqual(numel(txRows), 9);
+            testCase.verifyEqual({txRows.id}, {'0x383', '0x385', '0x393', ...
+                '0x395', '0x3A3', '0x3A5', '0x3B3', '0x3B5', '0x400'});
+
+            testCase.verifyEmpty(inverterhilgui.canRowModel([], 1.0));
+        end
+
+        function blankTelemetryContainsNoFabricatedValues(testCase)
+            snapshot = inverterhilgui.blankTelemetry();
+
+            testCase.verifyFalse(snapshot.valid);
+            testCase.verifyEqual(snapshot.targetTimeS, NaN);
+            testCase.verifyEmpty(snapshot.vcu.state);
+            testCase.verifyEqual(snapshot.vcu.timeInStateS, NaN);
+            testCase.verifyFalse(snapshot.vcu.errorKnown);
+            testCase.verifyEqual(snapshot.analogInV, nan(1, 4));
+            testCase.verifyEqual(snapshot.pedals.appliedV, nan(1, 4));
+            testCase.verifyFalse(snapshot.pedals.armed);
+            testCase.verifyFalse(snapshot.io.healthy);
+            testCase.verifyEqual(numel(snapshot.pins), 5);
+            testCase.verifyEqual({snapshot.pins.name}, {'VC_SD_OUT', ...
+                'MAIN_EN_OUT', 'PRECH_EN_OUT', 'INV_CTRL_EN', ...
+                'INV_CTRL_DIS'});
+            testCase.verifyEqual({snapshot.pins.testPoint}, {'TP6', 'TP7', ...
+                'TP8', 'TP9', 'TP10'});
+            for index = 1:numel(snapshot.pins)
+                testCase.verifyEmpty(snapshot.pins(index).state);
+            end
+            testCase.verifyEqual(numel(snapshot.dcLink), 2);
+            for index = 1:2
+                testCase.verifyEqual(snapshot.dcLink(index).voltageV, NaN);
+                testCase.verifyEqual(snapshot.dcLink(index).rawCount, NaN);
+                testCase.verifyTrue(snapshot.dcLink(index).capturePending);
+            end
+            testCase.verifyEqual(snapshot.switchingFrequencyKHz, NaN);
+            testCase.verifyEqual(numel(snapshot.inverter), 4);
+            testCase.verifyEqual([snapshot.inverter.index], 1:4);
+        end
+
+        function themeUsesTheSpecifiedConsolePalette(testCase)
+            theme = inverterhilgui.guiTheme();
+
+            testCase.verifyEqual(theme.color.background, ...
+                [9 12 14] / 255, 'AbsTol', 1e-12);
+            testCase.verifyEqual(theme.color.panel, ...
+                [25 35 45] / 255, 'AbsTol', 1e-12);
+            testCase.verifySubstring(theme.text.torqueBanner, ...
+                'TORQUE SCALE UNVERIFIED');
+            testCase.verifySubstring(theme.text.torqueBanner, '1/512');
+            testCase.verifySubstring(theme.text.torqueBanner, ...
+                'ephorus3-v1.03-provisional-1over512');
+            testCase.verifyEqual(theme.text.cornerLabel, 'UNVERIFIED');
+            testCase.verifyEqual(theme.text.noData, '--');
+        end
+    end
+
+    methods (Static, Access = private)
+        function root = workspaceRoot()
+            here = fileparts(mfilename('fullpath'));
+            root = fileparts(fileparts(here));
+        end
+    end
+end
