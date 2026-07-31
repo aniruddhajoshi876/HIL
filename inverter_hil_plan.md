@@ -5,6 +5,21 @@
 This file is a planning document only. No Simulink model, Speedgoat application,
 or generated code is part of this phase.
 
+### 1.1 Required workspace location
+
+All implementation artifacts for this inverter HIL must be created inside:
+
+`C:\Users\aniru\OneDrive - McGill University\mfe\HIL\`
+
+The main Simulink model will be
+`C:\Users\aniru\OneDrive - McGill University\mfe\HIL\inverter_hil.slx`.
+Keep the associated `inverter_hil.sldd`, `inverter_hil_app.mlapp`, project/setup
+scripts, test files, and any model references under the same `mfe\HIL` workspace.
+Tests may use `mfe\HIL\tests\inverter_hil\`, and generated build products may use
+an ignored folder under `mfe\HIL`, but no inverter-HIL implementation file may be
+created in `MFE26-VC`, `Downloads`, or another repository. The VCU repository is
+read-only reference input for this project.
+
 The vehicle controller (VCU) is the device under test. The Speedgoat system will
 replace the complete four-channel Electrophorus Ephorus3 unit and four basic
 motor/load plants. The closed-loop signal path will be:
@@ -836,7 +851,7 @@ execute every package in numeric order. Use this risk-first sequence:
 
 | Part | Deliverable | Suggested commit |
 |---:|---|---|
-| 1 | Project/folder scaffold, model configuration, and data dictionary | `build(hil): scaffold inverter HIL project` |
+| 1 | Create `mfe/HIL/inverter_hil.slx`, project/setup scaffold, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): scaffold inverter HIL project` |
 | 2 | Exact-release `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
 | 3 | Logical tunable parameter contract and defaults | `feat(hil): define runtime parameter contract` |
 | 4 | Hardware initial/reset values and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
@@ -880,6 +895,9 @@ execute every package in numeric order. Use this risk-first sequence:
 Commit rules:
 
 - Start implementation on a dedicated `codex/inverter-hil` branch.
+- Create every model, app, script, test, and model-reference source under
+  `C:\Users\aniru\OneDrive - McGill University\mfe\HIL\`; treat any output path
+  outside this workspace as a failed preflight check.
 - Stage only files belonging to the current part; the existing workspace has
   unrelated generated and deleted files that must remain untouched.
 - Run the focused tests and `git diff --check` before every commit.
