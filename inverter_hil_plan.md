@@ -20,6 +20,18 @@ an ignored folder under `mfe\HIL`, but no inverter-HIL implementation file may b
 created in `MFE26-VC`, `Downloads`, or another repository. The VCU repository is
 read-only reference input for this project.
 
+### 1.2 Required MATLAB release
+
+Create, save, build, and test the inverter HIL with MATLAB/Simulink R2024b and
+Simulink Real-Time R2024b. The main `inverter_hil.slx`, its model references,
+`inverter_hil.sldd`, and `inverter_hil_app.mlapp` must remain R2024b-compatible.
+Use the R2024b Speedgoat I/O Blockset assets supplied under the local
+`10.0.1.1\R2024B_SLX` installation. Project startup and build scripts must check
+that `version('-release')` is `2024b` and stop with a clear error otherwise.
+Do not open and save the authoritative model or App Designer file in a later
+MATLAB release because that may make it unreadable in R2024b. Any future release
+migration must use a separate branch and retain the last R2024b-compatible files.
+
 The vehicle controller (VCU) is the device under test. The Speedgoat system will
 replace the complete four-channel Electrophorus Ephorus3 unit and four basic
 motor/load plants. The closed-loop signal path will be:
@@ -704,7 +716,7 @@ preflight, but it cannot be declared `TORQUE CALIBRATED` or used for quantitativ
 torque-dependent acceptance until the scale is resolved.
 
 Before the nested paths in this table become an implementation dependency, build
-a minimal application for the exact Simulink Real-Time release and prove that
+a minimal R2024b Simulink Real-Time application and prove that
 `setparam` can update one field without replacing or disturbing sibling fields.
 Exercise two host callbacks writing different fields and verify both values on
 target. If single-field struct tuning is unsupported, expose independent scalar
@@ -746,8 +758,8 @@ timeout.
 
 ### 7.3 GUI visual and interaction design
 
-The GUI will be a MATLAB App Designer `.mlapp` using Simulink Real-Time target
-components and custom `uigridlayout` panels. Its first screen will be the actual
+The GUI will be an R2024b MATLAB App Designer `.mlapp` using R2024b Simulink
+Real-Time target components and custom `uigridlayout` panels. Its first screen will be the actual
 operator dashboard, not a landing page. It will follow the `todo` branch SIL GUI
 at commit `39ea8efd...`:
 
@@ -843,7 +855,7 @@ execute every package in numeric order. Use this risk-first sequence:
 3. **Behavior hardening:** Parts 15-17, 19-20, 23, 27-28, and 36. Add sub-tick
    policy, reset backoff, all fault/derating behavior, unsupported-mode handling,
    thermal/current outputs, fault injection, observability, and integration tests.
-4. **Runtime operator GUI:** Parts 2-3 and 29-35. Prove the exact-release tuning
+4. **Runtime operator GUI:** Parts 2-3 and 29-35. Prove the R2024b tuning
    API before binding controls, then add the dashboard in small passing commits.
 5. **Physical evidence and signoff:** Parts 39-40. Part 40 may record electrical
    and scale-independent bench results while Part 39 is open; quantitative torque
@@ -851,8 +863,8 @@ execute every package in numeric order. Use this risk-first sequence:
 
 | Part | Deliverable | Suggested commit |
 |---:|---|---|
-| 1 | Create `mfe/HIL/inverter_hil.slx`, project/setup scaffold, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): scaffold inverter HIL project` |
-| 2 | Exact-release `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
+| 1 | Create the R2024b `mfe/HIL/inverter_hil.slx`, project/setup scaffold, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): scaffold inverter HIL project` |
+| 2 | R2024b `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
 | 3 | Logical tunable parameter contract and defaults | `feat(hil): define runtime parameter contract` |
 | 4 | Hardware initial/reset values and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
 | 5 | Four-channel pedal calibration maps and host tests | `feat(io183): add pedal sensor maps` |
@@ -879,7 +891,7 @@ execute every package in numeric order. Use this risk-first sequence:
 | 26 | Bit-exact nine-frame tests, queue-status checks, and cross-channel isolation | `test(can): verify all Ephorus status frames` |
 | 27 | Per-channel, shared, and Config Error scope fault injection | `feat(model): add inverter fault injection` |
 | 28 | Target observability and instrument signal contract | `feat(hil): expose runtime observations` |
-| 29 | App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): scaffold VC HIL dashboard` |
+| 29 | R2024b App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): scaffold VC HIL dashboard` |
 | 30 | Runtime throttle, brake, and digital controls | `feat(gui): add live VCU input controls` |
 | 31 | VCU state strip, transition guards, and TP6-TP10 outputs | `feat(gui): add VCU state dashboard` |
 | 32 | Four inverter status/control panels | `feat(gui): add quad inverter view` |
@@ -887,7 +899,7 @@ execute every package in numeric order. Use this risk-first sequence:
 | 34 | Fault/scenario controls, heartbeat, and safe fallback | `feat(gui): add fault controls and heartbeat` |
 | 35 | Session logging and requested/applied audit trail | `feat(gui): add HIL session logging` |
 | 36 | MIL and host API integration tests | `test(hil): cover runtime parameter workflow` |
-| 37 | IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
+| 37 | R2024b IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
 | 38 | Record J3 isolation, output levels, grounds, and conditioning measurements | `docs(hil): record IO preflight measurements` |
 | 39 | Resolve inbound torque scaling and close quantitative torque signoff | `docs(can): resolve Ephorus torque scaling` |
 | 40 | Connected-bench checklist and measured electrical/non-torque signoff | `docs(hil): record inverter HIL bench verification` |
@@ -1085,11 +1097,11 @@ Commit rules:
 15. Whether exact 100 us hardware-control-pin, 350 us position-timeout, and
    500 us reset-floor timing is required; if so, use a faster task or dedicated
    hardware path instead of the proposed 1 ms reaction.
-16. Whether the exact Simulink Real-Time release supports independent field-level
+16. Whether Simulink Real-Time R2024b supports independent field-level
    `setparam` updates. If not, use separately tunable scalar parameters.
 17. Exact IO183/IO614 physical revisions, target-computer name,
-   MATLAB/Simulink Real-Time release, expected MLDATX deployment policy, and
-   whether the GUI must support more than one Speedgoat.
+   expected R2024b MLDATX deployment policy, and whether the GUI must support
+   more than one Speedgoat.
 18. Which GUI controls are allowed during Drive versus Idle/stopped operation.
 
 Host-only model and GUI work may proceed with explicit torque candidate profiles,
