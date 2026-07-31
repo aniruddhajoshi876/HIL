@@ -2,8 +2,8 @@ function results = run_inverter_hil_tests()
 %RUN_INVERTER_HIL_TESTS Run the independent host-verifiable R2024b suite.
 
 testFolder = fileparts(mfilename('fullpath'));
-workspaceRoot = fileparts(fileparts(testFolder));
-addpath(workspaceRoot);
+repoRoot = fileparts(fileparts(testFolder));
+addpath(fullfile(repoRoot, 'inverter_hil'));
 
 release = version('-release');
 if ~strcmp(release, '2024b')

@@ -7,3 +7,6 @@ slprj/
 *_ert_rtw/
 build/inverter_hil/
 logs/inverter_hil/
+examples/10.0.1.1/
+examples/tmp/
+examples/*.mldatx

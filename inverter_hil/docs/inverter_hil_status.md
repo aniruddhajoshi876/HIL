@@ -74,9 +74,9 @@ evidence resolving 1/256 versus 1/512 Nm/count.
 
 ## Commands
 
-Run these from the `inverter_hil` folder with R2024b:
+Run these from the repository root with R2024b:
 
 ```powershell
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "build_inverter_hil_model(true); verify_inverter_hil_model;"
+& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'inverter_hil')); cd(fullfile(pwd,'inverter_hil')); build_inverter_hil_model(true); verify_inverter_hil_model;"
 & 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'tests','inverter_hil')); run_inverter_hil_tests;"
 ```

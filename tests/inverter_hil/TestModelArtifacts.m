@@ -8,7 +8,8 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
     methods (TestClassSetup)
         function loadIoDisconnectedArtifact(testCase)
             testFolder = fileparts(mfilename('fullpath'));
-            testCase.Root = fileparts(fileparts(testFolder));
+            repoRoot = fileparts(fileparts(testFolder));
+            testCase.Root = fullfile(repoRoot, 'inverter_hil');
             addpath(testCase.Root);
             testCase.Root = inverter_hil_setup();
             testCase.assertEqual(version('-release'), '2024b');
