@@ -41,7 +41,7 @@ The following planned deliverables remain open:
 
 - Code-generation-compatible Simulink integration of decoder, state, plant,
   packer, queue-drain, rate, and observability logic.
-- Successful `slrealtime.tlc` build and IO-disconnected target smoke test.
+- Successful `speedgoat.tlc` build and IO-disconnected target smoke test.
 - Exact-release field-level `setparam` tuning spike and stable target parameter
   mapping.
 - `inverter_hil_app.mlapp`, target instruments, command audit log, and heartbeat

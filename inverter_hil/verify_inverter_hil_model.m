@@ -14,7 +14,7 @@ cleanup = onCleanup(@() close_system(model, 0));
 assert(strcmp(get_param(model, 'SolverType'), 'Fixed-step'));
 assert(strcmp(get_param(model, 'Solver'), 'FixedStepDiscrete'));
 assert(strcmp(get_param(model, 'FixedStep'), '0.001'));
-assert(strcmp(get_param(model, 'SystemTargetFile'), 'slrealtime.tlc'));
+assert(strcmp(get_param(model, 'SystemTargetFile'), 'speedgoat.tlc'));
 assert(strcmp(get_param(model, 'DataDictionary'), 'inverter_hil.sldd'));
 assert(contains(get_param(model, 'InitFcn'), ...
     'inverterhil.enforceHardwarePreflight'));
