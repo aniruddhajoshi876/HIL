@@ -68,10 +68,23 @@ brake channels shown in the schematic.
 | A4 | Analog Output 04 | HIL -> VCU | `ANA_BRAKE_P_2` | 50 | J2 pin 17 | Brake-pressure sensor channel 2 |
 | A5 | Analog Ground | Reference | Sensor ground | - | Harness ground | Primary analog reference |
 | A6 | Analog Ground | Spare reference | Sensor ground | - | Harness ground | Spare analog reference |
-| A7-A14 | Analog Inputs 01-08 | Not used in baseline | Reserved | - | - | Future analog monitoring/fault injection feedback |
+| A7 | Analog Input 01 | VCU -> HIL | `5V_THROTTLE_1` | 88 | Harness tap required | Monitor throttle-1 sensor rail |
+| A8 | Analog Input 02 | VCU -> HIL | `5V_THROTTLE_2` | 86 | Harness tap required | Monitor throttle-2 sensor rail |
+| A9 | Analog Input 03 | VCU -> HIL | `5V_BP_1` | 84 | Harness tap required | Monitor brake-1 sensor rail |
+| A10 | Analog Input 04 | VCU -> HIL | `5V_BP_2` | 82 | Harness tap required | Monitor brake-2 sensor rail |
+| A11-A14 | Analog Inputs 05-08 | Not used in baseline | Reserved | - | - | Future analog monitoring/fault feedback |
 | A15 | 0 V | Not used in baseline | Target-machine 0 V | - | - | Use only if required by an externally powered interface |
 | A16 | +5 V | Not used in baseline | Target-machine +5 V | - | - | Do not use as a pedal supply without a current/ground review |
 | A17 | Analog Ground | Spare reference | Sensor ground | - | Harness ground | Spare analog reference |
+
+Configure AI01-AI04 for single-ended 0-5 V rail monitoring after the harness-tap
+and ground strategy are approved. These measurements permit later ratiometric
+pedal emulation without changing the IO183 connector allocation.
+
+All four IO183 analog outputs are consumed by the redundant brake/throttle
+channels. J2 also exposes `ANA_IN_4`, `ANA_IN_1`, `ANA_IN_3`, and `ANA_IN_2` on
+pins 25, 27, 29, and 31, but stimulating any of them requires a second analog
+output module or external programmable source.
 
 Pedal conversion will be parameterized rather than hard-coded:
 
@@ -84,19 +97,26 @@ and fault override. The actual values and whether the redundant channels are
 parallel, inverse, or ratio-matched must be taken from the VCU calibration or
 measured on the real sensors. Typical pedal values must not be assumed.
 
-The IO183 hardware initial and reset values will be 0 V. A stopped, failed, or
-unloaded real-time application must therefore present an out-of-range pedal
-fault to the VCU rather than a healthy-looking pedal value. After the target
-application is running, its IO status is healthy, and an operator or automated
-scenario has armed the pedal interface, the model will slew all four channels
-to their calibrated released-pedal voltages. Loss of the model heartbeat returns
-the channels to 0 V through the configured reset/fallback path.
+The IO183 hardware initial and reset values will be 0 V. Based on the current
+firmware's raw-count windows, a stopped, failed, or unloaded application is
+intended to present an out-of-range pedal fault rather than a healthy-looking
+pedal value; this remains a measured acceptance test, not an unchecked hardware
+assumption. After the target application is running, its IO status is healthy,
+and an operator or automated scenario has armed the pedal interface, the model
+will slew all four channels to their calibrated released-pedal voltages. Loss of
+the model heartbeat returns the channels to 0 V through the configured
+reset/fallback path.
 
 The VCU has separate sensor rails on pins 88/86 for throttle and pins 84/82 for
 brake; those rails are not present on J2 or J3. The current `todo` firmware uses
-fixed ADC-count calibration and channel-agreement checks rather than explicitly
-measuring those rails. Even so, each calibration point must be measured at the
-connected VCU pin under load, not only at the IO183 connector.
+fixed ADC-count calibration, explicit lower and upper raw-count windows, and
+channel-agreement checks rather than explicitly measuring those rails. Its
+lower-bound checks make a 0 V stimulus invalid for both throttle channels and
+brake channel 1; brake channel 2 plausibility is currently disabled, but the
+remaining invalid channels still make the aggregate input invalid. The target
+test must confirm this behavior before 0 V is accepted as the hardware fallback.
+Each calibration point must also be measured at the connected VCU pin under
+load, not only at the IO183 connector.
 
 ### 3.2 IO183 Connector B: digital signals
 
@@ -228,8 +248,8 @@ changes.
 | byte 0 bit 3 | Boolean | Current-control mode; reject or fault because it is not for vehicle use |
 | byte 0 bits 4-7 and byte 1 | Reserved | Must be ignored on receive and zero in generated test vectors |
 | bytes 2-3 | signed int16, 1 RPM/bit | Speed setpoint |
-| bytes 4-5 | signed int16, provisional 1/256 Nm/bit | Positive torque limit; scale is blocking item below |
-| bytes 6-7 | signed int16, provisional 1/256 Nm/bit | Negative torque limit; scale is blocking item below |
+| bytes 4-5 | signed int16, ambiguous 1/256 or 1/512 Nm/bit | Positive torque limit; scale is blocking item below |
+| bytes 6-7 | signed int16, ambiguous 1/256 or 1/512 Nm/bit | Negative torque limit; scale is blocking item below |
 
 #### 4.1.1 Blocking torque-scale ambiguity
 
@@ -240,9 +260,10 @@ The current VCU `todo` firmware encodes with `1/256 Nm/count`; its SIL inverter
 model also uses 1/256 but clamps received counts to approximately +/-64 Nm.
 Neither implementation proves what the physical inverter accepts.
 
-The HIL decoder will always expose the raw signed counts. The engineering-unit
-scale will be a protocol constant, not a GUI-tunable runtime parameter, and will
-remain marked `UNVERIFIED` until one of these checks is completed:
+The HIL decoder will always expose the raw signed counts and both candidate
+engineering values. The scale used by the plant will be a versioned protocol
+profile, not a GUI-tunable runtime parameter, and no profile will be labeled
+hardware-ready until one of these checks is completed:
 
 1. Capture a real inverter command for a known torque limit. A 10 Nm command is
    raw 2560 at 1/256 and raw 5120 at 1/512.
@@ -250,10 +271,11 @@ remain marked `UNVERIFIED` until one of these checks is completed:
 3. Confirm the physical inverter's interpreted torque against an independent
    measurement over several positive and negative commands.
 
-Host-only decoder work may provisionally mirror the current VCU at 1/256, but a
-closed-loop hardware test and final known-vector approval are blocked until the
-scale is resolved. This prevents a factor-of-two error from being hidden by the
-plant model.
+Host-only decoder work will run explicit 1/256 and 1/512 profiles against the
+same raw frames and compare the resulting behavior. It must not silently default
+to the current VCU's 1/256 assumption, because mirroring the DUT could hide the
+factor-of-two error the HIL is intended to detect. Closed-loop hardware tests and
+final known-vector approval remain blocked until the profile is resolved.
 
 Each decoder instance will retain its own last valid command, record its own
 timestamp, reject wrong-DLC frames, and expose raw and engineering-unit values
@@ -282,6 +304,15 @@ Every 3X3 frame carries that inverter's state, ready and derating flags,
 maximum permitted output current, actual torque, torque setpoint, motor
 temperature, and power-switch temperature.
 
+Motor-temperature encoding is a separate blocking ambiguity. Table 6.13 states
+a 12-bit field at signed 1/8 C/count with a range of -100 C to +155 C; signed
+12-bit 1/8 spans -256 C to +255.875 C. An alternative unsigned 12-bit value at
+1/16 C/count with a -100 C offset spans -100 C to +155.9375 C and matches the
+printed endpoints closely. The current VCU decodes signed 1/8, but that does not
+prove the inverter encoding. Retain raw counts, display both interpretations,
+and resolve the field using a physical status frame at a known temperature or
+vendor clarification before hardware-ready status packing.
+
 Every 3X5 frame carries that inverter's Id setpoint/actual, Iq setpoint/actual,
 and actual motor speed.
 
@@ -293,11 +324,13 @@ General status ID `0x400` carries:
 - Independent DC-link-above-minimum flags for both pairs.
 - Mirrors of Control Enable and Control Disable.
 
-Table 6.13 also prints a contradictory DC-link endpoint: a 16-bit unsigned field
-at 1/64 V/count reaches 1023 63/64 V, not the printed 1023 15/16 V. The planned
-provisional scale remains 1/64 V/count because the unit column, present VCU
-decoder, and inverter voltage rating all support it. The HIL will retain the raw
-counts and confirm a known physical voltage or CAN capture before bench signoff.
+DC-link encoding is also blocking rather than a rounding correction. Table 6.13
+assigns 16 bits and 1/64 V/count, which reaches 1023 63/64 V, but its printed
+1023 15/16 V endpoint is exactly the full scale of 14 bits at 1/16 V/count.
+Both interpretations reach approximately 1024 V, so inverter voltage rating does
+not distinguish them. The current VCU decodes 1/64, but the HIL will retain raw
+counts, display both 1/64 and 1/16 interpretations, and lock the profile only
+after a known-voltage physical CAN capture or vendor clarification.
 
 All frames will use the exact bit positions and only the verified scalings from
 Ephorus tables 6.11-6.13. Packing and unpacking will use integer and bitwise
@@ -340,7 +373,11 @@ reported Ephorus states:
 The mandatory Config Error checks cover motor pole-pair count, configured motor
 rotation direction, and required encoder reference calibration values. Marking an
 inverter merely `connected = false` blocks readiness and Drive but does not create
-Config Error.
+Config Error. The datasheet is unclear whether one missing per-motor value reports
+Config Error only on that channel or disables all four channels because they share
+one configuration file. The model will retain both per-inverter configuration
+validity and a unit-wide configuration gate; the physical inverter or vendor must
+determine which status behavior becomes the locked hardware profile.
 
 The two hardware-control pins are common to all four instances, while CAN
 command age, reset, readiness, state, torque, temperature, and most injected
@@ -353,11 +390,16 @@ evaluated independently for each inverter:
   leaving Drive; greater than 500 ms latches Error.
 - Position age greater than 350 us latches Error. The basic plant has no encoder
   waveform, so it will model this as an independent position-age timer and fault
-  injection hook.
+  injection hook. A 1 ms task cannot reproduce the 350 us boundary; exact timing
+  requires a faster task, while the 1 ms baseline reacts on its first observed
+  sample and reports the quantization.
 - Control Enable low or Control Disable high for more than 100 us forces Iq and
   torque to zero. The proposed 1 ms task reacts on the first observed sample; a
   faster task is required if exact 100 us timing becomes an acceptance criterion.
-- Control Enable low for more than 200 ms while already in Drive latches Error.
+- Control Enable low while already in Drive leaves the reported state as Drive
+  during the 0-200 ms interval, with Iq and torque forced to zero after 100 us.
+  If Control Enable remains low for more than 200 ms, Error latches; retaining
+  Drive during that interval keeps the datasheet's Drive-only timer reachable.
   Control Disable high removes normal control; the baseline state policy is to
   leave Drive for Idle without inventing a Control Disable Error timer.
 - DC-link voltage above 700 V or below -10 V always latches Error. Dropping below
@@ -385,13 +427,15 @@ Error reset uses the datasheet backoff instead of a single fixed delay:
 - Reset succeeds only when no error cause is active, the wait has elapsed, and a
   reset command is present.
 
-The current VCU sends `ASC allowed = false`. The first basic HIL therefore decodes
-and logs the bit but explicitly excludes physical ASC current and braking-torque
-behavior. An unexpected true request will force normal torque to zero, raise an
-`unsupported_asc_request` diagnostic, and fail the scenario instead of being
-silently ignored. A later ASC model must implement the datasheet entry conditions
-(speed above the configured threshold, ASC allowed, normal control-enable
-condition false, and inverter connected) and its temperature, timeout, position,
+The first basic HIL decodes and logs `ASC allowed` but explicitly excludes physical
+ASC current and braking-torque behavior. The bit alone is permission, not a mode
+request, and must not change normal Drive behavior. The
+`unsupported_asc_entry` diagnostic is raised only when all datasheet entry
+conditions are simultaneously true: speed above the configured ASC threshold,
+ASC allowed, the normal control-enable condition false with discharge active,
+and that motor connected in configuration. At that point normal torque is forced
+to zero and the scenario fails visibly instead of silently approximating ASC. A
+later ASC model must also implement the temperature, command/position timeout,
 gate-supply, and speed exit conditions before ASC tests can be accepted.
 
 Each instance will expose the reason for each state transition so test failures
@@ -453,9 +497,18 @@ The two DC-link voltages can be tunable constants or simple first-order
 sources. Mechanical power and approximate DC current will be calculated per
 inverter for logging:
 
+Positive DC current means battery discharge during motoring and negative DC
+current means battery charging during regeneration:
+
 ```text
 P_mech[i] = T_motor[i] * omega[i]
-I_dc[i] = P_mech[i] / (efficiency[i] * max(V_dc_pair[i], V_floor))
+
+if P_mech[i] >= 0:
+    P_dc[i] = P_mech[i] / eta_motoring[i]
+else:
+    P_dc[i] = P_mech[i] * eta_regen[i]
+
+I_dc[i] = P_dc[i] / max(abs(V_dc_pair[i]), V_floor)
 ```
 
 Motoring and regenerative efficiency will be parameterized separately. Simple
@@ -506,9 +559,11 @@ Proposed execution rates:
 ### 7.1 Stable tunable-parameter contract
 
 The App Designer GUI will change VCU stimuli and plant/fault settings while the
-real-time application is running. It will use named tunable global parameter
-structures rather than reaching into arbitrary block-mask parameters. This
-keeps the GUI contract stable when the Simulink diagram is reorganized.
+real-time application is running. It will use a named logical parameter contract
+rather than reaching into arbitrary block-mask parameters. This keeps the GUI
+contract stable when the Simulink diagram is reorganized; whether that contract
+is backed by structures or independent scalar parameters depends on the required
+Simulink Real-Time preflight below.
 
 Proposed parameter groups:
 
@@ -537,22 +592,33 @@ Calibration and plant parameters will be separate from operator commands:
   limits, and slew rates. Runtime tuning is permitted only in Idle or while the
   application is paused unless a test explicitly allows otherwise.
 
-Protocol constants such as the inbound torque LSB and DC-link LSB are versioned
-build-time data. They are displayed by the GUI but cannot be changed with
-`setparam` while running. An unresolved torque scale prevents hardware-ready
-application status.
+Protocol constants such as inbound torque LSB, DC-link LSB, and motor-temperature
+encoding are versioned build-time data. The GUI displays all unresolved
+interpretations but cannot change the active hardware profile with `setparam`
+while running. Any unresolved blocking field prevents hardware-ready application
+status.
+
+Before the nested paths in this table become an implementation dependency, build
+a minimal application for the exact Simulink Real-Time release and prove that
+`setparam` can update one field without replacing or disturbing sibling fields.
+Exercise two host callbacks writing different fields and verify both values on
+target. If single-field struct tuning is unsupported, expose independent scalar
+`Simulink.Parameter` objects behind the same logical GUI names. Do not implement
+GUI-side read-modify-write of an entire shared structure because concurrent
+widgets can overwrite each other's updates.
 
 The model will use `Simulink.Parameter` data and code-generation settings that
-preserve these parameters as observable/tunable globals in the MLDATX. The app
-will discover the parameter contract from the built application and fail with a
-clear version mismatch if a required path is missing.
+preserve the selected structure fields or scalar parameters as observable and
+tunable in the MLDATX. The app will discover the parameter contract from the
+built application and fail with a clear version mismatch if a required path is
+missing.
 
 ### 7.2 Runtime update path
 
 The GUI will own a Simulink Real-Time target object and use `setparam` to change
-individual fields while the target application runs. It will use `getparam` on
-connect/reconnect to synchronize widgets with the target. Normal writes will
-not use `Force=true`; GUI and model bounds remain active.
+individual logical controls while the target application runs. It will use
+`getparam` on connect/reconnect to synchronize widgets with the target. Normal
+writes will not use `Force=true`; GUI and model bounds remain active.
 
 Runtime flow:
 
@@ -560,7 +626,8 @@ Runtime flow:
 2. The callback validates and clamps the engineering-unit value.
 3. Rapid slider movement is coalesced to the newest value at a 20-50 ms host
    update rate so the GUI remains responsive without flooding target traffic.
-4. `tg.setparam('', parameterPath, value)` updates the running application.
+4. The preflight-approved single-field path or independent scalar parameter is
+   written with `tg.setparam`; whole-structure read-modify-write is prohibited.
 5. The model consumes the new value at its next base-rate step.
 6. An observable applied-value signal is streamed back to the GUI and displayed
    beside the requested value.
@@ -598,9 +665,9 @@ at commit `39ea8efd...`:
 - Four compact inverter panels labeled `INV1` through `INV4`, each showing
   provisional corner label, state, ready, command age, torque command/actual,
   speed, Id/Iq, temperatures, derating, and active fault.
-- Until the torque scale is physically verified, the CAN view shows raw torque
-  counts, the provisional engineering value, and a persistent red
-  `TORQUE SCALE UNVERIFIED` banner.
+- Until all blocking encodings are physically verified, the CAN view shows raw
+  counts, both candidate engineering values for torque, DC-link voltage, and
+  motor temperature, plus a persistent red `PROTOCOL SCALES UNVERIFIED` banner.
 - Output-pin cards for `VC_SD_OUT`, `MAIN_EN_OUT`, `PRECH_EN_OUT`,
   `INV_CTRL_EN`, and `INV_CTRL_DIS`, labeled with TP6, TP7, TP8, TP9, and TP10
   respectively and using ON/OFF text plus color so state is never conveyed by
@@ -638,44 +705,52 @@ part passes its focused checks; do not accumulate the full model and GUI into a
 single commit. Each commit should contain one coherent behavior and its tests or
 documentation.
 
+Vendor questions and physical CAN captures should start immediately but must not
+block host-only work. Parts 1-37 use raw counts and explicit dual-interpretation
+profiles. Part 38 locks the verified protocol profile and gates hardware-ready
+status; only Part 39 may sign off the connected bench.
+
 | Part | Deliverable | Suggested commit |
 |---:|---|---|
-| 1 | Resolve torque scaling with capture/vendor evidence and lock protocol constants | `docs(can): resolve Ephorus scaling` |
-| 2 | Record J3 isolation, output levels, grounds, and conditioning measurements | `docs(hil): record IO preflight measurements` |
-| 3 | Project/folder scaffold, model configuration, and data dictionary | `build(hil): scaffold inverter HIL project` |
-| 4 | Named tunable parameter structures and defaults | `feat(hil): define runtime parameter contract` |
-| 5 | Hardware initial/reset values and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
-| 6 | Four-channel pedal calibration maps and host tests | `feat(io183): add pedal sensor maps` |
+| 1 | Project/folder scaffold, model configuration, and data dictionary | `build(hil): scaffold inverter HIL project` |
+| 2 | Exact-release `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
+| 3 | Logical tunable parameter contract and defaults | `feat(hil): define runtime parameter contract` |
+| 4 | Hardware initial/reset values and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
+| 5 | Four-channel pedal calibration maps and host tests | `feat(io183): add pedal sensor maps` |
+| 6 | Four VCU sensor-rail analog monitors and harness contract | `feat(io183): monitor VCU sensor rails` |
 | 7 | Four IO183 analog outputs with simultaneous update | `feat(io183): drive redundant pedal outputs` |
 | 8 | IO183 digital VCU stimuli with verified inactive initialization | `feat(io183): add VCU digital stimuli` |
 | 9 | TP6-TP10 IO183 monitoring and polarity diagnostics | `feat(io183): monitor VCU control outputs` |
 | 10 | IO614 setup, queue drain, and CAN diagnostics | `feat(io614): add VCU CAN transport` |
-| 11 | Raw and scaled decoding for all four control IDs | `feat(can): decode four Ephorus commands` |
-| 12 | Bit-exact control decoder and timeout tests | `test(can): verify Ephorus control decoding` |
-| 13 | Idle, Drive, Error, and Config Error core transitions | `feat(model): add Ephorus state machine` |
-| 14 | Command, position, and control-pin timing behavior | `feat(model): add inverter safety timing` |
-| 15 | Reset wait, recurrence backoff, and recovery conditions | `feat(model): add inverter reset backoff` |
-| 16 | Electrical, current, tracking, measurement, and thermal faults | `feat(model): add inverter fault causes` |
-| 17 | Switch/motor derating and current/torque limiting | `feat(model): add inverter derating` |
-| 18 | Explicit ASC unsupported-request policy and diagnostics | `feat(model): guard unsupported ASC mode` |
-| 19 | Instantiate and prove isolation of all four inverter channels | `feat(model): expand Ephorus model to four channels` |
-| 20 | Four independent motor/load plants | `feat(model): add four motor load plants` |
-| 21 | Four thermal and current-estimation plants | `feat(model): add inverter thermal outputs` |
-| 22 | Pack 3X3/3X5 status for all four channels | `feat(can): pack eight inverter status frames` |
-| 23 | Pack pairwise DC-link/general `0x400` status | `feat(can): add Ephorus general status` |
-| 24 | Bit-exact nine-frame tests and cross-channel isolation | `test(can): verify all Ephorus status frames` |
-| 25 | Per-channel and shared fault-injection controls | `feat(model): add inverter fault injection` |
-| 26 | Target observability and instrument signal contract | `feat(hil): expose runtime observations` |
-| 27 | App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): scaffold VC HIL dashboard` |
-| 28 | Runtime throttle, brake, and digital controls | `feat(gui): add live VCU input controls` |
-| 29 | VCU state strip, transition guards, and TP6-TP10 outputs | `feat(gui): add VCU state dashboard` |
-| 30 | Four inverter status/control panels | `feat(gui): add quad inverter view` |
-| 31 | Live raw/decoded TX/RX CAN tables and measured rates | `feat(gui): add CAN traffic monitor` |
-| 32 | Fault/scenario controls, heartbeat, and safe fallback | `feat(gui): add fault controls and heartbeat` |
-| 33 | Session logging and requested/applied audit trail | `feat(gui): add HIL session logging` |
-| 34 | MIL and host API integration tests | `test(hil): cover runtime parameter workflow` |
-| 35 | IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
-| 36 | Bench wiring checklist and measured electrical signoff | `docs(hil): record inverter HIL bench verification` |
+| 11 | Raw decoding for all four control IDs with independent ages | `feat(can): decode raw Ephorus commands` |
+| 12 | Dual torque/DC-link/motor-temperature interpretations | `feat(can): expose Ephorus scale candidates` |
+| 13 | Bit-exact raw decoder and timeout tests | `test(can): verify Ephorus control decoding` |
+| 14 | Idle, Drive, Error, and Config Error core transitions | `feat(model): add Ephorus state machine` |
+| 15 | Command, position, and control-pin timing behavior | `feat(model): add inverter safety timing` |
+| 16 | Reset wait, recurrence backoff, and recovery conditions | `feat(model): add inverter reset backoff` |
+| 17 | Electrical, current, tracking, measurement, and thermal faults | `feat(model): add inverter fault causes` |
+| 18 | Switch/motor derating and current/torque limiting | `feat(model): add inverter derating` |
+| 19 | ASC entry conjunction and unsupported-mode diagnostics | `feat(model): guard unsupported ASC entry` |
+| 20 | Instantiate and prove isolation of all four inverter channels | `feat(model): expand Ephorus model to four channels` |
+| 21 | Four independent motor/load plants | `feat(model): add four motor load plants` |
+| 22 | Four thermal and current-estimation plants | `feat(model): add inverter thermal outputs` |
+| 23 | Pack 3X3/3X5 status for all four channels in both candidate profiles | `feat(can): pack eight inverter status frames` |
+| 24 | Pack pairwise DC-link/general `0x400` in both candidate profiles | `feat(can): add Ephorus general status` |
+| 25 | Bit-exact nine-frame tests and cross-channel isolation | `test(can): verify all Ephorus status frames` |
+| 26 | Per-channel, shared, and Config Error scope fault injection | `feat(model): add inverter fault injection` |
+| 27 | Target observability and instrument signal contract | `feat(hil): expose runtime observations` |
+| 28 | App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): scaffold VC HIL dashboard` |
+| 29 | Runtime throttle, brake, and digital controls | `feat(gui): add live VCU input controls` |
+| 30 | VCU state strip, transition guards, and TP6-TP10 outputs | `feat(gui): add VCU state dashboard` |
+| 31 | Four inverter status/control panels | `feat(gui): add quad inverter view` |
+| 32 | Raw and dual-interpreted TX/RX CAN tables and measured rates | `feat(gui): add CAN traffic monitor` |
+| 33 | Fault/scenario controls, heartbeat, and safe fallback | `feat(gui): add fault controls and heartbeat` |
+| 34 | Session logging and requested/applied audit trail | `feat(gui): add HIL session logging` |
+| 35 | MIL and host API integration tests | `test(hil): cover runtime parameter workflow` |
+| 36 | IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
+| 37 | Record J3 isolation, output levels, grounds, and conditioning measurements | `docs(hil): record IO preflight measurements` |
+| 38 | Resolve all blocking encodings and lock the hardware protocol profile | `docs(can): resolve Ephorus protocol scaling` |
+| 39 | Connected-bench checklist and measured electrical signoff | `docs(hil): record inverter HIL bench verification` |
 
 Commit rules:
 
@@ -707,8 +782,9 @@ Commit rules:
   circuit; record the required conditioning and resulting IO183 voltage.
 - Confirm CAN channel, CAN1 wiring, baud rate, termination, and the four-channel
   corner mapping.
-- Resolve the inbound torque scale using a real-inverter capture or vendor
-  clarification and record the raw known vector in the repository.
+- Resolve torque, DC-link, and motor-temperature encodings using real-inverter
+  captures or vendor clarification and record the raw known vectors in the
+  repository.
 - Validate all four control decoders and all nine status packers using
   hand-calculated payloads.
 
@@ -735,8 +811,9 @@ Commit rules:
 ### 9.3 Functional tests
 
 - Released pedals keep requested and actual torque at zero.
-- A disarmed, stopped, or heartbeat-failed target produces an obvious VCU pedal
-  fault rather than a healthy released-pedal reading.
+- A disarmed, stopped, or heartbeat-failed target drives 0 V. The current `todo`
+  lower-bound raw-count checks must report the aggregate driver input invalid on
+  the target rather than accepting a healthy released-pedal reading.
 - Throttle sweep produces valid commands and positive torque response on all
   four inverter channels.
 - Brake sweep produces four valid negative torque limits and regenerative torque
@@ -750,10 +827,18 @@ Commit rules:
 - Record that the current firmware has the brake-channel cross-check disabled
   because brake sensor 2 is marked faulty; add an expected-failure test so that
   enabling the second-channel check later cannot pass unnoticed.
-- Loss of Control Enable or assertion of Control Disable removes torque immediately.
+- Loss of Control Enable or assertion of Control Disable removes torque after the
+  datasheet's greater-than-100 us threshold, quantized to the first 1 ms sample
+  in the baseline task.
+- With Control Enable low from Drive, the model reports Drive through the 200 ms
+  fault window, forces torque to zero at the first sample after 100 us, and enters
+  Error only after the greater-than-200 ms boundary. A shorter low pulse recovers
+  without making the Error timer unreachable.
 - A 50 ms command gap removes torque only from the affected inverter; a 500 ms
   gap produces Error only on that inverter. A shared-pin fault affects all four.
-- Position age over 350 us faults only the affected inverter.
+- Position age over 350 us faults only the affected inverter; the test records
+  first-sample quantization at 1 ms and runs an exact boundary test only when a
+  faster task is selected.
 - Reset cannot clear an active fault. Repeated cleared faults exercise the 500 us
   minimum, doubling wait, 100 s cap, greater-than-50 ms recovery condition, and
   immediate base-reset conjunction at speed below 100 RPM with CAN Enable false.
@@ -766,20 +851,26 @@ Commit rules:
   all three modeled measurement faults.
 - Power-switch derating starts at 90 C, reaches zero permitted output at 140 C,
   and affects only the selected inverter's permitted output and status flag.
-- A true ASC request raises `unsupported_asc_request` and cannot silently enter
-  the normal torque model.
+- `ASC allowed = true` by itself does not change Drive or torque. The
+  `unsupported_asc_entry` diagnostic appears only when speed, control-enable,
+  discharge, and connected-state entry conditions are simultaneously satisfied.
 - Config Error ignores CAN reset and clears only after a modeled power cycle with
-  valid mandatory configuration.
+  valid mandatory configuration. Until physical behavior is known, tests cover
+  both per-inverter and unit-wide Config Error reporting profiles.
+- Known-vector tests retain raw torque, DC-link, and motor-temperature counts and
+  verify both candidate engineering interpretations without a silent default.
 - Swapping any two status IDs is detected by the cross-channel isolation test.
 - CAN bus-off, receive overrun, and transmit-queue failures are visible in logging.
 
-## 10. Items to confirm before Simulink implementation
+## 10. Open decisions and hardware-ready gates
 
-1. Blocking: whether inbound torque fields use 1/256 or 1/512 Nm/count on the
-   physical inverter. Record a raw known vector before hardware-ready CAN signoff.
+1. Blocking for connected bench use: whether inbound torque fields use 1/256 or
+   1/512 Nm/count, DC-link fields use 1/64 or 1/16 V/count, and motor temperature
+   uses signed 1/8 C/count or unsigned 1/16 C/count with a -100 C offset. Record
+   raw physical known vectors before locking the hardware protocol profile.
 2. Pedal channel released/pressed voltages, channel correlation, valid windows,
    and whether the fixed ADC calibration is acceptable across actual VCU sensor
-   rail and ground variation.
+   rail and ground variation. Add harness taps for all four reserved rail monitors.
 3. Current firmware APPS/brake behavior versus the applicable 2026 competition
    rules, including the intentionally disabled brake-2 plausibility check.
 4. Electrical level, output type, active polarity, and inactive state for every
@@ -789,17 +880,23 @@ Commit rules:
    Ephorus inverter 1-4 to FL/FR/RL/RR.
 6. Existing CAN termination on the VCU/test board after the split-terminated
    Ephorus is removed.
-7. DC-link 1/64 V/count evidence, nominal voltage, and configured minimum threshold.
+7. Nominal DC-link voltage and configured minimum threshold after its field
+   encoding is resolved.
 8. Per-corner motor torque constants, inertias, drag/load, torque limits, speed
    limits, and desired positive/negative torque slew rates.
 9. Configured motor-temperature derating/shutdown values and ASC speed threshold.
-10. Whether exact 100 us hardware-control-pin timing is required; if so, use a
-   faster task or dedicated hardware path instead of the proposed 1 ms reaction.
-11. Exact IO183/IO614 physical revisions, target-computer name,
+10. Whether Config Error is per inverter or unit-wide on the physical 4x unit.
+11. Whether exact 100 us hardware-control-pin and 350 us position-timeout timing
+   is required; if so, use a faster task or dedicated hardware path instead of
+   the proposed 1 ms reaction.
+12. Whether the exact Simulink Real-Time release supports independent field-level
+   `setparam` updates. If not, use separately tunable scalar parameters.
+13. Exact IO183/IO614 physical revisions, target-computer name,
    MATLAB/Simulink Real-Time release, expected MLDATX deployment policy, and
    whether the GUI must support more than one Speedgoat.
-12. Which GUI controls are allowed during Drive versus Idle/stopped operation.
+14. Which GUI controls are allowed during Drive versus Idle/stopped operation.
 
-These confirmations are intentionally separated from model construction so the
-first Simulink version can be wired once, use correct electrical assumptions,
-and remain traceable to the VCU and all four Ephorus channels.
+Host-only model and GUI work may proceed with explicit candidate profiles, but
+the GUI must remain visibly `UNVERIFIED` and the connected-bench gate stays closed
+until the applicable items above are resolved. No Simulink artifacts are created
+as part of this planning phase.
