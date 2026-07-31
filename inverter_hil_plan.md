@@ -28,6 +28,11 @@ Simulink Real-Time R2024b. The main `inverter_hil.slx`, its model references,
 Use the R2024b Speedgoat I/O Blockset assets supplied under the local
 `10.0.1.1\R2024B_SLX` installation. Project startup and build scripts must check
 that `version('-release')` is `2024b` and stop with a clear error otherwise.
+Hardware access must use blocks linked from the installed R2024b
+`speedgoatlib_IO183` and `speedgoatlib_IO614` libraries. Do not replace the
+target I/O boundary with generic Simulink sources/sinks, copied library blocks,
+obsolete Speedgoat blocks, or custom S-functions when the supported library
+block exists.
 Do not open and save the authoritative model or App Designer file in a later
 MATLAB release because that may make it unreadable in R2024b. Any future release
 migration must use a separate branch and retain the last R2024b-compatible files.
@@ -662,6 +667,30 @@ channels. Do not implement them as four instances of the same referenced model
 unless tunability is proven for that configuration; Simulink Real-Time limits
 parameter tuning for referenced models used more than once.
 
+### 6.1 Required R2024b Speedgoat library blocks
+
+The target-facing subsystems must use these blocks from the installed Speedgoat
+I/O Blockset libraries:
+
+| Interface function | Required library block | Baseline configuration |
+|---|---|---|
+| IO183 module initialization | `IO183 - Setup` | One setup block for the physical module and selected channel modes |
+| Pedal sensor stimulation A1-A4 | `IO183 - Analog Output` | AO01-AO04, 0-5 V, simultaneous update, 0 V initial/reset |
+| Sensor-rail monitoring | `IO183 - Analog Input` | AI01-AI04 single-ended or AI01-AI04 differential using the approved A7-A14 allocation |
+| VCU button/shutdown stimuli B1-B8 | `IO183 - Digital Output` | Verified TTL-compatible channels with safe initial/reset levels |
+| VCU output monitoring B9-B13 | `IO183 - Digital Input` | Conditioned TP6-TP10 inputs with verified polarity |
+| IO614 module and CAN initialization | `IO614 - Setup` | CAN channel 1, High-Speed CAN, 1 Mbit/s, standard identifiers |
+| Four VCU control-frame reception | `IO614 - CAN Read` | RAW mode inside the documented do-while queue-drain subsystem |
+| Nine Ephorus status transmissions | `IO614 - CAN Write` | RAW mode, DLC 8, one block per status ID, status output enabled |
+| CAN controller diagnostics | `IO614 - CAN Status` | Enable transmit-pending, receive-overrun, warning/error, and bus-off observations |
+
+Use RAW CAN mode so the model's integer/bitwise packers and decoders own the
+exact eight payload bytes and can be checked against hand-built vectors. Enable
+the status output on every `IO614 - CAN Write` block and treat a failed queue
+write as an observable test failure. The model must reference the installed
+library links so R2024b library updates and block masks remain identifiable; do
+not break links merely to customize appearance.
+
 Proposed execution rates:
 
 - 1 ms base task: IO183, CAN receive queue, state machine, torque, and plant.
@@ -866,13 +895,13 @@ execute every package in numeric order. Use this risk-first sequence:
 | 1 | Create the R2024b `mfe/HIL/inverter_hil.slx`, project/setup scaffold, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): scaffold inverter HIL project` |
 | 2 | R2024b `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
 | 3 | Logical tunable parameter contract and defaults | `feat(hil): define runtime parameter contract` |
-| 4 | Hardware initial/reset values and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
+| 4 | `IO183 - Setup`, hardware initial/reset values, and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
 | 5 | Four-channel pedal calibration maps and host tests | `feat(io183): add pedal sensor maps` |
-| 6 | Four VCU sensor-rail analog monitors and harness contract | `feat(io183): monitor VCU sensor rails` |
-| 7 | Four IO183 analog outputs with simultaneous update | `feat(io183): drive redundant pedal outputs` |
-| 8 | IO183 digital VCU stimuli with verified inactive initialization | `feat(io183): add VCU digital stimuli` |
-| 9 | TP6-TP10 IO183 monitoring and polarity diagnostics | `feat(io183): monitor VCU control outputs` |
-| 10 | IO614 setup, queue drain, and CAN diagnostics | `feat(io614): add VCU CAN transport` |
+| 6 | Four VCU sensor-rail monitors using `IO183 - Analog Input` and the harness contract | `feat(io183): monitor VCU sensor rails` |
+| 7 | Four pedal outputs using `IO183 - Analog Output` with simultaneous update | `feat(io183): drive redundant pedal outputs` |
+| 8 | VCU stimuli using `IO183 - Digital Output` with verified inactive initialization | `feat(io183): add VCU digital stimuli` |
+| 9 | TP6-TP10 monitoring using `IO183 - Digital Input` and polarity diagnostics | `feat(io183): monitor VCU control outputs` |
+| 10 | `IO614 - Setup`, RAW CAN Read/Write, queue drain, CAN Status, and diagnostics | `feat(io614): add VCU CAN transport` |
 | 11 | Raw decoding for all four control IDs with independent ages | `feat(can): decode raw Ephorus commands` |
 | 12 | Dual inbound-torque interpretations plus raw DC-link and motor-temperature observability | `feat(can): expose Ephorus torque candidates` |
 | 13 | Bit-exact raw decoder and timeout tests | `test(can): verify Ephorus control decoding` |
@@ -899,7 +928,7 @@ execute every package in numeric order. Use this risk-first sequence:
 | 34 | Fault/scenario controls, heartbeat, and safe fallback | `feat(gui): add fault controls and heartbeat` |
 | 35 | Session logging and requested/applied audit trail | `feat(gui): add HIL session logging` |
 | 36 | MIL and host API integration tests | `test(hil): cover runtime parameter workflow` |
-| 37 | R2024b IO-disconnected Speedgoat build and smoke test | `test(hil): verify real-time application build` |
+| 37 | R2024b IO-disconnected build, Speedgoat library-link validation, and smoke test | `test(hil): verify real-time application build` |
 | 38 | Record J3 isolation, output levels, grounds, and conditioning measurements | `docs(hil): record IO preflight measurements` |
 | 39 | Resolve inbound torque scaling and close quantitative torque signoff | `docs(can): resolve Ephorus torque scaling` |
 | 40 | Connected-bench checklist and measured electrical/non-torque signoff | `docs(hil): record inverter HIL bench verification` |
@@ -916,6 +945,9 @@ Commit rules:
 - Commit each completed part before starting the next part. Do not carry unrelated
   work or a known failing test across a part boundary.
 - Keep model behavior, GUI behavior, and generated artifacts in separate commits.
+- Keep target I/O blocks linked to the supported R2024b Speedgoat libraries and
+  reject obsolete, broken-link, or generic-placeholder blocks during model
+  preflight.
 - Do not commit `slprj`, `.slxc`, generated real-time build folders, logs, or
   temporary render/clone files unless the repository policy explicitly requires
   a deployable MLDATX artifact.
