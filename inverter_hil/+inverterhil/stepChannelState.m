@@ -206,7 +206,12 @@ end
 function [active, cause] = evaluateOperationalFault( ...
         state, input, channelConfig, config, wasDrive)
 active = true;
-if state.commandErrorTimeout
+% A never-received command reaches here as the INVERTERHIL.DECODERSNAPSHOT
+% sentinel INTMAX('UINT32'), which must not be read as a 500 ms dropout. A
+% silent bus before the VCU transmits holds Idle; only a gap after a valid
+% command latches Error. CANENTERDRIVE still refuses Drive on the sentinel.
+if state.commandErrorTimeout && ...
+        double(input.commandAgeMs) < double(intmax('uint32'))
     cause = 'command_timeout';
 elseif input.positionAgeS > config.positionTimeoutS
     cause = 'position_timeout';

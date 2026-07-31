@@ -94,6 +94,47 @@ classdef TestStateMachine < matlab.unittest.TestCase
             end
         end
 
+        function neverReceivedCommandHoldsIdleWithoutLatchingError(testCase)
+            % A silent bus before the VCU transmits presents the
+            % INVERTERHIL.DECODERSNAPSHOT never-received sentinel. The
+            % channel must wait in Idle rather than latch Error, so plan
+            % 9.2 step 4 can transmit fixed Idle status during bring-up.
+            config = TestStateMachine.config();
+            channel = config.channels(1);
+            state = inverterhil.initialChannelState(channel, config, true);
+            input = TestStateMachine.channelInput();
+            input.commandAgeMs = intmax('uint32');
+
+            [~, output] = inverterhil.stepChannelState( ...
+                state, input, channel, config, true);
+
+            testCase.verifyEqual(output.mode, uint8(0));
+            testCase.verifyEqual(output.activeFault, 'none');
+            testCase.verifyTrue(output.commandErrorTimeout);
+            testCase.verifyEqual(output.transitionReason, ...
+                'hold_idle_can_disabled');
+        end
+
+        function staleCommandFromIdleStillLatchesError(testCase)
+            % Guards the sentinel exemption above from being widened into a
+            % state-dependent one: a real command that then stops must still
+            % latch Error from Idle, not only from Drive.
+            config = TestStateMachine.config();
+            channel = config.channels(1);
+            state = inverterhil.initialChannelState(channel, config, true);
+            input = TestStateMachine.channelInput();
+            input.commandEnable = true;
+            input.commandAgeMs = uint32(501);
+
+            [~, output] = inverterhil.stepChannelState( ...
+                state, input, channel, config, true);
+
+            testCase.verifyEqual(output.mode, uint8(2));
+            testCase.verifyEqual(output.activeFault, 'command_timeout');
+            testCase.verifyEqual(output.transitionReason, ...
+                'error_command_timeout');
+        end
+
         function positionAndControlPinThresholdsUseFirstSamplePolicy(testCase)
             config = TestStateMachine.config();
             channel = config.channels(1);
