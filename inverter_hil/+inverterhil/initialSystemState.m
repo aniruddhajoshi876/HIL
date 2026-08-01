@@ -15,9 +15,15 @@ if config.configErrorScope == uint8(1)
 else
     unitValid = true;
 end
-for channel = 1:4
+% CHANNELS is built via a full first assignment (channel 1), then
+% preallocated with REPMAT: MATLAB Coder does not support growing a struct
+% array by indexed assignment (CHANNELS(channel) = ... with CHANNELS not yet
+% existing at that size).
+channels = repmat(inverterhil.initialChannelState( ...
+    config.channels(1), config, unitValid), 1, 4);
+for channel = 2:4
     channels(channel) = inverterhil.initialChannelState( ...
-        config.channels(channel), config, unitValid); %#ok<AGROW>
+        config.channels(channel), config, unitValid);
 end
 state.channels = channels;
 state.stepCount = uint64(0);

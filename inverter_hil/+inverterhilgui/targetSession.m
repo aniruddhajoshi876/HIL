@@ -57,7 +57,19 @@ classdef targetSession < handle
         end
 
         function result = connect(obj)
-            %CONNECT Connect, discover the contract, and read target values.
+            %CONNECT Connect, ensure the application is running, discover the
+            %contract, and read target values.
+            %   CONNECT loads and starts INVERTER_HIL automatically so one
+            %   Connect click always yields a usable session running the build
+            %   currently on disk (see ENSUREAPPLICATIONRUNNING).
+            %
+            %   The hardware boundary is now live, so starting the application
+            %   does drive the IO183 outputs and transmits the Ephorus status
+            %   frames on CAN. It starts in the safe state the dictionary
+            %   ships: pedal calibration is NaN so both analog pedal pairs
+            %   hold 0 V, every digital stimulus is false, and the precharge
+            %   counter is 0 so no pulse is generated. Physical levels change
+            %   only when the operator moves a control.
             result = struct('success', false, 'state', obj.State, ...
                 'reason', '', 'contract', []);
             obj.applyEvent('connect');
@@ -65,6 +77,7 @@ classdef targetSession < handle
                 obj.ensureBackend();
                 obj.Backend.connect();
                 obj.applyEvent('connectSucceeded');
+                obj.ensureApplicationRunning();
                 obj.Contract = inverterhilgui.discoverContract( ...
                     obj.Backend.availableParameters());
                 obj.readAllTargetValues();
@@ -269,6 +282,22 @@ classdef targetSession < handle
         function applyEvent(obj, event)
             transition = inverterhilgui.connectionState(obj.State, event);
             obj.State = transition.state;
+        end
+
+        function ensureApplicationRunning(obj)
+            %ENSUREAPPLICATIONRUNNING Load the current build and start it.
+            %   The application is loaded unconditionally rather than only
+            %   when the target reports 'disconnected'/'stopped'. The loaded
+            %   application is always named INVERTER_HIL, so its name cannot
+            %   distinguish a freshly built INVERTER_HIL.MLDATX from one the
+            %   target loaded before the model was rebuilt. Returning early on
+            %   an already-'running' target would therefore silently leave the
+            %   operator driving a stale build while the GUI reported success
+            %   -- the failure mode is invisible, which is why this reloads
+            %   instead of attaching. Reconnecting consequently restarts the
+            %   run rather than resuming it.
+            obj.Backend.load('inverter_hil');
+            obj.Backend.start();
         end
 
         function syncStateFromBackend(obj)

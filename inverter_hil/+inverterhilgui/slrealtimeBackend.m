@@ -23,8 +23,12 @@ classdef slrealtimeBackend < handle
     methods
         function obj = slrealtimeBackend(targetName)
             %SLREALTIMEBACKEND Wrap the Simulink Real-Time target object.
+            %   Constructed via the SLREALTIME(name) shorthand, not the
+            %   package-qualified SLREALTIME.TARGET(name) form: R2024b
+            %   restricts direct access to the classdef constructor
+            %   (confirmed against real hardware: MATLAB:class:MethodRestricted).
             obj.Name = targetName;
-            obj.Target = slrealtime.Target(targetName);
+            obj.Target = slrealtime(targetName);
         end
 
         function connect(obj)
@@ -87,29 +91,31 @@ classdef slrealtimeBackend < handle
         end
 
         function paths = availableParameters(obj)
-            % The tunable-parameter listing is read from the loaded
-            % application. A missing or empty listing is reported honestly as
-            % an empty cell so DISCOVERCONTRACT raises a version mismatch.
+            % Simulink Real-Time R2024b's SLREALTIME.TARGET has no bulk
+            % parameter-listing method (confirmed against real Speedgoat
+            % hardware: no GETPARAMLIST, and METHODS(target) lists only
+            % GETPARAM/SETPARAM and named param-set save/load functions).
+            % Every candidate name from INVERTERHILGUI.PARAMETERCONTRACT is
+            % therefore probed individually with GETPARAM; a thrown error
+            % means that name is not exposed by the loaded application and is
+            % silently excluded rather than treated as a connection failure.
+            contract = inverterhilgui.parameterContract();
+            candidates = cell(1, 2 * numel(contract));
+            for index = 1:numel(contract)
+                candidates{2 * index - 1} = contract(index).structPath;
+                candidates{2 * index} = contract(index).flatPath;
+            end
+            candidates = unique(candidates, 'stable');
             paths = {};
-            listing = obj.Target.getparamlist();
-            if isempty(listing)
-                return;
-            end
-            if istable(listing)
-                names = listing.Properties.VariableNames;
-                if any(strcmp('BlockPath', names)) && ...
-                        any(strcmp('ParameterName', names))
-                    paths = cell(1, height(listing));
-                    for index = 1:height(listing)
-                        paths{index} = sprintf('%s/%s', ...
-                            char(listing.BlockPath(index)), ...
-                            char(listing.ParameterName(index)));
-                    end
-                    return;
+            for index = 1:numel(candidates)
+                try
+                    getparam(obj.Target, '', candidates{index});
+                    paths{end + 1} = candidates{index}; %#ok<AGROW>
+                catch
+                    % Not exposed by this application build; excluded, not an
+                    % error. DISCOVERCONTRACT decides whether the omission of
+                    % a required name is a version mismatch.
                 end
-            end
-            if iscell(listing)
-                paths = listing(:)';
             end
         end
 

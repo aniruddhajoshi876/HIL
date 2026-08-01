@@ -7,3 +7,7 @@ slprj/
 *_ert_rtw/
 build/inverter_hil/
 logs/inverter_hil/
+# MEX and real-time application products of codegen/slbuild
+codegen/
+*.mexw64
+*.mldatx

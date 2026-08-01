@@ -22,6 +22,12 @@ channel = struct( ...
     'rawTorqueNegCounts', int16(0), ...
     'loadTorqueNm', 0, ...
     'dcLinkV', 400);
+% ACTIVEFAULT and AUTHORITYREASON are overwritten by callers (see
+% INVERTERHIL.STEPMODEL) with strings of different lengths than the 'none'/
+% 'default_safe' literals above; MATLAB Coder locks a struct field's size at
+% first assignment unless told otherwise.
+coder.varsize('channel.activeFault', [1, 48], [0, 1]);
+coder.varsize('channel.authorityReason', [1, 48], [0, 1]);
 
 input.protocolProfileId = cal.protocolProfileId;
 input.channels = repmat(channel, 1, 4);

@@ -20,7 +20,20 @@ else
 end
 
 next = state;
-for channel = 1:4
+% CHANNELOUTPUT is built via a full first assignment (channel 1) before the
+% loop, then preallocated with REPMAT: MATLAB Coder does not support growing
+% a struct array by indexed assignment (CHANNELOUTPUT(channel) = ... with
+% CHANNELOUTPUT not yet existing at that size).
+firstInput = input.channels(1);
+firstInput.controlEnable = input.controlEnable;
+firstInput.controlDisable = input.controlDisable;
+firstInput.powerCycle = input.powerCycle;
+firstInput.dcLinkV = input.dcLinkV(1);
+[next.channels(1), firstOutput] = inverterhil.stepChannelState( ...
+    state.channels(1), firstInput, config.channels(1), config, unitValid);
+channelOutput = repmat(firstOutput, 1, 4);
+
+for channel = 2:4
     channelInput = input.channels(channel);
     channelInput.controlEnable = input.controlEnable;
     channelInput.controlDisable = input.controlDisable;
@@ -32,7 +45,7 @@ for channel = 1:4
     end
     [next.channels(channel), channelOutput(channel)] = ...
         inverterhil.stepChannelState(state.channels(channel), ...
-        channelInput, config.channels(channel), config, unitValid); %#ok<AGROW>
+        channelInput, config.channels(channel), config, unitValid);
 end
 next.stepCount = addOne(state.stepCount);
 next.configErrorScope = config.configErrorScope;

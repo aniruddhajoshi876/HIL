@@ -21,6 +21,17 @@ if localValid && ~logical(unitConfigurationValid)
 end
 
 p = inverterhil.protocol();
+% These free-text diagnostic fields take strings of different lengths across
+% branches below and in every function that later mutates this state (see
+% STEPCHANNELSTATE); MATLAB Coder locks a struct field's array size at first
+% assignment unless told otherwise, so each is declared variable-size here at
+% the field's origin. 48 chars comfortably covers the longest literal used
+% anywhere in the package (38 chars).
+coder.varsize('state.modeName', [1, 48], [0, 1]);
+coder.varsize('state.transitionReason', [1, 48], [0, 1]);
+coder.varsize('state.activeFault', [1, 48], [0, 1]);
+coder.varsize('state.latchedFaultCause', [1, 48], [0, 1]);
+coder.varsize('state.configurationReason', [1, 48], [0, 1]);
 state.mode = p.state.idle;
 state.modeName = 'Idle';
 state.transitionReason = 'initial_idle';

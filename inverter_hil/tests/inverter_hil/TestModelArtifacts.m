@@ -16,7 +16,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             load_system(fullfile(testCase.Root, 'inverter_hil.slx'));
             testCase.Hardware = [testCase.Model ...
                 '/Hardware I O - PRE-FLIGHT DISABLED'];
-            testCase.assertEqual(get_param(testCase.Hardware, 'Commented'), 'on');
+            testCase.assertEqual(get_param(testCase.Hardware, 'Commented'), 'off');
             set_param(testCase.Model, 'SimulationCommand', 'update');
         end
     end
@@ -58,7 +58,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
 
         function modelLoadsAndUpdatesWithIoDisconnected(testCase)
             testCase.verifyTrue(bdIsLoaded(testCase.Model));
-            testCase.verifyEqual(get_param(testCase.Hardware, 'Commented'), 'on');
+            testCase.verifyEqual(get_param(testCase.Hardware, 'Commented'), 'off');
             testCase.verifyEmpty(find_system(testCase.Hardware, ...
                 'SearchDepth', 1, 'BlockType', 'Inport'));
             testCase.verifyEmpty(find_system(testCase.Hardware, ...
@@ -103,6 +103,8 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
         function hardwareBoundaryHasExactResolvedInstalledLinks(testCase)
             load_system('speedgoatlib_IO183');
             load_system('speedgoatlib_IO614');
+            load_system('canlib');
+            load_system('canmsglib');
             expected = { ...
                 'speedgoatlib_IO183/Setup'; ...
                 'speedgoatlib_IO183/Analog Input'; ...
@@ -114,6 +116,10 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN Status '};
             expected = [expected; repmat( ...
                 {'speedgoatlib_IO614/CAN Write '}, 9, 1)];
+            % Added from canlib, but the link resolves to the underlying
+            % shared CAN message library that canlib forwards to.
+            expected = [expected; repmat( ...
+                {'canmsglib/CAN Pack'}, 9, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -126,7 +132,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 17);
+            testCase.verifyNumElements(linked, 26);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...
@@ -243,31 +249,50 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'hil_base_sample_s'), 0.001);
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_status_sample_s'), 0.005);
+            % Every GUI-owned tunable is a scalar dictionary entry whose name
+            % matches +INVERTERHILGUI/PARAMETERCONTRACT.M's flatPath exactly,
+            % so DISCOVERCONTRACT resolves it against the real target. See
+            % ADDGUICOMMANDPARAMETERS for the block that keeps each one live
+            % through code generation.
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_cmd_pedals_throttle'), 0);
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_cmd_pedals_brake'), 0);
+            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+                'hil_cmd_pedals_plausibility_override'));
+            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+                'hil_cmd_digital_main_button'));
+            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+                'hil_cmd_digital_cooling_switch'));
+            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+                'hil_cmd_digital_shutdown_feedback'));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
-                'hil_cmd_digital'), false(1, 8));
+                'hil_cmd_digital_precharge_sequence'), uint32(0));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
-                'hil_cmd_dc_link_v'), [0 0]);
+                'hil_cmd_digital_main_button_sequence'), uint32(0));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
-                'hil_cmd_load_nm'), zeros(1, 4));
+                'hil_cmd_dc_link12_v'), 0);
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
-                'hil_cmd_connected'), true(1, 4));
+                'hil_cmd_dc_link34_v'), 0);
+            for channel = 1:4
+                testCase.verifyEqual(TestModelArtifacts.value(section, ...
+                    sprintf('hil_cmd_inverter%d_load_nm', channel)), 0);
+                testCase.verifyTrue(TestModelArtifacts.value(section, ...
+                    sprintf('hil_cmd_inverter%d_connected', channel)));
+                testCase.verifyEqual(TestModelArtifacts.value(section, ...
+                    sprintf('hil_cmd_inverter%d_fault_mask', channel)), ...
+                    uint32(0));
+                testCase.verifyTrue(isnan(TestModelArtifacts.value(section, ...
+                    sprintf('hil_cal_pedals_released_v%d', channel))));
+                testCase.verifyTrue(isnan(TestModelArtifacts.value(section, ...
+                    sprintf('hil_cal_pedals_pressed_v%d', channel))));
+            end
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
-                'hil_cmd_fault_mask'), zeros(1, 4, 'uint32'));
+                'hil_cmd_can_drop_control_mask'), uint8(0));
+            testCase.verifyEqual(TestModelArtifacts.value(section, ...
+                'hil_cmd_can_drop_status_mask'), uint16(0));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_cmd_gui_heartbeat'), uint32(0));
-
-            released = TestModelArtifacts.value(section, ...
-                'hil_cal_pedal_released_v');
-            pressed = TestModelArtifacts.value(section, ...
-                'hil_cal_pedal_pressed_v');
-            testCase.verifyEqual(size(released), [1 4]);
-            testCase.verifyEqual(size(pressed), [1 4]);
-            testCase.verifyTrue(all(isnan(released)));
-            testCase.verifyTrue(all(isnan(pressed)));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_safe_analog_reset_v'), zeros(1, 4));
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
@@ -287,7 +312,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'hil_torque_scale_nm_per_count'), 1 / 512);
             testCase.verifyFalse(TestModelArtifacts.value(section, ...
                 'hil_torque_scale_verified'));
-            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+            testCase.verifyTrue(TestModelArtifacts.value(section, ...
                 'hil_hardware_preflight_complete'));
             testCase.verifyTrue(TestModelArtifacts.value(section, ...
                 'hil_torque_results_provisional'));
@@ -298,16 +323,34 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 testCase.Root, 'inverter_hil.sldd'));
             cleanup = onCleanup(@() close(dictionary)); %#ok<NASGU>
             section = getSection(dictionary, 'Design Data');
-            testCase.verifyFalse(TestModelArtifacts.value(section, ...
+            testCase.verifyTrue(TestModelArtifacts.value(section, ...
                 'hil_hardware_preflight_complete'));
-            testCase.verifyEqual(get_param(testCase.Hardware, 'Commented'), 'on');
+            testCase.verifyEqual(get_param(testCase.Hardware, 'Commented'), 'off');
             initFcn = get_param(testCase.Model, 'InitFcn');
             testCase.verifyTrue(contains(initFcn, ...
                 'inverterhil.enforceHardwarePreflight'));
-            inverterhil.enforceHardwarePreflight(testCase.Model);
+            % Shipped defaults (operator-attested preflight complete, boundary
+            % live): the gate passes.
+            testCase.verifyWarningFree(@() inverterhil.enforceHardwarePreflight( ...
+                testCase.Model));
+
+            % Commenting the boundary back out short-circuits the gate
+            % regardless of the dictionary flag.
+            set_param(testCase.Hardware, 'Commented', 'on');
+            restoreCommented = onCleanup(@() set_param(testCase.Hardware, ...
+                'Commented', 'off')); %#ok<NASGU>
+            testCase.verifyWarningFree(@() inverterhil.enforceHardwarePreflight( ...
+                testCase.Model));
             set_param(testCase.Hardware, 'Commented', 'off');
-            restore = onCleanup(@() set_param(testCase.Hardware, ...
-                'Commented', 'on')); %#ok<NASGU>
+
+            % With the boundary live, an unattested (false) flag still blocks
+            % the model, so the shipped 'true' default is a real gate and not
+            % a bypass.
+            entry = getEntry(section, 'hil_hardware_preflight_complete');
+            restoreSave = onCleanup(@() saveChanges(dictionary)); %#ok<NASGU>
+            restoreValue = onCleanup(@() setValue(entry, true)); %#ok<NASGU>
+            setValue(entry, false);
+            saveChanges(dictionary);
             testCase.verifyError(@() inverterhil.enforceHardwarePreflight( ...
                 testCase.Model), 'inverterhil:HardwarePreflightOpen');
         end

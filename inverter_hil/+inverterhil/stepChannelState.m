@@ -27,6 +27,14 @@ end
 
 p = inverterhil.protocol();
 stepUs = secondsToUs(config.sampleTimeS);
+% These free-text diagnostic fields take strings of different lengths across
+% the branches below; see the matching note in INITIALCHANNELSTATE.M, where
+% the fields originate.
+coder.varsize('next.modeName', [1, 48], [0, 1]);
+coder.varsize('next.transitionReason', [1, 48], [0, 1]);
+coder.varsize('next.activeFault', [1, 48], [0, 1]);
+coder.varsize('next.latchedFaultCause', [1, 48], [0, 1]);
+coder.varsize('next.configurationReason', [1, 48], [0, 1]);
 % Sub-millisecond limits are observed on the first completed model tick.
 next = state;
 next.stepCount = addUs(state.stepCount, uint64(1));
@@ -205,6 +213,7 @@ end
 
 function [active, cause] = evaluateOperationalFault( ...
         state, input, channelConfig, config, wasDrive)
+coder.varsize('cause', [1, 48], [0, 1]);
 active = true;
 % A never-received command reaches here as the INVERTERHIL.DECODERSNAPSHOT
 % sentinel INTMAX('UINT32'), which must not be read as a 500 ms dropout. A
@@ -261,6 +270,7 @@ allowed = logical(input.commandEnable) && logical(input.controlEnable) && ...
 end
 
 function reason = idleReason(input, channelConfig, config, state)
+coder.varsize('reason', [1, 48], [0, 1]);
 if ~logical(input.commandEnable)
     reason = 'hold_idle_can_disabled';
 elseif ~logical(input.controlEnable)
@@ -280,6 +290,9 @@ end
 
 function next = resetAfterPowerCycle(next, channelConfig, config, ...
         configurationValid, configReason)
+% NEXT arrives already variable-size on these fields (declared at the call
+% site in the main STEPCHANNELSTATE function); Coder does not allow
+% re-declaring coder.varsize on an already-typed input parameter.
 p = inverterhil.protocol();
 next.errorLatched = false;
 next.configErrorLatched = ~configurationValid;
@@ -312,6 +325,9 @@ end
 end
 
 function output = makeOutput(state)
+coder.varsize('output.modeName', [1, 48], [0, 1]);
+coder.varsize('output.transitionReason', [1, 48], [0, 1]);
+coder.varsize('output.activeFault', [1, 48], [0, 1]);
 output.mode = state.mode;
 output.modeName = state.modeName;
 output.transitionReason = state.transitionReason;

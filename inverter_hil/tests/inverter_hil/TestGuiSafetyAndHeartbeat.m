@@ -217,12 +217,24 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 'not_connected');
 
             session.connect();
-            testCase.verifyEqual(session.State, 'connected');
+            % CONNECT loads and starts INVERTER_HIL automatically so one
+            % click always yields a usable session; the fake backend is
+            % therefore already running by the time CONNECT returns.
+            testCase.verifyEqual(session.State, 'running');
+            testCase.verifyTrue(session.describeState().isRunning);
             testCase.verifyEqual(session.start().reason, ...
                 'action_not_allowed');
+            testCase.verifyEqual(session.load('inverter_hil').reason, ...
+                'action_not_allowed');
 
-            testCase.verifyTrue(session.load('inverter_hil').success);
+            testCase.verifyTrue(session.stop().success);
+            testCase.verifyEqual(session.State, 'stopped');
+
+            testCase.verifyTrue(session.reset().success);
             testCase.verifyEqual(session.State, 'loaded');
+            testCase.verifyEqual(session.stop().reason, ...
+                'action_not_allowed');
+
             testCase.verifyTrue(session.start().success);
             testCase.verifyEqual(session.State, 'running');
             testCase.verifyTrue(session.describeState().isRunning);
@@ -238,9 +250,12 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
             backend = inverterhilgui.fakeTargetBackend();
             session = inverterhilgui.targetSession('FakePC', backend);
             session.connect();
+            % CONNECT already leaves the session 'running'; only STOP (and
+            % DISCONNECT) are allowed from there, so STOP is the action used
+            % to exercise a mid-lifecycle backend failure.
             backend.FailNextCall = true;
 
-            result = session.load('inverter_hil');
+            result = session.stop();
 
             testCase.verifyFalse(result.success);
             testCase.verifyEqual(session.State, 'error');

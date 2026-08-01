@@ -1,0 +1,124 @@
+VERSION ""
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+
+BS_:
+
+BU_: VCU SPEEDGOAT
+
+BO_ 390 VCU_CTRL_INV1: 8 VCU
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ASCAllowed : 2|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ CurrentControlMode : 3|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ SpeedSetpointRpm : 16|16@1- (1,0) [-32768|32767] "rpm" SPEEDGOAT
+ SG_ PosTorqueLimit : 32|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+ SG_ NegTorqueLimit : 48|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+
+BO_ 406 VCU_CTRL_INV2: 8 VCU
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ASCAllowed : 2|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ CurrentControlMode : 3|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ SpeedSetpointRpm : 16|16@1- (1,0) [-32768|32767] "rpm" SPEEDGOAT
+ SG_ PosTorqueLimit : 32|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+ SG_ NegTorqueLimit : 48|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+
+BO_ 422 VCU_CTRL_INV3: 8 VCU
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ASCAllowed : 2|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ CurrentControlMode : 3|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ SpeedSetpointRpm : 16|16@1- (1,0) [-32768|32767] "rpm" SPEEDGOAT
+ SG_ PosTorqueLimit : 32|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+ SG_ NegTorqueLimit : 48|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+
+BO_ 438 VCU_CTRL_INV4: 8 VCU
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ ASCAllowed : 2|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ CurrentControlMode : 3|1@1+ (1,0) [0|1] "" SPEEDGOAT
+ SG_ SpeedSetpointRpm : 16|16@1- (1,0) [-32768|32767] "rpm" SPEEDGOAT
+ SG_ PosTorqueLimit : 32|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+ SG_ NegTorqueLimit : 48|16@1- (0.001953125,0) [-64|64] "Nm" SPEEDGOAT
+
+BO_ 899 INV1_STATUS_3X3: 8 SPEEDGOAT
+ SG_ ActualTorque : 0|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ TorqueSetpoint : 12|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ MotorTempRaw : 24|12@1- (0.125,0) [-100|155] "degC" VCU
+
+BO_ 901 INV1_STATUS_3X5: 8 SPEEDGOAT
+ SG_ IdActual : 0|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ IqActual : 16|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ MotorSpeedRpm : 32|16@1- (1,0) [-32768|32767] "rpm" VCU
+
+BO_ 915 INV2_STATUS_3X3: 8 SPEEDGOAT
+ SG_ ActualTorque : 0|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ TorqueSetpoint : 12|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ MotorTempRaw : 24|12@1- (0.125,0) [-100|155] "degC" VCU
+
+BO_ 917 INV2_STATUS_3X5: 8 SPEEDGOAT
+ SG_ IdActual : 0|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ IqActual : 16|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ MotorSpeedRpm : 32|16@1- (1,0) [-32768|32767] "rpm" VCU
+
+BO_ 931 INV3_STATUS_3X3: 8 SPEEDGOAT
+ SG_ ActualTorque : 0|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ TorqueSetpoint : 12|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ MotorTempRaw : 24|12@1- (0.125,0) [-100|155] "degC" VCU
+
+BO_ 933 INV3_STATUS_3X5: 8 SPEEDGOAT
+ SG_ IdActual : 0|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ IqActual : 16|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ MotorSpeedRpm : 32|16@1- (1,0) [-32768|32767] "rpm" VCU
+
+BO_ 947 INV4_STATUS_3X3: 8 SPEEDGOAT
+ SG_ ActualTorque : 0|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ TorqueSetpoint : 12|12@1- (0.03125,0) [-64|63.96875] "Nm" VCU
+ SG_ MotorTempRaw : 24|12@1- (0.125,0) [-100|155] "degC" VCU
+
+BO_ 949 INV4_STATUS_3X5: 8 SPEEDGOAT
+ SG_ IdActual : 0|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ IqActual : 16|16@1- (1,0) [-32768|32767] "A" VCU
+ SG_ MotorSpeedRpm : 32|16@1- (1,0) [-32768|32767] "rpm" VCU
+
+BO_ 1024 INV_STATUS_GENERAL: 8 SPEEDGOAT
+ SG_ DcLinkV12 : 0|16@1+ (0.015625,0) [0|1023.984375] "V" VCU
+ SG_ DcLinkV34 : 16|16@1+ (0.015625,0) [0|1023.984375] "V" VCU
+ SG_ SwitchingFreq : 32|16@1+ (0.001953125,0) [0|100] "kHz" VCU
+ SG_ DcLink12AboveMin : 48|1@1+ (1,0) [0|1] "" VCU
+ SG_ DcLink34AboveMin : 49|1@1+ (1,0) [0|1] "" VCU
+ SG_ ControlEnableMirror : 50|1@1+ (1,0) [0|1] "" VCU
+ SG_ ControlDisableMirror : 51|1@1+ (1,0) [0|1] "" VCU
+
+CM_ "Transport-visibility reference DBC for tests/io614_can_visibility_test.
+Signal bit layout follows inverter_hil/inverter_hil_plan.md section 4 as
+INSPIRATION ONLY: exact bit positions/scales are NOT verified against a
+physical capture, and the torque scale is a placeholder (1/512 Nm/count,
+matching the provisional profile used elsewhere in inverter_hil; the
+plan also documents a competing 1/256 Nm/count reading that is unresolved,
+see inverter_hil_plan.md section 4.1.1). The io614_can_visibility_test
+Simulink model itself uses raw IO614 CAN Read/Write blocks, not this DBC,
+and makes no claim about payload semantics -- see
+io614_can_visibility_test_plan.md, 'Minimal model behavior'. Copy/replace
+this file with the canonical inverter_hil.dbc once that project produces
+one (see inverter_hil_plan.md section 2/4 and this test's Open decisions).";
+CM_ BO_ 390 "VCU control frame to Ephorus channel 1 (0x186).";
+CM_ BO_ 406 "VCU control frame to Ephorus channel 2 (0x196).";
+CM_ BO_ 422 "VCU control frame to Ephorus channel 3 (0x1A6).";
+CM_ BO_ 438 "VCU control frame to Ephorus channel 4 (0x1B6).";
+CM_ BO_ 899 "Ephorus channel 1 3X3 status (0x383). Also the PCAN smoke-test
+default tx_id in io614_can_visibility_test_plan.md; the smoke test does
+not decode these signals, it only checks raw ID/DLC/payload transport.";
+CM_ BO_ 901 "Ephorus channel 1 3X5 status (0x385).";
+CM_ BO_ 915 "Ephorus channel 2 3X3 status (0x393).";
+CM_ BO_ 917 "Ephorus channel 2 3X5 status (0x395).";
+CM_ BO_ 931 "Ephorus channel 3 3X3 status (0x3A3).";
+CM_ BO_ 933 "Ephorus channel 3 3X5 status (0x3A5).";
+CM_ BO_ 947 "Ephorus channel 4 3X3 status (0x3B3).";
+CM_ BO_ 949 "Ephorus channel 4 3X5 status (0x3B5).";
+CM_ BO_ 1024 "General inverter-system status (0x400).";

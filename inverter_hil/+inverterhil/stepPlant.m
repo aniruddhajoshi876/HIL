@@ -165,6 +165,10 @@ for channelIndex = 1:4
     next.switchTemperatureC(channelIndex) = switchTemperatureC;
 
     result = emptyChannelOutput();
+    % AUTHORITYREASON takes strings of different lengths across branches in
+    % TORQUEAUTHORITY below; MATLAB Coder locks the field's size at the fixed
+    % 'default_safe' value EMPTYCHANNELOUTPUT assigns unless told otherwise.
+    coder.varsize('result.authorityReason', [1, 48], [0, 1]);
     result.speedSetpointRpm = channelInput.speedSetpointRpm;
     result.speedRpm = limitedSpeedRpm;
     result.unboundedSpeedRpm = candidateSpeedRpm;
@@ -241,6 +245,9 @@ output.protocolProfileId = cal.protocolProfileId;
 output.torqueScaleNmPerCount = cal.torqueScaleNmPerCount;
 output.torqueScaleVerified = logical(cal.torqueScaleVerified);
 output.channels = repmat(emptyChannelOutput(), 1, 4);
+% AUTHORITYREASON is overwritten per channel below with strings of different
+% lengths than the 'default_safe' literal EMPTYCHANNELOUTPUT assigns.
+coder.varsize('output.channels.authorityReason', [1, 48], [0, 1]);
 output.torqueSetpointNm = zeros(1, 4);
 output.torqueActualNm = zeros(1, 4);
 output.speedRpm = zeros(1, 4);
@@ -292,6 +299,7 @@ status = struct('idSetpointA', 0, 'idActualA', 0, ...
 end
 
 function [blocked, reason] = torqueAuthority(channelInput)
+coder.varsize('reason', [1, 48], [0, 1]);
 p = inverterhil.protocol();
 if channelInput.mode ~= p.state.drive
     blocked = true;
