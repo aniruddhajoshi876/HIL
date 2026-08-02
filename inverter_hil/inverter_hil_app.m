@@ -708,6 +708,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                         d.writeSucceeded;
                     app.Telemetry.can.diagnostics.writeKnown = d.writeKnown;
                 end
+                if live.inverterKnown
+                    app.applyLiveInverters(live.inverter);
+                end
             else
                 app.Telemetry.io.healthy = false;
                 app.Telemetry.io.healthyKnown = false;
@@ -722,6 +725,52 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.appliedPedalPercent(1, 'v1');
             app.Telemetry.pedals.brakeAppliedPercent = ...
                 app.appliedPedalPercent(3, 'v3');
+        end
+
+        function applyLiveInverters(app, decoded)
+            %APPLYLIVEINVERTERS Copy decoded status-frame values into the
+            %   telemetry snapshot the inverter panels render.
+            %
+            %   FORMATINVERTERPANEL renders torque through
+            %   FORMATTORQUECANDIDATES, which expects a RAW COUNT and applies
+            %   both candidate scales itself. The decoded values are already
+            %   in Nm at the frame's own 1/32 scale, so they are converted
+            %   back to counts here rather than passed as engineering units,
+            %   which would be rescaled a second time and displayed wrong.
+            stateNames = {'Idle', 'Drive', 'Error', 'ConfigError'};
+            for channel = 1:4
+                item = decoded(channel);
+
+                stateIndex = item.state + 1;
+                if isfinite(item.state) && stateIndex >= 1 && ...
+                        stateIndex <= numel(stateNames)
+                    app.Telemetry.inverter(channel).state = ...
+                        stateNames{stateIndex};
+                else
+                    app.Telemetry.inverter(channel).state = '';
+                end
+
+                app.Telemetry.inverter(channel).ready = item.ready;
+                app.Telemetry.inverter(channel).derating = item.derating;
+                app.Telemetry.inverter(channel).torqueActualRaw = ...
+                    item.torqueActualNm * 32;
+                app.Telemetry.inverter(channel).torqueCommandRaw = ...
+                    item.torqueCommandNm * 32;
+                app.Telemetry.inverter(channel).motorTemperatureC = ...
+                    item.motorTemperatureC;
+                app.Telemetry.inverter(channel).switchTemperatureC = ...
+                    item.switchTemperatureC;
+                app.Telemetry.inverter(channel).idSetpointA = ...
+                    item.idSetpointA;
+                app.Telemetry.inverter(channel).idActualA = item.idActualA;
+                app.Telemetry.inverter(channel).iqSetpointA = ...
+                    item.iqSetpointA;
+                app.Telemetry.inverter(channel).iqActualA = item.iqActualA;
+                app.Telemetry.inverter(channel).speedRpm = item.speedRpm;
+                % commandAgeS and activeFault are NOT carried by the status
+                % frames, so they stay at their blankTelemetry unknowns
+                % rather than being invented from the decode.
+            end
         end
 
         function percent = appliedPedalPercent(app, aoChannel, calSuffix)

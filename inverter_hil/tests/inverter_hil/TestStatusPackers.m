@@ -31,6 +31,114 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             testCase.verifyEqual(inverterhil.packStatus3X5(status), expected);
         end
 
+        function decodes3X3GoldenBytes(testCase)
+            % Decodes the SAME golden bytes PACKS3X3GOLDENBYTES asserts, so
+            % this verifies the decoder against a fixed wire format rather
+            % than against the packer -- a shared bug in both would not pass.
+            payload = uint8([hex2dec('4E') hex2dec('24') ...
+                hex2dec('B0') hex2dec('8E') hex2dec('28') ...
+                hex2dec('9C') hex2dec('0F') hex2dec('50')]);
+
+            status = inverterhil.decodeStatus3X3(payload);
+            testCase.verifyEqual(status.state, 2);
+            testCase.verifyTrue(status.ready);
+            testCase.verifyTrue(status.derating);
+            testCase.verifyEqual(status.maxAllowedCurrentA, 18.125);
+            testCase.verifyEqual(status.actualTorqueNm, -10.5);
+            testCase.verifyEqual(status.torqueSetpointNm, 20.25);
+            testCase.verifyEqual(status.motorTemperatureC, -12.5);
+            testCase.verifyEqual(status.switchTemperatureC, 80);
+        end
+
+        function decodes3X5GoldenBytes(testCase)
+            payload = uint8([hex2dec('23') hex2dec('C1') ...
+                hex2dec('AB') hex2dec('56') hex2dec('F4') ...
+                hex2dec('DE') hex2dec('AB') hex2dec('89')]);
+
+            status = inverterhil.decodeStatus3X5(payload);
+            testCase.verifyEqual(status.idSetpointA, 18.1875);
+            testCase.verifyEqual(status.idActualA, -84.25);
+            testCase.verifyEqual(status.iqSetpointA, 69.375);
+            testCase.verifyEqual(status.iqActualA, -33.0625);
+            testCase.verifyEqual(status.speedRpm, -30293);
+        end
+
+        function roundTripsExactlyRepresentableValues(testCase)
+            % Every value here is exactly representable at its field scale,
+            % so pack->decode must be lossless. Values that are not on a
+            % scale boundary quantise instead; that is covered separately by
+            % QUANTISESVALUESOFFTHESCALEBOUNDARY.
+            status = TestStatusPackers.status3X3();
+            status.state = uint8(1);
+            status.ready = true;
+            status.derating = false;
+            status.maxAllowedCurrentA = 7.5;
+            status.actualTorqueNm = -0.25;
+            status.torqueSetpointNm = 63.96875;
+            status.motorTemperatureC = 25.125;
+            status.switchTemperatureC = -40.0625;
+
+            decoded = inverterhil.decodeStatus3X3( ...
+                inverterhil.packStatus3X3(status));
+            testCase.verifyEqual(decoded.state, double(status.state));
+            testCase.verifyEqual(decoded.ready, logical(status.ready));
+            testCase.verifyEqual(decoded.derating, logical(status.derating));
+            testCase.verifyEqual(decoded.maxAllowedCurrentA, ...
+                status.maxAllowedCurrentA);
+            testCase.verifyEqual(decoded.actualTorqueNm, ...
+                status.actualTorqueNm);
+            testCase.verifyEqual(decoded.torqueSetpointNm, ...
+                status.torqueSetpointNm);
+            testCase.verifyEqual(decoded.motorTemperatureC, ...
+                status.motorTemperatureC);
+            testCase.verifyEqual(decoded.switchTemperatureC, ...
+                status.switchTemperatureC);
+
+            wide = TestStatusPackers.status3X5();
+            % -128 is exactly the signed 12-bit floor at 1/16 A (-2048
+            % counts). One step lower saturates, which is why the round trip
+            % must be asserted at the boundary, not past it.
+            wide.idSetpointA = -128;
+            wide.idActualA = 0;
+            wide.iqSetpointA = 12.5;
+            wide.iqActualA = -0.0625;
+            wide.speedRpm = 12000;
+
+            decodedWide = inverterhil.decodeStatus3X5( ...
+                inverterhil.packStatus3X5(wide));
+            testCase.verifyEqual(decodedWide.idSetpointA, wide.idSetpointA);
+            testCase.verifyEqual(decodedWide.idActualA, wide.idActualA);
+            testCase.verifyEqual(decodedWide.iqSetpointA, wide.iqSetpointA);
+            testCase.verifyEqual(decodedWide.iqActualA, wide.iqActualA);
+            testCase.verifyEqual(decodedWide.speedRpm, wide.speedRpm);
+        end
+
+        function quantisesValuesOffTheScaleBoundary(testCase)
+            % A value between two representable counts must come back as the
+            % nearest one. The GUI shows the wire value, not the commanded
+            % double, and this pins that behaviour so it is never mistaken
+            % for a decoder defect.
+            status = TestStatusPackers.status3X3();
+            status.actualTorqueNm = 1 / 64;   % half of the 1/32 Nm step
+
+            decoded = inverterhil.decodeStatus3X3( ...
+                inverterhil.packStatus3X3(status));
+            testCase.verifyEqual(decoded.actualTorqueNm, 1 / 32);
+        end
+
+        function decodersRejectMalformedPayloads(testCase)
+            bad = {uint8(zeros(1, 7)), uint8(zeros(8, 1)), ...
+                zeros(1, 8), 'eightchr'};
+            for k = 1:numel(bad)
+                testCase.verifyError( ...
+                    @() inverterhil.decodeStatus3X3(bad{k}), ...
+                    'inverterhil:MalformedPayload');
+                testCase.verifyError( ...
+                    @() inverterhil.decodeStatus3X5(bad{k}), ...
+                    'inverterhil:MalformedPayload');
+            end
+        end
+
         function packsSystemStatusGoldenBytes(testCase)
             status = TestStatusPackers.systemStatus();
             status.dcLink12V = 400.25;                  % 0x6410 counts

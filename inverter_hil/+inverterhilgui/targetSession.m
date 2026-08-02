@@ -263,7 +263,9 @@ classdef targetSession < handle
             snapshot = struct('known', false, 'pins', [], ...
                 'pedalsAppliedV', nan(1, 4), 'io', ...
                 struct('healthy', false, 'healthyKnown', false), ...
-                'can', blankLiveCan());
+                'can', blankLiveCan(), ...
+                'inverter', blankLiveInverters(), ...
+                'inverterKnown', false);
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -326,7 +328,55 @@ classdef targetSession < handle
                 snapshot.known = true;
             catch err
                 obj.LastError = err.message;
-                % KNOWN stays false: a partial or failed read must present as
+                return;
+            end
+
+            % Per-inverter state, decoded from the nine-frame status cycle
+            % this application is ACTUALLY transmitting, so the panels can
+            % never disagree with the bytes on the wire.
+            %
+            % Deliberately a separate try: the payload signal is the newest
+            % and least certain of these reads, so a failure here must leave
+            % the pin, pedal and CAN data above intact rather than blanking a
+            % whole snapshot that was otherwise good. INVERTERKNOWN stays
+            % false in that case and the panels honestly show dashes.
+            try
+                payloads = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 1);
+                if ~isequal(size(payloads), [9 8])
+                    return;
+                end
+                payloads = uint8(payloads);
+                % PROTOCOL.STATUSCYCLEIDS order: 3X3/3X5 interleaved per
+                % channel (383,385, 393,395, 3A3,3A5, 3B3,3B5) then 0x400.
+                for channel = 1:4
+                    threeX3 = inverterhil.decodeStatus3X3( ...
+                        payloads(2 * channel - 1, :));
+                    threeX5 = inverterhil.decodeStatus3X5( ...
+                        payloads(2 * channel, :));
+                    snapshot.inverter(channel).state = threeX3.state;
+                    snapshot.inverter(channel).ready = threeX3.ready;
+                    snapshot.inverter(channel).derating = threeX3.derating;
+                    snapshot.inverter(channel).torqueActualNm = ...
+                        threeX3.actualTorqueNm;
+                    snapshot.inverter(channel).torqueCommandNm = ...
+                        threeX3.torqueSetpointNm;
+                    snapshot.inverter(channel).motorTemperatureC = ...
+                        threeX3.motorTemperatureC;
+                    snapshot.inverter(channel).switchTemperatureC = ...
+                        threeX3.switchTemperatureC;
+                    snapshot.inverter(channel).idSetpointA = ...
+                        threeX5.idSetpointA;
+                    snapshot.inverter(channel).idActualA = threeX5.idActualA;
+                    snapshot.inverter(channel).iqSetpointA = ...
+                        threeX5.iqSetpointA;
+                    snapshot.inverter(channel).iqActualA = threeX5.iqActualA;
+                    snapshot.inverter(channel).speedRpm = threeX5.speedRpm;
+                end
+                snapshot.inverterKnown = true;
+            catch err
+                obj.LastError = err.message;
+                % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
             end
         end
@@ -423,6 +473,17 @@ classdef targetSession < handle
             end
         end
     end
+end
+
+function inverters = blankLiveInverters()
+%BLANKLIVEINVERTERS Unknown per-inverter block, NaN/empty per BLANKTELEMETRY's
+%   contract that an unread field is never a zero.
+inverters = repmat(struct( ...
+    'state', NaN, 'ready', [], 'derating', [], ...
+    'torqueActualNm', NaN, 'torqueCommandNm', NaN, ...
+    'motorTemperatureC', NaN, 'switchTemperatureC', NaN, ...
+    'idSetpointA', NaN, 'idActualA', NaN, ...
+    'iqSetpointA', NaN, 'iqActualA', NaN, 'speedRpm', NaN), 1, 4);
 end
 
 function can = blankLiveCan()
