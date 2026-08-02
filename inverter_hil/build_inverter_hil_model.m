@@ -209,22 +209,31 @@ add_line(model, 'Ephorus System Status/1', 'Status Payloads Goto/1', ...
 
 % The received-frame observation has no consumer inside the model -- it
 % exists purely so the GUI can READ it -- but a subsystem output port must
-% still be connected or the diagram will not update. Terminating it alone is
-% not enough: an unused signal is exactly what the code generator removes,
-% and a removed signal cannot be read back, which would leave the RX table
-% blank with no visible cause. Naming it and marking it a test point is what
-% guarantees it survives into the real-time application.
+% still be connected or the diagram will not update. A Terminator is the
+% established pattern this file already uses everywhere for exactly this
+% (see ADDTERMINATEDINPUT and ADDGUICOMMANDPARAMETERS's Constant->Terminator
+% pairs): a real consumer that keeps a signal live through code generation
+% without implying anything downstream depends on its value.
+%
+% DATALOGGING is deliberately NOT set here, though an earlier version of
+% this file did set it (alongside TESTPOINT) believing the Terminator alone
+% might not survive optimization. That combination reliably crashed the
+% HOST MATLAB process -- not the target -- with an access violation inside
+% LIBMWSLRESTIME_XCP.DLL's AsyncQueue::write/StreamingList teardown, every
+% time STOP(TARGET) ran while this port's logged stream was active
+% (confirmed against four separate matlab_crash_dump.* traces, same top two
+% frames each time; GETCRASHSTACK on the target found no corresponding
+% target-side fault, so the deployed application itself was never at fault).
+% DataLogging opens a persistent host-side signal-streaming subscription
+% distinct from GETSIGNAL's own one-shot reads, and it is that subscription
+% whose teardown was crashing. The Terminator was always sufficient by
+% itself -- this file's own established pattern proves it -- so there was
+% nothing to gain from DataLogging and a live MATLAB session to lose.
 add_block('simulink/Sinks/Terminator', ...
     [model '/Received Control Observation Terminator'], ...
     'Position', [1220 350 1240 370]);
-rxLine = add_line(model, 'Ephorus System Status/2', ...
+add_line(model, 'Ephorus System Status/2', ...
     'Received Control Observation Terminator/1', 'autorouting', 'on');
-set_param(rxLine, 'Name', 'ReceivedControlObservation');
-% TESTPOINT and DATALOGGING live on the SOURCE OUTPUT PORT, not on the line;
-% the line only owns NAME. Setting them on the line handle errors with
-% 'line does not have a parameter named TestPoint'.
-statusPorts = get_param([model '/Ephorus System Status'], 'PortHandles');
-set_param(statusPorts.Outport(2), 'TestPoint', 'on', 'DataLogging', 'on');
 add_line(model, 'Test Inputs/4', 'Load Demux/1', 'autorouting', 'on');
 add_line(model, 'Test Inputs/5', 'DC Link Demux/1', 'autorouting', 'on');
 add_line(model, 'Fault Injection/2', 'Fault Demux/1', 'autorouting', 'on');
