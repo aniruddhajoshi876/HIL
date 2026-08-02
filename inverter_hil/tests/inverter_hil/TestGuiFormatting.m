@@ -310,19 +310,56 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function themeUsesTheSpecifiedConsolePalette(testCase)
+            % Palette switched from the dark console to high-contrast
+            % black-on-white on 2026-08-02 for readability. The assertion
+            % that matters is CONTRAST, not the specific hex values: dark
+            % text on a light background, comfortably past the WCAG AA 4.5:1
+            % ratio. Pinning exact RGB made this test fail for a deliberate
+            % readability change while saying nothing about legibility.
             theme = inverterhilgui.guiTheme();
 
-            testCase.verifyEqual(theme.color.background, ...
-                [9 12 14] / 255, 'AbsTol', 1e-12);
-            testCase.verifyEqual(theme.color.panel, ...
-                [25 35 45] / 255, 'AbsTol', 1e-12);
+            background = theme.color.background;
+            primary = theme.color.primaryText;
+            testCase.verifyGreaterThan(mean(background), 0.9, ...
+                'Background must be light.');
+            testCase.verifyLessThan(mean(primary), 0.2, ...
+                'Primary text must be dark.');
+            testCase.verifyGreaterThan( ...
+                TestGuiFormatting.contrastRatio(primary, background), 4.5, ...
+                'Primary text on background must meet WCAG AA (4.5:1).');
+            testCase.verifyGreaterThan( ...
+                TestGuiFormatting.contrastRatio(theme.color.secondaryText, ...
+                theme.color.panel), 4.5, ...
+                'Secondary text on panel must meet WCAG AA (4.5:1).');
             testCase.verifySubstring(theme.text.torqueBanner, ...
                 'TORQUE SCALE UNVERIFIED');
             testCase.verifySubstring(theme.text.torqueBanner, '1/512');
             testCase.verifySubstring(theme.text.torqueBanner, ...
                 'ephorus3-v1.03-provisional-1over512');
+            % Still the placeholder for an out-of-range index; the confirmed
+            % 1=FL/2=FR/3=RR/4=RL mapping is asserted by
+            % CORNERLABELSUSECONFIRMEDMAPPING.
             testCase.verifyEqual(theme.text.cornerLabel, 'UNVERIFIED');
             testCase.verifyEqual(theme.text.noData, '--');
+        end
+    end
+
+    methods (Static, Access = private)
+        function ratio = contrastRatio(foreground, background)
+            %CONTRASTRATIO WCAG 2.1 relative-luminance contrast ratio.
+            lumA = TestGuiFormatting.relativeLuminance(foreground);
+            lumB = TestGuiFormatting.relativeLuminance(background);
+            ratio = (max(lumA, lumB) + 0.05) / (min(lumA, lumB) + 0.05);
+        end
+
+        function lum = relativeLuminance(rgb)
+            %RELATIVELUMINANCE WCAG 2.1 relative luminance of a 0-1 RGB row.
+            channel = rgb;
+            low = channel <= 0.03928;
+            channel(low) = channel(low) / 12.92;
+            channel(~low) = ((channel(~low) + 0.055) / 1.055) .^ 2.4;
+            lum = 0.2126 * channel(1) + 0.7152 * channel(2) + ...
+                0.0722 * channel(3);
         end
     end
 

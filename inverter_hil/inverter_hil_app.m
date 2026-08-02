@@ -710,6 +710,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 if live.inverterKnown
                     app.applyLiveInverters(live.inverter);
+                    app.applyLiveTxFrames(live);
                 end
             else
                 app.Telemetry.io.healthy = false;
@@ -725,6 +726,67 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.appliedPedalPercent(1, 'v1');
             app.Telemetry.pedals.brakeAppliedPercent = ...
                 app.appliedPedalPercent(3, 'v3');
+        end
+
+        function applyLiveTxFrames(app, live)
+            %APPLYLIVETXFRAMES Fill the HIL TX table from the frames actually
+            %   being transmitted, decoded plus their raw bytes.
+            %
+            %   MEASURED RATE IS DELIBERATELY LEFT UNKNOWN. CANROWMODEL
+            %   derives the rate from consecutive observed timestamps and its
+            %   help is explicit that the 5 ms nominal cycle must never be
+            %   assumed. This app polls at the 250 ms status tick, so feeding
+            %   it poll times would report about 4 Hz for frames the model
+            %   emits at 200 Hz -- a plausible-looking, wrong number. Leaving
+            %   TIMESTAMPSS empty makes the column read dashes, which is the
+            %   honest statement that polling cannot measure this rate. A real
+            %   rate needs frame-arrival instrumentation on the target.
+            payloads = live.txPayloads;
+            observations = app.Telemetry.can.tx;
+            now = app.hostTimeS();
+            for index = 1:numel(observations)
+                if index > size(payloads, 1)
+                    break;
+                end
+                bytes = payloads(index, :);
+                value = sprintf('%02X ', bytes);
+                previous = observations(index).value;
+                observations(index).value = strtrim(value);
+                observations(index).signal = ...
+                    app.txFrameSignalText(index, live);
+                if ~strcmp(previous, observations(index).value)
+                    observations(index).lastChangeS = now;
+                end
+            end
+            app.Telemetry.can.tx = observations;
+        end
+
+        function text = txFrameSignalText(app, index, live)
+            %TXFRAMESIGNALTEXT One-line decoded summary for a status frame.
+            %   Frames 1-8 are the 3X3/3X5 pair per channel; frame 9 is the
+            %   0x400 system status, which this app does not decode, so it
+            %   reports its own name rather than a fabricated reading.
+            text = app.Theme.text.noData;
+            if index >= 9
+                text = 'system status';
+                return;
+            end
+            channel = ceil(index / 2);
+            item = live.inverter(channel);
+            if mod(index, 2) == 1
+                stateText = app.Telemetry.inverter(channel).state;
+                if isempty(stateText)
+                    stateText = app.Theme.text.noData;
+                end
+                text = sprintf('%s rdy=%d T=%.2f/%.2f Nm %.1f/%.1f C', ...
+                    stateText, item.ready, item.torqueActualNm, ...
+                    item.torqueCommandNm, item.motorTemperatureC, ...
+                    item.switchTemperatureC);
+            else
+                text = sprintf('id %.2f/%.2f iq %.2f/%.2f A %g rpm', ...
+                    item.idSetpointA, item.idActualA, item.iqSetpointA, ...
+                    item.iqActualA, item.speedRpm);
+            end
         end
 
         function applyLiveInverters(app, decoded)

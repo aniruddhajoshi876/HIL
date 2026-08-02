@@ -265,7 +265,8 @@ classdef targetSession < handle
                 struct('healthy', false, 'healthyKnown', false), ...
                 'can', blankLiveCan(), ...
                 'inverter', blankLiveInverters(), ...
-                'inverterKnown', false);
+                'inverterKnown', false, ...
+                'txPayloads', zeros(9, 8, 'uint8'));
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -300,16 +301,18 @@ classdef targetSession < handle
                 busWarning = logical(obj.Backend.getsignal(diagBlock, 6));
 
                 % Each CAN Write block exposes one status output, enabled at
-                % build time (enableStatusPort). Per the IO614 driver manual
-                % that port reports whether the message reached the module tx
-                % queue, so FALSE here means "queued cleanly", not "silent".
+                % build time via enableStatusPort -- whose mask prompt is
+                % "Show Overrun Output". The port is therefore an OVERRUN
+                % flag: TRUE means the tx buffer overran, i.e. the frame did
+                % NOT get away cleanly. It is inverted here so the field
+                % reads as "no overrun" rather than being reported backwards.
                 writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
                     '3B3', '3B5', '400'};
-                writeSucceeded = false(1, numel(writeIds));
+                writeNoOverrun = false(1, numel(writeIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
                         writeIds{k});
-                    writeSucceeded(k) = ...
+                    writeNoOverrun(k) = ...
                         ~logical(obj.Backend.getsignal(writeBlock, 1));
                 end
 
@@ -319,7 +322,7 @@ classdef targetSession < handle
                 snapshot.can.diagnostics.transmitOverrun = txOverrun;
                 snapshot.can.diagnostics.receiveOverrun = rxOverrun;
                 snapshot.can.diagnostics.errorWarning = busWarning;
-                snapshot.can.diagnostics.writeSucceeded = writeSucceeded;
+                snapshot.can.diagnostics.writeSucceeded = writeNoOverrun;
                 snapshot.can.diagnostics.writeKnown = true;
                 snapshot.can.known = true;
 
@@ -373,6 +376,9 @@ classdef targetSession < handle
                     snapshot.inverter(channel).iqActualA = threeX5.iqActualA;
                     snapshot.inverter(channel).speedRpm = threeX5.speedRpm;
                 end
+                % Raw bytes retained so the TX table can show exactly what
+                % left the module, not just the decoded interpretation.
+                snapshot.txPayloads = payloads;
                 snapshot.inverterKnown = true;
             catch err
                 obj.LastError = err.message;
