@@ -1,17 +1,19 @@
 function theme = guiTheme()
-%GUITHEME Dense dark engineering-console colors, typography, and spacing.
+%GUITHEME Dense light engineering-console colors, typography, and spacing.
+%   High-contrast black-on-white variant for readability (panels, tab bar,
+%   and body text all resolve to near-black on near-white).
 
-theme.color.background = hexColor('090C0E');
-theme.color.panel = hexColor('19232D');
-theme.color.panelEdge = hexColor('27333F');
-theme.color.healthy = hexColor('3FCF6A');
-theme.color.electrical = hexColor('4A9EFF');
-theme.color.waiting = hexColor('E0A52A');
-theme.color.fault = hexColor('E1483C');
-theme.color.primaryText = hexColor('DCE3EA');
-theme.color.secondaryText = hexColor('7B8CA0');
-theme.color.disabledText = hexColor('4A5765');
-theme.color.highlight = hexColor('2E4256');
+theme.color.background = hexColor('FFFFFF');
+theme.color.panel = hexColor('F1F3F6');
+theme.color.panelEdge = hexColor('B7C0CC');
+theme.color.healthy = hexColor('1B7A3D');
+theme.color.electrical = hexColor('0F5FB8');
+theme.color.waiting = hexColor('9A6300');
+theme.color.fault = hexColor('C4291D');
+theme.color.primaryText = hexColor('000000');
+theme.color.secondaryText = hexColor('33404D');
+theme.color.disabledText = hexColor('8A93A0');
+theme.color.highlight = hexColor('D6E4F5');
 
 theme.font.name = 'Consolas';
 theme.font.title = 15;

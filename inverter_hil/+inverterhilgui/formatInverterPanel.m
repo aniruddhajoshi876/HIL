@@ -3,9 +3,19 @@ function panel = formatInverterPanel(snapshot, index)
 %
 %   PANEL = FORMATINVERTERPANEL(SNAPSHOT, INDEX) reads only
 %   SNAPSHOT.INVERTER(INDEX), so status from one inverter can never leak into
-%   another panel. Plan 4.1.3 requires the canonical inverter number to remain
-%   visible and the provisional corner label to stay UNVERIFIED until the
-%   FL/FR/RL/RR mapping is confirmed, so CORNER is a constant here.
+%   another panel.
+%
+%   CORNER MAPPING - operator-confirmed 2026-08-01:
+%     Ephorus index 1 = FL, 2 = FR, 3 = RR, 4 = RL
+%   Plan 4.1.3 held the corner label at UNVERIFIED until the FL/FR/RL/RR to
+%   Ephorus-index mapping was confirmed; this is that confirmation, recorded
+%   here as its single source. The provenance is an operator assertion, NOT an
+%   automated check - nothing in this repository can verify which physical
+%   wheel an index drives, so if that assertion is wrong every corner label is
+%   wrong in a way no test will catch. Plan 4.1.3 also requires the canonical
+%   inverter number to stay visible beside the corner, which PANEL.TITLE does.
+%   CORNERVERIFIED reports whether CORNER is a real mapping or the UNVERIFIED
+%   placeholder, so the caller can colour it accordingly.
 %
 %   Torque is rendered by INVERTERHILGUI.FORMATTORQUECANDIDATES, which always
 %   shows the raw count and both candidate scales.
@@ -13,9 +23,13 @@ function panel = formatInverterPanel(snapshot, index)
 theme = inverterhilgui.guiTheme();
 noData = theme.text.noData;
 
+% Index order is Ephorus 1-4; see the corner-mapping note in the help above.
+cornerNames = {'FL', 'FR', 'RR', 'RL'};
+
 panel = struct( ...
     'title', noData, ...
     'corner', theme.text.cornerLabel, ...
+    'cornerVerified', false, ...
     'state', noData, ...
     'ready', noData, ...
     'commandAge', noData, ...
@@ -37,6 +51,10 @@ if ~isnumeric(index) || ~isscalar(index) || ~isreal(index) || ...
     return;
 end
 panel.title = sprintf('INV%d', index);
+% Only reached once INDEX is a validated 1-4, so the lookup cannot go out of
+% range and an invalid index keeps the UNVERIFIED placeholder set above.
+panel.corner = cornerNames{index};
+panel.cornerVerified = true;
 if ~isstruct(snapshot) || ~isscalar(snapshot) || ...
         ~isfield(snapshot, 'inverter') || numel(snapshot.inverter) < index
     return;

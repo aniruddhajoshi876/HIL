@@ -82,7 +82,7 @@ dictionary = Simulink.data.dictionary.create(path);
 cleanupDict = onCleanup(@() close(dictionary));
 section = getSection(dictionary, 'Design Data');
 
-addEntry(section, 'tx_enable', parameter(false, false, true));
+addEntry(section, 'tx_enable', parameter(true, false, true));
 addEntry(section, 'tx_id', parameter(uint32(hex2dec('383')), ...
     uint32(0), uint32(2047)));
 addEntry(section, 'tx_dlc', parameter(uint8(8), uint8(0), uint8(8)));

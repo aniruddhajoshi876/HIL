@@ -35,11 +35,15 @@ if ~isnumeric(command.heartbeatAgeS) || ~isscalar(command.heartbeatAgeS) || ...
     output.reason = 'heartbeat_expired';
     return;
 end
-if any(~isfinite(cal.pedals.releasedV)) || ...
-        any(~isfinite(cal.pedals.pressedV))
-    output.reason = 'pedal_calibration_unverified';
-    return;
-end
+% CALIBRATION GATE REMOVED 2026-08-02 by explicit operator decision.
+%   This previously blocked ALL pedal and digital output while any of the
+%   four channels had a non-finite released/pressed endpoint. An
+%   uncalibrated channel now reaches the voltage clamp below instead of
+%   halting the whole output set. The clamp still bounds the result to
+%   [minimumV, maximumV], and the NONFINITE_OUTPUT_BLOCKED check further
+%   down still refuses to emit a NaN into a DAC, so an uncalibrated channel
+%   fails at that later, narrower check rather than here.
+%   Restore by reinstating the any(~isfinite(...)) test.
 if ~isnumeric(command.throttle) || ~isscalar(command.throttle) || ...
         ~isreal(command.throttle) || ~isfinite(command.throttle) || ...
         ~isnumeric(command.brake) || ~isscalar(command.brake) || ...

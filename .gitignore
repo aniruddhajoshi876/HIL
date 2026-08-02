@@ -14,3 +14,30 @@ examples/tmp/
 # Decision-16 spike products; regenerate with build_decision16_spike(true)
 spikes/decision16/decision16_spike.slx
 spikes/decision16/decision16_spike.sldd
+
+# ---------------------------------------------------------------------------
+# Added 2026-08-02 with the initial commit
+# ---------------------------------------------------------------------------
+# examples/ totals ~2.0 GB (vendor blockset + Speedgoat example projects) and
+# is reinstallable from the Speedgoat Customer Portal. The two rules above
+# cover the bulk of it; this excludes the remainder so no vendor payload can
+# reach the remote.
+examples/
+
+# The Speedgoat I/O blockset installer (~251 MB) ships inside Speedgoat.zip.
+# references/ keeps only the manuals and wiring diagrams; the installer and the
+# original archive stay out of git (GitHub rejects >100 MB blobs without LFS).
+speedgoat_io_blockset_*.zip
+Speedgoat.zip
+
+# Further MATLAB generated products not covered above
+codegen/
+*.asv
+*.autosave
+*.mexw64
+*.mexa64
+
+# OS / editor noise
+Thumbs.db
+desktop.ini
+.DS_Store

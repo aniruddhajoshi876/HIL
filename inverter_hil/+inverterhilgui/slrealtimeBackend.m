@@ -65,6 +65,16 @@ classdef slrealtimeBackend < handle
             setparam(obj.Target, blockPath, parameterName, value);
         end
 
+        function value = getsignal(obj, blockPath, port)
+            %GETSIGNAL Read one streamed output-port value by block path.
+            %   Unlike GETPARAM/SETPARAM (tunable parameters), this reads a
+            %   live signal value off a running application, e.g. an I/O
+            %   driver block's measured output. Confirmed against real
+            %   Speedgoat hardware: SLREALTIME.TARGET/GETSIGNAL(target,
+            %   blockPath, portIndex).
+            value = getsignal(obj.Target, blockPath, port);
+        end
+
         function value = isConnected(obj)
             value = logical(isConnected(obj.Target));
         end

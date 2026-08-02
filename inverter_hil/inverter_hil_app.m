@@ -662,6 +662,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function refreshAll(app)
             %REFRESHALL Repaint every readout from the current snapshot.
+            app.refreshLiveIo();
             app.refreshPolicy();
             app.refreshToolbar();
             app.refreshStateStrip();
@@ -671,6 +672,80 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.refreshInverters();
             app.refreshCan();
             app.refreshLog();
+        end
+
+        function refreshLiveIo(app)
+            %REFRESHLIVEIO Pull the genuinely live target signals -- IO
+            %   health, the five VCU-monitor digital inputs, and the four
+            %   commanded pedal output voltages -- via
+            %   TARGETSESSION.READLIVEIO. This is the ONLY source that
+            %   updates APP.TELEMETRY after STARTUPFCN's initial BLANKTELEMETRY
+            %   assignment; nothing else in this class re-reads the target.
+            %   On any read failure the affected fields revert to the honest
+            %   unknown state rather than holding a stale value.
+            live = app.Session.readLiveIo();
+            if live.known
+                app.Telemetry.io.healthy = live.io.healthy;
+                app.Telemetry.io.healthyKnown = live.io.healthyKnown;
+                for index = 1:numel(app.Telemetry.pins)
+                    app.Telemetry.pins(index).state = live.pins(index);
+                end
+                app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
+                if live.can.known
+                    d = live.can.diagnostics;
+                    app.Telemetry.can.diagnostics.busLoadPercent = ...
+                        d.busLoadPercent;
+                    app.Telemetry.can.diagnostics.busOff = d.busOff;
+                    app.Telemetry.can.diagnostics.recoveryCount = ...
+                        d.recoveryCount;
+                    app.Telemetry.can.diagnostics.transmitOverrun = ...
+                        d.transmitOverrun;
+                    app.Telemetry.can.diagnostics.receiveOverrun = ...
+                        d.receiveOverrun;
+                    app.Telemetry.can.diagnostics.errorWarning = ...
+                        d.errorWarning;
+                    app.Telemetry.can.diagnostics.writeSucceeded = ...
+                        d.writeSucceeded;
+                    app.Telemetry.can.diagnostics.writeKnown = d.writeKnown;
+                end
+            else
+                app.Telemetry.io.healthy = false;
+                app.Telemetry.io.healthyKnown = false;
+                for index = 1:numel(app.Telemetry.pins)
+                    app.Telemetry.pins(index).state = [];
+                end
+                app.Telemetry.pedals.appliedV = nan(1, 4);
+                blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
+                app.Telemetry.can.diagnostics = blankCan;
+            end
+            app.Telemetry.pedals.throttleAppliedPercent = ...
+                app.appliedPedalPercent(1, 'v1');
+            app.Telemetry.pedals.brakeAppliedPercent = ...
+                app.appliedPedalPercent(3, 'v3');
+        end
+
+        function percent = appliedPedalPercent(app, aoChannel, calSuffix)
+            %APPLIEDPEDALPERCENT Invert PEDALVOLTAGECALIBRATION's own mapping
+            %   to show what percent the measured AO voltage corresponds to.
+            %   Uses only values already read from the target (measured
+            %   voltage, and the calibration endpoints the target itself
+            %   reports back), not invented telemetry.
+            percent = NaN;
+            appliedV = app.Telemetry.pedals.appliedV(aoChannel);
+            if ~isfinite(appliedV)
+                return;
+            end
+            [releasedV, releasedKnown] = app.Session.readCached( ...
+                ['cal.pedals.released_' calSuffix]);
+            [pressedV, pressedKnown] = app.Session.readCached( ...
+                ['cal.pedals.pressed_' calSuffix]);
+            if ~releasedKnown || ~pressedKnown || ...
+                    ~isfinite(releasedV) || ~isfinite(pressedV) || ...
+                    releasedV == pressedV
+                return;
+            end
+            fraction = (appliedV - releasedV) / (pressedV - releasedV);
+            percent = min(max(fraction, 0), 1) * 100;
         end
 
         function refreshPolicy(app)
@@ -868,6 +943,15 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 app.InverterTitleLabels(channel).Text = panel.title;
                 app.InverterCornerLabels(channel).Text = panel.corner;
+                % A confirmed corner is ordinary identification, not an alarm;
+                % only the UNVERIFIED placeholder stays fault-coloured.
+                if panel.cornerVerified
+                    app.InverterCornerLabels(channel).FontColor = ...
+                        app.Theme.color.secondaryText;
+                else
+                    app.InverterCornerLabels(channel).FontColor = ...
+                        app.Theme.color.fault;
+                end
             end
         end
 
@@ -911,13 +995,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
             else
                 writeText = '--';
             end
-            text = sprintf(['CAN WRITE %s | RX OVERRUN %s | ERROR WARNING ' ...
-                '%s | BUS-OFF %s | QUEUE %s | BURST %s'], writeText, ...
+            text = sprintf(['CAN WRITE %s | BUS LOAD %s | TX OVERRUN %s | ' ...
+                'RX OVERRUN %s | ERROR WARNING %s | BUS-OFF %s | ' ...
+                'RECOVERIES %s | QUEUE %s | BURST %s'], writeText, ...
+                inverterhilgui.formatMeasurement( ...
+                diagnostics.busLoadPercent, NaN, '%', false).value, ...
+                inverterhilgui.formatPinState( ...
+                diagnostics.transmitOverrun).text, ...
                 inverterhilgui.formatPinState( ...
                 diagnostics.receiveOverrun).text, ...
                 inverterhilgui.formatPinState( ...
                 diagnostics.errorWarning).text, ...
                 inverterhilgui.formatPinState(diagnostics.busOff).text, ...
+                inverterhilgui.formatMeasurement( ...
+                diagnostics.recoveryCount, NaN, '', false).value, ...
                 inverterhilgui.formatMeasurement(diagnostics.queueDepth, ...
                 NaN, '', false).value, ...
                 inverterhilgui.formatMeasurement( ...

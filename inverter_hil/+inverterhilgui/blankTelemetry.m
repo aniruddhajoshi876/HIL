@@ -68,6 +68,10 @@ snapshot.can.diagnostics.errorWarning = [];
 snapshot.can.diagnostics.busOff = [];
 snapshot.can.diagnostics.queueDepth = NaN;
 snapshot.can.diagnostics.burstDurationS = NaN;
+% Read live from the IO614 CAN Status block by TARGETSESSION.READLIVEIO.
+snapshot.can.diagnostics.busLoadPercent = NaN;
+snapshot.can.diagnostics.recoveryCount = NaN;
+snapshot.can.diagnostics.transmitOverrun = [];
 
 snapshot.io.healthy = false;
 snapshot.io.healthyKnown = false;

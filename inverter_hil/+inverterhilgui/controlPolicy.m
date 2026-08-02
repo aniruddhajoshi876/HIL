@@ -90,49 +90,52 @@ if ~lifecycle.isConnected
     policy.reason = 'not_connected';
     return;
 end
-if ~values.contractResolved
-    policy.reason = 'contract_unresolved';
-    return;
-end
-if ~values.targetHealthy
-    policy.reason = 'target_unhealthy';
-    return;
-end
-if ~values.heartbeatOk
-    policy.reason = 'heartbeat_lost';
-    return;
-end
 
+% INTERLOCKS REMOVED 2026-08-02 by explicit operator decision.
+%
+%   The contract-resolved, target-healthy, heartbeat-alive, expert-mode,
+%   Drive-restriction and application-stopped gates documented in the help
+%   above are all bypassed below. The operator asked for full manual control
+%   and was shown what that means: there is now NO software protection
+%   against commanding this rig in an unverified or unhealthy state.
+%
+%   What that costs, concretely, so a future reader can restore it knowingly:
+%     * targetHealthy/heartbeatOk no longer gate anything, so pedal and
+%       digital commands stay enabled against a bus-off CAN link or a GUI
+%       whose heartbeat the target has already declared stale.
+%     * The expert interlock no longer guards calibration, plant parameters,
+%       fault injection or DC-link commands, so a mis-click edits them
+%       directly.
+%     * Plan 7.1's "calibration may change only while stopped until
+%       validated" is no longer enforced.
+%     * INDROVE/Drive restriction is gone: every group stays live while the
+%       VCU is in ENABLE/BUZZING/RTD.
+%   INTERLOCKS is still validated above, and the values are still reported
+%   through the returned struct, so restoring any individual gate is a
+%   matter of reinstating its condition here.
+%
+%   RUNNING is still required for the runtime stimulus groups. That is not a
+%   safety interlock: SETPARAM against a stopped application simply fails, so
+%   enabling those widgets would only produce write errors.
 running = lifecycle.isRunning;
-inDrive = any(strcmp(vcuState, {'ENABLE', 'BUZZING', 'RTD'}));
-quiescent = ~running || strcmp(vcuState, 'LV_ON') || isempty(vcuState);
 
-% Runtime stimuli require a running application; they are the only groups
-% permitted while the VCU is in Drive.
 policy.pedals = running;
 policy.digitalStimuli = running;
 policy.momentary = running;
 policy.armPedals = running;
-policy.plausibilityViolation = running && values.plausibilityOverride;
+policy.plausibilityViolation = running;
 
-% Everything else needs the application stopped or the VCU quiet, plus the
-% explicit expert interlock.
-unlocked = values.expertMode && quiescent && ~inDrive;
-policy.expertGroupsUnlocked = unlocked;
-policy.electrical = unlocked;
-policy.plantParameters = unlocked;
-policy.calibration = unlocked && ~running;
-policy.faultInjection = unlocked;
-policy.canFaults = unlocked;
+policy.expertGroupsUnlocked = true;
+policy.electrical = true;
+policy.plantParameters = true;
+policy.calibration = true;
+policy.faultInjection = true;
+policy.canFaults = true;
 
-if inDrive
-    policy.reason = 'drive_restricted';
-elseif unlocked
-    policy.reason = 'expert_unlocked';
-elseif running
-    policy.reason = 'running_stimuli_only';
+if running
+    policy.reason = 'interlocks_removed_running';
 else
-    policy.reason = 'idle_locked';
+    policy.reason = 'interlocks_removed_stopped';
 end
 end
 

@@ -165,8 +165,11 @@ add to instruments and watch live than a vector signal.
 1. Power off the bus and verify resistance across CAN High and CAN Low.
 2. Connect IO614 CAN1 to PCAN CAN High, CAN Low, and CAN ground.
 3. Start PCAN at 1 Mbit/s, classic CAN.
-4. Build and run the Speedgoat test application.
-5. Enable `tx_enable`.
+4. Build and run the Speedgoat test application. `tx_enable` now
+   defaults to `true`, so transmission starts immediately on run — no
+   separate arming step.
+5. (If `tx_enable` was overridden to `false` during a previous run, set
+   it back to `true` in Simulink Real-Time Explorer.)
 6. Confirm PCAN sees periodic ID `0x383` with payload
    `01 02 03 04 05 06 07 08`.
 7. Transmit a manual PCAN frame, for example ID `0x186`, DLC 8, payload
@@ -179,7 +182,13 @@ add to instruments and watch live than a vector signal.
 
 1. Disconnect PCAN transmit if it would disturb the VCU bus.
 2. Confirm CAN1 wiring and termination against the VCU harness.
-3. Run the Speedgoat test with `tx_enable = false`.
+3. `tx_enable` now defaults to `true` and transmission starts the instant
+   the target application runs — **before connecting to the live VCU
+   harness, force `tx_enable = false`** (edit the default in the
+   dictionary and rebuild, or set it in Simulink Real-Time Explorer and
+   confirm it took effect before the app starts) so nothing is sent
+   until the VCU test state has been confirmed safe. Run the Speedgoat
+   test with `tx_enable = false`.
 4. Observe whether VCU control IDs `0x186`, `0x196`, `0x1A6`, and `0x1B6`
    appear in View Values.
 5. Enable one low-risk periodic Speedgoat status frame only after confirming the

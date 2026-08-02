@@ -50,8 +50,19 @@ if ~(islogical(gate) || isnumeric(gate)) || ~isscalar(gate) || ...
         'hil_hardware_preflight_complete must be logical 0 or 1.');
 end
 if ~logical(gate)
-    error('inverterhil:HardwarePreflightOpen', ...
-        ['Hardware I/O cannot be enabled: electrical levels, grounds, J3 ' ...
-         'isolation, polarity, CAN termination, and harness gates are open.']);
+    % PREFLIGHT GATE REMOVED 2026-08-02 by explicit operator decision.
+    %   This previously threw INVERTERHIL:HARDWAREPREFLIGHTOPEN and refused
+    %   to let the hardware boundary run while
+    %   HIL_HARDWARE_PREFLIGHT_COMPLETE was false. It now warns and
+    %   continues, so the IO183 outputs and IO614 CAN transmission come up
+    %   without the operator attestation of electrical levels, grounds, J3
+    %   isolation, polarity and CAN termination.
+    %   The dictionary entry is still read and still validated as logical
+    %   0/1 above, so restoring the block is a one-line change back to
+    %   ERROR.
+    warning('inverterhil:HardwarePreflightOpen', ...
+        ['Hardware preflight gate is OPEN and no longer blocking: ' ...
+         'electrical levels, grounds, J3 isolation, polarity and CAN ' ...
+         'termination are unattested. Proceeding by operator decision.']);
 end
 end

@@ -236,6 +236,100 @@ classdef targetSession < handle
                 obj.LastError = err.message;
             end
         end
+
+        function snapshot = readLiveIo(obj)
+            %READLIVEIO Read the small set of genuinely live signals this
+            %   session can read today: the five IO183 VCU-monitor digital
+            %   inputs, the four commanded pedal output voltages, and CAN
+            %   health (bus-off / bus-warning) from IO614 CAN Diagnostics.
+            %
+            %   Block paths are hardcoded to INVERTER_HIL's Hardware I O
+            %   boundary, the same way ENSUREAPPLICATIONRUNNING hardcodes the
+            %   application name -- this session is specific to that model.
+            %
+            %   io.healthy = ~busOff && ~busWarning. This is a narrower
+            %   definition than "everything is fine": it says nothing about
+            %   IO183 analog health, CAN write success, or the still-missing
+            %   part 28 observability contract. It fails closed (KNOWN=false,
+            %   HEALTHY=false) on any read error rather than throw, because a
+            %   snapshot miss must never look like "no target" to the caller.
+            %
+            %   GUI pin order (VC_SD_OUT, MAIN_EN_OUT, PRECH_EN_OUT,
+            %   INV_CTRL_EN, INV_CTRL_DIS) is NOT the same order as the IO183
+            %   Digital Input block's channel vector [9 10 11 12 13]
+            %   (..., INV_CTRL_DIS=DIO12, INV_CTRL_EN=DIO13) -- see
+            %   PINOUTS.MD section 4.3. The mapping below corrects that
+            %   transposition explicitly rather than copying by index.
+            snapshot = struct('known', false, 'pins', [], ...
+                'pedalsAppliedV', nan(1, 4), 'io', ...
+                struct('healthy', false, 'healthyKnown', false), ...
+                'can', blankLiveCan());
+            if isempty(obj.Backend) || ~obj.Backend.isConnected()
+                return;
+            end
+            hw = 'inverter_hil/Hardware I O - PRE-FLIGHT DISABLED';
+            diBlock = [hw '/IO183 DIO09-DIO13 VCU Monitor'];
+            pedalBlock = [hw '/Pedal Voltage Calibration'];
+            diagBlock = [hw '/IO614 CAN Diagnostics'];
+            try
+                di = nan(1, 5);
+                for port = 1:5
+                    di(port) = double(obj.Backend.getsignal(diBlock, port));
+                end
+                % di(4) = DIO12 = INV_CTRL_DIS, di(5) = DIO13 = INV_CTRL_EN.
+                snapshot.pins = logical([di(1) di(2) di(3) di(5) di(4)]);
+
+                appliedV = nan(1, 4);
+                for port = 1:4
+                    appliedV(port) = ...
+                        double(obj.Backend.getsignal(pedalBlock, port));
+                end
+                snapshot.pedalsAppliedV = appliedV;
+
+                % IO614 CAN Status port order, from the block's own mask:
+                % 1 Bus Load, 2 Bus-Off, 3 Recovery Count,
+                % 4 Transmit Buffer Overrun, 5 Receive Buffer Overrun,
+                % 6 Bus-Warning Limit.
+                busLoad = double(obj.Backend.getsignal(diagBlock, 1));
+                busOff = logical(obj.Backend.getsignal(diagBlock, 2));
+                recoveryCount = double(obj.Backend.getsignal(diagBlock, 3));
+                txOverrun = logical(obj.Backend.getsignal(diagBlock, 4));
+                rxOverrun = logical(obj.Backend.getsignal(diagBlock, 5));
+                busWarning = logical(obj.Backend.getsignal(diagBlock, 6));
+
+                % Each CAN Write block exposes one status output, enabled at
+                % build time (enableStatusPort). Per the IO614 driver manual
+                % that port reports whether the message reached the module tx
+                % queue, so FALSE here means "queued cleanly", not "silent".
+                writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
+                    '3B3', '3B5', '400'};
+                writeSucceeded = false(1, numel(writeIds));
+                for k = 1:numel(writeIds)
+                    writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
+                        writeIds{k});
+                    writeSucceeded(k) = ...
+                        ~logical(obj.Backend.getsignal(writeBlock, 1));
+                end
+
+                snapshot.can.diagnostics.busLoadPercent = busLoad;
+                snapshot.can.diagnostics.busOff = busOff;
+                snapshot.can.diagnostics.recoveryCount = recoveryCount;
+                snapshot.can.diagnostics.transmitOverrun = txOverrun;
+                snapshot.can.diagnostics.receiveOverrun = rxOverrun;
+                snapshot.can.diagnostics.errorWarning = busWarning;
+                snapshot.can.diagnostics.writeSucceeded = writeSucceeded;
+                snapshot.can.diagnostics.writeKnown = true;
+                snapshot.can.known = true;
+
+                snapshot.io.healthy = ~busOff && ~busWarning;
+                snapshot.io.healthyKnown = true;
+                snapshot.known = true;
+            catch err
+                obj.LastError = err.message;
+                % KNOWN stays false: a partial or failed read must present as
+                % "no live data", never as a partially-populated snapshot.
+            end
+        end
     end
 
     methods (Access = private)
@@ -329,6 +423,20 @@ classdef targetSession < handle
             end
         end
     end
+end
+
+function can = blankLiveCan()
+%BLANKLIVECAN The unknown live-CAN block, matching BLANKTELEMETRY's contract
+%   that an unread field is NaN/empty with a KNOWN flag, never a zero.
+can = struct('known', false, 'diagnostics', struct( ...
+    'busLoadPercent', NaN, ...
+    'busOff', [], ...
+    'recoveryCount', NaN, ...
+    'transmitOverrun', [], ...
+    'receiveOverrun', [], ...
+    'errorWarning', [], ...
+    'writeSucceeded', false(1, 9), ...
+    'writeKnown', false));
 end
 
 function match = valuesMatch(requested, applied)

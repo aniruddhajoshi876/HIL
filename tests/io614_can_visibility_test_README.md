@@ -48,7 +48,10 @@ checks in `io614_can_visibility_test_plan.md`.
   block) that produces the IO614 CAN Write block's `Tx Control` pulse
   (`uint32(1)` = send this 1 ms step, `uint32(0)` = skip) whenever
   `tx_enable` is true and `tx_period_ms` has elapsed. **`tx_enable`
-  defaults to `false`** — nothing transmits until an operator arms it.
+  defaults to `true`** — transmission starts as soon as the target
+  application starts running, with no operator arming step. Set
+  `tx_enable = false` before connecting to a live VCU harness unless
+  you have already confirmed it is safe to transmit.
 - `IO614 CAN Diagnostics` — bus load, bus-off, recovery count, transmit
   buffer overrun, receive buffer overrun, and bus-warning-limit status.
 
@@ -85,7 +88,7 @@ show up in Simulink Real-Time Explorer without extra configuration.
 `io614_can_visibility_test_R2024b.sldd`, so they can be changed from
 Simulink Real-Time Explorer (or `tg.setparam`) while the target
 application is running, without a rebuild — matching the plan's
-requirement. Defaults: `tx_enable = false`, `tx_id = 0x383`,
+requirement. Defaults: `tx_enable = true`, `tx_id = 0x383`,
 `tx_dlc = 8`, `tx_payload_u8 = [1 2 3 4 5 6 7 8]`, `tx_period_ms = 100`.
 
 To use the VCU-facing presets from the plan, just change `tx_id` at

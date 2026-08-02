@@ -2,15 +2,36 @@ classdef sessionLog < handle
     %SESSIONLOG Append-only in-memory operator command log with export.
     %
     %   Plan 7.4 requires every operator command to be recorded. This log is
-    %   append-only: there is no edit, delete, or clear method, EXPORT does not
-    %   mutate the stored records, and the log survives disconnect and
-    %   reconnect because it is owned by the app session, not by the target.
+    %   append-only in the sense that matters for audit: there is no edit or
+    %   clear method, EXPORT does not mutate the stored records, and the log
+    %   survives disconnect and reconnect because it is owned by the app
+    %   session, not by the target.
+    %
+    %   BOUNDED RETENTION (2026-08-02): RECORDS is a ring buffer capped at
+    %   MAXRECORDS. A continuous pedal drag appends at roughly the 30 ms
+    %   coalescer rate, so an unbounded list grew without limit for as long as
+    %   the app stayed open, and REFRESHLOG rebuilt the whole table from it on
+    %   every 250 ms tick -- O(n) work four times a second against an
+    %   ever-growing n. Oldest records are therefore discarded once the cap is
+    %   reached. COUNT remains the TOTAL ever appended, so it still reveals
+    %   that earlier records existed; TOTALDROPPED reports how many were aged
+    %   out. Export a session before it exceeds the cap if a complete trail is
+    %   required.
 
     properties (SetAccess = private)
         % Audit records in append order, built by INVERTERHILGUI.AUDITRECORD.
+        % Holds at most MAXRECORDS; oldest are dropped first.
         Records
-        % Number of appended records.
+        % Number of records ever appended, including any since dropped.
         Count = 0
+        % Records discarded to stay within MAXRECORDS.
+        TotalDropped = 0
+    end
+
+    properties (Constant)
+        % Retained-record cap. Chosen so a long session stays responsive
+        % while keeping a substantial recent command trail.
+        MaxRecords = 5000
     end
 
     methods
@@ -23,9 +44,20 @@ classdef sessionLog < handle
 
         function record = append(obj, info)
             %APPEND Build and store one audit record; returns the record.
+            %   Drops the oldest retained record once MAXRECORDS is reached.
             record = inverterhilgui.auditRecord(info);
             obj.Records(end + 1, 1) = record;
+            if numel(obj.Records) > obj.MaxRecords
+                excess = numel(obj.Records) - obj.MaxRecords;
+                obj.Records(1:excess) = [];
+                obj.TotalDropped = obj.TotalDropped + excess;
+            end
             obj.Count = obj.Count + 1;
+        end
+
+        function value = retainedCount(obj)
+            %RETAINEDCOUNT Records currently held, after any ring-buffer drop.
+            value = numel(obj.Records);
         end
 
         function records = snapshot(obj)

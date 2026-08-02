@@ -143,7 +143,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
 
             populated = inverterhilgui.formatInverterPanel(snapshot, 2);
             testCase.verifyEqual(populated.title, 'INV2');
-            testCase.verifyEqual(populated.corner, 'UNVERIFIED');
+            testCase.verifyEqual(populated.corner, 'FR');
             testCase.verifyEqual(populated.state, 'DRIVE');
             testCase.verifyEqual(populated.ready, 'READY');
             testCase.verifyEqual(populated.commandAge, '0.004 s');
@@ -158,10 +158,12 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             testCase.verifyEqual(populated.derating, 'ACTIVE');
             testCase.verifyEqual(populated.activeFault, 'OVERTEMP');
 
+            expectedCorners = struct('c1', 'FL', 'c3', 'RR', 'c4', 'RL');
             for channel = [1 3 4]
                 other = inverterhilgui.formatInverterPanel(snapshot, channel);
                 testCase.verifyEqual(other.title, sprintf('INV%d', channel));
-                testCase.verifyEqual(other.corner, 'UNVERIFIED');
+                testCase.verifyEqual(other.corner, ...
+                    expectedCorners.(sprintf('c%d', channel)));
                 testCase.verifyEqual(other.state, '--');
                 testCase.verifyEqual(other.torqueCommand, '--');
                 testCase.verifyEqual(other.speed, '--');
@@ -175,12 +177,30 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             testCase.verifyFalse(bad.hasData);
         end
 
-        function cornerLabelsStayUnverified(testCase)
+        function cornerLabelsUseConfirmedMapping(testCase)
+            % Operator-confirmed 2026-08-01: 1=FL, 2=FR, 3=RR, 4=RL. Pins the
+            % mapping so a silent reordering is caught. Note this guards the
+            % recorded mapping only -- no test can confirm which physical
+            % wheel an Ephorus index actually drives.
+            expected = {'FL', 'FR', 'RR', 'RL'};
             snapshot = inverterhilgui.blankTelemetry();
             for channel = 1:4
                 panel = inverterhilgui.formatInverterPanel(snapshot, channel);
-                testCase.verifyEqual(panel.corner, 'UNVERIFIED');
+                testCase.verifyEqual(panel.corner, expected{channel});
+                testCase.verifyTrue(panel.cornerVerified);
                 testCase.verifyEqual(panel.title, sprintf('INV%d', channel));
+            end
+        end
+
+        function invalidIndexKeepsUnverifiedPlaceholder(testCase)
+            % An out-of-range index must not index into the corner list; it
+            % keeps the placeholder and reports the mapping as unconfirmed.
+            snapshot = inverterhilgui.blankTelemetry();
+            for badIndex = [0 5 2.5 NaN]
+                panel = inverterhilgui.formatInverterPanel(snapshot, badIndex);
+                testCase.verifyEqual(panel.corner, 'UNVERIFIED');
+                testCase.verifyFalse(panel.cornerVerified);
+                testCase.verifyEqual(panel.title, '--');
             end
         end
 

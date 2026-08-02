@@ -9,8 +9,8 @@ classdef fakeTargetBackend < handle
     %
     %   It implements the backend interface expected by TARGETSESSION:
     %     connect, disconnect, load, start, stop, reset, getparam, setparam,
-    %     isConnected, applicationState, executionTimeS, targetName,
-    %     availableParameters, addInstrument, removeInstruments.
+    %     getsignal, isConnected, applicationState, executionTimeS,
+    %     targetName, availableParameters, addInstrument, removeInstruments.
 
     properties
         % Parameter paths this fake application claims to expose.
@@ -117,6 +117,13 @@ classdef fakeTargetBackend < handle
             end
             obj.WriteCount = obj.WriteCount + 1;
             obj.WriteLog{end + 1, 1} = {path, value};
+        end
+
+        function value = getsignal(obj, ~, ~)
+            % No fake test currently exercises READLIVEIO; this exists only
+            % so FAKETARGETBACKEND keeps satisfying the backend interface.
+            obj.requireConnected();
+            value = 0;
         end
 
         function value = isConnected(obj)
