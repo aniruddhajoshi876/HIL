@@ -15,4 +15,16 @@ bank.rejectedCount = uint32(0);
 % model. RECEIVECONTROLFRAME still RETURNS the readable reason for host use.
 %   0 none | 1 injected drop | 2 rejected by decodeControlFrame
 bank.lastRejectCode = uint8(0);
+% Set by STEPMODEL when a channel's retained command carries a torque-limit
+% pair outside the plant's domain (positive limit negative, or negative limit
+% positive) -- a device-under-test defect the rig must report rather than
+% crash on.
+%
+% LATCHED, deliberately. The model steps every 5 ms while the GUI polls at
+% 250 ms, so a per-tick flag would be invisible 49 times out of 50 and the
+% operator would never see a fault that really occurred. The cost is that
+% recovery is not observable: once set it stays set until the application
+% restarts. Clearing it would need an explicit acknowledge path, which does
+% not exist yet.
+bank.commandOutOfDomain = false(1, 4);
 end

@@ -75,19 +75,36 @@ end
 for index = 1:numel(frames)
     bank = inverterhil.receiveControlFrame(bank, frames(index), tickMs);
 end
-nextBank = bank;
+% NEXTBANK is assigned after the plant loop below, not here: that loop can
+% still set COMMANDOUTOFDOMAIN, and returning the bank early would drop it.
 snapshot = inverterhil.decoderSnapshot(bank, tickMs);
 
+% Every decoded command bit is forwarded, not just ENABLE.
+%
+%   Forwarding ENABLE alone left three decoded fields stranded in the bank,
+%   and each silently disabled a documented behaviour:
+%     RESETERROR  - STEPCHANNELSTATE implements 'error_reset' correctly, but
+%                   never saw the bit, so a latched Error could NEVER be
+%                   cleared over CAN. A real VCU's reset frame (the one
+%                   EPHORUSDRIVER::QUEUERESETENABLE emits) had no effect.
+%     CURRENTMODE - the unsupported-current-mode refusal (plan 4.1.2) was
+%                   unreachable, so the HIL accepted Drive on a frame it is
+%                   specified to refuse.
+%     ASCALLOWED  - never reached the state machine at all.
 sysInput = inverterhil.defaultStateInput();
 for channel = 1:4
     sysInput.channels(channel).commandAgeMs = snapshot.ageMs(channel);
-    % ENABLE now comes from the retained command rather than a hardcoded
-    % false, so a channel with a live enable can actually reach Drive.
     if bank.hasCommand(channel)
-        sysInput.channels(channel).commandEnable = ...
-            bank.commands(channel).enable;
+        command = bank.commands(channel);
+        sysInput.channels(channel).commandEnable = command.enable;
+        sysInput.channels(channel).resetError = command.resetError;
+        sysInput.channels(channel).ascAllowed = command.ascAllowed;
+        sysInput.channels(channel).currentMode = command.currentMode;
     else
         sysInput.channels(channel).commandEnable = false;
+        sysInput.channels(channel).resetError = false;
+        sysInput.channels(channel).ascAllowed = false;
+        sysInput.channels(channel).currentMode = false;
     end
 end
 
@@ -104,7 +121,53 @@ for channel = 1:4
         channelOutput.commandTorqueTimeout;
     plantInput.channels(channel).commandErrorTimeout = ...
         channelOutput.commandErrorTimeout;
+
+    % The commanded speed setpoint and torque limits reach the plant.
+    %
+    %   These were left at DEFAULTPLANTINPUT's zeros while the decoded values
+    %   sat unused in the bank, so a commanding VCU could put a channel into
+    %   Drive but never make it produce torque or turn: the transmitted 3X3
+    %   torque setpoint and 3X5 speed stayed 0 forever, with no fault to
+    %   explain why. That made the entire torque path untestable.
+    %
+    %   Counts are converted with CAL.TORQUESCALENMPERCOUNT rather than a
+    %   literal, so this does NOT pick a side in the unresolved 1/512 vs
+    %   1/256 question -- it follows whichever profile the calibration
+    %   selects. The raw counts are forwarded UNSCALED alongside, so a
+    %   consumer that must not depend on that choice still has the wire
+    %   value.
+    if ~bank.hasCommand(channel)
+        continue;
+    end
+    command = bank.commands(channel);
+    plantInput.channels(channel).speedSetpointRpm = ...
+        double(command.speedSetpointRpm);
+    plantInput.channels(channel).rawTorquePosCounts = ...
+        command.rawTorquePosCounts;
+    plantInput.channels(channel).rawTorqueNegCounts = ...
+        command.rawTorqueNegCounts;
+
+    % STEPPLANT REQUIRES an ordered pair: positive limit >= 0, negative
+    % limit <= 0. A VCU is under test and may send neither -- a sign error
+    % or a swapped pair is exactly the firmware defect this rig exists to
+    % find. Passing such a pair through unchanged makes STEPPLANT THROW,
+    % which on the real-time target is a hard fault: the HIL would die
+    % instead of reporting the DUT's mistake. The pair is therefore clamped
+    % into the plant's domain and the violation is recorded per channel, so
+    % it surfaces as an observation about the VCU rather than as a crash or
+    % as silence. Clamping each side independently also guarantees
+    % negative <= positive, so the ordering check cannot fail afterwards.
+    positiveNm = double(command.rawTorquePosCounts) * ...
+        cal.torqueScaleNmPerCount;
+    negativeNm = double(command.rawTorqueNegCounts) * ...
+        cal.torqueScaleNmPerCount;
+    if positiveNm < 0 || negativeNm > 0
+        bank.commandOutOfDomain(channel) = true;
+    end
+    plantInput.channels(channel).torqueLimitPositiveNm = max(0, positiveNm);
+    plantInput.channels(channel).torqueLimitNegativeNm = min(0, negativeNm);
 end
+nextBank = bank;
 
 [nextPlantState, plantOutput] = inverterhil.stepPlant(plantState, plantInput, cal);
 

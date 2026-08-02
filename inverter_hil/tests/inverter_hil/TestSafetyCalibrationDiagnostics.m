@@ -1,5 +1,68 @@
 classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
     methods (Test)
+        function pedalConstantsMatchTheDeviceUnderTestSource(testCase)
+            % Pins the raw counts to the exact device-under-test constants
+            % they were read from. This is a TRIPWIRE, not a validation: it
+            % cannot tell whether those constants are right, only whether the
+            % HIL still agrees with what was read. If MFE26-VC changes its
+            % thresholds this test keeps passing while the calibration
+            % silently goes stale, so the raw counts must be re-read from
+            % driverInputs.cpp whenever that file's conversions change.
+            constants = inverterhil.pedalCalibrationConstants();
+            testCase.assertNumElements(constants, 4);
+            testCase.verifyEqual([constants.channel], 1:4);
+
+            % convertThrottle1ToPercent / convertThrottle2ToPercent /
+            % convertBrakeToPercent, MFE26-VC/Core/Src/driverInputs.cpp.
+            testCase.verifyEqual([constants.releasedRaw], ...
+                [30100 63600 9025 9025]);
+            testCase.verifyEqual([constants.pressedRaw], ...
+                [23100 46500 31800 31800]);
+
+            % Direction must be DERIVED from the endpoints, never declared
+            % separately -- a hand-maintained direction field could disagree
+            % with the voltages and invert a pedal.
+            testCase.verifyEqual({constants.direction}, ...
+                {'falling', 'falling', 'rising', 'rising'});
+            for index = 1:4
+                if strcmp(constants(index).direction, 'falling')
+                    testCase.verifyLessThan(constants(index).pressedV, ...
+                        constants(index).releasedV);
+                else
+                    testCase.verifyGreaterThan(constants(index).pressedV, ...
+                        constants(index).releasedV);
+                end
+            end
+        end
+
+        function pedalConstantsConvertThroughTheDeclaredAdcDomain(testCase)
+            % Every voltage must be reproducible from its raw count by the
+            % ADS7066 domain the device under test's own SIL model declares
+            % (ADS_VREF_V = 3.3, ADS_FULL_SCALE = 65535). Recomputed here
+            % rather than compared to literals so a changed domain cannot
+            % pass by having both sides edited to agree.
+            constants = inverterhil.pedalCalibrationConstants();
+            for index = 1:numel(constants)
+                testCase.verifyEqual(constants(index).releasedV, ...
+                    constants(index).releasedRaw * 3.3 / 65535, ...
+                    'AbsTol', 0);
+                testCase.verifyEqual(constants(index).pressedV, ...
+                    constants(index).pressedRaw * 3.3 / 65535, ...
+                    'AbsTol', 0);
+            end
+
+            % Both brake channels share CONVERTBRAKETOPERCENT in the device
+            % under test, so they must stay identical by derivation.
+            testCase.verifyEqual(constants(4).releasedV, ...
+                constants(3).releasedV);
+            testCase.verifyEqual(constants(4).pressedV, constants(3).pressedV);
+
+            % Every endpoint has to be reachable by the IO183 analog output.
+            volts = [constants.releasedV, constants.pressedV];
+            testCase.verifyTrue(all(isfinite(volts)));
+            testCase.verifyTrue(all(volts >= 0 & volts <= 5));
+        end
+
         function uncalibratedChannelsNoLongerBlockTheWholeOutputSet(testCase)
             % Was DEFAULTCALIBRATIONISEXPLICITLYUNARMED. The
             % pedal_calibration_unverified gate was removed on 2026-08-02 by

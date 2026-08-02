@@ -136,7 +136,76 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 testCase.verifyError( ...
                     @() inverterhil.decodeStatus3X5(bad{k}), ...
                     'inverterhil:MalformedPayload');
+                testCase.verifyError( ...
+                    @() inverterhil.decodeSystemStatus(bad{k}), ...
+                    'inverterhil:MalformedPayload');
             end
+        end
+
+        function decodesSystemStatusGoldenBytes(testCase)
+            % The SAME golden bytes PACKSSYSTEMSTATUSGOLDENBYTES asserts, so
+            % the decoder is checked against a fixed wire format rather than
+            % against the packer. Byte 6 = 0x05 sets bits 48 and 50, i.e.
+            % dcLink12AboveMinimum and controlEnable but not the other two.
+            payload = uint8([hex2dec('10') hex2dec('64') ...
+                hex2dec('A0') hex2dec('57') hex2dec('80') ...
+                hex2dec('14') hex2dec('05') 0]);
+
+            status = inverterhil.decodeSystemStatus(payload);
+            testCase.verifyEqual(status.dcLink12V, 400.25);
+            testCase.verifyEqual(status.dcLink34V, 350.5);
+            testCase.verifyEqual(status.switchingFrequencyKHz, 10.25);
+            testCase.verifyTrue(status.dcLink12AboveMinimum);
+            testCase.verifyFalse(status.dcLink34AboveMinimum);
+            testCase.verifyTrue(status.controlEnable);
+            testCase.verifyFalse(status.controlDisable);
+        end
+
+        function roundTripsSystemStatusAcrossFlagCombinations(testCase)
+            % Each flag occupies its own bit, so a bug that swapped or
+            % aliased two of them survives any single-flag test. Sweeping all
+            % 16 combinations pins each bit to its own field.
+            for mask = 0:15
+                status = TestStatusPackers.systemStatus();
+                status.dcLink12V = 0;
+                status.dcLink34V = 1023.984375;   % 0xFFFF counts, the ceiling
+                status.switchingFrequencyKHz = 8;
+                status.dcLink12AboveMinimum = logical(bitget(mask, 1));
+                status.dcLink34AboveMinimum = logical(bitget(mask, 2));
+                status.controlEnable = logical(bitget(mask, 3));
+                status.controlDisable = logical(bitget(mask, 4));
+
+                decoded = inverterhil.decodeSystemStatus( ...
+                    inverterhil.packSystemStatus(status));
+                testCase.verifyEqual(decoded.dcLink12V, status.dcLink12V);
+                testCase.verifyEqual(decoded.dcLink34V, status.dcLink34V);
+                testCase.verifyEqual(decoded.switchingFrequencyKHz, ...
+                    status.switchingFrequencyKHz);
+                testCase.verifyEqual(decoded.dcLink12AboveMinimum, ...
+                    status.dcLink12AboveMinimum);
+                testCase.verifyEqual(decoded.dcLink34AboveMinimum, ...
+                    status.dcLink34AboveMinimum);
+                testCase.verifyEqual(decoded.controlEnable, ...
+                    status.controlEnable);
+                testCase.verifyEqual(decoded.controlDisable, ...
+                    status.controlDisable);
+            end
+        end
+
+        function systemStatusDecoderIgnoresUnassignedBits(testCase)
+            % PACKSYSTEMSTATUS never writes bits 52-63. A frame with those
+            % bits set -- which a real transmitter may legitimately use for
+            % fields this protocol revision does not define -- must not
+            % perturb any field the decoder does report.
+            clean = uint8([hex2dec('10') hex2dec('64') ...
+                hex2dec('A0') hex2dec('57') hex2dec('80') ...
+                hex2dec('14') hex2dec('05') 0]);
+            dirty = clean;
+            dirty(7) = bitor(dirty(7), uint8(hex2dec('F0')));
+            dirty(8) = uint8(hex2dec('FF'));
+
+            testCase.verifyEqual(inverterhil.decodeSystemStatus(dirty), ...
+                inverterhil.decodeSystemStatus(clean));
         end
 
         function packsSystemStatusGoldenBytes(testCase)

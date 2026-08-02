@@ -764,11 +764,24 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function text = txFrameSignalText(app, index, live)
             %TXFRAMESIGNALTEXT One-line decoded summary for a status frame.
             %   Frames 1-8 are the 3X3/3X5 pair per channel; frame 9 is the
-            %   0x400 system status, which this app does not decode, so it
-            %   reports its own name rather than a fabricated reading.
-            text = app.Theme.text.noData;
+            %   0x400 general system status.
+            %
+            %   Every value here comes from INVERTERHIL.DECODE* applied to the
+            %   bytes the module actually transmitted, so this column can
+            %   never disagree with the raw payload beside it.
             if index >= 9
-                text = 'system status';
+                system = live.systemStatus;
+                if ~isfinite(system.dcLink12V)
+                    text = 'system status';
+                    return;
+                end
+                text = sprintf(['DC %.2f/%.2f V (min %s/%s) fsw %.3f kHz ' ...
+                    'en=%s dis=%s'], system.dcLink12V, system.dcLink34V, ...
+                    app.flagText(system.dcLink12AboveMinimum), ...
+                    app.flagText(system.dcLink34AboveMinimum), ...
+                    system.switchingFrequencyKHz, ...
+                    app.flagText(system.controlEnable), ...
+                    app.flagText(system.controlDisable));
                 return;
             end
             channel = ceil(index / 2);
@@ -1157,6 +1170,14 @@ classdef inverter_hil_app < matlab.apps.AppBase
             else
                 text = sprintf('%.3f s', double(value));
             end
+        end
+
+        function text = flagText(~, state)
+            %FLAGTEXT ON/OFF text for a decoded boolean status bit.
+            %   Delegates to FORMATPINSTATE so a single implementation decides
+            %   what an unknown flag looks like, and an unset one can never
+            %   render as OFF by accident.
+            text = inverterhilgui.formatPinState(state).text;
         end
 
         function text = formatPercent(app, value)

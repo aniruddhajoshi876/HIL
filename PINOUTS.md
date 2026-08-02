@@ -224,67 +224,79 @@ AO02 and brake → AO03, AO04 via measured released/pressed endpoints, clamped t
 | `throttle` | `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
 | `brake` | `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
 
-#### Calibration state — 1 of 4 channels set
+#### Calibration state — all 4 channels set
 
-| Channel | `released_v` | `pressed_v` | Status |
-|---|---|---|---|
-| AO01 throttle 1 | **1.515679 V** | **1.163195 V** | **derived from firmware** (see below) |
-| AO02 throttle 2 | `NaN` | `NaN` | uncalibrated |
-| AO03 brake 1 | `NaN` | `NaN` | uncalibrated |
-| AO04 brake 2 | `NaN` | `NaN` | uncalibrated |
+Single source of truth: **`+inverterhil/pedalCalibrationConstants.m`**, applied to
+the dictionary by **`apply_pedal_calibration.m`**. Do not edit the `.sldd` by hand.
 
-**AO01 derivation.** From `MFE26-VC/Core/Src/driverInputs.cpp`
-`convertThrottle1ToPercent`, a *falling* signal, converted through the VCU ADC
-domain (65535 counts full scale at 3.3 V, per `docs/sil_vs_hil_conformance.md`
-CONF-7):
+| Channel | Raw released → pressed | `released_v` | `pressed_v` | Direction |
+|---|---|---|---|---|
+| AO01 throttle 1 | 30100 → 23100 | 1.515679 V | 1.163195 V | falling |
+| AO02 throttle 2 | 63600 → 46500 | 3.202564 V | 2.341497 V | falling |
+| AO03 brake 1 | 9025 → 31800 | 0.454452 V | 1.601282 V | rising |
+| AO04 brake 2 | 9025 → 31800 | 0.454452 V | 1.601282 V | rising |
 
-| Point | Raw count | Volts | Firmware % |
-|---|---:|---:|---:|
-| Rest / released | 30100 (`throttle1Max`) | 1.515679 | 0 % |
-| Pressed | 23100 (`throttle1Min`) | 1.163195 | 100 % |
+All raw counts are read from `MFE26-VC/Core/Src/driverInputs.cpp`
+(`convertThrottle1ToPercent`, `convertThrottle2ToPercent`, `convertBrakeToPercent`)
+and converted through the ADC domain that repo's own SIL model declares
+(`sil/registry/params.hpp`: `ADS_VREF_V = 3.3`, `ADS_FULL_SCALE = 65535`; see
+`docs/sil_vs_hil_conformance.md` CONF-7). AO03 and AO04 are identical because the
+firmware runs `brake1Raw` and `brake2Raw` through the *same* conversion.
 
-`pressed_v1 < released_v1` is correct — the signal falls as the pedal is pressed,
-and `pedalVoltageCalibration` handles the inversion natively.
+`pressed_v < released_v` on the throttles is correct — those signals fall as the
+pedal is pressed. `pedalVoltageCalibration` interpolates released → pressed, so
+direction is expressed by the endpoints themselves and never declared separately.
 
-The `throttle1Min` (23100) endpoint was chosen over the sensor's physical
-full-press (~20900 counts ≈ 1.0524 V, per the source comment and
-`isThrottle1InRange`) so that **GUI throttle % maps 1:1 onto firmware
-`throttle1Pct`**. Verified round-trip GUI → AO01 volts → 16-bit DAC quantisation
-→ VCU ADC counts → firmware percent: **0.0000 % error** at 0/10/25/50/75/90/100 %,
-with every raw count inside the firmware's in-range window `[19520, 31480]`.
-Using 20900 instead would saturate the firmware at ~76 % of GUI travel.
+> **⚠ A rebuild used to erase this.** `build_inverter_hil_model` creates the
+> dictionary from scratch with every endpoint at `NaN`, and that silently wiped
+> the applied calibration once — reaching the deployed target. The failure is
+> quiet: `pedalVoltageCalibration` emits **0 V** for a non-finite endpoint, so the
+> GUI sliders keep moving while the VCU pin never changes. The build now re-applies
+> `apply_pedal_calibration` as its last step, and
+> `TestModelArtifacts/dictionaryContractAndSafeDefaultsAreExact` asserts the
+> dictionary equals the constants, so a recurrence fails the suite instead of
+> shipping.
 
-> ### ⚠ Derived, not measured — and output is still blocked
+> ### ⚠ Derived from the device under test, not measured
 >
-> **1. These endpoints were derived from firmware constants, not measured.**
+> **1. These endpoints came from firmware constants, not from a measurement.**
 > `inverter_hil_plan.md` §3.1 requires each endpoint be measured **at the
 > connected VCU pin under load**, not at the IO183 connector — it warns that
 > "typical pedal values must not be assumed". The numbers above assume the IO183
 > output reaches the VCU ADC undivided and unloaded. **Confirm on the bench
-> before trusting AO01 quantitatively.**
+> before trusting them quantitatively.**
 >
-> **2. Output is still fully blocked.** `+inverterhil/safeIoOutputs.m` gates on
-> `any(~isfinite(cal.pedals.releasedV)) || any(~isfinite(cal.pedals.pressedV))`
-> across **all four** channels. With AO02–AO04 still `NaN`, every pedal *and
-> digital* output stays blocked with reason `pedal_calibration_unverified`
-> (`output.armed` never becomes true). Calibrating throttle 1 alone does not
-> unblock anything.
+> This has a permanent consequence worth stating plainly: because HIL 0–100 % is
+> defined *by* the VCU's own constants, a pedal sweep **cannot discover that those
+> constants are wrong**. It confirms the VCU interprets a known voltage as the
+> percentage it intends to; it does not confirm that intent matches the physical
+> pedal. Closing that gap needs measured endpoints.
+>
+> Two further uncertainties that reading firmware cannot settle:
+>
+> - **`VREF` is assumed.** `ADS7066.cpp:31` clears `REF_EN`, so the internal 2.5 V
+>   reference is **off** and an external pin sets the scale. Its actual value is a
+>   board fact absent from the firmware; 3.3 V comes from the SIL model's
+>   assertion. If it is really 2.5 V, every voltage above is high by 1.32×.
+> - **The ADS7066 is a 12-bit part** whose result `ADS7066.cpp:126` left-justifies
+>   into a 16-bit word, so counts move in steps of 16 and true full scale is 65520,
+>   not 65535. The resulting error is ~1 part in 65535 (≈0.02 mV), so 65535 is kept
+>   to stay bit-identical with the SIL model.
+>
+> **2. `pressed_v1` is the VCU's 100 % point, not the pedal's stop.**
+> `throttle1Min` is 23100 while the same file's comment and `isThrottle1InRange`
+> put full press near 20900. 23100 is used because it is the constant the
+> conversion actually applies, which makes **GUI throttle % map 1:1 onto firmware
+> `throttle1Pct`**. Verified round-trip GUI → AO01 volts → 16-bit DAC quantisation
+> → VCU ADC counts → firmware percent: **0.0000 % error** at 0/10/25/50/75/90/100 %,
+> every raw count inside the in-range window `[19520, 31480]`. Using 20900 would
+> saturate the firmware at ~76 % of GUI travel.
 >
 > **3. There is a second, separate calibration surface.**
 > `+inverterhil/defaultCalibration.m` holds `cal.pedals.releasedV/pressedV` as
 > 1×4 `NaN` vectors for the host/SIL core path. The dictionary entries documented
 > here feed the **Simulink** `Pedal Voltage Calibration` block. Setting one does
 > not set the other.
-
-Remaining firmware endpoints, already converted, for whenever the other channels
-are calibrated (`driverInputs.cpp`; brake 2 has **no** firmware conversion because
-its plausibility check is currently disabled):
-
-| Channel | Rest | Pressed | Direction |
-|---|---|---|---|
-| Throttle 2 | 63600 → 3.2026 V | 46500 → 2.3415 V | falling |
-| Brake 1 | 9025 → 0.4545 V | 31800 → 1.6013 V | **rising** |
-| Brake 2 | — | — | unknown |
 
 Digital command sources (all default to `false`/`0` at load):
 `hil_cmd_digital_main_button`, `hil_cmd_digital_cooling_switch`,

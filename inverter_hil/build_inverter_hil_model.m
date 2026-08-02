@@ -48,6 +48,15 @@ addAnnotation(model, ...
 save_system(model, modelPath, 'SaveModelWorkspace', false);
 set_param(model, 'SimulationCommand', 'update');
 save_system(model, modelPath);
+
+% CREATEDICTIONARY seeds every pedal endpoint at NaN so an uncalibrated
+% channel is detectable. That is right for a fresh dictionary and wrong for a
+% rebuild: it silently discarded the applied calibration once, and a
+% discarded endpoint fails quietly (PEDALVOLTAGECALIBRATION drives 0 V, so
+% the GUI sliders still move while the VCU pin does not). Re-applying from
+% version-controlled constants here makes a rebuild non-destructive.
+apply_pedal_calibration(dictionaryPath);
+
 fprintf('Created %s and %s with MATLAB %s.\n', ...
     modelPath, dictionaryPath, version('-release'));
 end
