@@ -37,17 +37,22 @@ function [nextState, nextPlantState, cycle, stateOutput, plantOutput, ...
 %   from INVERTERHIL.PACKSTATUSCYCLE, and both raw step outputs for
 %   observability (GUI telemetry, logging).
 
-if nargin < 4
+if nargin < 4 || isempty(config)
     config = inverterhil.defaultStateConfig();
 end
-if nargin < 5
+if nargin < 5 || isempty(cal)
     cal = inverterhil.defaultCalibration();
 end
 if nargin < 6 || isempty(bank)
     bank = inverterhil.initialDecoderBank();
 end
 if nargin < 7
-    frames = repmat(emptyFrame(), 1, 0);
+    % A single DROPPED frame, not a 1x0 array: RECEIVECONTROLFRAME rejects a
+    % dropped frame without touching the bank, so this is behaviourally
+    % identical to "no frames" while keeping FRAMES a fixed 1x1 for code
+    % generation. A 1x0 default conflicts with the 1x1 a caller passes, and
+    % codegen requires one consistent size.
+    frames = emptyFrame();
 end
 if ~isa(tickMs, 'uint32') || ~isscalar(tickMs)
     error('inverterhil:InvalidTick', 'tickMs must be a uint32 scalar.');
@@ -122,10 +127,10 @@ cycle = inverterhil.packStatusCycle(channelStatus, systemStatus);
 end
 
 function frame = emptyFrame()
-%EMPTYFRAME Prototype in RECEIVECONTROLFRAME's required field order, used
-%   only to give the no-FRAMES default a concrete 1x0 type so MATLAB Coder
-%   can resolve the loop that never executes.
+%EMPTYFRAME A single frame marked DROP, in RECEIVECONTROLFRAME's required
+%   field order. DROP is true so the default retains nothing: "no frames
+%   supplied" must never look like a received command.
 frame = struct('id', uint32(0), 'dlc', uint8(0), ...
     'payload', zeros(1, 8, 'uint8'), 'isExtended', false, ...
-    'isRemote', false, 'drop', false);
+    'isRemote', false, 'drop', true);
 end

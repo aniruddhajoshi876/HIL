@@ -16,7 +16,7 @@ if ~isscalar(frame.drop) || logical(frame.drop)
     accepted = false;
     reason = 'injected_drop';
     bank.rejectedCount = bank.rejectedCount + uint32(1);
-    bank.lastRejectReason = reason;
+    bank.lastRejectCode = uint8(1);
     return;
 end
 
@@ -30,6 +30,6 @@ if accepted
     bank.acceptedCount(index) = bank.acceptedCount(index) + uint32(1);
 else
     bank.rejectedCount = bank.rejectedCount + uint32(1);
-    bank.lastRejectReason = reason;
+    bank.lastRejectCode = uint8(2);
 end
 end
