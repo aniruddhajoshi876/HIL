@@ -1,5 +1,6 @@
 function [nextState, nextPlantState, cycle, stateOutput, plantOutput, ...
-    nextBank] = stepModel(state, plantState, tickMs, config, cal, bank, frames)
+    nextBank] = stepModel(state, plantState, tickMs, config, cal, bank, ...
+    frames, externalInputs)
 %STEPMODEL Advance one status tick and pack the real, correctly bit-packed
 %Idle-state Ephorus status cycle -- not a hardcoded zero placeholder.
 %
@@ -21,12 +22,26 @@ function [nextState, nextPlantState, cycle, stateOutput, plantOutput, ...
 %   ambient temperatures -- correctly bit-packed per
 %   +INVERTERHIL/PACKSTATUS3X3, PACKSTATUS3X5, and PACKSYSTEMSTATUS.
 %
-%   Not yet wired (left at defaultCalibration()/defaultPlantInput() safe
-%   defaults, honestly, rather than fabricated): live DC-link voltage
-%   measurement (IO183 AI is read into the model but not yet fed to this
-%   function), external load torque, and GUI torque/enable commands. Each of
-%   those is a distinct future wiring task, not a limitation of this
-%   function's packing correctness.
+%   EXTERNALINPUTS carries the GUI-owned per-channel plant inputs that used
+%   to be stranded at DEFAULTPLANTINPUT's safe defaults: a struct with a 1x4
+%   CHANNELS array of loadTorqueNm (Nm), dcLinkV (V), connected (logical),
+%   and faultMask (uint32) -- see INVERTERHIL.DEFAULTEXTERNALINPUTS, which
+%   also supplies the default when this argument is omitted, so every
+%   existing caller keeps STEPMODEL's original behavior bit-for-bit.
+%   loadTorqueNm and dcLinkV feed PLANTINPUT directly (dcLinkV is also what
+%   SYSTEMSTATUS.DCLINK12/34ABOVEMINIMUM below is computed from). CONNECTED
+%   overrides CONFIG.CHANNELS(*).CONNECTED, which STEPCHANNELSTATE already
+%   consumes for real (Idle-forcing and the ready/canEnterDrive gates), so
+%   this is a genuine behavioral wire, not a new gate. FAULTMASK has no
+%   consumer anywhere in the host-verifiable core today (no per-channel
+%   fault-injection bitmask exists in STEPPLANT/STEPCHANNELSTATE/the status
+%   packers) and is accepted but otherwise unused; see
+%   INVERTERHIL.DEFAULTEXTERNALINPUTS for why it is still carried.
+%
+%   Live IO183 AI rail-monitor voltage is a separate, unrelated telemetry
+%   signal (a hardware self-check readback of the commanded pedal voltage,
+%   not a plant input) and is deliberately never fed to this function; see
+%   PINOUTS.MD S4.2 and INVERTERHILGUI.TARGETSESSION.READLIVEIO.
 %
 %   STATE, PLANTSTATE  - previous INITIALSYSTEMSTATE / INITIALPLANTSTATE.
 %   TICKMS             - uint32 monotonic tick count in milliseconds.
@@ -53,6 +68,24 @@ if nargin < 7
     % generation. A 1x0 default conflicts with the 1x1 a caller passes, and
     % codegen requires one consistent size.
     frames = emptyFrame();
+end
+if nargin < 8 || isempty(externalInputs)
+    % Always defaulted through the same struct-typed function rather than
+    % an [] sentinel: MATLAB Coder rejects a double [] being reassigned to a
+    % struct (see the matching CONFIG/CAL note below), and this default
+    % reproduces today's DEFAULTPLANTINPUT/DEFAULTSTATECONFIG values exactly,
+    % so an omitted argument is bit-for-bit identical to before this
+    % parameter existed.
+    externalInputs = inverterhil.defaultExternalInputs();
+end
+% CONNECTED is applied before STEPSYSTEMSTATE runs, overriding whatever
+% CONFIG.CHANNELS(*).CONNECTED the caller passed. Every existing caller
+% passes DEFAULTSTATECONFIG()'s connected = true, and the default
+% EXTERNALINPUTS above is also connected = true, so this is a no-op for
+% every test that predates this argument.
+for channel = 1:4
+    config.channels(channel).connected = ...
+        logical(externalInputs.channels(channel).connected);
 end
 if ~isa(tickMs, 'uint32') || ~isscalar(tickMs)
     error('inverterhil:InvalidTick', 'tickMs must be a uint32 scalar.');
@@ -121,6 +154,14 @@ for channel = 1:4
         channelOutput.commandTorqueTimeout;
     plantInput.channels(channel).commandErrorTimeout = ...
         channelOutput.commandErrorTimeout;
+
+    % GUI-commanded load torque and DC-link voltage. Unconditional (not
+    % gated by bank.hasCommand below): these are independent external plant
+    % inputs, not CAN-decoded command fields, so they apply whether or not a
+    % VCU is currently commanding this channel.
+    plantInput.channels(channel).loadTorqueNm = ...
+        externalInputs.channels(channel).loadTorqueNm;
+    plantInput.channels(channel).dcLinkV = externalInputs.channels(channel).dcLinkV;
 
     % The commanded speed setpoint and torque limits reach the plant.
     %

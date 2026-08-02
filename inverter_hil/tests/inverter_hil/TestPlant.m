@@ -343,18 +343,22 @@ classdef TestPlant < matlab.unittest.TestCase
         end
 
         function profileObservabilityIsCorrectAndImmutable(testCase)
+            % Torque scale resolved 2026-08-02 (see INVERTERHIL.PROTOCOL's
+            % torqueProfiles.vcu256 comment, citing MFE26-VC firmware
+            % ephorus_driver.hpp:55): DEFAULTCALIBRATION now defaults to the
+            % verified 1/256 profile, not the retired 1/512 provisional one.
             cal = TestPlant.calibration();
             state = inverterhil.initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).rawTorquePosCounts = int16(8192);
             input.channels(1).rawTorqueNegCounts = int16(-8192);
-            input.channels(1).torqueLimitPositiveNm = 16;
-            input.channels(1).torqueLimitNegativeNm = -16;
+            input.channels(1).torqueLimitPositiveNm = 32;
+            input.channels(1).torqueLimitNegativeNm = -32;
             [~, output] = inverterhil.stepPlant(state, input, cal);
             testCase.verifyEqual(output.protocolProfileId, ...
-                'ephorus3-v1.03-provisional-1over512');
-            testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 512);
-            testCase.verifyFalse(output.torqueScaleVerified);
+                'ephorus3-v1.03-candidate-1over256');
+            testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 256);
+            testCase.verifyTrue(output.torqueScaleVerified);
             testCase.verifyEqual(output.channels(1).torquePosNm256, 32);
             testCase.verifyEqual(output.channels(1).torqueNegNm256, -32);
             testCase.verifyEqual(output.channels(1).torquePosNm512, 16);
@@ -362,23 +366,28 @@ classdef TestPlant < matlab.unittest.TestCase
 
             badInput = input;
             badInput.protocolProfileId = ...
-                'ephorus3-v1.03-candidate-1over256';
+                'ephorus3-v1.03-provisional-1over512';
             testCase.verifyError(@() inverterhil.stepPlant( ...
                 state, badInput, cal), 'inverterhil:InvalidPlantInput');
             badState = state;
             badState.protocolProfileId = ...
-                'ephorus3-v1.03-candidate-1over256';
+                'ephorus3-v1.03-provisional-1over512';
             testCase.verifyError(@() inverterhil.stepPlant( ...
                 badState, input, cal), 'inverterhil:InvalidPlantState');
 
-            cal.protocolProfileId = 'ephorus3-v1.03-candidate-1over256';
-            cal.torqueScaleNmPerCount = 1 / 256;
+            % Switching explicitly to the retired, still-unverified 1/512
+            % profile must still work and must still report itself
+            % correctly -- it is kept only as a known-not-the-answer
+            % profile (INVERTERHIL.PROTOCOL), not deleted.
+            cal.protocolProfileId = 'ephorus3-v1.03-provisional-1over512';
+            cal.torqueScaleNmPerCount = 1 / 512;
             cal.torqueScaleVerified = false;
             inverterhil.validateCalibration(cal);
             state = inverterhil.initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             [~, output] = inverterhil.stepPlant(state, input, cal);
-            testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 256);
+            testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 512);
+            testCase.verifyFalse(output.torqueScaleVerified);
         end
 
         function malformedPlantStateAndInputFailClosed(testCase)

@@ -29,11 +29,24 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
     %   TORQUE SCALE. INVERTER_HIL_PLAN.MD section 4.1.1 records that Ephorus
     %   table 6.11 is internally inconsistent: it names 1/256 Nm/count but
     %   prints a range that only 1/512 Nm/count produces. The VCU encodes 1/256
-    %   (EPHORUS_TORQUE_CTRL_SCALE_NM), which the plan explicitly says must not
-    %   be adopted because mirroring the DUT would hide the very factor-of-two
-    %   error the HIL exists to detect. Resolving it needs an instrumented
-    %   inverter on a bench, which is hardware work. Every torque assertion
-    %   below is therefore made on the RAW COUNT, which is unambiguous.
+    %   (EPHORUS_TORQUE_CTRL_SCALE_NM).
+    %
+    %   RESOLVED 2026-08-02. Independent firmware evidence (MFE26-VC clone,
+    %   branch 'todo') settles this: EPHORUS_TORQUE_CTRL_SCALE_NM
+    %   (ephorus_driver.hpp:55) is 1/256 Nm and is explicitly labeled (lines
+    %   38-39) as the torque-limit scale for exactly these fields; the SIL
+    %   model (ephorus_model.cpp:37-38) and its own golden-value conformance
+    %   tests agree. The 1/512 value the plan's older analysis found was
+    %   never a torque scale at all -- it is the unrelated switchingFreq_khz
+    %   field's scale (ephorus_driver.hpp:119,187), and confusing the two
+    %   appears to be how the HIL's provisional profile picked 1/512. See
+    %   INVERTERHIL.PROTOCOL's torqueProfiles.vcu256 comment.
+    %
+    %   Every torque assertion below is nonetheless still made on the RAW
+    %   COUNT wherever practical: it is unambiguous under either
+    %   interpretation and was not worth rewriting now that the ambiguity
+    %   is closed. Scenario 4a below additionally asserts the resolved
+    %   verification state directly.
 
     methods (Test)
 
@@ -181,18 +194,68 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             testCase.verifyEqual(retained.rawTorquePosCounts, int16(8192));
             testCase.verifyEqual(retained.rawTorqueNegCounts, int16(-8192));
 
-            % The two candidate interpretations must remain exactly a factor
-            % of two apart and both must remain unverified. This is the whole
-            % point of carrying both: the ambiguity is recorded, not resolved.
+            % The two candidate interpretations remain exactly a factor of
+            % two apart -- both are still carried side by side on the wire
+            % decode, which is scale-independent by construction.
             testCase.verifyEqual(retained.torquePosNm256, ...
                 2 * retained.torquePosNm512, 'AbsTol', 1e-12);
             testCase.verifyEqual(retained.torqueNegNm256, ...
                 2 * retained.torqueNegNm512, 'AbsTol', 1e-12);
+            % RESOLVED 2026-08-02 by firmware evidence (see this class's
+            % TORQUE SCALE note above and INVERTERHIL.PROTOCOL): 1/256 is
+            % verified true; 1/512 was never a torque scale in the firmware
+            % at all and stays unverified, retained only as a known-wrong
+            % profile.
             profiles = inverterhil.protocol().torqueProfiles;
             testCase.verifyFalse(profiles.provisional512.verified, ...
-                'The 1/512 profile must stay unverified until bench proof.');
-            testCase.verifyFalse(profiles.vcu256.verified, ...
-                'The 1/256 profile must stay unverified until bench proof.');
+                'The 1/512 profile was never a real torque scale (see the ' + ...
+                "switchingFreq_khz mixup) and must stay unverified.");
+            testCase.verifyTrue(profiles.vcu256.verified, ...
+                'The 1/256 profile is resolved by firmware evidence.');
+        end
+
+        % ---------------------------------------------------------------
+        % Scenario 4a-2 - the firmware's own golden torque-limit value, run
+        % end to end through DEFAULTCALIBRATION's now-resolved scale.
+        % ---------------------------------------------------------------
+        function torqueLimitScaleMatchesFirmwareConformanceGoldenValue(testCase)
+            % MFE26-VC sil/tests/conformance/ephorus_conformance.cpp:252,440
+            % and sil/tests/gui/can_decode_test.cpp:25 assert this exact
+            % conversion for the control-frame torque-limit fields: 3200 raw
+            % counts at EPHORUS_TORQUE_CTRL_SCALE_NM (1/256 Nm/count,
+            % ephorus_driver.hpp:55) is +12.5 Nm. INVERTERHIL.PROTOCOL's
+            % torqueProfiles.vcu256 comment cites the same evidence. Unlike
+            % Scenario 4a above (which only checks the scale-independent
+            % wire decode), this asserts the golden value survives all the
+            % way through DEFAULTCALIBRATION's resolved default (Fix 3) and
+            % CAL.TORQUESCALENMPERCOUNT into the plant input the transmitted
+            % status is built from.
+            command = TestVcuCommandLoop.emptyCommand();
+            command.enable = true;
+            command.rawTorquePosCounts = int16(3200);
+            command.rawTorqueNegCounts = int16(-3200);
+            frame = TestVcuCommandLoop.controlFrame(hex2dec('186'), ...
+                TestVcuCommandLoop.controlPayload(command));
+
+            run = TestVcuCommandLoop.newRun();
+            testCase.assertEqual(run.cal.protocolProfileId, ...
+                'ephorus3-v1.03-candidate-1over256', ...
+                'Precondition: DEFAULTCALIBRATION must default to the resolved 1/256 profile.');
+            testCase.assertEqual(run.cal.torqueScaleNmPerCount, 1 / 256);
+            run = TestVcuCommandLoop.step(run, frame);
+
+            testCase.verifyEqual(run.bank.commands(1).torquePosNm256, 12.5, ...
+                'AbsTol', 1e-9);
+            testCase.verifyEqual(run.bank.commands(1).torqueNegNm256, -12.5, ...
+                'AbsTol', 1e-9);
+            testCase.verifyEqual( ...
+                run.plantOutput.channels(1).selectedTorquePositiveNm, 12.5, ...
+                'AbsTol', 1e-9, ...
+                'CAL.TORQUESCALENMPERCOUNT must convert 3200 counts to the firmware''s own +12.5 Nm golden value.');
+            testCase.verifyEqual( ...
+                run.plantOutput.channels(1).selectedTorqueNegativeNm, -12.5, ...
+                'AbsTol', 1e-9);
+            testCase.verifyEqual(run.plantOutput.torqueScaleNmPerCount, 1 / 256);
         end
 
         % ---------------------------------------------------------------

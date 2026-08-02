@@ -833,6 +833,14 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.Telemetry.pins(index).state = live.pins(index);
                 end
                 app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
+                % Fix 1: the IO183 Rail Monitor AI readback of the pedal
+                % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
+                % hardware self-check measurement of the same lines AO01-04
+                % command -- see TARGETSESSION.READLIVEIO. Shown alongside
+                % the commanded throttle/brake percent (ThrottleField /
+                % BrakeField, already live) in REFRESHELECTRICAL's rail
+                % panel, honestly NaN when unread rather than fabricated.
+                app.Telemetry.analogInV = live.analogInV;
                 if live.can.known
                     d = live.can.diagnostics;
                     app.Telemetry.can.diagnostics.busLoadPercent = ...
@@ -869,6 +877,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.Telemetry.pins(index).state = [];
                 end
                 app.Telemetry.pedals.appliedV = nan(1, 4);
+                app.Telemetry.analogInV = nan(1, 4);
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
             end

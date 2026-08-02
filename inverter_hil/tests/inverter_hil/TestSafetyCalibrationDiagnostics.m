@@ -224,8 +224,12 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
+            % 1/256 is the now-resolved vcu256 scale CALIBRATED() already
+            % carries (see INVERTERHIL.PROTOCOL), so this must instead pick
+            % a genuinely mismatched scale to exercise the profile-ID cross
+            % check: the retired 1/512 profile's value.
             invalid = cal;
-            invalid.torqueScaleNmPerCount = 1 / 256;
+            invalid.torqueScaleNmPerCount = 1 / 512;
             testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 

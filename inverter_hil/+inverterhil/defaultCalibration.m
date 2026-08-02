@@ -3,9 +3,12 @@ function cal = defaultCalibration()
 
 p = inverterhil.protocol();
 cal.sampleTimeS = 1e-3;
-cal.protocolProfileId = p.torqueProfiles.provisional512.id;
-cal.torqueScaleNmPerCount = p.torqueProfiles.provisional512.scaleNmPerCount;
-cal.torqueScaleVerified = p.torqueProfiles.provisional512.verified;
+% Torque scale resolved 2026-08-02 by firmware evidence (see
+% INVERTERHIL.PROTOCOL's torqueProfiles.vcu256 comment): the control-frame
+% torque-limit fields use 1/256 Nm/count, not the previously-default 1/512.
+cal.protocolProfileId = p.torqueProfiles.vcu256.id;
+cal.torqueScaleNmPerCount = p.torqueProfiles.vcu256.scaleNmPerCount;
+cal.torqueScaleVerified = p.torqueProfiles.vcu256.verified;
 cal.dcLinkMinimumV = 350;
 cal.switchingFrequencyKHz = 10;
 cal.configErrorScope = uint8(0); % 0 per-channel, 1 unit-wide

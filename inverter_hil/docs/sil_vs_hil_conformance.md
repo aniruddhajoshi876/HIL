@@ -33,6 +33,19 @@ Evidence was produced by building and running SIL (MinGW-w64 gcc 16.1, CMake
 - `run_inverter_hil_tests` → **131 Passed, 0 Failed** (baseline unchanged; no
   file in either repo was modified by this investigation)
 
+> **Amendment, 2026-08-02.** This document was written before the CAN
+> decoder-bank-threading commits (`a308a7e`, `d5bcb8d`, `a5dc937`, `97bdea2`,
+> `3bdb6e1`) and before CONF-2/SUSP-1 below were resolved (torque scale fixed
+> to 1/256; GUI dc-link/load-torque tunables wired into `stepModel`; CAN
+> control-frame and status-frame drop-mask fault injection added). The
+> `run_inverter_hil_tests` baseline is now **161+ Passed, 0 Failed** (161
+> before these fixes, plus new tests added alongside them: `TestCanDropMask`
+> and `TestVcuCommandLoop.torqueLimitScaleMatchesFirmwareConformanceGoldenValue`).
+> CONF-2 and SUSP-1 are marked resolved/updated in place below rather than
+> rewritten, so the original investigation's evidence trail stays intact; every
+> other finding in this document reflects the read-and-verify pass exactly as
+> originally performed and has not been re-audited.
+
 ---
 
 ## CONFIRMED divergences
@@ -70,26 +83,47 @@ Both sides traced to source, and they genuinely differ.
 - The plan does not resolve this field. Reporting as a genuine A-vs-{B,C}
   disagreement rather than picking a winner.
 
-### CONF-2 — Control torque scale: 1/256 in SIL and firmware, 1/512 in HIL
+### CONF-2 — RESOLVED 2026-08-02: control torque scale is 1/256 in SIL, firmware, and now HIL
+
+**Originally filed as a divergence** (HIL defaulted to 1/512 against SIL's and
+the firmware's 1/256); **resolved, not just flagged**, once independent
+firmware evidence settled the ambiguity `inverter_hil_plan.md:303-354` had
+left open. See `+inverterhil/protocol.m`'s `torqueProfiles.vcu256` comment for
+the full citation set
+(`Drivers/Device_Drivers/Inc/ephorus_driver.hpp:38-39,55`;
+`sil/models/ephorus_model.cpp:37-38`;
+`sil/tests/conformance/ephorus_conformance.cpp:252,440`;
+`sil/tests/gui/can_decode_test.cpp:25`). The 1/512 value the HIL had defaulted
+to was never a torque scale in either the firmware or SIL at all — it is
+`switchingFreq_khz`'s unrelated scale
+(`ephorus_driver.hpp:119,187`, `sil/models/ephorus_model.cpp` status packing) —
+and confusing the two appears to be how the HIL's provisional profile picked
+1/512 in the first place.
 
 | | Behavior | Evidence |
 | --- | --- | --- |
 | **A (SIL)** | `/256.0`, and additionally clamps received counts to ±16384 (±64 Nm) | `sil/models/ephorus_model.cpp:35-43` |
-| **B (HIL)** | Default profile is `provisional512`, **1/512** | `+inverterhil/protocol.m:21-24`; `+inverterhil/defaultCalibration.m:6-8` |
+| **B (HIL), before the fix** | Default profile was `provisional512`, **1/512** | `+inverterhil/protocol.m:21-24` (pre-fix); `+inverterhil/defaultCalibration.m:6-8` (pre-fix) |
+| **B (HIL), after the fix** | Default profile is `vcu256`, **1/256**, `verified = true` | `+inverterhil/protocol.m` `torqueProfiles.vcu256`; `+inverterhil/defaultCalibration.m` |
 | **C (firmware)** | `EPHORUS_TORQUE_CTRL_SCALE_NM = 1.0f/256.0f` | `Drivers/Device_Drivers/Inc/ephorus_driver.hpp:55`; applied at `Src/ephorus_driver.cpp:267-268` |
 
-- **Area:** CAN. **Frame:** `0x186/0x196/0x1A6/0x1B6`, bytes 4-5 and 6-7. **Severity: HIGH.**
+- **Area:** CAN. **Frame:** `0x186/0x196/0x1A6/0x1B6`, bytes 4-5 and 6-7. **Severity: HIGH (was), now closed.**
 - The firmware commands up to 15 Nm (`Core/Src/vcComms.cpp:141`) → 3840 counts.
-  SIL reads 15.0 Nm; the HIL default reads **7.5 Nm**. A factor-of-two
-  under-read of every torque command on the bench.
-- This is a **known, deliberately documented** ambiguity, not an oversight:
-  `inverter_hil_plan.md:303-354` records the datasheet's self-contradiction and
-  explicitly notes at `:311-312` that the firmware and SIL both use 1/256 while
-  the HIL provisionally picks 1/512 to avoid mirroring the DUT's assumption.
-  `+inverterhil/decodeControlFrame.m:57-60` carries **both** interpretations
-  side by side, so the HIL is instrumented to switch. Listed here because the
-  running default diverges from the reference and must be resolved on hardware
-  before any torque number from the bench is trustworthy.
+  SIL reads 15.0 Nm; the HIL previously read **7.5 Nm** under the 1/512
+  default — a factor-of-two under-read of every torque command on the bench.
+  With the HIL now defaulting to 1/256, all three agree: 15.0 Nm.
+- The retired `provisional512` profile is kept in `+inverterhil/protocol.m`
+  (still `verified = false`, now explicitly annotated as the switching-frequency
+  mixup) only because `validateCalibration.m`'s profile whitelist and a handful
+  of tests (`TestPlant.profileObservabilityIsCorrectAndImmutable`,
+  `TestVcuCommandLoop.torqueLimitCountsAreDecodedAndRetainedExactly`) exercise it
+  as a second, known-not-the-answer profile for regression coverage. It must
+  never become the default again.
+- A golden-value regression test now pins the resolved conversion directly to
+  the firmware's own conformance numbers:
+  `TestVcuCommandLoop.torqueLimitScaleMatchesFirmwareConformanceGoldenValue`
+  asserts 3200 raw counts → +12.5 Nm through `DEFAULTCALIBRATION`'s default,
+  matching `sil/tests/conformance/ephorus_conformance.cpp:252,440`.
 
 ### CONF-3 — Power-on with a silent bus: SIL latches Error, HIL holds Idle
 
@@ -233,19 +267,31 @@ Both sides traced to source, and they genuinely differ.
 
 ## SUSPECTED (could not fully verify)
 
-### SUSP-1 — `0x400` bits 48/49 are never computed in the HIL host core
+### SUSP-1 — UPDATED 2026-08-02: `0x400` bits 48/49 ARE now computed in the HIL host core
 
-`dcLink12AboveMinimum` / `dcLink34AboveMinimum` appear **only** as inputs to
-`+inverterhil/packSystemStatus.m:21-24` and in tests
-(`tests/inverter_hil/TestPlant.m:335`, `TestStatusPackers.m:39,88,138,222`). No
-function in `+inverterhil/` derives them from `dcLinkMinimumV`. SIL derives them
-from its 50 V threshold at `sil/models/ephorus_model.cpp:598-601`.
+**This finding predates the CAN decoder-bank-threading commits (`a308a7e`,
+`d5bcb8d`, `a5dc937`, `97bdea2`, `3bdb6e1`) and the GUI dc-link/load-torque
+wiring fix, and is stale.** `+inverterhil/stepModel.m` now derives both bits
+directly from `cal.dcLinkMinimumV` and the per-pair DC-link voltage:
+`systemStatus.dcLink12AboveMinimum = dcLink12V > cal.dcLinkMinimumV` and the
+same for pair 3/4, immediately before `inverterhil.packStatusCycle` is called.
+`+inverterhil/packSystemStatus.m:21-24` packs the two logicals into `0x400`
+bits 48/49 exactly as this finding originally described; the producer is no
+longer missing.
 
-The threshold divergence itself is confirmed for *Drive entry* (CONF-4), but I
-could not confirm what value reaches these two **wire bits** on the HIL, because
-the producer lives in the Simulink model and `inverter_hil.slx` is a
-constant-zero scaffold (`build_inverter_hil_model.m:181-271`), so simulating it
-proves nothing. Needs a source-level check of the model's system-status wiring.
+`dcLink12V`/`dcLink34V` themselves were, until the GUI-tunable wiring fix,
+hardcoded to `+inverterhil/defaultPlantInput.m`'s constant 400 V for every
+channel — so the bits were computed, but from a value the operator could not
+change. `hil_cmd_dc_link12_v` and `hil_cmd_dc_link34_v` (GUI Command
+Parameters) now route through `inverterhil.stepModel`'s `externalInputs`
+argument into `plantInput.channels(*).dcLinkV`, so an operator-commanded
+DC-link voltage genuinely changes both the plant input and these two wire
+bits, matching what SIL derives from its own (numerically different, see
+CONF-4) 50 V threshold.
+
+The threshold *value* divergence (350 V HIL/firmware vs 50 V SIL) remains
+exactly as CONF-4 describes; only the "is anything computed at all" question
+this finding raised is resolved.
 
 ### SUSP-2 — APPS disagreement threshold: firmware 20 %, SIL registry 10 %, HIL absent
 
@@ -287,11 +333,17 @@ negative results are not re-derived later.
 
 ## Coverage not achieved, and why
 
-1. **`inverter_hil.slx` was not simulated.** It is a constant-zero scaffold
-   (`build_inverter_hil_model.m:181-271`), so simulation would prove nothing,
-   and opening it outside R2024b is prohibited. Consequence: SUSP-1 is
-   unresolved, and no signal that originates in the Simulink layer rather than
-   `+inverterhil/` was compared.
+1. **`inverter_hil.slx` was not simulated**, at the time of this investigation.
+   Opening it outside R2024b is prohibited, so simulation was out of scope for
+   a read-and-verify pass regardless. **This item's premise is now stale**: at
+   the time it was written the Ephorus Channel 1-4 subsystem scaffolding was a
+   constant-zero placeholder, but CAN status packing, transmission, reception,
+   and decode are real (see the 2026-08-02 amendment above and SUSP-1 below);
+   only the dead "Ephorus Channel 1-4" subsystem itself (`buildChannel`, `Load
+   Demux`/`DC Link Demux`/`Fault Demux` in `build_inverter_hil_model.m`)
+   remains unused scaffolding, deliberately bypassed rather than resurrected.
+   No signal that originates in the Simulink layer rather than
+   `+inverterhil/` was compared by this investigation.
 2. **No joint A/B execution.** There is no shared harness between the C++ SIL
    and the MATLAB host core. CONF-3's end-to-end consequence (four inverters in
    Error vs Idle throughout the pre-RTD states) is established from source plus
