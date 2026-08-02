@@ -37,18 +37,26 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
                             applicationState, vcuState, flags(flagIndex, :));
                         testCase.verifyTrue(policy.connectionControls, label);
 
-                        healthy = lifecycle.isConnected && ...
-                            interlocks.contractResolved && ...
-                            interlocks.targetHealthy && ...
-                            interlocks.heartbeatOk;
-                        if ~healthy
-                            % An unhealthy or unresolved target must not be
-                            % able to arm anything at all.
+                        % INTERLOCKS REMOVED 2026-08-02: connection is now
+                        % the only gate. targetHealthy, heartbeatOk,
+                        % contractResolved, expertMode and the Drive
+                        % restriction no longer affect any group. This matrix
+                        % therefore asserts that the policy is INDIFFERENT to
+                        % those flags -- which is the property that would
+                        % break first if a gate were accidentally reinstated
+                        % or a new one added.
+                        if ~lifecycle.isConnected
                             TestGuiControlPolicy.verifyAllFalse(testCase, ...
                                 policy, [stimulusGroups expertGroups], label);
+                            testCase.verifyEqual(policy.reason, ...
+                                'not_connected', label);
                             continue;
                         end
 
+                        % Stimuli still require a running application. That
+                        % is functional, not safety: SETPARAM against a
+                        % stopped target fails, so enabling those widgets
+                        % would only produce write errors.
                         expectedStimuli = lifecycle.isRunning;
                         for groupIndex = 1:numel(stimulusGroups)
                             testCase.verifyEqual( ...
@@ -57,34 +65,23 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
                                 stimulusGroups{groupIndex}]);
                         end
                         testCase.verifyEqual(policy.plausibilityViolation, ...
-                            expectedStimuli && ...
-                            interlocks.plausibilityOverride, label);
+                            expectedStimuli, label);
 
-                        if inDrive
-                            % Conservative default for open decision 18:
-                            % during Drive only pedal and digital stimuli.
-                            TestGuiControlPolicy.verifyAllFalse(testCase, ...
-                                policy, expertGroups, label);
-                            continue;
+                        % Expert groups are unconditionally open, including
+                        % during Drive and regardless of expertMode.
+                        for groupIndex = 1:numel(expertGroups)
+                            testCase.verifyTrue( ...
+                                policy.(expertGroups{groupIndex}), ...
+                                [label ' ' expertGroups{groupIndex}]);
                         end
-                        if ~interlocks.expertMode
-                            TestGuiControlPolicy.verifyAllFalse(testCase, ...
-                                policy, expertGroups, label);
-                            continue;
+                        testCase.verifyTrue(policy.expertGroupsUnlocked, label);
+                        if lifecycle.isRunning
+                            testCase.verifyEqual(policy.reason, ...
+                                'interlocks_removed_running', label);
+                        else
+                            testCase.verifyEqual(policy.reason, ...
+                                'interlocks_removed_stopped', label);
                         end
-
-                        quiescent = ~lifecycle.isRunning || ...
-                            strcmp(vcuState, 'LV_ON') || isempty(vcuState);
-                        testCase.verifyEqual(policy.faultInjection, ...
-                            quiescent, label);
-                        testCase.verifyEqual(policy.plantParameters, ...
-                            quiescent, label);
-                        testCase.verifyEqual(policy.canFaults, ...
-                            quiescent, label);
-                        testCase.verifyEqual(policy.electrical, ...
-                            quiescent, label);
-                        testCase.verifyEqual(policy.calibration, ...
-                            quiescent && ~lifecycle.isRunning, label);
                     end
                 end
             end
@@ -92,75 +89,88 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
                 numel(applicationStates) * numel(vcuStates) * size(flags, 1));
         end
 
-        function driveOnlyPermitsPedalAndDigitalStimuli(testCase)
+        function driveNoLongerRestrictsExpertGroups(testCase)
+            % Was DRIVEONLYPERMITSPEDALANDDIGITALSTIMULI. The Drive
+            % restriction (open decision 18's conservative default) was
+            % removed on 2026-08-02 by explicit operator decision, so every
+            % group stays live while the VCU is in ENABLE/BUZZING/RTD.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            interlocks.expertMode = true;
             policy = inverterhilgui.controlPolicy('running', 'RTD', ...
                 interlocks);
 
             testCase.verifyTrue(policy.pedals);
             testCase.verifyTrue(policy.digitalStimuli);
             testCase.verifyTrue(policy.momentary);
-            testCase.verifyFalse(policy.calibration);
-            testCase.verifyFalse(policy.plantParameters);
-            testCase.verifyFalse(policy.faultInjection);
-            testCase.verifyFalse(policy.canFaults);
-            testCase.verifyFalse(policy.electrical);
-            testCase.verifyEqual(policy.reason, 'drive_restricted');
+            testCase.verifyTrue(policy.calibration);
+            testCase.verifyTrue(policy.plantParameters);
+            testCase.verifyTrue(policy.faultInjection);
+            testCase.verifyTrue(policy.canFaults);
+            testCase.verifyTrue(policy.electrical);
+            testCase.verifyEqual(policy.reason, 'interlocks_removed_running');
         end
 
-        function expertGroupsRequireTheExpertInterlock(testCase)
+        function expertGroupsNoLongerRequireTheExpertInterlock(testCase)
+            % Was EXPERTGROUPSREQUIRETHEEXPERTINTERLOCK. expertMode no longer
+            % gates anything; the flag is still validated and carried, so
+            % reinstating the gate is a one-line change in CONTROLPOLICY.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            locked = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
-                interlocks);
-            testCase.verifyFalse(locked.faultInjection);
-            testCase.verifyFalse(locked.calibration);
-            testCase.verifyEqual(locked.reason, 'idle_locked');
-
+            withoutExpert = inverterhilgui.controlPolicy('stopped', ...
+                'LV_ON', interlocks);
             interlocks.expertMode = true;
-            unlocked = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
+            withExpert = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
                 interlocks);
-            testCase.verifyTrue(unlocked.faultInjection);
-            testCase.verifyTrue(unlocked.plantParameters);
-            testCase.verifyTrue(unlocked.calibration);
-            testCase.verifyTrue(unlocked.canFaults);
-            testCase.verifyEqual(unlocked.reason, 'expert_unlocked');
+
+            for policy = [withoutExpert withExpert]
+                testCase.verifyTrue(policy.faultInjection);
+                testCase.verifyTrue(policy.plantParameters);
+                testCase.verifyTrue(policy.calibration);
+                testCase.verifyTrue(policy.canFaults);
+                testCase.verifyEqual(policy.reason, ...
+                    'interlocks_removed_stopped');
+            end
         end
 
-        function calibrationStaysLockedWhileTheApplicationRuns(testCase)
+        function calibrationIsEditableWhileTheApplicationRuns(testCase)
+            % Was CALIBRATIONSTAYSLOCKEDWHILETHEAPPLICATIONRUNS. Plan 7.1's
+            % "hil_cal may change only while stopped until validated" is no
+            % longer enforced.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            interlocks.expertMode = true;
             policy = inverterhilgui.controlPolicy('running', 'LV_ON', ...
                 interlocks);
 
             testCase.verifyTrue(policy.plantParameters);
             testCase.verifyTrue(policy.faultInjection);
-            testCase.verifyFalse(policy.calibration, ...
-                'Plan 7.1 restricts hil_cal edits to a stopped application.');
+            testCase.verifyTrue(policy.calibration);
         end
 
-        function unhealthyTargetCannotArmThePedalInterface(testCase)
+        function unhealthyTargetCanStillArmThePedalInterface(testCase)
+            % Was UNHEALTHYTARGETCANNOTARMTHEPEDALINTERFACE. This is the
+            % sharpest consequence of removing the interlocks and is asserted
+            % explicitly rather than merely implied: pedal and digital
+            % commands stay enabled against an unhealthy target, a lost
+            % heartbeat, or an unresolved parameter contract.
             failures = {'targetHealthy', 'heartbeatOk', 'contractResolved'};
-            reasons = {'target_unhealthy', 'heartbeat_lost', ...
-                'contract_unresolved'};
             for index = 1:numel(failures)
                 interlocks = TestGuiControlPolicy.healthyInterlocks();
-                interlocks.expertMode = true;
                 interlocks.(failures{index}) = false;
                 policy = inverterhilgui.controlPolicy('running', 'RTD', ...
                     interlocks);
 
-                testCase.verifyFalse(policy.pedals, failures{index});
-                testCase.verifyFalse(policy.armPedals, failures{index});
-                testCase.verifyFalse(policy.digitalStimuli, failures{index});
-                testCase.verifyFalse(policy.momentary, failures{index});
-                testCase.verifyEqual(policy.reason, reasons{index});
+                testCase.verifyTrue(policy.pedals, failures{index});
+                testCase.verifyTrue(policy.armPedals, failures{index});
+                testCase.verifyTrue(policy.digitalStimuli, failures{index});
+                testCase.verifyTrue(policy.momentary, failures{index});
+                testCase.verifyEqual(policy.reason, ...
+                    'interlocks_removed_running', failures{index});
             end
         end
 
-        function plausibilityViolationNeedsBothRunningAndTheInterlock(testCase)
+        function plausibilityViolationNeedsOnlyRunning(testCase)
+            % Was PLAUSIBILITYVIOLATIONNEEDSBOTHRUNNINGANDTHEINTERLOCK. The
+            % plausibilityOverride interlock no longer gates the group; only
+            % the functional running requirement remains.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            testCase.verifyFalse(inverterhilgui.controlPolicy('running', ...
+            testCase.verifyTrue(inverterhilgui.controlPolicy('running', ...
                 'LV_ON', interlocks).plausibilityViolation);
 
             interlocks.plausibilityOverride = true;

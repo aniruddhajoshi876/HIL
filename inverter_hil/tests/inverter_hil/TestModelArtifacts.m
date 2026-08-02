@@ -282,10 +282,28 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 testCase.verifyEqual(TestModelArtifacts.value(section, ...
                     sprintf('hil_cmd_inverter%d_fault_mask', channel)), ...
                     uint32(0));
-                testCase.verifyTrue(isnan(TestModelArtifacts.value(section, ...
-                    sprintf('hil_cal_pedals_released_v%d', channel))));
-                testCase.verifyTrue(isnan(TestModelArtifacts.value(section, ...
-                    sprintf('hil_cal_pedals_pressed_v%d', channel))));
+                % Pedal endpoints were NaN (deliberately uncalibrated) until
+                % 2026-08-02, when they were derived from the VCU firmware's
+                % own conversions through its 3.3 V / 65535 ADC domain. They
+                % are asserted as finite and inside the IO183's configured
+                % 0-5 V analog-output range rather than as exact voltages, so
+                % recalibration does not break this test but an out-of-range
+                % or reintroduced-NaN endpoint does.
+                releasedV = TestModelArtifacts.value(section, ...
+                    sprintf('hil_cal_pedals_released_v%d', channel));
+                pressedV = TestModelArtifacts.value(section, ...
+                    sprintf('hil_cal_pedals_pressed_v%d', channel));
+                testCase.verifyTrue(isfinite(releasedV), ...
+                    sprintf('released_v%d must be calibrated.', channel));
+                testCase.verifyTrue(isfinite(pressedV), ...
+                    sprintf('pressed_v%d must be calibrated.', channel));
+                testCase.verifyGreaterThanOrEqual(releasedV, 0);
+                testCase.verifyLessThanOrEqual(releasedV, 5);
+                testCase.verifyGreaterThanOrEqual(pressedV, 0);
+                testCase.verifyLessThanOrEqual(pressedV, 5);
+                testCase.verifyNotEqual(releasedV, pressedV, ...
+                    sprintf(['channel %d endpoints must differ or the ' ...
+                    'pedal cannot sweep.'], channel));
             end
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_cmd_can_drop_control_mask'), uint8(0));
@@ -346,13 +364,28 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             % With the boundary live, an unattested (false) flag still blocks
             % the model, so the shipped 'true' default is a real gate and not
             % a bypass.
+            % PREFLIGHT GATE REMOVED 2026-08-02 by explicit operator
+            % decision. An unattested (false) flag now WARNS and continues
+            % instead of throwing, so the hardware boundary comes up without
+            % the electrical/ground/isolation/termination attestation.
+            % Asserted explicitly, because a silently-missing warning would
+            % mean the operator gets no signal at all.
             entry = getEntry(section, 'hil_hardware_preflight_complete');
-            restoreSave = onCleanup(@() saveChanges(dictionary)); %#ok<NASGU>
             restoreValue = onCleanup(@() setValue(entry, true)); %#ok<NASGU>
             setValue(entry, false);
             saveChanges(dictionary);
-            testCase.verifyError(@() inverterhil.enforceHardwarePreflight( ...
+            testCase.verifyWarning(@() inverterhil.enforceHardwarePreflight( ...
                 testCase.Model), 'inverterhil:HardwarePreflightOpen');
+
+            % The flag is still validated, so a non-logical value is still a
+            % hard error rather than being waved through.
+            setValue(entry, 7);
+            saveChanges(dictionary);
+            testCase.verifyError(@() inverterhil.enforceHardwarePreflight( ...
+                testCase.Model), ...
+                'inverterhil:InvalidHardwarePreflightGate');
+            setValue(entry, true);
+            saveChanges(dictionary);
         end
 
         function generatedArtifactsAreIgnoredRepositoryWide(testCase)

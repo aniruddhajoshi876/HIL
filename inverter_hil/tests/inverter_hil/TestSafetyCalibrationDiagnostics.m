@@ -1,15 +1,45 @@
 classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
     methods (Test)
-        function defaultCalibrationIsExplicitlyUnarmed(testCase)
+        function uncalibratedChannelsNoLongerBlockTheWholeOutputSet(testCase)
+            % Was DEFAULTCALIBRATIONISEXPLICITLYUNARMED. The
+            % pedal_calibration_unverified gate was removed on 2026-08-02 by
+            % explicit operator decision, so NaN endpoints no longer halt
+            % every pedal AND digital output.
+            %
+            % IMPORTANT, and NOT what removing the gate was expected to do:
+            % the output now ARMS with an uncalibrated channel. The remaining
+            % nonfinite_output_blocked check does NOT catch it, because
+            % MATLAB's MIN/MAX ignore NaN -- min(max(NaN,0),5) returns 0, so
+            % the clamp erases the NaN before the nonfinite test ever sees
+            % it. An uncalibrated channel therefore drives a real 0 V and
+            % reports 'armed', rather than being refused.
+            %
+            % 0 V is still the intended out-of-range stimulus (plan 3.1: the
+            % VCU's lower-bound raw-count checks should reject it), so this
+            % is not silently plausible at the VCU. But the GUI now says
+            % 'armed' for a channel nobody calibrated, which is the honest
+            % description of the current behaviour and is pinned here so the
+            % next reader is not surprised by it.
             cal = inverterhil.defaultCalibration();
             command = TestSafetyCalibrationDiagnostics.validCommand();
             output = inverterhil.safeIoOutputs(command, cal);
 
-            testCase.verifyFalse(output.armed);
-            testCase.verifyEqual(output.analogV, zeros(1, 4));
-            testCase.verifyEqual(output.digital, false(1, 8));
-            testCase.verifyEqual(output.reason, ...
-                'pedal_calibration_unverified');
+            testCase.verifyTrue(output.armed);
+            testCase.verifyEqual(output.analogV, zeros(1, 4), ...
+                'Uncalibrated channels must still land at 0 V, not NaN.');
+            testCase.verifyEqual(output.reason, 'armed');
+
+            % NOTE for whoever restores the gate: the nonfinite_output_blocked
+            % check below the clamp is now effectively UNREACHABLE from
+            % calibration values. MIN/MAX ignore NaN in both directions, so a
+            % NaN endpoint AND a NaN clamp bound are both scrubbed to a finite
+            % number before that check runs. It is not a second line of
+            % defence for an uncalibrated channel; only the removed gate was.
+            broken = cal;
+            broken.pedals.maximumV = [NaN 5 5 5];
+            stillArmed = inverterhil.safeIoOutputs(command, broken);
+            testCase.verifyTrue(stillArmed.armed, ...
+                'Documents that a NaN clamp bound is scrubbed, not caught.');
         end
 
         function calibratedArmedOutputsAreMappedAndClamped(testCase)
