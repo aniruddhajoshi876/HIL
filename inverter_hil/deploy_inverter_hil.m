@@ -50,7 +50,16 @@ end
 % A running application must be stopped before another can be loaded. This
 % is checked rather than assumed because the target is normally left running
 % its startup application.
-if strcmp(target.status().execStatus, 'running')
+status = target.status();
+% R2024b returns the execution state as a character vector; newer releases
+% return a status structure with EXECSTATUS. Normalize both forms so the
+% deployment helper remains usable with the project-supported release.
+if isstruct(status)
+    isRunning = strcmp(status.execStatus, 'running');
+else
+    isRunning = strcmp(char(status), 'running');
+end
+if isRunning
     fprintf('Stopping the running application...\n');
     stop(target);
 end

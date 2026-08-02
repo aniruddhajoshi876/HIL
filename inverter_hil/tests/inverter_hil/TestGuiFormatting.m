@@ -310,20 +310,16 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function themeUsesTheSpecifiedConsolePalette(testCase)
-            % Palette switched from the dark console to high-contrast
-            % black-on-white on 2026-08-02 for readability. The assertion
-            % that matters is CONTRAST, not the specific hex values: dark
-            % text on a light background, comfortably past the WCAG AA 4.5:1
-            % ratio. Pinning exact RGB made this test fail for a deliberate
-            % readability change while saying nothing about legibility.
+            % VS Code 2017-style dark console: near-black background with
+            % white primary text and readable secondary text on panels.
             theme = inverterhilgui.guiTheme();
 
             background = theme.color.background;
             primary = theme.color.primaryText;
-            testCase.verifyGreaterThan(mean(background), 0.9, ...
-                'Background must be light.');
-            testCase.verifyLessThan(mean(primary), 0.2, ...
-                'Primary text must be dark.');
+            testCase.verifyLessThan(mean(background), 0.2, ...
+                'Background must be near-black.');
+            testCase.verifyGreaterThan(mean(primary), 0.8, ...
+                'Primary text must be light.');
             testCase.verifyGreaterThan( ...
                 TestGuiFormatting.contrastRatio(primary, background), 4.5, ...
                 'Primary text on background must meet WCAG AA (4.5:1).');

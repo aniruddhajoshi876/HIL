@@ -1,19 +1,20 @@
 function theme = guiTheme()
-%GUITHEME Dense light engineering-console colors, typography, and spacing.
-%   High-contrast black-on-white variant for readability (panels, tab bar,
-%   and body text all resolve to near-black on near-white).
+%GUITHEME VS Code 2017-style dark engineering-console colors.
+%   Near-black chrome, charcoal panels, white text, and restrained semantic
+%   accents keep dense telemetry readable without inventing status through
+%   color alone.
 
-theme.color.background = hexColor('FFFFFF');
-theme.color.panel = hexColor('F1F3F6');
-theme.color.panelEdge = hexColor('B7C0CC');
-theme.color.healthy = hexColor('1B7A3D');
-theme.color.electrical = hexColor('0F5FB8');
-theme.color.waiting = hexColor('9A6300');
-theme.color.fault = hexColor('C4291D');
-theme.color.primaryText = hexColor('000000');
-theme.color.secondaryText = hexColor('33404D');
-theme.color.disabledText = hexColor('8A93A0');
-theme.color.highlight = hexColor('D6E4F5');
+theme.color.background = hexColor('1E1E1E');
+theme.color.panel = hexColor('252526');
+theme.color.panelEdge = hexColor('3E3E42');
+theme.color.healthy = hexColor('89D185');
+theme.color.electrical = hexColor('569CD6');
+theme.color.waiting = hexColor('D7BA7D');
+theme.color.fault = hexColor('F48771');
+theme.color.primaryText = hexColor('F0F0F0');
+theme.color.secondaryText = hexColor('CCCCCC');
+theme.color.disabledText = hexColor('858585');
+theme.color.highlight = hexColor('264F78');
 
 theme.font.name = 'Consolas';
 theme.font.title = 15;

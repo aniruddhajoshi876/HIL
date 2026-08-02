@@ -34,6 +34,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
         ResetButton               matlab.ui.control.Button
         TorqueBannerLabel         matlab.ui.control.Label
         TabGroup                  matlab.ui.container.TabGroup
+        TabBarPanel               matlab.ui.container.Panel
+        TabButtons                matlab.ui.control.Button
         OverviewTab               matlab.ui.container.Tab
         InvertersTab              matlab.ui.container.Tab
         IoCanTab                  matlab.ui.container.Tab
@@ -135,15 +137,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             app.TabGroup = uitabgroup(app.RootLayout);
             app.TabGroup.Layout.Row = 3;
-            app.OverviewTab = uitab(app.TabGroup, 'Title', 'Overview');
-            app.InvertersTab = uitab(app.TabGroup, 'Title', 'Inverters');
-            app.IoCanTab = uitab(app.TabGroup, 'Title', 'I/O & CAN');
-            app.FaultsTab = uitab(app.TabGroup, 'Title', 'Faults & Scenarios');
-            app.LoggingTab = uitab(app.TabGroup, 'Title', 'Logging');
+            app.TabGroup.TabLocation = 'top';
+            % The native tab headers are intentionally blank: MATLAB does
+            % not expose a supported dark header style in R2024b. The
+            % readable custom bar below is the only visible tab navigation.
+            app.OverviewTab = uitab(app.TabGroup, 'Title', '');
+            app.InvertersTab = uitab(app.TabGroup, 'Title', '');
+            app.IoCanTab = uitab(app.TabGroup, 'Title', '');
+            app.FaultsTab = uitab(app.TabGroup, 'Title', '');
+            app.LoggingTab = uitab(app.TabGroup, 'Title', '');
             tabs = [app.OverviewTab app.InvertersTab app.IoCanTab ...
                 app.FaultsTab app.LoggingTab];
-            set(tabs, 'BackgroundColor', theme.color.background, ...
+            set(tabs, 'BackgroundColor', theme.color.panel, ...
                 'ForegroundColor', theme.color.primaryText);
+            app.createTabBar();
 
             app.createOverviewTab();
             app.createInvertersTab();
@@ -152,6 +159,89 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.createLoggingTab();
 
             app.UIFigure.Visible = 'on';
+        end
+
+        function createTabBar(app)
+            %CREATETABBAR Cover MATLAB's unstyleable native tab headers with
+            %   a dark, keyboard/mouse-friendly navigation bar. The native
+            %   tab pages remain the content model; these buttons only select
+            %   those pages and supply the readable dark appearance.
+            theme = app.Theme;
+            app.TabBarPanel = uipanel(app.UIFigure, ...
+                'Units', 'pixels', ...
+                'Position', [0 0 1 1], ...
+                'BackgroundColor', theme.color.background, ...
+                'BorderType', 'none');
+            grid = uigridlayout(app.TabBarPanel, [1 5]);
+            grid.Padding = [0 0 0 0];
+            grid.ColumnSpacing = 1;
+            titles = {'Overview', 'Inverters', 'I/O & CAN', ...
+                'Faults & Scenarios', 'Logging'};
+            pages = [app.OverviewTab app.InvertersTab app.IoCanTab ...
+                app.FaultsTab app.LoggingTab];
+            buttonArray = uibutton(grid);
+            for index = 2:numel(titles)
+                buttonArray(index) = uibutton(grid);
+            end
+            app.TabButtons = buttonArray;
+            for index = 1:numel(titles)
+                button = app.TabButtons(index);
+                button.Text = titles{index};
+                button.FontName = theme.font.name;
+                button.FontSize = theme.font.body;
+                button.FontWeight = 'bold';
+                button.FontColor = theme.color.primaryText;
+                button.BackgroundColor = theme.color.panel;
+                button.ButtonPushedFcn = ...
+                    @(~, ~) app.selectTab(pages(index));
+            end
+            app.TabGroup.SelectionChangedFcn = ...
+                @(~, ~) app.syncTabButtons();
+            app.UIFigure.SizeChangedFcn = ...
+                @(~, ~) app.positionTabBar();
+            drawnow;
+            app.positionTabBar();
+            uistack(app.TabBarPanel, 'top');
+            app.syncTabButtons();
+        end
+
+        function positionTabBar(app)
+            %POSITIONTABBAR Place the custom bar over the native white header.
+            %   MATLAB uitabgroup has no supported header color property in
+            %   R2024b. Positioning this panel from the live tab-group bounds
+            %   keeps the native strip fully covered after window resizing.
+            if isempty(app.TabBarPanel) || ~isvalid(app.TabBarPanel) || ...
+                    isempty(app.TabGroup) || ~isvalid(app.TabGroup)
+                return;
+            end
+            tabPosition = app.TabGroup.Position;
+            nativeHeaderHeight = 42;
+            app.TabBarPanel.Position = [tabPosition(1), ...
+                tabPosition(2) + tabPosition(4) + 98, ...
+                tabPosition(3), nativeHeaderHeight];
+            uistack(app.TabBarPanel, 'top');
+        end
+
+        function selectTab(app, page)
+            app.TabGroup.SelectedTab = page;
+            app.syncTabButtons();
+        end
+
+        function syncTabButtons(app)
+            if isempty(app.TabButtons) || ~isvalid(app.TabButtons(1))
+                return;
+            end
+            pages = [app.OverviewTab app.InvertersTab app.IoCanTab ...
+                app.FaultsTab app.LoggingTab];
+            for index = 1:numel(pages)
+                if app.TabGroup.SelectedTab == pages(index)
+                    app.TabButtons(index).BackgroundColor = ...
+                        app.Theme.color.highlight;
+                else
+                    app.TabButtons(index).BackgroundColor = ...
+                        app.Theme.color.panel;
+                end
+            end
         end
 
         function createToolbar(app)
@@ -337,8 +427,10 @@ classdef inverter_hil_app < matlab.apps.AppBase
             guardPanel = app.makePanel(column, 'NEXT TRANSITION');
             guardGrid = app.makeGrid(guardPanel, {'1x'}, {'1x'});
             app.GuardTable = uitable(guardGrid);
-            app.GuardTable.ColumnName = {'GUARD', 'ACTUAL', 'REQUIRED', ...
-                'RESULT'};
+            % Native uitable headers remain white in R2024b and cannot be
+            % themed reliably. The surrounding section and row labels carry
+            % the meaning, so hide this nonessential header strip.
+            app.GuardTable.ColumnName = {};
             app.GuardTable.ColumnWidth = {200, 130, 130, 90};
             app.GuardTable.RowName = {};
             app.GuardTable.Data = cell(0, 4);
@@ -535,7 +627,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
             theme = app.Theme;
             outer = app.makeGrid(app.LoggingTab, {'1x', 30}, {'1x'});
             app.LogTable = uitable(outer);
-            app.LogTable.ColumnName = inverterhilgui.sessionLog.columnNames();
+            % Hide MATLAB's unstyleable white column-header strip.
+            app.LogTable.ColumnName = {};
             app.LogTable.ColumnWidth = {170, 90, 200, 220, 110, 110, 90, 240};
             app.LogTable.RowName = {};
             app.LogTable.Data = cell(0, 8);
@@ -708,9 +801,14 @@ classdef inverter_hil_app < matlab.apps.AppBase
                         d.writeSucceeded;
                     app.Telemetry.can.diagnostics.writeKnown = d.writeKnown;
                 end
+                if live.txPayloadsKnown
+                    app.applyLiveTxFrames(live);
+                end
+                % No inverter feedback path exists in this model. Do not
+                % populate inverter panels from the HIL's own transmitted
+                % status frames; those bytes are output, not measured state.
                 if live.inverterKnown
                     app.applyLiveInverters(live.inverter);
-                    app.applyLiveTxFrames(live);
                 end
                 if live.rx.known
                     app.applyLiveRxFrames(live.rx);
@@ -756,7 +854,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 previous = observations(index).value;
                 observations(index).value = strtrim(value);
                 observations(index).signal = ...
-                    app.txFrameSignalText(index, live);
+                    ['HIL-generated; bus ACK unverified | ' ...
+                    app.txFrameSignalText(index, live)];
                 if ~strcmp(previous, observations(index).value)
                     observations(index).lastChangeS = now;
                 end
@@ -841,44 +940,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
         end
 
         function text = txFrameSignalText(app, index, live)
-            %TXFRAMESIGNALTEXT One-line decoded summary for a status frame.
-            %   Frames 1-8 are the 3X3/3X5 pair per channel; frame 9 is the
-            %   0x400 general system status.
-            %
-            %   Every value here comes from INVERTERHIL.DECODE* applied to the
-            %   bytes the module actually transmitted, so this column can
-            %   never disagree with the raw payload beside it.
-            if index >= 9
-                system = live.systemStatus;
-                if ~isfinite(system.dcLink12V)
-                    text = 'system status';
-                    return;
-                end
-                text = sprintf(['DC %.2f/%.2f V (min %s/%s) fsw %.3f kHz ' ...
-                    'en=%s dis=%s'], system.dcLink12V, system.dcLink34V, ...
-                    app.flagText(system.dcLink12AboveMinimum), ...
-                    app.flagText(system.dcLink34AboveMinimum), ...
-                    system.switchingFrequencyKHz, ...
-                    app.flagText(system.controlEnable), ...
-                    app.flagText(system.controlDisable));
-                return;
-            end
-            channel = ceil(index / 2);
-            item = live.inverter(channel);
-            if mod(index, 2) == 1
-                stateText = app.Telemetry.inverter(channel).state;
-                if isempty(stateText)
-                    stateText = app.Theme.text.noData;
-                end
-                text = sprintf('%s rdy=%d T=%.2f/%.2f Nm %.1f/%.1f C', ...
-                    stateText, item.ready, item.torqueActualNm, ...
-                    item.torqueCommandNm, item.motorTemperatureC, ...
-                    item.switchTemperatureC);
-            else
-                text = sprintf('id %.2f/%.2f iq %.2f/%.2f A %g rpm', ...
-                    item.idSetpointA, item.idActualA, item.iqSetpointA, ...
-                    item.iqActualA, item.speedRpm);
-            end
+            %#ok<INUSD>
+            % TX bytes are model output. They are not decoded as inverter
+            % state because no external acknowledgement or feedback is
+            % implied by their presence in this table.
+            text = 'HIL-generated output; ACK unverified';
         end
 
         function applyLiveInverters(app, decoded)
@@ -1346,8 +1412,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function table = makeCanTable(app, parent)
             %MAKECANTABLE Create one themed CAN traffic table.
             table = uitable(parent);
-            table.ColumnName = {'LIVE', 'ID', 'NAME', 'SIGNAL', 'VALUE', ...
-                'MEASURED RATE'};
+            % Hide MATLAB's unstyleable white column-header strip.
+            table.ColumnName = {};
             table.ColumnWidth = {70, 70, 110, 200, 160, 130};
             table.RowName = {};
             table.Data = cell(0, 6);
