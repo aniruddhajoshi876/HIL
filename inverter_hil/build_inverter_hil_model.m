@@ -59,6 +59,14 @@ save_system(model, modelPath);
 % version-controlled constants here makes a rebuild non-destructive.
 apply_pedal_calibration(dictionaryPath);
 
+% The virtual VCU is part of the same deployable application. Add its
+% isolated Module 3 / IO614 Port A boundary after the base model has been
+% generated; the integration helper is itself R2024b-gated and idempotent.
+virtualVcuModels = fullfile(fileparts(root), 'virtual-vcu', 'models');
+addpath(virtualVcuModels);
+add_virtual_vcu_to_model(modelPath);
+patch_virtual_vcu_chart(modelPath);
+
 fprintf('Created %s and %s with MATLAB %s.\n', ...
     modelPath, dictionaryPath, version('-release'));
 end
@@ -547,9 +555,9 @@ set_param(di, 'parModuleId', '1', 'parSampTime', '0.001', ...
 setup = add_block('speedgoatlib_IO614/CAN and LIN Setup ', ...
     [path '/IO614 CAN Setup'], 'Position', [235 30 390 100]);
 set_param(setup, 'moduleType', 'IO614', 'id', '1', ...
-    'canChn1', 'CAN (HS)', 'canChn2', 'Disabled', ...
+    'canChn1', 'CAN (HS)', 'canChn2', 'CAN (HS)', ...
     'canChn3', 'Disabled', 'canChn4', 'Disabled', ...
-    'arbBdrChn1', '1.0 MBaud');
+    'arbBdrChn1', '1.0 MBaud', 'arbBdrChn2', '1.0 MBaud');
 read = add_block('speedgoatlib_IO614/CAN Read ', ...
     [path '/IO614 CAN FIFO Read Raw'], 'Position', [235 130 390 190]);
 % useBusOut is ON so port 2 is a CAN_MESSAGE bus the Rx Bus Selector can

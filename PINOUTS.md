@@ -27,7 +27,7 @@ module.
 | Module | Role | Used by `inverter_hil`? |
 |---|---|---|
 | **IO183** | 16-bit analog in/out + digital I/O — VCU pedal stimulus, rail monitoring, discrete stimulus/monitor | **Yes** — the focus of this document |
-| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1 only |
+| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1/Port B inverter HIL and channel 2/Port A virtual VCU |
 | **IO391** | Configurable FPGA I/O | **No** — manual ships in the bundle, module is not referenced anywhere in the project |
 
 ---
@@ -384,8 +384,10 @@ order**:
 | **C** | CAN 4 |
 | **D** | CAN 3 |
 
-`inverter_hil` and `io614_can_visibility_test_R2024b` both use **channel 1 → wire
-to connector B**, `CAN (HS)` @ **1.0 MBaud**, channels 2–4 disabled.
+`inverter_hil` uses **channel 1 → connector B** for the inverter HIL and
+**channel 2 → connector A** for the virtual VCU, both `CAN (HS)` @ **1.0
+MBaud**. Channels 3–4 remain disabled. The standalone visibility test still
+uses channel 1 only.
 
 ### 5.2 DB9 pinout (identical on all four connectors)
 
