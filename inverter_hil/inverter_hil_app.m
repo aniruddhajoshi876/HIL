@@ -197,8 +197,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
             app.TabGroup.SelectionChangedFcn = ...
                 @(~, ~) app.syncTabButtons();
-            app.UIFigure.SizeChangedFcn = ...
-                @(~, ~) app.positionTabBar();
+            % No UIFIGURE.SIZECHANGEDFCN here. Assigning one warned at every
+            % construction ('will not execute while AutoResizeChildren is set
+            % to on') and then never ran, so it advertised a resize response
+            % this app did not actually have. REFRESHALL re-derives the
+            % overlay geometry on the status tick instead; see POSITIONTABBAR.
             drawnow;
             app.positionTabBar();
             uistack(app.TabBarPanel, 'top');
@@ -208,17 +211,36 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function positionTabBar(app)
             %POSITIONTABBAR Place the custom bar over the native white header.
             %   MATLAB uitabgroup has no supported header color property in
-            %   R2024b. Positioning this panel from the live tab-group bounds
-            %   keeps the native strip fully covered after window resizing.
+            %   R2024b, so the readable black strip is an overlay and its
+            %   geometry has to match the native header exactly.
+            %
+            %   The header is derived from the tab group's own live bounds:
+            %   POSITION covers the whole control, INNERPOSITION covers only
+            %   the page area, so the band between the two tops IS the header.
+            %   That holds at any window size and needs no magic numbers.
+            %
+            %   It previously used a fixed 42 px height and a +98 y offset,
+            %   which only matched one particular window size. Worse, it ran
+            %   once during construction, before the grid layout had settled,
+            %   so it captured the tab group's pre-layout bounds and left the
+            %   bar 250 px wide at mid-screen -- covering dashboard content
+            %   while most of the white native strip stayed exposed.
             if isempty(app.TabBarPanel) || ~isvalid(app.TabBarPanel) || ...
                     isempty(app.TabGroup) || ~isvalid(app.TabGroup)
                 return;
             end
-            tabPosition = app.TabGroup.Position;
-            nativeHeaderHeight = 42;
-            app.TabBarPanel.Position = [tabPosition(1), ...
-                tabPosition(2) + tabPosition(4) + 98, ...
-                tabPosition(3), nativeHeaderHeight];
+            outer = app.TabGroup.Position;
+            inner = app.TabGroup.InnerPosition;
+            headerBottom = inner(2) + inner(4);
+            headerHeight = (outer(2) + outer(4)) - headerBottom;
+            if ~(headerHeight > 0) || ~(outer(3) > 0)
+                return;
+            end
+            target = [outer(1), headerBottom, outer(3), headerHeight];
+            if isequal(app.TabBarPanel.Position, target)
+                return;
+            end
+            app.TabBarPanel.Position = target;
             uistack(app.TabBarPanel, 'top');
         end
 
@@ -765,6 +787,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function refreshAll(app)
             %REFRESHALL Repaint every readout from the current snapshot.
+            %
+            %   POSITIONTABBAR is driven from here rather than only from
+            %   UIFIGURE.SIZECHANGEDFCN because that callback NEVER FIRES:
+            %   the figure keeps AUTORESIZECHILDREN on, which suppresses it,
+            %   and MATLAB says so at construction ('SizeChangedFcn callback
+            %   will not execute while AutoResizeChildren is set to on'). An
+            %   addlistener on SizeChanged is suppressed identically -- both
+            %   were measured firing zero times across a resize. Turning
+            %   AutoResizeChildren off would hand back the callback but also
+            %   hand this class responsibility for resizing every child.
+            %
+            %   Re-deriving the overlay geometry on the existing status tick
+            %   is what keeps the bar aligned after a resize. It is two
+            %   property reads and an early return when nothing moved, so the
+            %   cost is negligible, and correctness no longer depends on a
+            %   callback this figure configuration cannot deliver.
+            app.positionTabBar();
             app.refreshLiveIo();
             app.refreshPolicy();
             app.refreshToolbar();
