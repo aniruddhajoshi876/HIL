@@ -170,7 +170,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.TabBarPanel = uipanel(app.UIFigure, ...
                 'Units', 'pixels', ...
                 'Position', [0 0 1 1], ...
-                'BackgroundColor', theme.color.background, ...
+                'BackgroundColor', theme.color.tabBar, ...
                 'BorderType', 'none');
             grid = uigridlayout(app.TabBarPanel, [1 5]);
             grid.Padding = [0 0 0 0];
@@ -190,8 +190,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 button.FontName = theme.font.name;
                 button.FontSize = theme.font.body;
                 button.FontWeight = 'bold';
-                button.FontColor = theme.color.primaryText;
-                button.BackgroundColor = theme.color.panel;
+                button.FontColor = theme.color.tabBarText;
+                button.BackgroundColor = theme.color.tabBar;
                 button.ButtonPushedFcn = ...
                     @(~, ~) app.selectTab(pages(index));
             end
@@ -228,18 +228,28 @@ classdef inverter_hil_app < matlab.apps.AppBase
         end
 
         function syncTabButtons(app)
+            %SYNCTABBUTTONS Show which tab is selected without leaving black.
+            %   Every button keeps THEME.COLOR.TABBAR as its background, so
+            %   the header strip stays uniformly black; selection is carried
+            %   by pure-white bold text against the dimmer, lighter-weight
+            %   label of an unselected tab. Swapping the background instead
+            %   (as this did previously) put a blue block behind the selected
+            %   tab and broke the black header.
             if isempty(app.TabButtons) || ~isvalid(app.TabButtons(1))
                 return;
             end
+            theme = app.Theme;
             pages = [app.OverviewTab app.InvertersTab app.IoCanTab ...
                 app.FaultsTab app.LoggingTab];
             for index = 1:numel(pages)
+                button = app.TabButtons(index);
+                button.BackgroundColor = theme.color.tabBar;
                 if app.TabGroup.SelectedTab == pages(index)
-                    app.TabButtons(index).BackgroundColor = ...
-                        app.Theme.color.highlight;
+                    button.FontColor = theme.color.tabBarText;
+                    button.FontWeight = 'bold';
                 else
-                    app.TabButtons(index).BackgroundColor = ...
-                        app.Theme.color.panel;
+                    button.FontColor = theme.color.tabBarInactiveText;
+                    button.FontWeight = 'normal';
                 end
             end
         end

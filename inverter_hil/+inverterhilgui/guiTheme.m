@@ -16,6 +16,20 @@ theme.color.secondaryText = hexColor('CCCCCC');
 theme.color.disabledText = hexColor('858585');
 theme.color.highlight = hexColor('264F78');
 
+% Tab header bar. Pure black with pure white text, deliberately stronger
+% than the 1E1E1E/F0F0F0 chrome around it: this strip sits directly on
+% MATLAB's own white native tab header, which R2024b exposes no supported
+% way to recolour, so the custom bar must cover it opaquely and stay legible
+% at a glance rather than blending into the panels behind it.
+%
+% Selection is carried by TEXT WEIGHT AND BRIGHTNESS, not by a background
+% swap, so every tab keeps the black background that was asked for.
+% TABBARINACTIVETEXT is still light (13:1 on black, well past WCAG AA), so
+% an unselected tab reads as unselected without becoming hard to read.
+theme.color.tabBar = hexColor('000000');
+theme.color.tabBarText = hexColor('FFFFFF');
+theme.color.tabBarInactiveText = hexColor('CCCCCC');
+
 theme.font.name = 'Consolas';
 theme.font.title = 15;
 theme.font.heading = 12;
