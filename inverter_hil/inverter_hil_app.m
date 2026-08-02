@@ -712,6 +712,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.applyLiveInverters(live.inverter);
                     app.applyLiveTxFrames(live);
                 end
+                if live.rx.known
+                    app.applyLiveRxFrames(live.rx);
+                end
             else
                 app.Telemetry.io.healthy = false;
                 app.Telemetry.io.healthyKnown = false;
@@ -759,6 +762,82 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
             end
             app.Telemetry.can.tx = observations;
+        end
+
+        function applyLiveRxFrames(app, rx)
+            %APPLYLIVERXFRAMES Fill the VCU TX / HIL RX table from the frames
+            %   the target genuinely retained.
+            %
+            %   A channel that has received nothing keeps its blank row and
+            %   renders as dashes. It is NOT filled with the zero payload the
+            %   observation carries, because eight 00 bytes is a frame a VCU
+            %   can legitimately send -- showing it for a silent channel would
+            %   be indistinguishable from real traffic.
+            %
+            %   Rate is left unmeasured for the same reason as the TX table:
+            %   this app polls far slower than frames arrive, so any rate it
+            %   derived from poll times would be plausible and wrong.
+            %   ACCEPTEDCOUNT is shown instead, which is a real number the
+            %   target counted.
+            observations = app.Telemetry.can.rx;
+            now = app.hostTimeS();
+            for index = 1:numel(observations)
+                if index > numel(rx.channels)
+                    break;
+                end
+                channel = rx.channels(index);
+                if isempty(channel.hasCommand) || ~channel.hasCommand
+                    observations(index).signal = 'no frame received';
+                    observations(index).value = '';
+                    continue;
+                end
+                previous = observations(index).value;
+                observations(index).value = ...
+                    strtrim(sprintf('%02X ', channel.payload));
+                observations(index).signal = ...
+                    app.rxFrameSignalText(observations(index).id, channel);
+                if ~strcmp(previous, observations(index).value)
+                    observations(index).lastChangeS = now;
+                end
+            end
+            app.Telemetry.can.rx = observations;
+        end
+
+        function text = rxFrameSignalText(app, id, channel)
+            %RXFRAMESIGNALTEXT Decoded summary of one retained control frame.
+            %   Decoded here from the retained bytes with the SAME decoder the
+            %   model uses, so this column can never disagree with the raw
+            %   payload beside it. ID is the row's own control ID.
+            [accepted, ~, command] = inverterhil.decodeControlFrame( ...
+                uint32(id), uint8(8), channel.payload, false, false);
+            if ~accepted
+                text = 'retained bytes no longer decode';
+                return;
+            end
+            % Torque limits are reported as RAW COUNTS, not Nm. Converting
+            % would require choosing between the 1/512 and 1/256 scales, and
+            % that question is unresolved (INVERTERHIL.PROTOCOL marks both
+            % profiles verified = false). Counts are what is on the wire and
+            % are correct under either answer.
+            text = sprintf(['en=%d rst=%d asc=%d imode=%d | %d rpm | ' ...
+                'trq %+d/%+d counts | %d rx, age %s'], ...
+                command.enable, command.resetError, command.ascAllowed, ...
+                command.currentMode, command.speedSetpointRpm, ...
+                command.rawTorquePosCounts, command.rawTorqueNegCounts, ...
+                channel.acceptedCount, app.formatAgeMs(channel.ageMs));
+            if ~isempty(channel.outOfDomain) && channel.outOfDomain
+                text = [text ' | TORQUE LIMITS CLAMPED'];
+            end
+        end
+
+        function text = formatAgeMs(app, value)
+            %FORMATAGEMS Command age, dashes when unknown or never-received.
+            if ~isnumeric(value) || ~isscalar(value) || ~isfinite(value) || ...
+                    value >= double(intmax('uint32'))
+                text = app.Theme.text.noData;
+            else
+                text = sprintf('%d ms', round(value));
+            end
         end
 
         function text = txFrameSignalText(app, index, live)

@@ -1,5 +1,92 @@
 classdef TestControlDecoder < matlab.unittest.TestCase
     methods (Test)
+        function rxObservationReportsWhatWasActuallyReceived(testCase)
+            % The GUI's RX table is fed entirely from this matrix, so the
+            % column layout is a contract with TARGETSESSION.READLIVEIO and
+            % is asserted position by position.
+            bank = inverterhil.initialDecoderBank();
+            payload = uint8([hex2dec('AD') hex2dec('5A') hex2dec('C7') ...
+                hex2dec('CF') 0 hex2dec('20') 0 hex2dec('E0')]);
+            frame = TestControlDecoder.frame(hex2dec('196'), payload);
+
+            bank = inverterhil.receiveControlFrame(bank, frame, uint32(1000));
+            observation = inverterhil.rxObservation(bank, uint32(1075));
+
+            testCase.assertSize(observation, [4 14]);
+            % Channel 2 received; its raw bytes are retained verbatim.
+            testCase.verifyEqual(observation(2, 1:8), double(payload));
+            testCase.verifyEqual(observation(2, 9), 1);     % hasCommand
+            testCase.verifyEqual(observation(2, 10), 1);    % acceptedCount
+            testCase.verifyEqual(observation(2, 11), 75);   % ageMs
+            testCase.verifyEqual(observation(2, 12), 0);    % outOfDomain
+
+            % Every other channel must read as never-received, NOT as zero
+            % age -- a silent 0 ms would look like a live command.
+            for channel = [1 3 4]
+                testCase.verifyEqual(observation(channel, 1:8), zeros(1, 8));
+                testCase.verifyEqual(observation(channel, 9), 0);
+                testCase.verifyEqual(observation(channel, 11), ...
+                    double(intmax('uint32')), ...
+                    'never-received must be the sentinel, not 0 ms.');
+            end
+
+            % Bank-wide columns are repeated on every row.
+            testCase.verifyEqual(observation(:, 13), zeros(4, 1));
+            testCase.verifyEqual(observation(:, 14), zeros(4, 1));
+        end
+
+        function rxObservationDistinguishesZeroPayloadFromNoFrame(testCase)
+            % An all-zero payload is a frame a VCU can legitimately send.
+            % If absence were inferred from the bytes, this frame would be
+            % indistinguishable from silence and the RX table would show
+            % dashes for a channel that is actually being commanded.
+            bank = inverterhil.initialDecoderBank();
+            frame = TestControlDecoder.frame(hex2dec('186'), ...
+                zeros(1, 8, 'uint8'));
+
+            bank = inverterhil.receiveControlFrame(bank, frame, uint32(500));
+            observation = inverterhil.rxObservation(bank, uint32(500));
+
+            testCase.verifyEqual(observation(1, 1:8), zeros(1, 8));
+            testCase.verifyEqual(observation(1, 9), 1, ...
+                'hasCommand must report the frame despite zero bytes.');
+            testCase.verifyEqual(observation(1, 11), 0);
+        end
+
+        function rxObservationCountsRejectionsWithoutAttributingThem(testCase)
+            % A rejected frame cannot be attributed to a channel, so it must
+            % raise the bank-wide counter and leave every per-channel field
+            % untouched.
+            bank = inverterhil.initialDecoderBank();
+            bad = TestControlDecoder.frame(hex2dec('7FF'), ...
+                zeros(1, 8, 'uint8'));
+
+            bank = inverterhil.receiveControlFrame(bank, bad, uint32(10));
+            observation = inverterhil.rxObservation(bank, uint32(10));
+
+            testCase.verifyEqual(observation(:, 13), 1 * ones(4, 1));
+            testCase.verifyEqual(observation(:, 14), 2 * ones(4, 1));
+            testCase.verifyEqual(observation(:, 9), zeros(4, 1));
+        end
+
+        function retainedPayloadTracksOnlyAcceptedFrames(testCase)
+            % A later rejected frame must not overwrite the last good bytes.
+            bank = inverterhil.initialDecoderBank();
+            good = uint8([1 2 3 4 5 6 7 8]);
+            bank = inverterhil.receiveControlFrame(bank, ...
+                TestControlDecoder.frame(hex2dec('1A6'), good), uint32(1));
+            rejected = TestControlDecoder.frame(hex2dec('1A6'), ...
+                uint8([9 9 9 9 9 9 9 9]));
+            rejected.isRemote = true;
+
+            bank = inverterhil.receiveControlFrame(bank, rejected, uint32(2));
+            observation = inverterhil.rxObservation(bank, uint32(2));
+
+            testCase.verifyEqual(observation(3, 1:8), double(good));
+            testCase.verifyEqual(observation(3, 10), 1, ...
+                'a rejected frame must not raise acceptedCount.');
+        end
+
         function decodesGoldenVector(testCase)
             payload = uint8([hex2dec('AD') hex2dec('5A') ...
                 hex2dec('C7') hex2dec('CF') 0 hex2dec('20') ...
@@ -162,6 +249,19 @@ classdef TestControlDecoder < matlab.unittest.TestCase
     end
 
     methods (Static, Access = private)
+        function frame = frame(id, payload)
+            %FRAME A valid frame carrying PAYLOAD, for the RX observation
+            %   tests. VALIDFRAME below is payload-free and kept as is so the
+            %   existing decoder tests are untouched.
+            frame = struct( ...
+                'id', uint32(id), ...
+                'dlc', uint8(8), ...
+                'payload', payload, ...
+                'isExtended', false, ...
+                'isRemote', false, ...
+                'drop', false);
+        end
+
         function frame = validFrame(id)
             frame = struct( ...
                 'id', uint32(id), ...

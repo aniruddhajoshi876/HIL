@@ -28,6 +28,11 @@ if accepted
     bank.hasCommand(index) = true;
     bank.lastValidTickMs(index) = tickMs;
     bank.acceptedCount(index) = bank.acceptedCount(index) + uint32(1);
+    % The raw bytes are retained alongside the decoded command so the GUI's
+    % RX table can show exactly what arrived on the wire, not just this
+    % decoder's interpretation of it. When the two disagree the raw view is
+    % what makes the disagreement visible.
+    bank.lastPayload(index, :) = frame.payload;
 else
     bank.rejectedCount = bank.rejectedCount + uint32(1);
     bank.lastRejectCode = uint8(2);

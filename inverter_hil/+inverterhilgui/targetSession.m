@@ -267,6 +267,7 @@ classdef targetSession < handle
                 'inverter', blankLiveInverters(), ...
                 'inverterKnown', false, ...
                 'systemStatus', blankLiveSystemStatus(), ...
+                'rx', blankLiveRx(), ...
                 'txPayloads', zeros(9, 8, 'uint8'));
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
@@ -390,6 +391,50 @@ classdef targetSession < handle
                 % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
             end
+
+            % What the target actually RECEIVED from the VCU, published on
+            % output port 2 of the same subsystem (see
+            % INVERTERHIL.RXOBSERVATION for the column layout).
+            %
+            % Separate try again, for the same reason as the block above: this
+            % port only exists in applications built after the RX observation
+            % was added, so an older application still running on the target
+            % makes this read fail. That must leave everything above intact
+            % and simply report RX as unknown, not blank a good snapshot.
+            try
+                observation = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 2);
+                if ~isequal(size(observation), [4 14])
+                    return;
+                end
+                observation = double(observation);
+                for channel = 1:4
+                    hasCommand = observation(channel, 9) ~= 0;
+                    snapshot.rx.channels(channel).hasCommand = hasCommand;
+                    snapshot.rx.channels(channel).acceptedCount = ...
+                        observation(channel, 10);
+                    snapshot.rx.channels(channel).outOfDomain = ...
+                        observation(channel, 12) ~= 0;
+                    % PAYLOAD and AGEMS stay at their blank values unless a
+                    % frame was genuinely accepted. Copying the zero row for a
+                    % never-received channel would render as eight 00 bytes,
+                    % which is a real frame a VCU can send -- the table would
+                    % then show fabricated traffic on a silent channel.
+                    if ~hasCommand
+                        continue;
+                    end
+                    snapshot.rx.channels(channel).payload = ...
+                        uint8(observation(channel, 1:8));
+                    snapshot.rx.channels(channel).ageMs = ...
+                        observation(channel, 11);
+                end
+                snapshot.rx.rejectedCount = observation(1, 13);
+                snapshot.rx.lastRejectCode = observation(1, 14);
+                snapshot.rx.known = true;
+            catch err
+                obj.LastError = err.message;
+                % RX.KNOWN stays false; the table shows dashes.
+            end
         end
     end
 
@@ -495,6 +540,20 @@ inverters = repmat(struct( ...
     'motorTemperatureC', NaN, 'switchTemperatureC', NaN, ...
     'idSetpointA', NaN, 'idActualA', NaN, ...
     'iqSetpointA', NaN, 'iqActualA', NaN, 'speedRpm', NaN), 1, 4);
+end
+
+function rx = blankLiveRx()
+%BLANKLIVERX The unknown received-control block.
+%   PAYLOAD is empty, not zeros: an all-zero payload is a frame a VCU can
+%   legitimately send, so it must never be how "nothing received" presents.
+channel = struct( ...
+    'payload', zeros(1, 0, 'uint8'), ...
+    'hasCommand', [], ...
+    'acceptedCount', NaN, ...
+    'ageMs', NaN, ...
+    'outOfDomain', []);
+rx = struct('known', false, 'channels', repmat(channel, 1, 4), ...
+    'rejectedCount', NaN, 'lastRejectCode', NaN);
 end
 
 function status = blankLiveSystemStatus()

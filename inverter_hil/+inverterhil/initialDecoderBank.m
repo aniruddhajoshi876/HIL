@@ -27,4 +27,10 @@ bank.lastRejectCode = uint8(0);
 % restarts. Clearing it would need an explicit acknowledge path, which does
 % not exist yet.
 bank.commandOutOfDomain = false(1, 4);
+% Raw bytes of the last ACCEPTED frame per channel, retained so the GUI can
+% show the wire content rather than only the decode. Zeros until a frame is
+% accepted; HASCOMMAND is what distinguishes "never received" from "received
+% a genuinely all-zero payload", so a reader must consult it and never treat
+% all-zero bytes as absence.
+bank.lastPayload = zeros(4, 8, 'uint8');
 end
