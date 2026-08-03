@@ -28,6 +28,20 @@ snapshot.pedals.brakeAppliedPercent = NaN;
 snapshot.pedals.appliedV = nan(1, 4);
 snapshot.pedals.armed = false;
 
+snapshot.steering.requestedAngleDeg = NaN;
+snapshot.steering.appliedAngleDeg = NaN;
+snapshot.steering.observedAngleDeg = NaN;
+snapshot.steering.speedDegPerS = NaN;
+snapshot.steering.valid = [];
+snapshot.steering.ageS = NaN;
+snapshot.steering.dropout = false;
+
+snapshot.imu.accelerationMps2 = nan(1, 3);
+snapshot.imu.rateOfTurnRadPerS = nan(1, 3);
+snapshot.imu.valid = [];
+snapshot.imu.ageS = NaN;
+snapshot.imu.dropout = false;
+
 snapshot.analogInV = nan(1, 4);
 
 pinNames = {'VC_SD_OUT', 'MAIN_EN_OUT', 'PRECH_EN_OUT', ...

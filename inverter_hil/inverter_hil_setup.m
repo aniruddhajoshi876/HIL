@@ -26,7 +26,8 @@ if isempty(speedgoatBlocks)
         'R2024b Speedgoat block libraries are missing near %s.', root);
 end
 
-addpath(root, speedgoatBlocks);
+addpath(root, speedgoatBlocks, fullfile(root, 'imu'), ...
+    fullfile(root, 'steering-sensor'));
 cacheFolder = fullfile(root, '.simulink', 'cache');
 codegenFolder = fullfile(root, '.simulink', 'codegen');
 if ~isfolder(cacheFolder)
