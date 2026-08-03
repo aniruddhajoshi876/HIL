@@ -66,6 +66,7 @@ virtualVcuModels = fullfile(fileparts(root), 'virtual-vcu', 'models');
 addpath(virtualVcuModels);
 add_virtual_vcu_to_model(modelPath);
 patch_virtual_vcu_chart(modelPath);
+patch_virtual_vcu_inputs(modelPath);
 
 fprintf('Created %s and %s with MATLAB %s.\n', ...
     modelPath, dictionaryPath, version('-release'));

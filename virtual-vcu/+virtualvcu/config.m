@@ -18,4 +18,9 @@ c.throttlePressedRaw = [20900 46500];
 c.brakeRestRaw = [9025 8280];
 c.brakePressedRaw = [31800 31800];
 c.pedalCanId = uint32(501);
+c.stateNames = {'LV_ON','PRECHARGING','ENABLE','BUZZING','RTD','ERROR_SHUTDOWN'};
+c.prechargeTicks = uint32(7500); % 1 ms model task, firmware reference
+c.buzzingTicks = uint32(1500);
+c.digitalMap = struct('precharge',1,'main',2,'cooling',3,'fan',4, ...
+    'shutdownFeedback',5);
 end

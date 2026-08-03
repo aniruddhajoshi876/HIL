@@ -134,7 +134,7 @@ end
 function setMatlabFunctionScript(blockPath, script)
 rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
 chart(1).Script = script;
-if ~contains(chart(1).Script, 'function payloads = virtualVcuDeployStep(ai)')
+if ~contains(chart(1).Script, 'function payloads = virtualVcuDeployStep(u)')
     error('virtualvcu:ChartScript', 'Virtual VCU chart script was not installed.');
 end
 end

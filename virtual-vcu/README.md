@@ -1,14 +1,18 @@
-# Minimal virtual VCU (MATLAB/Simulink R2024b)
+# Virtual VCU (MATLAB/Simulink R2024b)
 
-This folder contains the bench-only LV_ON VCU behavior. It reads only the
-physical IO183 inputs assigned to I/O Module 3, sends CAN on IO614 Port A
-(CAN channel 2), and receives inverter status frames from that port. It never
-uses the inverter's Module 1 signals or Port B in software.
+This folder contains the bench-only VCU behavior. It reads only the physical
+IO183 AI/DI inputs assigned to I/O Module 3, decodes inverter status frames on
+IO614 Port A (CAN channel 2), and sends pedal plus four inverter control
+frames on that port. It never uses Module 1 signals or Port B in software.
 
 The pedal constants and Ephorus frame layout are extracted from MFE26-VC
 `todo` commit `39ea8efd3fc4e88f76e876f94fb99d4adabb7749`; firmware source is
-referenced, not copied. `+virtualvcu/step.m` starts enabled in `LV_ON` and
-produces the minimum pedal plus four inverter-control payloads.
+referenced, not copied. `+virtualvcu/step.m` implements
+`LV_ON -> PRECHARGING -> ENABLE -> BUZZING -> RTD`. Precharge and buzzer
+timing are 7.5 s and 1.5 s at the 1 ms task rate. RTD requires the main-button
+DI and at least 25% brake; shutdown feedback forces `ERROR_SHUTDOWN` and safe
+torque. Control frames are disabled outside active HV states and torque is
+zero outside RTD.
 
 Hardware contract: Module 1 AO01-AO04 -> Module 3 AI01-AI04 through the
 documented 17-pin M12 wiring; Module 1 DIO outputs -> Module 3 DI inputs after
@@ -24,6 +28,9 @@ connected CANH/CANL/ground at 1 Mbit/s with two 120 ohm end terminators.
 | Brake 1 | IO183 AO03 | A3 | AI03 | A9 | 0-5 V |
 | Brake 2 | IO183 AO04 | A4 | AI04 | A10 | 0-5 V |
 | Digital 1-8 | IO183 DIO01-DIO08 | B1-B8 | DI01-DI08 | B1-B8 | conditioned TTL; polarity TBD |
+
+Digital mapping: DI01 precharge, DI02 main/RTD button, DI03 cooling, DI04 fan,
+and DI05 shutdown feedback. DI06-DI08 are reserved.
 
 Analog ground uses A5/A6/A17 and digital reference uses B17 only after the
 ground strategy and signal conditioning are verified. Do not connect 12/24 V
@@ -54,6 +61,8 @@ From the HIL repository root:
 
 The GUI remains `inverter_hil/inverter_hil_app.mlapp`; target telemetry is
 unknown until a target observation exists. The generated model is integrated,
-and the R2024b Speedgoat build completed locally, producing
-`inverter_hil.mldatx`. Target deployment/start, physical Port A/Port B ACKs,
-and analog loopback evidence remain hardware-dependent and unverified here.
+and R2024b TLC plus object compilation completed locally. The final QNX link
+was blocked by the existing OneDrive path-with-spaces toolchain invocation, so
+no fresh `inverter_hil.mldatx` claim is made from this pass. Target
+deployment/start, physical Port A/Port B ACKs, and analog loopback evidence
+remain hardware-dependent and unverified here.

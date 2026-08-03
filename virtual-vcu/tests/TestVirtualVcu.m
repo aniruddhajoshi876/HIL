@@ -45,5 +45,29 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             testCase.verifyEqual(dbc.statusIds, ...
                 uint32([899 901 915 917 931 933 947 949 1024]));
         end
+        function stateMachineUsesDigitalInputs(testCase)
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
+            di = false(1,8); di(1) = true;
+            out = virtualvcu.step(volts, true, di);
+            testCase.verifyEqual(out.state, 'PRECHARGING');
+            ctx = out.context; ctx.ticks = c.prechargeTicks - 1;
+            di(1) = false; out = virtualvcu.step(volts, true, di, [], ctx);
+            testCase.verifyEqual(out.state, 'ENABLE');
+            di(2) = true; out = virtualvcu.step(volts, true, di, [], out.context);
+            testCase.verifyEqual(out.state, 'BUZZING');
+            ctx = out.context; ctx.ticks = c.buzzingTicks - 1;
+            out = virtualvcu.step(volts, true, di, [], ctx);
+            testCase.verifyEqual(out.state, 'RTD');
+            testCase.verifyEqual(out.controlPayloads(1,1), uint8(1));
+        end
+        function canStatusIsDecodedAndRetained(testCase)
+            payload = uint8([4 0 4 0 0 0 0 0]);
+            out = virtualvcu.step(zeros(1,4), true, false(1,8), ...
+                struct('id',uint32(hex2dec('383')),'payload',payload));
+            testCase.verifyTrue(out.can.valid);
+            testCase.verifyEqual(out.can.lastId, uint32(hex2dec('383')));
+            testCase.verifyTrue(out.can.inverterReady);
+        end
     end
 end
