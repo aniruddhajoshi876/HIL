@@ -35,6 +35,7 @@ classdef fakeTargetBackend < handle
         Running = false
         Name = 'FakeTarget'
         ExecutionTimeS = 0
+        CurrentApplication = ''
     end
 
     methods
@@ -71,6 +72,7 @@ classdef fakeTargetBackend < handle
             obj.requireConnected();
             obj.Loaded = true;
             obj.Running = false;
+            obj.CurrentApplication = 'inverter_hil';
         end
 
         function start(obj)
@@ -86,6 +88,10 @@ classdef fakeTargetBackend < handle
         function stop(obj)
             obj.failIfRequested('stop');
             obj.Running = false;
+        end
+
+        function name = currentApplicationName(obj)
+            name = obj.CurrentApplication;
         end
 
         function reset(obj)

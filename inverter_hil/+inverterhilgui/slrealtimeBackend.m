@@ -92,6 +92,11 @@ classdef slrealtimeBackend < handle
             end
         end
 
+        function name = currentApplicationName(obj)
+            %CURRENTAPPLICATIONNAME Return the target's current app name.
+            name = char(getLastApplication(obj.Target));
+        end
+
         function value = executionTimeS(obj)
             value = double(obj.Target.getExecTime());
         end

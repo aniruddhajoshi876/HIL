@@ -78,7 +78,7 @@ classdef targetSession < handle
                 obj.ensureBackend();
                 obj.Backend.connect();
                 obj.applyEvent('connectSucceeded');
-                obj.ensureApplicationLoaded();
+                obj.ensureApplicationRunning();
                 obj.Contract = inverterhilgui.discoverContract( ...
                     obj.Backend.availableParameters());
                 obj.readAllTargetValues();
@@ -566,17 +566,25 @@ classdef targetSession < handle
             obj.State = transition.state;
         end
 
-        function ensureApplicationLoaded(obj)
-            %ENSUREAPPLICATIONLOADED Stop the target and load current build.
-            %   The application is loaded unconditionally rather than only
-            %   when the target reports disconnected/stopped. The single
-            %   INVERTER_HIL application contains both inverter HIL and the
-            %   virtual VCU, so this guarantees both boundaries are replaced
-            %   together before the GUI reads its contract and telemetry.
-            if strcmp(obj.Backend.applicationState(), 'running')
-                obj.Backend.stop();
+        function ensureApplicationRunning(obj)
+            %ENSUREAPPLICATIONRUNNING Stop only another app, then run ours.
+            %   A running INVERTER_HIL is preserved. If another model owns
+            %   the target, it is stopped before the integrated inverter HIL
+            %   plus virtual VCU application is loaded and started.
+            state = obj.Backend.applicationState();
+            if strcmp(state, 'running')
+                current = obj.Backend.currentApplicationName();
+                if ~strcmpi(current, 'inverter_hil')
+                    obj.Backend.stop();
+                    state = 'stopped';
+                else
+                    return;
+                end
             end
-            obj.Backend.load('inverter_hil');
+            if ~strcmp(state, 'loaded')
+                obj.Backend.load('inverter_hil');
+            end
+            obj.Backend.start();
         end
 
         function syncStateFromBackend(obj)
