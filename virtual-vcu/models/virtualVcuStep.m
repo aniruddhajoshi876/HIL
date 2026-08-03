@@ -1,6 +1,6 @@
 function [pedal,c1,c2,c3,c4,telemetry,rxSeen,rxId] = virtualVcuStep(ai,rxPresent,rxIdIn,rxExtended,rxRemote,rxLength,rxData)
 %#codegen
-% Fixed-size deployable wrapper. Physical Module 3 AI is the only pedal source.
+% Fixed-size deployable wrapper. Physical Module 2 AI is the only pedal source.
 x = double(ai);
 t = uint8(max(0,min(100,round(x(1) * 20))));
 b = uint16(max(0,min(650,round(x(3) * 130))));

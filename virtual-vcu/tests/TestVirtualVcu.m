@@ -31,7 +31,7 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
         end
         function hardwareSeparationIsExplicit(testCase)
             c = virtualvcu.config();
-            testCase.verifyEqual(c.moduleId, 3);
+            testCase.verifyEqual(c.moduleId, 2);
             testCase.verifyEqual(c.canChannel, 2);
             testCase.verifyEqual(c.canPort, 'A');
             testCase.verifyNotEqual(c.moduleId, 1);

@@ -1,6 +1,6 @@
 function out = step(measuredVoltageV, enabled, digitalInputs, rx, context)
 %STEP Run one deterministic virtual-VCU state-machine sample.
-%   Inputs are physical Module 3 AI/DI values and an optional decoded CAN
+%   Inputs are physical Module 2 AI/DI values and an optional decoded CAN
 %   frame.  No GUI command or Module 1 signal is accepted.
 if nargin < 2, enabled = true; end
 if nargin < 3 || isempty(digitalInputs), digitalInputs = false(1,8); end

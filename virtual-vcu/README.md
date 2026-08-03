@@ -1,7 +1,7 @@
 # Virtual VCU (MATLAB/Simulink R2024b)
 
 This folder contains the bench-only VCU behavior. It reads only the physical
-IO183 AI/DI inputs assigned to I/O Module 3, decodes inverter status frames on
+IO183 AI/DI inputs assigned to I/O Module 2, decodes inverter status frames on
 IO614 Port A (CAN channel 2), and sends pedal plus four inverter control
 frames on that port. It never uses Module 1 signals or Port B in software.
 
@@ -14,14 +14,14 @@ DI and at least 25% brake; shutdown feedback forces `ERROR_SHUTDOWN` and safe
 torque. Control frames are disabled outside active HV states and torque is
 zero outside RTD.
 
-Hardware contract: Module 1 AO01-AO04 -> Module 3 AI01-AI04 through the
-documented 17-pin M12 wiring; Module 1 DIO outputs -> Module 3 DI inputs after
+Hardware contract: Module 1 AO01-AO04 -> Module 2 AI01-AI04 through the
+documented 17-pin M12 wiring; Module 1 DIO outputs -> Module 2 DI inputs after
 level/polarity review. IO614 Port A (channel 2) and Port B (channel 1) are
 connected CANH/CANL/ground at 1 Mbit/s with two 120 ohm end terminators.
 
 ## Loopback map
 
-| Function | Module 1 source | Module 1 pin | Module 3 input | Module 3 pin | Range/level |
+| Function | Module 1 source | Module 1 pin | Module 2 input | Module 2 pin | Range/level |
 |---|---|---:|---|---:|---|
 | Throttle 1 | IO183 AO01 | A1 | AI01 | A7 | 0-5 V |
 | Throttle 2 | IO183 AO02 | A2 | AI02 | A8 | 0-5 V |

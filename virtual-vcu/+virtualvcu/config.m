@@ -1,8 +1,8 @@
 function c = config()
 %CONFIG R2024b virtual-VCU bench contract.
 %   The virtual VCU is deliberately separated from the inverter boundary:
-%   IO183 module 3 and IO614 connector A (CAN channel 2).
-c.moduleId = 3;
+%   IO183 module 2 and IO614 connector A (CAN channel 2).
+c.moduleId = 2;
 c.canChannel = 2;
 c.canPort = 'A';
 c.canBitrate = 1e6;
