@@ -18,6 +18,14 @@ if ~isfinite(raw(1)) || ~isfinite(raw(2)) || ~isfinite(raw(3)) || ~isfinite(raw(
 end
 persistent state ticks
 if isempty(state), state = uint8(0); ticks = uint32(0); end
+rxId = uint32(max(u(13),0));
+rxLength = uint32(max(u(16),0));
+rxStatus3x3 = rxLength == 8 && (rxId == 899 || rxId == 915 || ...
+    rxId == 931 || rxId == 947);
+if rxStatus3x3 && bitand(uint8(max(u(17),0)),uint8(3)) >= 2 && ...
+        state >= 2 && state <= 4
+    state = uint8(5); ticks = uint32(0);
+end
 if shutdownFeedback
     state = uint8(5); ticks = uint32(0);
 elseif state == 5
