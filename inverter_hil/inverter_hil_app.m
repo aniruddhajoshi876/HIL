@@ -52,6 +52,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
         BrakeSlider               matlab.ui.control.Slider
         BrakeField                matlab.ui.control.NumericEditField
         BrakeAppliedLabel         matlab.ui.control.Label
+        SteeringDial              matlab.ui.control.Knob
+        SteeringField             matlab.ui.control.NumericEditField
+        SteeringAppliedLabel      matlab.ui.control.Label
         PedalVoltageLabels
         PlausibilityCheckBox      matlab.ui.control.CheckBox
         ExpertModeCheckBox        matlab.ui.control.CheckBox
@@ -99,6 +102,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
         TargetBusy = false
         ThrottleCoalescer
         BrakeCoalescer
+        SteeringCoalescer
+        % Last steering angle the operator REQUESTED via the dial or the
+        % numeric field. Held here rather than read back off the widget so
+        % REFRESHDRIVERINPUTS can show requested and applied side by side;
+        % NaN until the operator actually moves the dial, so a never-touched
+        % control shows dashes instead of a fabricated 0 deg.
+        RequestedSteeringDeg = NaN
         % True while an XCP master (e.g. CarMaker over Ethernet) is
         % actively driving pedal demand, in which case it owns
         % hil_cmd_pedals_throttle/brake and the GUI becomes
@@ -418,7 +428,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             theme = app.Theme;
             panel = app.makePanel(parent, 'DRIVER INPUTS');
             grid = app.makeGrid(panel, ...
-                {26, 26, 26, 26, 90, 26, 26, 26, 26, '1x'}, ...
+                {26, 26, 26, 26, 26, 90, 26, 26, 26, 26, '1x'}, ...
                 {150, '1x', 110, 150});
 
             app.makeLabel(grid, 'THROTTLE %', theme.font.body, ...
@@ -451,6 +461,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.BrakeField = app.makeNumericField(grid, ...
                 [0 100], @onBrakeFieldChanged);
             app.BrakeAppliedLabel = app.makeLabel(grid, ...
+                'APPLIED --', theme.font.body, theme.color.secondaryText);
+
+            app.makeLabel(grid, 'STEERING ANGLE deg', theme.font.body, ...
+                theme.color.primaryText);
+            app.SteeringDial = uiknob(grid, 'continuous');
+            app.SteeringDial.Limits = [-780 780];
+            app.SteeringDial.MajorTicks = -780:195:780;
+            app.SteeringDial.Value = 0;
+            app.SteeringDial.FontName = theme.font.name;
+            app.SteeringDial.FontColor = theme.color.secondaryText;
+            app.SteeringDial.ValueChangingFcn = ...
+                createCallbackFcn(app, @onSteeringChanging, true);
+            app.SteeringDial.ValueChangedFcn = ...
+                createCallbackFcn(app, @onSteeringChanged, true);
+            app.SteeringField = app.makeNumericField(grid, ...
+                [-780 780], @onSteeringFieldChanged);
+            app.SteeringAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
 
             app.makeLabel(grid, 'APPLIED PEDAL V', theme.font.body, ...
@@ -825,6 +852,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.Telemetry = inverterhilgui.blankTelemetry();
             app.ThrottleCoalescer = inverterhilgui.sliderCoalescer(0.030);
             app.BrakeCoalescer = inverterhilgui.sliderCoalescer(0.030);
+            app.SteeringCoalescer = inverterhilgui.sliderCoalescer(0.030);
             app.Heartbeat = struct('counter', uint32(0), ...
                 'lastUpdateS', NaN);
             app.refreshAll();
@@ -933,6 +961,10 @@ classdef inverter_hil_app < matlab.apps.AppBase
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
             if emission.hasValue && ~app.XcpDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
+            end
+            emission = app.SteeringCoalescer.poll(app.hostTimeS());
+            if emission.hasValue
+                app.commitWrite('steering.angle_deg', emission.value, true);
             end
         end
 
@@ -1464,6 +1496,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.Telemetry.vcu.state, interlocks, app.XcpDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
+            app.applyEnable([app.SteeringDial app.SteeringField], ...
+                app.Policy.sensorStimulus);
             app.applyEnable([app.CoolingSwitch ...
                 app.ShutdownFeedbackSwitch], app.Policy.digitalStimuli);
             app.applyEnable([app.PrechargeButton app.MainMomentaryButton], ...
@@ -1620,6 +1654,26 @@ classdef inverter_hil_app < matlab.apps.AppBase
             throttleMismatch = isfinite(sensorPercentages(1)) && ...
                 isfinite(sensorPercentages(2)) && ...
                 abs(sensorPercentages(1) - sensorPercentages(2)) > 20;
+            % REQUESTED (dial), APPLIED (virtual car), SPEED (derived), and
+            % LWS (independently decoded frame value) are four DIFFERENT
+            % quantities, so they get four separate fields rather than one
+            % label that flips between them. The dial is not a display-only
+            % LWS override: it feeds the shared vehicle state through a
+            % bounded steering rate, so REQUESTED and APPLIED genuinely
+            % differ while the car is still slewing, and LWS is what the
+            % encoded CAN frame actually carries. Unknown values render as
+            % dashes -- never a fabricated zero.
+            if isfield(app.Telemetry, 'steering')
+                steering = app.Telemetry.steering;
+            else
+                steering = inverterhilgui.blankTelemetry().steering;
+            end
+            app.SteeringAppliedLabel.Text = sprintf( ...
+                'REQUESTED %s | APPLIED %s | SPEED %s | LWS %s', ...
+                app.formatSteeringValue(app.RequestedSteeringDeg, 'deg'), ...
+                app.formatSteeringValue(steering.appliedAngleDeg, 'deg'), ...
+                app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
+                app.formatSteeringValue(steering.observedAngleDeg, 'deg'));
             for index = 1:4
                 measurement = inverterhilgui.formatMeasurement( ...
                     pedals.appliedV(index), NaN, 'V', false);
@@ -2013,6 +2067,50 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.BrakeSlider.Value = app.BrakeField.Value;
             app.submitPedal(app.BrakeCoalescer, 'pedals.brake', ...
                 app.BrakeField.Value);
+        end
+
+        function onSteeringChanging(app, event)
+            %ONSTEERINGCHANGING Coalesce rapid virtual-car steering motion.
+            app.submitSteering(event.Value);
+        end
+
+        function onSteeringChanged(app, ~)
+            %ONSTEERINGCHANGED Commit the final steering-dial value.
+            app.SteeringField.Value = app.SteeringDial.Value;
+            app.submitSteering(app.SteeringDial.Value);
+        end
+
+        function onSteeringFieldChanged(app, ~)
+            %ONSTEERINGFIELDCHANGED Commit a typed steering angle.
+            app.SteeringDial.Value = app.SteeringField.Value;
+            app.submitSteering(app.SteeringField.Value);
+        end
+
+        function submitSteering(app, angleDeg)
+            %SUBMITSTEERING Offer a steering angle to the 30 ms coalescer.
+            emission = app.SteeringCoalescer.submit(angleDeg, ...
+                app.hostTimeS());
+            if emission.hasValue
+                app.commitWrite('steering.angle_deg', emission.value, true);
+            end
+            % Record what was REQUESTED and let REFRESHDRIVERINPUTS repaint
+            % the combined readback. The label is not written here: doing so
+            % would overwrite the applied/speed/observed fields with a
+            % requested-only string until the next refresh, which is exactly
+            % the requested-vs-applied conflation the separate fields exist
+            % to prevent.
+            app.RequestedSteeringDeg = angleDeg;
+        end
+
+        function text = formatSteeringValue(app, value, unit)
+            %FORMATSTEERINGVALUE One steering readback field.
+            %   Dashes for anything not a finite scalar, so a disconnected or
+            %   stale sensor is never rendered as a real measurement.
+            if isnumeric(value) && isscalar(value) && isfinite(value)
+                text = sprintf('%.1f %s', value, unit);
+            else
+                text = app.Theme.text.noData;
+            end
         end
 
         function submitPedal(app, coalescer, name, percent)
