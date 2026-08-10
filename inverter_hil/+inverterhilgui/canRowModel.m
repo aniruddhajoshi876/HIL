@@ -8,8 +8,12 @@ function rows = canRowModel(observations, nowS, options)
 %   nominal cycle: with fewer than two timestamps the rate reads as dashes.
 %
 %   OBSERVATIONS is a structure array with fields ID, NAME, SIGNAL, VALUE,
-%   TIMESTAMPSS (observed arrival times, seconds) and LASTCHANGES (host time
-%   of the most recent payload change).
+%   TIMESTAMPSS (observed arrival times, seconds), LASTCHANGES (host time
+%   of the most recent payload change), and COUNT (a genuine, target-
+%   measured cumulative message count -- e.g. INVERTERHIL.RXOBSERVATION's
+%   ACCEPTEDCOUNT, or EPHORUSSYSTEMSTATUSSTEP's TXCOUNT -- shown verbatim,
+%   never derived or estimated here, the same "only show what is actually
+%   measured" rule the rate calculation already follows).
 %
 %   OPTIONS fields: HIGHLIGHTS (change-highlight window, default 0.5 s) and
 %   STALES (age past which a row reads STALE, default 0.1 s).
@@ -40,6 +44,7 @@ for index = 1:numel(observations)
     row.name = textOr(item, 'name', noData);
     row.signal = textOr(item, 'signal', noData);
     row.value = textOr(item, 'value', noData);
+    row.count = countText(item, noData);
 
     stamps = timestampVector(item);
     if numel(stamps) >= 2
@@ -86,8 +91,26 @@ row = struct( ...
     'value', noData, ...
     'rate', noData, ...
     'rateHz', NaN, ...
+    'count', noData, ...
     'lastSeenS', NaN, ...
     'highlight', false);
+end
+
+function text = countText(item, noData)
+%COUNTTEXT A whole, non-negative message count, verbatim from the target.
+%   Never fabricated: a missing, non-scalar, negative, or non-integer
+%   COUNT reads as NODATA rather than being rounded or clamped into
+%   looking like a real one.
+text = noData;
+if ~isfield(item, 'count')
+    return;
+end
+value = item.count;
+if ~isnumeric(value) || ~isscalar(value) || ~isreal(value) || ...
+        ~isfinite(value) || value < 0 || value ~= floor(value)
+    return;
+end
+text = sprintf('%d', value);
 end
 
 function text = idText(item, noData)

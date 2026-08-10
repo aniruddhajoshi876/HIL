@@ -70,6 +70,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         InverterFieldLabels
         InverterTitleLabels
         InverterCornerLabels
+        InverterSourceLabel       matlab.ui.control.Label
         CanRxTable                matlab.ui.control.Table
         CanTxTable                matlab.ui.control.Table
         CanDiagnosticsLabel       matlab.ui.control.Label
@@ -93,11 +94,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
         Telemetry
         Policy
         StatusTimer
+        % True while a CONNECT/LOAD/START/STOP/RESET call is in flight on
+        % the Simulink Real-Time target. See ENTERTARGETSECTION.
+        TargetBusy = false
         ThrottleCoalescer
         BrakeCoalescer
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
+        % Previous poll's target transmit count, and whether it advanced
+        % between the last two polls. INVERTERHILGUI.CANACKSTATUS requires
+        % that genuine observation before it will report frames as
+        % acknowledged -- see APPLYLIVETXFRAMES.
+        LastTxMessageCount = NaN
+        TxTransmitting = false
         % Resolved at startup from inverterhilgui.hostHeartbeatTimeout so the
         % host can never report healthy longer than the target-side fallback.
         HeartbeatTimeoutS
@@ -530,14 +540,29 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function createInvertersTab(app)
             %CREATEINVERTERSTAB Four compact INV1-INV4 status panels.
             theme = app.Theme;
-            outer = app.makeGrid(app.InvertersTab, {'1x', '1x'}, ...
-                {'1x', '1x'});
+            outer = app.makeGrid(app.InvertersTab, {18, '1x'}, {'1x'});
+            % Permanent disclosure, the same pattern as the CAN TX table's
+            % "HIL-generated; bus ACK unverified" text: these fields are
+            % this rig's own simulated inverter output (STEPMODEL/
+            % STEPPLANT), not a measurement confirmed by another node. See
+            % TARGETSESSION.READLIVEIO for why -- there is no cross-channel
+            % CAN receipt signal wired up to verify it.
+            app.InverterSourceLabel = app.makeLabel(outer, ...
+                ['SIMULATED INVERTER OUTPUT (this rig''s own STEPMODEL/' ...
+                'STEPPLANT state) - not independently confirmed by a ' ...
+                'cross-channel CAN receipt; no such signal is wired up yet.'], ...
+                theme.font.small, theme.color.secondaryText);
+            app.InverterSourceLabel.Layout.Row = 1;
+            app.InverterSourceLabel.Layout.Column = 1;
+            panels = app.makeGrid(outer, {'1x', '1x'}, {'1x', '1x'});
+            panels.Layout.Row = 2;
+            panels.Layout.Column = 1;
             fieldCount = numel(app.InverterFieldNames);
             app.InverterTitleLabels = gobjects(1, 4);
             app.InverterCornerLabels = gobjects(1, 4);
             app.InverterFieldLabels = gobjects(4, fieldCount);
             for channel = 1:4
-                panel = app.makePanel(outer, sprintf('INVERTER %d', channel));
+                panel = app.makePanel(panels, sprintf('INVERTER %d', channel));
                 rows = num2cell(repmat(20, 1, fieldCount + 1));
                 grid = app.makeGrid(panel, [rows {'1x'}], {170, '1x'});
                 app.InverterTitleLabels(channel) = app.makeLabel(grid, ...
@@ -700,6 +725,21 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function onStatusTimer(app)
             %ONSTATUSTIMER Low-rate status, heartbeat, and reconciliation.
+            %
+            %   Skipped outright while TARGETBUSY (see ENTERTARGETSECTION):
+            %   this tick's TICKHEARTBEAT/REFRESHALL reach the target through
+            %   GETSIGNAL/GETPARAM exactly like CONNECT/LOAD/START/STOP/
+            %   RESET do, and a timer tick landing mid-lifecycle-call reaches
+            %   Simulink Real-Time's async streaming queue from two call
+            %   stacks at once. That is not a MATLAB error to catch -- it is
+            %   an access violation in slrealtime::xcp::AsyncQueue::write
+            %   that takes MATLAB down with it (confirmed from crash dumps
+            %   captured on this machine on the STOP path). Skipping, not
+            %   deferring, is what keeps this timer from ever reaching the
+            %   target while a lifecycle call is on it.
+            if app.TargetBusy
+                return;
+            end
             try
                 app.tickHeartbeat();
                 app.pollCoalescers();
@@ -707,6 +747,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
             catch err
                 app.reportError('status_timer', err);
             end
+        end
+
+        function cleanupObj = enterTargetSection(app)
+            %ENTERTARGETSECTION Lock ONSTATUSTIMER out of the target for the
+            %   life of the returned cleanup object. Every callback that
+            %   calls CONNECT/LOAD/START/STOP/RESET on APP.SESSION must hold
+            %   this for its full body (the action and the REFRESHALL that
+            %   follows it), since REFRESHALL reaches the target too.
+            app.TargetBusy = true;
+            cleanupObj = onCleanup(@() app.leaveTargetSection());
+        end
+
+        function leaveTargetSection(app)
+            app.TargetBusy = false;
         end
 
         function tickHeartbeat(app)
@@ -897,12 +951,44 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   assumed. This app polls at the 250 ms status tick, so feeding
             %   it poll times would report about 4 Hz for frames the model
             %   emits at 200 Hz -- a plausible-looking, wrong number. Leaving
-            %   TIMESTAMPSS empty makes the column read dashes, which is the
-            %   honest statement that polling cannot measure this rate. A real
-            %   rate needs frame-arrival instrumentation on the target.
+            %   TIMESTAMPSS holds exactly ONE entry, this poll's host time --
+            %   never accumulated -- so CANROWMODEL's rate calculation (which
+            %   needs at least 2 samples) stays off and the column keeps
+            %   reading dashes, the honest statement that polling cannot
+            %   measure this rate. A single timestamp is enough for
+            %   CANROWMODEL's LIVE/STALE check, though, which only asks
+            %   whether the most recent sample is still fresh; leaving
+            %   TIMESTAMPSS empty (as before) starved that check too, so
+            %   every row read NO DATA forever regardless of whether the
+            %   target was actually transmitting. A real rate still needs
+            %   frame-arrival instrumentation on the target.
+            %
+            %   COUNT is different: LIVE.TXMESSAGECOUNT is a genuine,
+            %   target-measured cumulative count (EPHORUSSYSTEMSTATUSSTEP's
+            %   TXCOUNT), not derived from poll times, so it is shown
+            %   verbatim -- the same "number of messages sent" a CAN
+            %   analyzer like PCAN-View shows, in place of a rate this app
+            %   cannot honestly measure.
             payloads = live.txPayloads;
             observations = app.Telemetry.can.tx;
             now = app.hostTimeS();
+
+            % Whether the target's own transmit count advanced since the
+            % last poll -- a genuine observation that frames are actually
+            % leaving, which INVERTERHILGUI.CANACKSTATUS requires before it
+            % will credit an error-free controller with acknowledgement.
+            count = live.txMessageCount;
+            if isnumeric(count) && isscalar(count) && isfinite(count)
+                if isfinite(app.LastTxMessageCount)
+                    app.TxTransmitting = count > app.LastTxMessageCount;
+                end
+                app.LastTxMessageCount = count;
+            else
+                app.TxTransmitting = false;
+            end
+            ack = inverterhilgui.canAckStatus( ...
+                app.Telemetry.can.diagnostics, app.TxTransmitting);
+
             for index = 1:numel(observations)
                 if index > size(payloads, 1)
                     break;
@@ -912,11 +998,12 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 previous = observations(index).value;
                 observations(index).value = strtrim(value);
                 observations(index).signal = ...
-                    ['HIL-generated; bus ACK unverified | ' ...
-                    app.txFrameSignalText(index, live)];
+                    ['HIL-generated | ' ack.text];
                 if ~strcmp(previous, observations(index).value)
                     observations(index).lastChangeS = now;
                 end
+                observations(index).timestampsS = now;
+                observations(index).count = live.txMessageCount;
             end
             app.Telemetry.can.tx = observations;
         end
@@ -936,6 +1023,15 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   derived from poll times would be plausible and wrong.
             %   ACCEPTEDCOUNT is shown instead, which is a real number the
             %   target counted.
+            %
+            %   TIMESTAMPSS gets exactly ONE entry per channel, computed as
+            %   NOW minus the target's own AGEMS -- a real, target-measured
+            %   per-frame age (from EPHORUS RX RETENTION's 1 ms clock), not
+            %   a poll-time guess -- so CANROWMODEL's LIVE/STALE check
+            %   reflects whether the CHANNEL is actually current, not just
+            %   whether this poll happened to succeed. A single entry never
+            %   feeds CANROWMODEL's rate calculation (which needs 2+), so
+            %   the RATE column still correctly stays dashes.
             observations = app.Telemetry.can.rx;
             now = app.hostTimeS();
             for index = 1:numel(observations)
@@ -946,6 +1042,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if isempty(channel.hasCommand) || ~channel.hasCommand
                     observations(index).signal = 'no frame received';
                     observations(index).value = '';
+                    observations(index).timestampsS = [];
                     continue;
                 end
                 previous = observations(index).value;
@@ -956,6 +1053,12 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if ~strcmp(previous, observations(index).value)
                     observations(index).lastChangeS = now;
                 end
+                if isnumeric(channel.ageMs) && isscalar(channel.ageMs) && ...
+                        isfinite(channel.ageMs) && ...
+                        channel.ageMs < double(intmax('uint32'))
+                    observations(index).timestampsS = now - double(channel.ageMs) / 1000;
+                end
+                observations(index).count = double(channel.acceptedCount);
             end
             app.Telemetry.can.rx = observations;
         end
@@ -995,14 +1098,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
             else
                 text = sprintf('%d ms', round(value));
             end
-        end
-
-        function text = txFrameSignalText(app, index, live)
-            %#ok<INUSD>
-            % TX bytes are model output. They are not decoded as inverter
-            % state because no external acknowledgement or feedback is
-            % implied by their presence in this table.
-            text = 'HIL-generated output; ACK unverified';
         end
 
         function applyLiveInverters(app, decoded)
@@ -1295,12 +1390,18 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function paintCanTable(app, table, rows)
             %PAINTCANTABLE Render CAN rows and highlight recent payload changes.
+            %   The last column shows ROWS.COUNT -- a genuine, target-
+            %   measured cumulative message count (PCAN-View style), not
+            %   ROWS.RATE: RATE stays dashed by design (see CANROWMODEL),
+            %   since nothing here measures real frame-arrival timing, and a
+            %   climbing count is a more honest, unambiguous sign of live
+            %   traffic than a rate this app cannot actually derive.
             data = cell(numel(rows), 6);
             highlighted = false(1, numel(rows));
             for index = 1:numel(rows)
                 data(index, :) = {rows(index).live, rows(index).id, ...
                     rows(index).name, rows(index).signal, ...
-                    rows(index).value, rows(index).rate};
+                    rows(index).value, rows(index).count};
                 highlighted(index) = rows(index).highlight;
             end
             if isempty(rows)
@@ -1486,6 +1587,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function onConnectPushed(app, ~)
             %ONCONNECTPUSHED Connect or disconnect the target.
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             if app.Session.describeState().isConnected
                 app.recordLifecycle('disconnect', app.Session.disconnect());
             else
@@ -1496,24 +1598,28 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function onLoadPushed(app, ~)
             %ONLOADPUSHED Load the real-time application.
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('load', app.Session.load('inverter_hil'));
             app.refreshAll();
         end
 
         function onStartPushed(app, ~)
             %ONSTARTPUSHED Start the real-time application.
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('start', app.Session.start());
             app.refreshAll();
         end
 
         function onStopPushed(app, ~)
             %ONSTOPPUSHED Stop the application and fall back to safe outputs.
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('stop', app.Session.stop());
             app.refreshAll();
         end
 
         function onResetPushed(app, ~)
             %ONRESETPUSHED Reset the target application.
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('reset', app.Session.reset());
             app.refreshAll();
         end

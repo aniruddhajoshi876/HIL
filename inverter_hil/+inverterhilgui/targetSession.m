@@ -270,7 +270,8 @@ classdef targetSession < handle
                 'systemStatus', blankLiveSystemStatus(), ...
                 'rx', blankLiveRx(), ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
-                'txPayloadsKnown', false);
+                'txPayloadsKnown', false, ...
+                'txMessageCount', NaN);
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -415,19 +416,46 @@ classdef targetSession < handle
                 snapshot.systemStatus = ...
                     inverterhil.decodeSystemStatus(payloads(9, :));
                 % Raw bytes retained so the TX table can show exactly what the
-                % model generated. They are not proof of successful bus
-                % transmission or acknowledgement by another node.
+                % model generated. These bytes alone are not proof of
+                % successful transmission; acknowledgement is reported
+                % separately and for real by INVERTERHILGUI.CANACKSTATUS,
+                % from the CAN controller's own bus-off/error-warning
+                % counters read below.
                 snapshot.txPayloads = payloads;
                 snapshot.txPayloadsKnown = true;
-                % The decoded values above are model output, not measured
-                % inverter feedback. Keep INVERTERKNOWN false so the GUI shows
-                % unavailable rather than presenting simulated state as live.
-                snapshot.inverterKnown = false;
+                % The decoded values above are this rig's own generated
+                % inverter-side output (STEPMODEL/STEPPLANT), not an
+                % independently confirmed measurement -- there is no
+                % cross-channel CAN receipt signal wired up to verify it
+                % (see INVERTER_HIL_APP's CREATEINVERTERSTAB, which carries a
+                % permanent disclosure label for exactly this reason).
+                % INVERTERKNOWN is true because there genuinely is decoded
+                % data to show; the "genuinely received" branch below still
+                % overwrites individual channels with independently verified
+                % values if a real CAN round-trip observation is ever wired
+                % up, so this is a floor, not a ceiling, on data quality.
+                snapshot.inverterKnown = true;
                 snapshot.systemStatus = blankLiveSystemStatus();
             catch err
                 obj.LastError = err.message;
                 % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
+            end
+
+            % Port 4: a genuine, target-measured count of status-cycle
+            % payloads emitted (see BUILD_INVERTER_HIL_MODEL's
+            % STATUSCYCLESCRIPT). Its own try, matching port 3 above: this
+            % port only exists in applications built after this fix, so an
+            % older running application must leave everything read above
+            % intact and simply report the count unknown (NaN), not blank a
+            % good snapshot.
+            try
+                txCount = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 4);
+                snapshot.txMessageCount = double(txCount);
+            catch err
+                obj.LastError = err.message;
+                % TXMESSAGECOUNT stays NaN; the GUI shows dashes.
             end
 
             % What the target actually RECEIVED from the VCU, published on
