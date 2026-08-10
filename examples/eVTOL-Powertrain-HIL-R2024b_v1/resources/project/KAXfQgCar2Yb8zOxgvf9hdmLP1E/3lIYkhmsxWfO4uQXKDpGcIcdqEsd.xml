@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Info File="SupportFiles/Scripts/ShutDown.m" GroupUUID="" Icon="" Name="ShutDown" Type="Shutdown" Visible="0">
+    <Extension Name="ShutdownPrev" Value="61838f6a-4b15-4b5a-8c94-d10326d525d7"/>
+</Info>
