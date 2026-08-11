@@ -4,9 +4,22 @@ function patch_virtual_vcu_state_outputs(modelPath)
 % R2024b-only model edit. The saved model is changed through Simulink and
 % Stateflow APIs; the SLX archive is never edited directly. The existing
 % five 8-byte CAN payloads remain elements 1:40. Elements 41:44 are state
-% ID, MAIN_EN_OUT, PRECH_EN_OUT, and INV_CTRL_EN. Stable root Outport paths
-% make those simulated outputs readable by the GUI. This script deliberately
+% ID, MAIN_EN_OUT, PRECH_EN_OUT, and INV_CTRL_EN. This script deliberately
 % does not rewire physical IO183 outputs.
+%
+% GETSIGNAL(target, blockPath, portIndex) reads port PORTINDEX of the
+% SUBSYSTEM at blockPath -- i.e. it needs an Outport block placed INSIDE a
+% subsystem, whose 'Port' parameter becomes that subsystem's numbered
+% output port (see the existing, working 'Ephorus System Status'
+% subsystem in build_inverter_hil_model.m for the same pattern). An
+% earlier version of this script instead created standalone
+% simulink/Sinks/Out1 blocks directly at the TOP model level, with no
+% wrapping subsystem -- getsignal on those failed with "Port index 1
+% exceeds number of ports of ... block", because a bare Outport doesn't
+% "originate" a port the way a subsystem's boundary does. Fixed by
+% wrapping all five observers in one 'Virtual VCU Observability'
+% subsystem instead. If an earlier (broken) run of this script already
+% created the old standalone blocks, they are removed first.
 
 if nargin < 1
     modelPath = fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))), ...
@@ -42,22 +55,15 @@ names = {'State ID', 'Main Enable', 'Precharge Enable', ...
     'Inverter Control Enable'};
 tags = {'VirtualVcuStateId', 'VirtualVcuMainEnable', ...
     'VirtualVcuPrechargeEnable', 'VirtualVcuInverterControlEnable'};
-% The pedal payload is already the first CAN output; expose a copy for
-% honest model-generated observation in the GUI.
 pedalTag = 'VirtualVcuPedalPayload';
+
+% Publish each signal as a global Goto tag from inside "Virtual VCU" --
+% this part was correct before and is unchanged.
 if getSimulinkBlockHandle([root '/Virtual VCU Pedal Payload']) == -1
     add_block('simulink/Signal Routing/Goto', ...
         [root '/Virtual VCU Pedal Payload'], 'GotoTag', pedalTag, ...
         'TagVisibility', 'global', 'Position', [520 420 730 445]);
     add_line(root, 'VCU Payload Split/1', ...
-        'Virtual VCU Pedal Payload/1', 'autorouting', 'on');
-end
-if getSimulinkBlockHandle([model '/Virtual VCU Pedal Payload']) == -1
-    add_block('simulink/Signal Routing/From', [model '/From Virtual VCU Pedal Payload'], ...
-        'GotoTag', pedalTag, 'Position', [1280 85 1350 105]);
-    add_block('simulink/Sinks/Out1', [model '/Virtual VCU Pedal Payload'], ...
-        'Port', '5', 'Position', [1390 85 1420 105]);
-    add_line(model, 'From Virtual VCU Pedal Payload/1', ...
         'Virtual VCU Pedal Payload/1', 'autorouting', 'on');
 end
 for k = 1:numel(names)
@@ -72,19 +78,98 @@ for k = 1:numel(names)
         [blockName '/1']);
     add_line(root, sprintf('VCU Payload Split/%d', 5+k), ...
         [blockName '/1'], 'autorouting', 'on');
+end
 
-    outName = ['Virtual VCU ' names{k}];
-    outPath = [model '/' outName];
-    if getSimulinkBlockHandle(outPath) == -1
-        fromName = ['From ' outName];
-        add_block('simulink/Signal Routing/From', [model '/' fromName], ...
-            'GotoTag', tags{k}, ...
-            'Position', [1280 100 + 55*k 1350 120 + 55*k]);
-        add_block('simulink/Sinks/Out1', outPath, 'Port', num2str(k), ...
-            'Position', [1390 100 + 55*k 1420 120 + 55*k]);
-        add_line(model, [fromName '/1'], [outName '/1'], ...
-            'autorouting', 'on');
+% Remove the old, broken standalone top-level Out1 blocks and their From
+% blocks, if a previous (incorrect) run of this script created them.
+legacyNames = [{'Pedal Payload'}, names];
+legacyTags = [{pedalTag}, tags];
+for k = 1:numel(legacyNames)
+    outPath = [model '/Virtual VCU ' legacyNames{k}];
+    fromPath = [model '/From Virtual VCU ' legacyNames{k}];
+    if getSimulinkBlockHandle(outPath) ~= -1
+        delete_block(outPath);
     end
+    if getSimulinkBlockHandle(fromPath) ~= -1
+        delete_block(fromPath);
+    end
+end
+
+% Wrap all five observers in one subsystem, matching the working
+% "Ephorus System Status" pattern: From (global tag) -> Out1 (Port 'N')
+% inside a subsystem, so the subsystem's own boundary exposes ports 1-5
+% that GETSIGNAL(model/Virtual VCU Observability, N) can address.
+obsPath = [model '/Virtual VCU Observability'];
+if getSimulinkBlockHandle(obsPath) == -1
+    add_block('simulink/Ports & Subsystems/Subsystem', obsPath, ...
+        'Position', [1280 60 1420 300]);
+end
+% Default Subsystem blocks are created with one In1/Out1 pair (directly
+% wired to each other); deleting either block removes its lines too, so
+% every port here comes from a global Goto tag, not the subsystem's own
+% default inport.
+if getSimulinkBlockHandle([obsPath '/In1']) ~= -1
+    delete_block([obsPath '/In1']);
+end
+if getSimulinkBlockHandle([obsPath '/Out1']) ~= -1
+    delete_block([obsPath '/Out1']);
+end
+
+% A bare From->Outport passthrough is not enough: GETSIGNAL on these ports
+% returned the SAME wrong (44-element, upstream chart-sized) data for
+% every port. Root cause (see MathWorks "Troubleshoot Signals Not
+% Accessible by Name", slrealtime doc set): Simulink's block-IO
+% optimization eliminates a passthrough signal that nothing else in the
+% model consumes -- these are observability-only dead ends -- and its
+% compiled storage collapses onto its upstream signal, which is exactly
+% why every port here read back the chart's raw 44-element output.
+% Plain TestPoint marking on the From block's output was NOT sufficient
+% (tried and confirmed still broken after a clean rebuild). The actual
+% documented fix is an explicit Signal Copy, which in the Simulink API is
+% NOT a block named "SignalCopy" (no such block type exists) but a
+% "Signal Conversion" block (simulink/Signal Attributes/Signal
+% Conversion) configured with ConversionOutput='Signal copy', which
+% forces independent, non-optimizable storage. Contrast
+% "Ephorus System Status" ports 1/2 (build_inverter_hil_model.m), which
+% stay readable without this because their signals are genuinely
+% consumed elsewhere in the model (the real CAN Write path), not just
+% tapped for observability -- port 3 there is a bare passthrough like
+% this one was, and correctly fails with the "Add a SignalCopy block"
+% diagnostic rather than silently returning wrong data.
+obsNames = [{'Pedal Payload'}, names];
+obsTags = [{pedalTag}, tags];
+for k = 1:numel(obsNames)
+    fromName = [obsPath '/From ' obsNames{k}];
+    copyName = [obsPath '/Signal Copy ' obsNames{k}];
+    outName = [obsPath '/' obsNames{k}];
+    if getSimulinkBlockHandle(fromName) == -1
+        add_block('simulink/Signal Routing/From', fromName, ...
+            'GotoTag', obsTags{k}, ...
+            'Position', [40 20 + 70*k 160 40 + 70*k]);
+    end
+    if getSimulinkBlockHandle(copyName) == -1
+        add_block('simulink/Signal Attributes/Signal Conversion', ...
+            copyName, 'ConversionOutput', 'Signal copy', ...
+            'Position', [190 20 + 70*k 340 40 + 70*k]);
+    else
+        set_param(copyName, 'ConversionOutput', 'Signal copy');
+    end
+    if getSimulinkBlockHandle(outName) == -1
+        add_block('simulink/Sinks/Out1', outName, 'Port', num2str(k), ...
+            'Position', [380 20 + 70*k 410 40 + 70*k]);
+    end
+    deleteExistingLine(obsPath, ['From ' obsNames{k} '/1'], ...
+        [obsNames{k} '/1']);
+    deleteExistingLine(obsPath, ['From ' obsNames{k} '/1'], ...
+        ['Signal Copy ' obsNames{k} '/1']);
+    deleteExistingLine(obsPath, ['Signal Copy ' obsNames{k} '/1'], ...
+        [obsNames{k} '/1']);
+    add_line(obsPath, ['From ' obsNames{k} '/1'], ...
+        ['Signal Copy ' obsNames{k} '/1'], 'autorouting', 'on');
+    add_line(obsPath, ['Signal Copy ' obsNames{k} '/1'], ...
+        [obsNames{k} '/1'], 'autorouting', 'on');
+    copyPorts = get_param(copyName, 'PortHandles');
+    set_param(copyPorts.Outport, 'TestPoint', 'on');
 end
 
 save_system(model, modelPath);

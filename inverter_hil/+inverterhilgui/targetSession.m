@@ -348,18 +348,24 @@ classdef targetSession < handle
             % Virtual VCU observer signals are model-generated outputs. They
             % are useful for state/pedal diagnostics but are not physical CAN
             % loopback or an ACK from another node.
+            %
+            % GETSIGNAL(block, port) reads port N of a SUBSYSTEM's own
+            % boundary (the Outport blocks placed inside it), not a bare
+            % top-level Out1 block -- see the "Ephorus System Status"
+            % pattern this now matches. Ports: 1=pedal payload,
+            % 2=state ID, 3=main enable, 4=precharge enable,
+            % 5=inverter control enable (patch_virtual_vcu_state_outputs.m).
             try
-                stateId = obj.Backend.getsignal( ...
-                    'inverter_hil/Virtual VCU State ID', 1);
-                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
-                    snapshot.vcuStateId = double(stateId);
-                    snapshot.vcuStateKnown = true;
-                end
-                pedal = obj.Backend.getsignal( ...
-                    'inverter_hil/Virtual VCU Pedal Payload', 1);
+                obsPath = 'inverter_hil/Virtual VCU Observability';
+                pedal = obj.Backend.getsignal(obsPath, 1);
                 if numel(pedal) == 8
                     snapshot.pedalPayload = uint8(reshape(pedal, 1, 8));
                     snapshot.pedalPayloadKnown = true;
+                end
+                stateId = obj.Backend.getsignal(obsPath, 2);
+                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
+                    snapshot.vcuStateId = double(stateId);
+                    snapshot.vcuStateKnown = true;
                 end
             catch err
                 obj.LastError = err.message;
