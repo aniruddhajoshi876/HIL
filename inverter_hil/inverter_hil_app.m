@@ -1398,7 +1398,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.StateStripLabels(index).FontWeight = weight;
             end
             if app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive
-                app.StateErrorLabel.FontColor = theme.color.fault;
+                % FontColor and BackgroundColor must differ, or "ERROR"
+                % renders invisible against its own highlight -- exactly
+                % what a same-color pair does. Dark text on the fault-red
+                % background reads clearly, matching how every other card
+                % state (active/passed/upcoming) already uses two
+                % distinct colors.
+                app.StateErrorLabel.FontColor = theme.color.background;
                 app.StateErrorLabel.FontWeight = 'bold';
                 app.StateErrorLabel.BackgroundColor = theme.color.fault;
             else
