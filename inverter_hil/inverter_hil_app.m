@@ -606,9 +606,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
         end
 
-        function onInverterDisclosurePushed(app, source, ~)
+        function onInverterDisclosurePushed(app, event)
             %ONINVERTERDISCLOSUREPUSHED Toggle only the source inverter panel.
-            channel = find(app.InverterDisclosureButtons == source, 1);
+            %   This app's CREATECALLBACKFCN wrapper invokes callbacks as
+            %   CALLBACK(APP, EVENT) -- not (APP, SOURCE, EVENT) -- so which
+            %   button fired must come from EVENT.SOURCE, matching every
+            %   other callback in this file (e.g. ONCONNECTPUSHED(APP, ~)).
+            channel = find(app.InverterDisclosureButtons == event.Source, 1);
             if isempty(channel)
                 return;
             end
