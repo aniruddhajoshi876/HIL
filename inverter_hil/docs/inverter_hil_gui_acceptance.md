@@ -18,7 +18,8 @@ Verification legend:
 | E3 | Authoritative verification path | `R2024b batch` via the Bash/PowerShell tool |
 | E4 | `appdesigner.internal.serialization.MLAPPSerializer` in R2024b | Present (`exist == 8`), properties include `FullFileName`, `MatlabCodeText`, `UIFigure`, `Callbacks`, `StartupCallback`, `ClassName`, `OverwriteTargetFile`; methods include `save` |
 | E5 | Simulink Real-Time in R2024b | Installed |
-| E6 | **Baseline test suite state** | **66 passed / 1 failed of 67.** Pre-existing failure `TestModelArtifacts/executionAndDictionaryAttachmentAreExact`: model `SystemTargetFile` is `speedgoat.tlc`, test expects `slrealtime.tlc`. Unrelated to the GUI. **Must not be fixed here** (would require editing `inverter_hil.slx`) and must not get worse. |
+| E6 | **Baseline test suite state (as recorded when Parts 29-35 were implemented)** | **66 passed / 1 failed of 67.** Pre-existing failure `TestModelArtifacts/executionAndDictionaryAttachmentAreExact`: model `SystemTargetFile` is `speedgoat.tlc`, test expects `slrealtime.tlc`. Unrelated to the GUI. This entry is a historical record for that work and is now stale — see E7 for the current baseline. |
+| E7 | **Baseline test suite state (as of Part 32A, 2026-08-11, `R2024b batch`)** | **193 total, 192 passed, 1 failed, 0 incomplete.** The suite has grown substantially since E6. The sole pre-existing failure is now `TestModelArtifacts/modelLoadsAndUpdatesWithIoDisconnected` (`verifyWarningFree` tripped by an IO183 Speedgoat deprecation warning during Simulink model load/update), a different failure than E6's, unrelated to the GUI and not touched by this or prior GUI work. **Must not be fixed as part of GUI changes** (would require editing `inverter_hil.slx`/IO183 driver config) and must not get worse. |
 
 ## A. Architecture and workspace constraints
 
@@ -106,13 +107,24 @@ Verification legend:
 |---|---|---|
 | G1 | Four compact panels `INV1`-`INV4` | manual |
 | G2 | Corner label always reads `UNVERIFIED` beside the canonical inverter number | manual + unittest |
-| G3 | Each panel shows state, ready, command age | manual |
-| G4 | Torque command/actual plus raw torque count | manual |
+| G3 | Each panel shows state, ready, and command age when expanded; their values remain current while collapsed. | manual |
+| G4 | Each panel shows torque command and actual in collapsed and expanded states, including the existing raw-count/candidate-scale formatting. | manual |
 | G5 | Both 1/256 and 1/512 candidate torque values shown for the raw count | unittest |
-| G6 | Speed, Id/Iq shown | manual |
-| G7 | Motor and switch temperatures with raw counts | manual |
-| G8 | Derating and active fault shown | manual |
+| G6 | Each panel shows speed and Id/Iq when expanded. | manual |
+| G7 | Each panel shows motor and switch temperatures when expanded, with the existing raw-count formatting. | manual |
+| G8 | Each panel shows derating and active fault when expanded. | manual |
 | G9 | Per-inverter formatting is a pure function; no cross-channel leakage | unittest |
+
+## N. Part 32A - Collapsible outbound status and inbound-ready panel layout
+
+| ID | Requirement | Verify |
+|---|---|---|
+| N1 | Four inverter panels default to collapsed independently; each collapsed panel shows exactly TORQUE CMD, TORQUE ACT, and MOTOR TEMP from the existing 12-field contract. | manual + unittest |
+| N2 | Clicking one disclosure button expands only that inverter and reveals STATE, READY, CMD AGE, SPEED, Id set/act, Iq set/act, SWITCH TEMP, DERATING, and ACTIVE FAULT. | manual + unittest |
+| N3 | Repeated refreshes update all 12 formatter-backed labels without resetting any panel's expansion state. | unittest |
+| N4 | Disclosure state is layout-only and does not alter telemetry, corner labels, the UNVERIFIED presentation, or the persistent red TORQUE SCALE UNVERIFIED banner. | manual + unittest |
+| N5 | R2024b App Designer primitives compose the disclosure; no native accordion is assumed, and no decorative graphics are added. | manual + lint |
+| N6 | A future inbound Control section is documented as a proposal only (design doc section 5) and is NOT implemented by this change; no per-inverter inbound structure exists yet in `inverter_hil_app.m`. The design doc records what is missing (a decoded, per-inverter inbound telemetry contract beyond the current raw 4x14 observation) before that section can be built. | manual |
 
 ## H. Part 33 - CAN tables, dual torque, capture status, rates
 
