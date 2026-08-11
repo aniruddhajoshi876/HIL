@@ -112,6 +112,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
         InverterExpanded = false(1, 4)
         InverterStatusGrids
         InverterDisclosureButtons
+        % Host time the VCU was last observed entering its current state.
+        % NaN whenever state is not currently known, so time-in-state never
+        % holds a stale value across a disconnect. See REFRESHLIVEIO.
+        VcuStateEnteredS = NaN
+        VcuStateLast = ''
         % Resolved at startup from inverterhilgui.hostHeartbeatTimeout so the
         % host can never report healthy longer than the target-side fallback.
         HeartbeatTimeoutS
@@ -972,10 +977,21 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     names = [app.VcuStateNames {'ERROR_SHUTDOWN'}];
                     stateIndex = round(live.vcuStateId) + 1;
                     if stateIndex >= 1 && stateIndex <= numel(names)
-                        app.Telemetry.vcu.state = names{stateIndex};
+                        newState = names{stateIndex};
+                        [app.VcuStateEnteredS, timeInStateS] = ...
+                            inverterhilgui.trackVcuStateEntry(newState, ...
+                            app.VcuStateLast, app.VcuStateEnteredS, ...
+                            app.hostTimeS());
+                        app.VcuStateLast = newState;
+                        app.Telemetry.vcu.state = newState;
+                        app.Telemetry.vcu.timeInStateS = timeInStateS;
                         app.Telemetry.vcu.errorKnown = stateIndex == 6;
                         app.Telemetry.vcu.errorActive = stateIndex == 6;
                     end
+                else
+                    app.VcuStateEnteredS = NaN;
+                    app.VcuStateLast = '';
+                    app.Telemetry.vcu.timeInStateS = NaN;
                 end
                 app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
@@ -1016,6 +1032,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.applyLiveRxFrames(live.rx, live);
                 end
             else
+                app.VcuStateEnteredS = NaN;
+                app.VcuStateLast = '';
+                app.Telemetry.vcu.timeInStateS = NaN;
                 app.Telemetry.io.healthy = false;
                 app.Telemetry.io.healthyKnown = false;
                 for index = 1:numel(app.Telemetry.pins)

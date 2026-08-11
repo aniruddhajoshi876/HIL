@@ -215,6 +215,37 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 'ENABLE'), 'unknown');
         end
 
+        function vcuStateEntryResetsOnChangeAndAdvancesWhileHeld(testCase)
+            % Regression test: TIME IN STATE previously never moved because
+            % nothing ever updated app.Telemetry.vcu.timeInStateS -- it was
+            % initialized to NaN in blankTelemetry.m and left there forever.
+            [entered, elapsed] = inverterhilgui.trackVcuStateEntry( ...
+                'LV_ON', '', NaN, 100.0);
+            testCase.verifyEqual(entered, 100.0);
+            testCase.verifyEqual(elapsed, 0.0);
+
+            % Same state on a later tick: entry timestamp is held, elapsed
+            % time keeps advancing -- this is the live-incrementing timer.
+            [entered2, elapsed2] = inverterhilgui.trackVcuStateEntry( ...
+                'LV_ON', 'LV_ON', entered, 102.5);
+            testCase.verifyEqual(entered2, 100.0);
+            testCase.verifyEqual(elapsed2, 2.5);
+
+            % A real state change resets the clock to 0 s elapsed.
+            [entered3, elapsed3] = inverterhilgui.trackVcuStateEntry( ...
+                'PRECHARGING', 'LV_ON', entered2, 102.5);
+            testCase.verifyEqual(entered3, 102.5);
+            testCase.verifyEqual(elapsed3, 0.0);
+
+            % Reconnecting with a stale/unknown previous timestamp (NaN)
+            % also resets, even if the state string happens to match --
+            % guards against a fabricated elapsed time across a disconnect.
+            [entered4, elapsed4] = inverterhilgui.trackVcuStateEntry( ...
+                'PRECHARGING', 'PRECHARGING', NaN, 200.0);
+            testCase.verifyEqual(entered4, 200.0);
+            testCase.verifyEqual(elapsed4, 0.0);
+        end
+
         function canRatesAreMeasuredNotAssumed(testCase)
             observation = struct( ...
                 'id', uint32(hex2dec('186')), ...
