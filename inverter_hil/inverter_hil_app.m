@@ -102,6 +102,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
+        InverterExpanded = false(1, 4)
+        InverterStatusGrids
+        InverterDisclosureButtons
         % Resolved at startup from inverterhilgui.hostHeartbeatTimeout so the
         % host can never report healthy longer than the target-side fallback.
         HeartbeatTimeoutS
@@ -557,24 +560,86 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.InverterTitleLabels = gobjects(1, 4);
             app.InverterCornerLabels = gobjects(1, 4);
             app.InverterFieldLabels = gobjects(4, fieldCount);
+            app.InverterStatusGrids = [];
+            app.InverterDisclosureButtons = [];
             for channel = 1:4
                 panel = app.makePanel(outer, sprintf('INVERTER %d', channel));
-                rows = num2cell(repmat(20, 1, fieldCount + 1));
-                grid = app.makeGrid(panel, [rows {'1x'}], {170, '1x'});
+                [~, collapsedRows] = ...
+                    inverterhilgui.inverterPanelVisibility(false);
+                grid = app.makeGrid(panel, [{20} collapsedRows], ...
+                    {170, '1x', 120});
                 app.InverterTitleLabels(channel) = app.makeLabel(grid, ...
                     sprintf('INV%d', channel), theme.font.heading, ...
                     theme.color.primaryText);
                 app.InverterTitleLabels(channel).FontWeight = 'bold';
+                app.InverterTitleLabels(channel).Layout.Row = 1;
+                app.InverterTitleLabels(channel).Layout.Column = 1;
                 app.InverterCornerLabels(channel) = app.makeLabel(grid, ...
                     theme.text.cornerLabel, theme.font.small, ...
                     theme.color.fault);
+                app.InverterCornerLabels(channel).Layout.Row = 1;
+                app.InverterCornerLabels(channel).Layout.Column = 2;
+                button = app.makeButton(grid, '> DETAILS', ...
+                    @onInverterDisclosurePushed);
+                button.Layout.Row = 1;
+                button.Layout.Column = 3;
+                if channel == 1
+                    app.InverterStatusGrids = grid;
+                    app.InverterDisclosureButtons = button;
+                else
+                    app.InverterStatusGrids(channel) = grid;
+                    app.InverterDisclosureButtons(channel) = button;
+                end
                 for field = 1:fieldCount
-                    app.makeLabel(grid, app.InverterFieldNames{field}, ...
+                    name = app.makeLabel(grid, app.InverterFieldNames{field}, ...
                         theme.font.small, theme.color.secondaryText);
+                    name.Layout.Row = field + 1;
+                    name.Layout.Column = 1;
                     app.InverterFieldLabels(channel, field) = ...
                         app.makeLabel(grid, theme.text.noData, ...
                         theme.font.small, theme.color.primaryText);
+                    app.InverterFieldLabels(channel, field).Layout.Row = ...
+                        field + 1;
+                    app.InverterFieldLabels(channel, field).Layout.Column = 2;
                 end
+                app.setInverterExpanded(channel, false);
+            end
+        end
+
+        function onInverterDisclosurePushed(app, source, ~)
+            %ONINVERTERDISCLOSUREPUSHED Toggle only the source inverter panel.
+            channel = find(app.InverterDisclosureButtons == source, 1);
+            if isempty(channel)
+                return;
+            end
+            app.setInverterExpanded(channel, ~app.InverterExpanded(channel));
+        end
+
+        function setInverterExpanded(app, channel, expanded)
+            %SETINVERTEREXPANDED Apply layout-only visibility for one panel.
+            if ~isnumeric(channel) || ~isscalar(channel) || ...
+                    ~isreal(channel) || ~isfinite(channel) || ...
+                    channel < 1 || channel > 4 || channel ~= floor(channel)
+                error('inverterhilgui:InvalidInverterChannel', ...
+                    'Inverter channel must be an integer from 1 through 4.');
+            end
+            if ~islogical(expanded) || ~isscalar(expanded)
+                error('inverterhilgui:InvalidExpandedState', ...
+                    'Expanded state must be a logical scalar.');
+            end
+
+            [~, fieldRows] = ...
+                inverterhilgui.inverterPanelVisibility(expanded);
+            app.InverterExpanded(channel) = expanded;
+            app.InverterStatusGrids(channel).RowHeight = [{20} fieldRows];
+            if expanded
+                app.InverterDisclosureButtons(channel).Text = 'v DETAILS';
+                app.InverterDisclosureButtons(channel).Tooltip = ...
+                    'Collapse inverter details';
+            else
+                app.InverterDisclosureButtons(channel).Text = '> DETAILS';
+                app.InverterDisclosureButtons(channel).Tooltip = ...
+                    'Expand inverter details';
             end
         end
 
