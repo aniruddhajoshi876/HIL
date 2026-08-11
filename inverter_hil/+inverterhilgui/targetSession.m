@@ -566,18 +566,23 @@ classdef targetSession < handle
         end
 
         function ensureApplicationRunning(obj)
-            %ENSUREAPPLICATIONRUNNING Load the current build and start it.
-            %   The application is loaded unconditionally rather than only
-            %   when the target reports 'disconnected'/'stopped'. The loaded
-            %   application is always named INVERTER_HIL, so its name cannot
-            %   distinguish a freshly built INVERTER_HIL.MLDATX from one the
-            %   target loaded before the model was rebuilt. Returning early on
-            %   an already-'running' target would therefore silently leave the
-            %   operator driving a stale build while the GUI reported success
-            %   -- the failure mode is invisible, which is why this reloads
-            %   instead of attaching. Reconnecting consequently restarts the
-            %   run rather than resuming it.
-            obj.Backend.load('inverter_hil');
+            %ENSUREAPPLICATIONRUNNING Stop only another app, then run ours.
+            %   A running INVERTER_HIL is preserved. If another model owns
+            %   the target, it is stopped before the integrated inverter HIL
+            %   application is loaded and started.
+            state = obj.Backend.applicationState();
+            if strcmp(state, 'running')
+                current = obj.Backend.currentApplicationName();
+                if ~strcmpi(current, 'inverter_hil')
+                    obj.Backend.stop();
+                    state = 'stopped';
+                else
+                    return;
+                end
+            end
+            if ~strcmp(state, 'loaded')
+                obj.Backend.load('inverter_hil');
+            end
             obj.Backend.start();
         end
 
