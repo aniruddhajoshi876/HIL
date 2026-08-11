@@ -20,6 +20,11 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             testCase.verifyEqual(payload, uint8([1 0 80 70 128 12 0 0]));
             testCase.verifyEqual(virtualvcu.config().controlIds(1), uint32(hex2dec('186')));
         end
+        function goldenPedalBytes(testCase)
+            testCase.verifyEqual(virtualvcu.packPedalFrame(12.5, 1), ...
+                uint8([13 138 2 138 2 0 0 0]));
+            testCase.verifyEqual(virtualvcu.config().pedalCanId, uint32(501));
+        end
         function lvOnUsesMeasuredInputsOnly(testCase)
             c = virtualvcu.config();
             volts = [c.throttleRestRaw c.brakeRestRaw] / c.adcFullScale * c.io183FullScaleV;
@@ -61,6 +66,60 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             testCase.verifyEqual(out.state, 'RTD');
             testCase.verifyEqual(out.controlPayloads(1,1), uint8(1));
         end
+        function deployedChartScriptReachesRtdOnBrakeHeld(testCase)
+            % Regression test for a real bug: virtualVcuDeployStep.m (the
+            % script deployed into the Stateflow chart, maintained
+            % separately from +virtualvcu/step.m used above) computed b1/b2
+            % as fractions in [0,1] but compared mean([b1 b2]) against the
+            % literal 25 -- a value only reachable by a percent-scale
+            % quantity. A fraction can never reach 25, so ENABLE never
+            % advanced to BUZZING/RTD no matter how hard the brake was
+            % pressed. +virtualvcu/step.m was not affected: it keeps b1/b2
+            % in percent scale, so its identical-looking ">= 25" check was
+            % already correct. Only a test that calls the deployed chart
+            % script itself, not step.m, can catch this class of bug.
+            here = fileparts(mfilename('fullpath'));
+            modelsDir = fullfile(fileparts(here), 'models');
+            testCase.applyFixture( ...
+                matlab.unittest.fixtures.PathFixture(modelsDir));
+            clear('virtualVcuDeployStep'); %#ok<CLFUN>
+
+            c = virtualvcu.config();
+            % virtualVcuDeployStep.m takes u(1:4) as volts (0-5 V), unlike
+            % the raw ADC counts in c.*Raw -- convert the same way
+            % stateMachineUsesDigitalInputs (above) does for step.m.
+            toVolts = @(raw) double(raw) / c.adcFullScale * c.io183FullScaleV;
+            throttleRestV = toVolts(c.throttleRestRaw(1));
+            brakePressedV = toVolts(c.brakePressedRaw(1));
+
+            u = zeros(17, 1);
+            u(1) = throttleRestV; u(2) = throttleRestV;
+            u(3) = brakePressedV; u(4) = brakePressedV;
+
+            u(5) = 1; % precharge button
+            payloads = virtualVcuDeployStep(u);
+            testCase.verifyEqual(payloads(41), uint8(1)); % PRECHARGING
+
+            u(5) = 0;
+            for k = 1:double(c.prechargeTicks)
+                payloads = virtualVcuDeployStep(u);
+            end
+            testCase.verifyEqual(payloads(41), uint8(2), ...
+                'Expected ENABLE after the 7.5 s precharge delay.');
+
+            u(6) = 1; % main button, brake already held above
+            payloads = virtualVcuDeployStep(u);
+            testCase.verifyEqual(payloads(41), uint8(3), ...
+                ['Expected BUZZING once main button is pressed with ' ...
+                'brake held -- this is exactly the transition the ' ...
+                '25-vs-0.25 scale bug silently blocked.']);
+
+            for k = 1:double(c.buzzingTicks)
+                payloads = virtualVcuDeployStep(u);
+            end
+            testCase.verifyEqual(payloads(41), uint8(4)); % RTD
+        end
+
         function canStatusIsDecodedAndRetained(testCase)
             payload = uint8([4 0 4 0 0 0 0 0]);
             out = virtualvcu.step(zeros(1,4), true, false(1,8), ...

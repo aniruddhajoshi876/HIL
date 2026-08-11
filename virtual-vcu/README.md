@@ -46,6 +46,17 @@ standard 11-bit identifiers, and torque-limit scale 1/256 Nm/count. The
 firmware's pedal broadcast `0x1F5` is not defined in this inverter DBC and is
 therefore kept as an explicit VCU-side contract in `packPedalFrame.m`.
 
+The virtual VCU uses the raw calibrated throttle percentage for `0x1F5` in all
+states, including RTD. The firmware's RTD torque-request substitution is not
+represented because this bench has no separate torque-request input.
+PRECHARGING remains the plain 7.5 s timed state; no additional DC-link-rise
+plausibility fault was invented.
+
+After rebuilding or opening an existing model, run
+`virtual-vcu/models/patch_virtual_vcu_state_outputs.m` under R2024b. It adds
+state/control observers and the model-generated pedal-payload observer used
+by the GUI; these are not physical CAN loopback or CAN-ACK evidence.
+
 Local verification is host-only. No physical analog loopback, CAN ACK, target
 build, or deployment is claimed until it is captured on the bench.
 

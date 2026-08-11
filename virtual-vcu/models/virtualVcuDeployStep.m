@@ -1,6 +1,8 @@
 function payloads = virtualVcuDeployStep(u)
 %#codegen
-payloads = zeros(40,1,'uint8');
+% Elements 1:40 are the five CAN payloads. Elements 41:44 expose the
+% virtual VCU state and its three control outputs to the model observer.
+payloads = zeros(44,1,'uint8');
 ai = u(1:4);
 raw = min(max(double(ai(:)),0),5) / 5 * 65535;
 t1 = min(max((30100-raw(1))/9200,0),1);
@@ -35,7 +37,7 @@ elseif state == 0 && precharge
 elseif state == 1
     ticks = ticks + 1;
     if ticks >= 7500, state = uint8(2); ticks = uint32(0); end
-elseif state == 2 && mainButton && brakeOk && mean([b1 b2]) >= 25
+elseif state == 2 && mainButton && brakeOk && mean([b1 b2]) >= 0.25
     state = uint8(3); ticks = uint32(0);
 elseif state == 3
     ticks = ticks + 1;
@@ -61,4 +63,8 @@ payloads(13) = uint8(mod(torque,256)); payloads(14) = uint8(floor(double(torque)
 payloads(21) = payloads(13); payloads(22) = payloads(14);
 payloads(29) = payloads(13); payloads(30) = payloads(14);
 payloads(37) = payloads(13); payloads(38) = payloads(14);
+payloads(41) = state;
+payloads(42) = uint8(state >= 2 && state <= 4); % MAIN_EN_OUT
+payloads(43) = uint8(state == 1);              % PRECH_EN_OUT
+payloads(44) = uint8(state >= 1 && state <= 4); % INV_CTRL_EN
 end

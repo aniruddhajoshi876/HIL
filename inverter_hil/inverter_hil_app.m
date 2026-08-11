@@ -42,6 +42,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         FaultsTab                 matlab.ui.container.Tab
         LoggingTab                matlab.ui.container.Tab
         StateStripLabels
+        StateStripSeparators
         StateErrorLabel           matlab.ui.control.Label
         TimeInStateLabel          matlab.ui.control.Label
         GuardTable                matlab.ui.control.Table
@@ -349,21 +350,33 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 {theme.spacing.stripHeight, '1x'}, {'1x'});
 
             strip = app.makeGrid(outer, {'1x'}, ...
-                {90, 130, 100, 100, 80, 90, 160, '1x'});
+                {90, 18, 130, 18, 100, 18, 100, 18, 80, 18, 90, 160, '1x'});
             strip.BackgroundColor = theme.color.panel;
             app.StateStripLabels = gobjects(1, numel(app.VcuStateNames));
+            app.StateStripSeparators = gobjects(1, numel(app.VcuStateNames)-1);
             for index = 1:numel(app.VcuStateNames)
                 app.StateStripLabels(index) = app.makeLabel(strip, ...
                     app.VcuStateNames{index}, theme.font.heading, ...
                     theme.color.disabledText);
+                app.StateStripLabels(index).Layout.Column = 2 * index - 1;
                 app.StateStripLabels(index).HorizontalAlignment = 'center';
+                app.StateStripLabels(index).BackgroundColor = theme.color.background;
+                if index < numel(app.VcuStateNames)
+                    app.StateStripSeparators(index) = app.makeLabel(strip, '>', ...
+                        theme.font.heading, theme.color.secondaryText);
+                    app.StateStripSeparators(index).Layout.Column = 2 * index;
+                    app.StateStripSeparators(index).HorizontalAlignment = 'center';
+                end
             end
             app.StateErrorLabel = app.makeLabel(strip, 'ERROR', ...
                 theme.font.heading, theme.color.disabledText);
+            app.StateErrorLabel.Layout.Column = 11;
             app.StateErrorLabel.HorizontalAlignment = 'center';
+            app.StateErrorLabel.BackgroundColor = theme.color.background;
             app.TimeInStateLabel = app.makeLabel(strip, ...
                 'TIME IN STATE --', theme.font.body, ...
                 theme.color.secondaryText);
+            app.TimeInStateLabel.Layout.Column = 12;
 
             columns = app.makeGrid(outer, {'1x'}, {'1x', '1x'});
             app.createDriverInputs(columns);
@@ -668,7 +681,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.InstrumentStatusLabel.Layout.Column = [1 2];
 
             rxPanel = app.makePanel(outer, ...
-                'VCU TX / HIL RX  0x186 0x196 0x1A6 0x1B6');
+                'VCU TX / HIL RX  0x1F5 0x186 0x196 0x1A6 0x1B6');
             rxPanel.Layout.Row = 2;
             rxPanel.Layout.Column = 1;
             rxGrid = app.makeGrid(rxPanel, {'1x'}, {'1x'});
@@ -955,6 +968,15 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 for index = 1:numel(app.Telemetry.pins)
                     app.Telemetry.pins(index).state = live.pins(index);
                 end
+                if live.vcuStateKnown
+                    names = [app.VcuStateNames {'ERROR_SHUTDOWN'}];
+                    stateIndex = round(live.vcuStateId) + 1;
+                    if stateIndex >= 1 && stateIndex <= numel(names)
+                        app.Telemetry.vcu.state = names{stateIndex};
+                        app.Telemetry.vcu.errorKnown = stateIndex == 6;
+                        app.Telemetry.vcu.errorActive = stateIndex == 6;
+                    end
+                end
                 app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
@@ -990,8 +1012,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if live.inverterKnown
                     app.applyLiveInverters(live.inverter);
                 end
-                if live.rx.known
-                    app.applyLiveRxFrames(live.rx);
+                if live.rx.known || live.pedalPayloadKnown
+                    app.applyLiveRxFrames(live.rx, live);
                 end
             else
                 app.Telemetry.io.healthy = false;
@@ -1077,7 +1099,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.Telemetry.can.tx = observations;
         end
 
-        function applyLiveRxFrames(app, rx)
+        function applyLiveRxFrames(app, rx, live)
             %APPLYLIVERXFRAMES Fill the VCU TX / HIL RX table from the frames
             %   the target genuinely retained.
             %
@@ -1103,11 +1125,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   the RATE column still correctly stays dashes.
             observations = app.Telemetry.can.rx;
             now = app.hostTimeS();
-            for index = 1:numel(observations)
-                if index > numel(rx.channels)
+            if live.pedalPayloadKnown && numel(observations) >= 1
+                payload = live.pedalPayload;
+                previous = observations(1).value;
+                observations(1).value = strtrim(sprintf('%02X ', payload));
+                observations(1).signal = app.pedalFrameSignalText(payload);
+                observations(1).timestampsS = now;
+                observations(1).count = NaN;
+                if ~strcmp(previous, observations(1).value)
+                    observations(1).lastChangeS = now;
+                end
+            end
+            for index = 2:numel(observations)
+                channelIndex = index - 1;
+                if channelIndex < 1 || channelIndex > numel(rx.channels)
                     break;
                 end
-                channel = rx.channels(index);
+                channel = rx.channels(channelIndex);
                 if isempty(channel.hasCommand) || ~channel.hasCommand
                     observations(index).signal = 'no frame received';
                     observations(index).value = '';
@@ -1130,6 +1164,18 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 observations(index).count = double(channel.acceptedCount);
             end
             app.Telemetry.can.rx = observations;
+        end
+
+        function text = pedalFrameSignalText(~, payload)
+            %PEDALFRAMESIGNALTEXT Decode only the explicit VCU 0x1F5 contract.
+            if numel(payload) ~= 8
+                text = 'invalid pedal payload';
+                return;
+            end
+            front = double(payload(2)) + 256 * double(payload(3));
+            rear = double(payload(4)) + 256 * double(payload(5));
+            text = sprintf('throttle %d %% | front %d PSI | rear %d PSI | steering 0', ...
+                payload(1), front, rear);
         end
 
         function text = rxFrameSignalText(app, id, channel)
@@ -1303,26 +1349,43 @@ classdef inverter_hil_app < matlab.apps.AppBase
         end
 
         function refreshStateStrip(app)
-            %REFRESHSTATESTRIP Highlight the observed VCU state, if known.
+            %REFRESHSTATESTRIP Paint graphical active/passed/upcoming cards.
             theme = app.Theme;
             current = app.Telemetry.vcu.state;
             for index = 1:numel(app.VcuStateNames)
-                if strcmpi(current, app.VcuStateNames{index})
-                    app.StateStripLabels(index).FontColor = ...
-                        theme.color.healthy;
-                    app.StateStripLabels(index).FontWeight = 'bold';
-                else
-                    app.StateStripLabels(index).FontColor = ...
-                        theme.color.disabledText;
-                    app.StateStripLabels(index).FontWeight = 'normal';
+                status = inverterhilgui.stateCardStyle(current, ...
+                    app.VcuStateNames{index}, ...
+                    app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive);
+                switch status
+                    case 'active'
+                        color = theme.color.healthy;
+                        background = theme.color.highlight;
+                        weight = 'bold';
+                    case 'passed'
+                        color = theme.color.electrical;
+                        background = theme.color.panel;
+                        weight = 'normal';
+                    case 'upcoming'
+                        color = theme.color.disabledText;
+                        background = theme.color.background;
+                        weight = 'normal';
+                    otherwise
+                        color = theme.color.secondaryText;
+                        background = theme.color.background;
+                        weight = 'normal';
                 end
+                app.StateStripLabels(index).FontColor = color;
+                app.StateStripLabels(index).BackgroundColor = background;
+                app.StateStripLabels(index).FontWeight = weight;
             end
             if app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive
                 app.StateErrorLabel.FontColor = theme.color.fault;
                 app.StateErrorLabel.FontWeight = 'bold';
+                app.StateErrorLabel.BackgroundColor = theme.color.fault;
             else
                 app.StateErrorLabel.FontColor = theme.color.disabledText;
                 app.StateErrorLabel.FontWeight = 'normal';
+                app.StateErrorLabel.BackgroundColor = theme.color.background;
             end
             app.TimeInStateLabel.Text = ['TIME IN STATE ' ...
                 app.formatSeconds(app.Telemetry.vcu.timeInStateS)];

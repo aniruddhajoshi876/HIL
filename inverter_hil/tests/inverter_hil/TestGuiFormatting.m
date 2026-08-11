@@ -204,6 +204,17 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             end
         end
 
+        function stateCardsClassifySequence(testCase)
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'LV_ON'), 'passed');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'PRECHARGING'), 'active');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'ENABLE'), 'upcoming');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle('', ...
+                'ENABLE'), 'unknown');
+        end
+
         function canRatesAreMeasuredNotAssumed(testCase)
             observation = struct( ...
                 'id', uint32(hex2dec('186')), ...
@@ -259,8 +270,8 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             snapshot = inverterhilgui.blankTelemetry();
             rows = inverterhilgui.canRowModel(snapshot.can.rx, 1.0);
 
-            testCase.verifyEqual(numel(rows), 4);
-            expectedIds = {'0x186', '0x196', '0x1A6', '0x1B6'};
+            testCase.verifyEqual(numel(rows), 5);
+            expectedIds = {'0x1F5', '0x186', '0x196', '0x1A6', '0x1B6'};
             for index = 1:numel(rows)
                 testCase.verifyEqual(rows(index).id, expectedIds{index});
                 testCase.verifyEqual(rows(index).live, 'NO DATA');

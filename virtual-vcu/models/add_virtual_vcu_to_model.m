@@ -67,8 +67,9 @@ if numel(ports.Inport) ~= 1 || numel(ports.Outport) ~= 1
 end
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 add_block('simulink/Signal Routing/Demux', [path '/VCU Payload Split'], ...
-    'Outputs', '[8 8 8 8 8]', 'Position', [780 25 800 200]);
+    'Outputs', '[8 8 8 8 8 1 1 1 1]', 'Position', [780 25 800 300]);
 add_line(path, 'Virtual VCU LV_ON/1', 'VCU Payload Split/1');
+addVirtualVcuOutputTags(path);
 % The CAN receive path remains physical and observable. No-data is preserved
 % as false/unknown; it is not converted into a fabricated status frame.
 for k = 1:5
@@ -124,6 +125,33 @@ close_system(model, 0);
 load_system(modelPath);
 setMatlabFunctionScript([path], vcuScript());
 save_system(model, modelPath);
+end
+
+function addVirtualVcuOutputTags(path)
+%ADDVIRTUALVCUOUTPUTTAGS Publish the state/control scalar outputs.
+if getSimulinkBlockHandle([path '/Virtual VCU Pedal Payload']) == -1
+    add_block('simulink/Signal Routing/Goto', ...
+        [path '/Virtual VCU Pedal Payload'], ...
+        'GotoTag', 'VirtualVcuPedalPayload', 'TagVisibility', 'global', ...
+        'Position', [520 420 730 445]);
+    add_line(path, 'VCU Payload Split/1', ...
+        'Virtual VCU Pedal Payload/1', 'autorouting', 'on');
+end
+names = {'State ID', 'Main Enable', 'Precharge Enable', ...
+    'Inverter Control Enable'};
+tags = {'VirtualVcuStateId', 'VirtualVcuMainEnable', ...
+    'VirtualVcuPrechargeEnable', 'VirtualVcuInverterControlEnable'};
+for k = 1:numel(names)
+    blockName = ['Virtual VCU ' names{k}];
+    block = [path '/' blockName];
+    if getSimulinkBlockHandle(block) == -1
+        add_block('simulink/Signal Routing/Goto', block, ...
+            'GotoTag', tags{k}, 'TagVisibility', 'global', ...
+            'Position', [520 470 + 30*k 730 490 + 30*k]);
+        add_line(path, sprintf('VCU Payload Split/%d', 5+k), ...
+            [blockName '/1'], 'autorouting', 'on');
+    end
+end
 end
 
 function script = vcuScript()

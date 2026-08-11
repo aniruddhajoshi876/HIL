@@ -269,6 +269,9 @@ classdef targetSession < handle
                 'inverterKnown', false, ...
                 'systemStatus', blankLiveSystemStatus(), ...
                 'rx', blankLiveRx(), ...
+                'vcuStateId', NaN, 'vcuStateKnown', false, ...
+                'pedalPayload', zeros(1, 0, 'uint8'), ...
+                'pedalPayloadKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN);
@@ -340,6 +343,27 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 return;
+            end
+
+            % Virtual VCU observer signals are model-generated outputs. They
+            % are useful for state/pedal diagnostics but are not physical CAN
+            % loopback or an ACK from another node.
+            try
+                stateId = obj.Backend.getsignal( ...
+                    'inverter_hil/Virtual VCU State ID', 1);
+                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
+                    snapshot.vcuStateId = double(stateId);
+                    snapshot.vcuStateKnown = true;
+                end
+                pedal = obj.Backend.getsignal( ...
+                    'inverter_hil/Virtual VCU Pedal Payload', 1);
+                if numel(pedal) == 8
+                    snapshot.pedalPayload = uint8(reshape(pedal, 1, 8));
+                    snapshot.pedalPayloadKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % Observer outputs are optional on older applications.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the
