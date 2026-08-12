@@ -15,9 +15,9 @@ ai = u(1:4);
 % not the firmware's ADC reference; the two happen to share units (V)
 % but are unrelated scales.
 rawRead = min(max(double(ai(:)),0),3.3) / 3.3 * 65535;
-persistent state ticks rawFilt
+persistent state ticks rawFilt dcLinkAccum
 if isempty(state)
-    state = uint8(0); ticks = uint32(0); rawFilt = rawRead;
+    state = uint8(0); ticks = uint32(0); rawFilt = rawRead; dcLinkAccum = 0;
 end
 % First-order low-pass on the raw ADC counts, matching how real VCU
 % firmware filters pedal sensors before computing torque. This bench's
@@ -100,19 +100,32 @@ payloads(42) = uint8(state >= 2 && state <= 4); % MAIN_EN_OUT
 payloads(43) = uint8(state == 1);              % PRECH_EN_OUT
 payloads(44) = uint8(state >= 1 && state <= 4); % INV_CTRL_EN
 % DCLINKV simulates the DC bus capacitance charging through the precharge
-% resistor: 0 V at LV_ON, ramping linearly to NOMINALDCLINKV over the same
-% 7500-tick PRECHARGING window the state machine itself times against (so
-% the two are always consistent by construction, not by a second,
-% independently-tuned timer), then held at NOMINALDCLINKV through
-% ENABLE/BUZZING/RTD. Drops back to 0 once precharge is re-armed (state
-% re-enters PRECHARGING from RTD) or on ERROR_SHUTDOWN/LV_ON, matching a
-% real bus discharging once the main contactor opens.
+% resistor: 0 V at LV_ON, ramping at a FIXED rate (RAMPVOLTSPERTICK,
+% volts per 1 ms tick) while PRECHARGING through RTD, capping at
+% NOMINALDCLINKV once reached rather than being forced to land on it
+% exactly when the precharge state-machine timeout expires. The ramp rate
+% is deliberately independent of that timeout (the ELSEIF STATE==1 branch
+% above, currently 7500 ticks): whichever one changes later, the other
+% does not need updating to match, and the display simply shows whatever
+% the accumulator genuinely reached by then -- possibly still short of
+% NOMINALDCLINKV, possibly already capped at it. Drops back to 0 once
+% precharge is re-armed (state re-enters PRECHARGING from RTD) or on
+% ERROR_SHUTDOWN/LV_ON, matching a real bus discharging once the main
+% contactor opens.
+%
+% DCLINKACCUM, not DCLINKV itself, is the persistent state: a variable
+% that is both persistent and a direct MATLAB Function output makes
+% Simulink unable to determine output sizes/types during code generation
+% (the same pitfall TXCOUNTER/TXCOUNT already works around elsewhere in
+% this file) -- confirmed by a from-scratch DEPLOY (not just the earlier
+% diagram-level build) failing with exactly that class of error when
+% DCLINKV was made persistent directly.
 nominalDcLinkV = 400;
-if state == 1
-    dcLinkV = nominalDcLinkV * min(double(ticks) / 7500, 1);
-elseif state >= 2 && state <= 4
-    dcLinkV = nominalDcLinkV;
+rampVoltsPerTick = 400 / 7500;
+if state >= 1 && state <= 4
+    dcLinkAccum = min(dcLinkAccum + rampVoltsPerTick, nominalDcLinkV);
 else
-    dcLinkV = 0;
+    dcLinkAccum = 0;
 end
+dcLinkV = dcLinkAccum;
 end
