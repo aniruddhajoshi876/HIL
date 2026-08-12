@@ -67,14 +67,56 @@ add_line(path, 'Port A CAN FIFO Read/2', 'Port A RX Selector/1');
 fcn = add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [path '/Virtual VCU LV_ON'], 'Position', [520 25 750 260]);
 setMatlabFunctionScript(fcn, vcuScript());
-ports = get_param(fcn, 'PortHandles');
-if numel(ports.Inport) ~= 1 || numel(ports.Outport) ~= 1
-    error('virtualvcu:ChartInterface', 'Expected 1 input/1 output.');
-end
+% No immediate PortHandles assertion here (an earlier version checked for
+% exactly 1 input/3 outputs right after SETMATLABFUNCTIONSCRIPT): a freshly
+% created MATLAB Function block reports its ORIGINAL DEFAULT port count
+% (1 input/1 output) until Simulink actually compiles/updates the diagram
+% against the new script, so that check failed even on a correctly
+% installed 3-output script -- confirmed by a from-scratch build. The
+% ADD_LINE calls below on ports 2/3 are themselves a sufficient check:
+% Simulink errors clearly if those ports genuinely do not exist once the
+% diagram is compiled.
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 add_block('simulink/Signal Routing/Demux', [path '/VCU Payload Split'], ...
     'Outputs', '[8 8 8 8 8 1 1 1 1]', 'Position', [780 25 800 300]);
 add_line(path, 'Virtual VCU LV_ON/1', 'VCU Payload Split/1');
+% Outputs 2/3 (DCLINKV, APPSBRAKEFAULT) are genuine typed values (double
+% volts, logical), not CAN payload bytes, so they bypass VCU PAYLOAD SPLIT
+% entirely and go straight to their own global tags -- DCLINKV replaces
+% the static hil_cmd_dc_link12_v/34_v GUI tunables in BUILDSYSTEMSTATUS
+% (BUILD_INVERTER_HIL_MODEL.M) with this state-driven ramp, by REDIRECTING
+% the two existing "GuiCmdDcLink12V From"/"GuiCmdDcLink34V From" blocks'
+% GotoTag below rather than having BUILDSYSTEMSTATUS reference this tag
+% directly. BUILD_INVERTER_HIL_MODEL.M calls ADDHARDWAREBOUNDARY (which
+% builds "Ephorus System Status") BEFORE calling THIS function, and
+% immediately compiles the diagram to save the base model -- a "From"
+% block referencing a Goto tag that does not exist ANYWHERE in the model
+% yet (VIRTUALVCUDCLINKV, only created here) failed that compile with a
+% cryptic, seemingly-unrelated Stateflow data-size error elsewhere in the
+% model ('Inferred size ... does not match back propagated size' on
+% EPHORUSSTATUSCYCLEFRAMES's own output -- confirmed by a from-scratch
+% build reproducing it, and by the ORIGINAL (unmodified) file's own
+% GuiCmdDcLink12V/34V tags building cleanly in the same slot). Retargeting
+% the ALREADY-COMPILED "From" blocks' tag here, after this tag genuinely
+% exists, avoids the forward-reference entirely.
+% APPSBRAKEFAULT is republished through VIRTUAL VCU OBSERVABILITY (see
+% PATCH_VIRTUAL_VCU_STATE_OUTPUTS.M) for the GUI's fault banner.
+add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU DC Link V'], ...
+    'GotoTag', 'VirtualVcuDcLinkV', 'TagVisibility', 'global', ...
+    'Position', [780 340 950 360]);
+add_line(path, 'Virtual VCU LV_ON/2', 'Virtual VCU DC Link V/1', 'autorouting', 'on');
+add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU APPS Brake Fault'], ...
+    'GotoTag', 'VirtualVcuAppsBrakeFault', 'TagVisibility', 'global', ...
+    'Position', [780 370 950 390]);
+add_line(path, 'Virtual VCU LV_ON/3', 'Virtual VCU APPS Brake Fault/1', 'autorouting', 'on');
+statusPath = [model '/Ephorus System Status'];
+for dcName = {'GuiCmdDcLink12V From', 'GuiCmdDcLink34V From'}
+    dcFromPath = [statusPath '/' dcName{1}];
+    assert(getSimulinkBlockHandle(dcFromPath) ~= -1, ...
+        'virtualvcu:MissingDcLinkFrom', ...
+        '%s is missing; BUILDSYSTEMSTATUS''s wiring may have changed.', dcFromPath);
+    set_param(dcFromPath, 'GotoTag', 'VirtualVcuDcLinkV');
+end
 addVirtualVcuOutputTags(path);
 % The CAN receive path remains physical and observable. No-data is preserved
 % as false/unknown; it is not converted into a fabricated status frame.
@@ -152,9 +194,15 @@ save_system(model, modelPath);
 % Persist the chart source once more after a close/reopen. This mirrors the
 % R2024b App/Stateflow serialization behavior and prevents a stale default
 % `function y=fcn(u)` template from shadowing the generated script.
+%
+% [PATH] (the "Virtual VCU" SUBSYSTEM's own path, not the CHART inside
+% it) was passed here previously -- STATEFLOW's 'Path' find filter needs
+% the chart's own path, [path '/Virtual VCU LV_ON'], so this call also
+% silently found zero charts and left the script untouched, exactly like
+% the handle issue SETMATLABFUNCTIONSCRIPT's own header now documents.
 close_system(model, 0);
 load_system(modelPath);
-setMatlabFunctionScript([path], vcuScript());
+setMatlabFunctionScript([path '/Virtual VCU LV_ON'], vcuScript());
 setCounterScript([path '/Port A Pedal TX Counter'], pedalTxCounterScript());
 save_system(model, modelPath);
 end
@@ -209,7 +257,15 @@ function setCounterScript(blockPath, script)
 %SETCOUNTERSCRIPT Install a MATLAB Function block script without
 %   SETMATLABFUNCTIONSCRIPT's hardcoded assertion, which checks for the
 %   main chart's own function signature and does not apply here.
+%   BLOCKPATH may be a handle or a path string -- see
+%   SETMATLABFUNCTIONSCRIPT's header for why a raw handle needs resolving
+%   to a path first.
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
 rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
 chart(1).Script = script;
 if ~contains(chart(1).Script, 'function count = pedalTxCountStep(payload)')
     error('virtualvcu:CounterScript', 'Pedal TX counter script was not installed.');
@@ -229,9 +285,23 @@ script = sprintf(['function count = pedalTxCountStep(payload) %%#ok<INUSD>\n' ..
 end
 
 function setMatlabFunctionScript(blockPath, script)
+%SETMATLABFUNCTIONSCRIPT Install SCRIPT on the MATLAB Function chart at
+%   BLOCKPATH. BLOCKPATH may be a block handle (as ADD_BLOCK returns) or a
+%   Simulink path string; STATEFLOW's own 'Path' find filter only matches
+%   a string, so a raw handle here silently found zero charts and left
+%   CHART(1).SCRIPT a no-op on an empty array -- confirmed by a
+%   from-scratch build reproducing it (the chart quietly stayed on its
+%   default 1-output template while every caller believed the 3-output
+%   script had been installed).
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
 rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
 chart(1).Script = script;
-if ~contains(chart(1).Script, 'function payloads = virtualVcuDeployStep(u)')
+if ~contains(chart(1).Script, ...
+        'function [payloads, dcLinkV, appsBrakeFault] = virtualVcuDeployStep(u)')
     error('virtualvcu:ChartScript', 'Virtual VCU chart script was not installed.');
 end
 end

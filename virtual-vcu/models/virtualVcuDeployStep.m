@@ -1,4 +1,4 @@
-function payloads = virtualVcuDeployStep(u)
+function [payloads, dcLinkV, appsBrakeFault] = virtualVcuDeployStep(u)
 %#codegen
 % Elements 1:40 are the five CAN payloads. Elements 41:44 expose the
 % virtual VCU state and its three control outputs to the model observer.
@@ -41,6 +41,10 @@ brakeOk = (raw(3) >= 9025 && raw(3) <= 31800) && ...
 % must cut torque authority immediately, independent of appsOk/brakeOk.
 % 0.25 matches the existing ENABLE->BUZZING brake-applied threshold so one
 % number governs "brake is meaningfully applied" everywhere in this chart.
+% Exposed as a genuine second output (not packed into PAYLOADS, which is
+% only the five real CAN frames) so the GUI can show a real fault
+% indicator instead of the operator having to infer it from a torque
+% number silently going to zero.
 appsBrakeFault = mean([t1 t2]) > 0.05 && mean([b1 b2]) >= 0.25;
 precharge = u(5) > 0.5;
 mainButton = u(6) > 0.5;
@@ -95,4 +99,20 @@ payloads(41) = state;
 payloads(42) = uint8(state >= 2 && state <= 4); % MAIN_EN_OUT
 payloads(43) = uint8(state == 1);              % PRECH_EN_OUT
 payloads(44) = uint8(state >= 1 && state <= 4); % INV_CTRL_EN
+% DCLINKV simulates the DC bus capacitance charging through the precharge
+% resistor: 0 V at LV_ON, ramping linearly to NOMINALDCLINKV over the same
+% 7500-tick PRECHARGING window the state machine itself times against (so
+% the two are always consistent by construction, not by a second,
+% independently-tuned timer), then held at NOMINALDCLINKV through
+% ENABLE/BUZZING/RTD. Drops back to 0 once precharge is re-armed (state
+% re-enters PRECHARGING from RTD) or on ERROR_SHUTDOWN/LV_ON, matching a
+% real bus discharging once the main contactor opens.
+nominalDcLinkV = 400;
+if state == 1
+    dcLinkV = nominalDcLinkV * min(double(ticks) / 7500, 1);
+elseif state >= 2 && state <= 4
+    dcLinkV = nominalDcLinkV;
+else
+    dcLinkV = 0;
+end
 end

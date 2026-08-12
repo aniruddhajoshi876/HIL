@@ -1002,6 +1002,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.VcuStateLast = '';
                     app.Telemetry.vcu.timeInStateS = NaN;
                 end
+                if live.appsBrakeFaultKnown
+                    app.Telemetry.appsBrakeFault = live.appsBrakeFault;
+                else
+                    app.Telemetry.appsBrakeFault = [];
+                end
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
                 % hardware self-check measurement of the same lines AO01-04
@@ -1063,6 +1068,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 app.Telemetry.pedals.appliedV = nan(1, 4);
                 app.Telemetry.analogInV = nan(1, 4);
+                app.Telemetry.appsBrakeFault = [];
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
             end
@@ -1541,10 +1547,31 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %REFRESHDRIVERINPUTS Repaint requested and applied pedal values.
             theme = app.Theme;
             pedals = app.Telemetry.pedals;
-            app.ThrottleAppliedLabel.Text = sprintf('APPLIED %s', ...
-                app.formatPercent(pedals.throttleAppliedPercent));
-            app.BrakeAppliedLabel.Text = sprintf('APPLIED %s', ...
-                app.formatPercent(pedals.brakeAppliedPercent));
+            % Throttle+brake plausibility interlock (VIRTUALVCUDEPLOYSTEP.M's
+            % APPSBRAKEFAULT): shown directly on the two labels the operator
+            % is already looking at while pressing pedals, rather than a new
+            % banner elsewhere that could go unnoticed. Only ever appended
+            % when the chart itself reports the fault (islogical/true), never
+            % inferred here from a torque number happening to read zero.
+            faultActive = islogical(app.Telemetry.appsBrakeFault) && ...
+                app.Telemetry.appsBrakeFault;
+            if faultActive
+                app.ThrottleAppliedLabel.Text = sprintf( ...
+                    'APPLIED %s | APPS+BRAKE FAULT: TORQUE SUPPRESSED', ...
+                    app.formatPercent(pedals.throttleAppliedPercent));
+                app.BrakeAppliedLabel.Text = sprintf( ...
+                    'APPLIED %s | APPS+BRAKE FAULT: TORQUE SUPPRESSED', ...
+                    app.formatPercent(pedals.brakeAppliedPercent));
+                app.ThrottleAppliedLabel.FontColor = theme.color.fault;
+                app.BrakeAppliedLabel.FontColor = theme.color.fault;
+            else
+                app.ThrottleAppliedLabel.Text = sprintf('APPLIED %s', ...
+                    app.formatPercent(pedals.throttleAppliedPercent));
+                app.BrakeAppliedLabel.Text = sprintf('APPLIED %s', ...
+                    app.formatPercent(pedals.brakeAppliedPercent));
+                app.ThrottleAppliedLabel.FontColor = theme.color.secondaryText;
+                app.BrakeAppliedLabel.FontColor = theme.color.secondaryText;
+            end
             [sensorPercentages, ~] = app.pedalSensorPercentages();
             throttleMismatch = isfinite(sensorPercentages(1)) && ...
                 isfinite(sensorPercentages(2)) && ...

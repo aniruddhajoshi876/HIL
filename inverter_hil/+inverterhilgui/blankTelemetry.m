@@ -15,6 +15,13 @@ snapshot.vcu.timeInStateS = NaN;
 snapshot.vcu.errorActive = false;
 snapshot.vcu.errorKnown = false;
 
+% Whether VIRTUALVCUDEPLOYSTEP.M's own APPS+brake plausibility interlock
+% is actively suppressing torque -- a genuine chart-computed value (see
+% TARGETSESSION.READLIVEIO port 8), not inferred here from a torque number
+% happening to read zero. Empty (unknown) rather than false when unread,
+% so a failed read never presents as "interlock not active".
+snapshot.appsBrakeFault = [];
+
 snapshot.guards.mainButton = [];
 snapshot.guards.brakePercent = NaN;
 snapshot.guards.dcLink12V = NaN;

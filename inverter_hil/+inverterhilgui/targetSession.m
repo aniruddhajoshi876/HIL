@@ -273,6 +273,7 @@ classdef targetSession < handle
                 'pedalPayload', zeros(1, 0, 'uint8'), ...
                 'pedalPayloadKnown', false, ...
                 'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
+                'appsBrakeFault', [], 'appsBrakeFaultKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN);
@@ -391,6 +392,25 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 % PEDALTXCOUNT/PEDALTXCOUNTKNOWN stay at their defaults.
+            end
+
+            % Port 8: VIRTUALVCUDEPLOYSTEP.M's own APPSBRAKEFAULT output --
+            % whether the throttle+brake plausibility interlock is actively
+            % suppressing torque right now, a genuine chart-computed value,
+            % not inferred GUI-side from a torque number happening to be
+            % zero. Same optional-port pattern as port 6: an older running
+            % application without this port must leave the reads above
+            % intact and simply report the fault state unknown.
+            try
+                fault = obj.Backend.getsignal(obsPath, 8);
+                if (islogical(fault) || isnumeric(fault)) && isscalar(fault) && ...
+                        isfinite(double(fault))
+                    snapshot.appsBrakeFault = logical(fault);
+                    snapshot.appsBrakeFaultKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the
