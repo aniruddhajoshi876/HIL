@@ -14,7 +14,11 @@ c.digitalChannels = uint8(1:8);
 c.adcFullScale = 65535;
 c.io183FullScaleV = 5.0;
 c.throttleRestRaw = [30100 63600];
-c.throttlePressedRaw = [20900 46500];
+% throttle1's pressed raw is 23100, not 20900: MFE26-VC's
+% DriverInputs.cpp::convertThrottle1ToPercent uses throttle1Min=23100 (a
+% 7000-count span from throttle1Max=30100), not the 9200-count span
+% (implying a 20900 full-press point) this bench previously assumed.
+c.throttlePressedRaw = [23100 46500];
 c.brakeRestRaw = [9025 8280];
 c.brakePressedRaw = [31800 31800];
 c.pedalCanId = uint32(501);
