@@ -1002,7 +1002,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.VcuStateLast = '';
                     app.Telemetry.vcu.timeInStateS = NaN;
                 end
-                app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
                 % hardware self-check measurement of the same lines AO01-04
@@ -1010,6 +1009,19 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 % the commanded throttle/brake percent (ThrottleField /
                 % BrakeField, already live) in REFRESHELECTRICAL's rail
                 % panel, honestly NaN when unread rather than fabricated.
+                %
+                % PEDALS.APPLIEDV is sourced from this same ANALOGINV, not
+                % LIVE.PEDALSAPPLIEDV: that field is a permanent NaN
+                % placeholder for a genuinely different, unwired signal (the
+                % AO command's own echo -- see TARGETSESSION.READLIVEIO's
+                % comment on PEDALSAPPLIEDV), so every consumer of
+                % PEDALS.APPLIEDV (PedalVoltageLabels, per-sensor
+                % percentages, the plausibility guard) was reading a value
+                % that could never be anything but NaN on this bench, even
+                % though the genuinely self-looped pedal voltage was already
+                % being measured and shown two lines below in the rail
+                % panel.
+                app.Telemetry.pedals.appliedV = live.analogInV;
                 app.Telemetry.analogInV = live.analogInV;
                 if live.can.known
                     d = live.can.diagnostics;
