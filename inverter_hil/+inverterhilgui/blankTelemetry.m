@@ -116,7 +116,7 @@ function items = blankCanObservations(ids, names)
 count = numel(ids);
 items = repmat(struct( ...
     'id', uint32(0), 'name', '', 'signal', '', 'value', '', ...
-    'timestampsS', [], 'lastChangeS', NaN), 1, count);
+    'timestampsS', [], 'lastChangeS', NaN, 'count', NaN), 1, count);
 for index = 1:count
     items(index).id = ids(index);
     items(index).name = names{index};
@@ -124,5 +124,6 @@ for index = 1:count
     items(index).value = '';
     items(index).timestampsS = [];
     items(index).lastChangeS = NaN;
+    items(index).count = NaN;
 end
 end

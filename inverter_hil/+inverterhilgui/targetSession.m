@@ -270,7 +270,8 @@ classdef targetSession < handle
                 'rx', blankLiveRx(), ...
                 'vcuStateKnown', false, 'vcuStateId', 0, ... % stays false until a real VCU's CAN status decode is wired up here
                 'txPayloads', zeros(9, 8, 'uint8'), ...
-                'txPayloadsKnown', false);
+                'txPayloadsKnown', false, ...
+                'txMessageCount', NaN);
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -415,8 +416,11 @@ classdef targetSession < handle
                 snapshot.systemStatus = ...
                     inverterhil.decodeSystemStatus(payloads(9, :));
                 % Raw bytes retained so the TX table can show exactly what the
-                % model generated. They are not proof of successful bus
-                % transmission or acknowledgement by another node.
+                % model generated. These bytes alone are not proof of
+                % successful transmission; acknowledgement is reported
+                % separately and for real by INVERTERHILGUI.CANACKSTATUS,
+                % from the CAN controller's own bus-off/error-warning
+                % counters read above.
                 snapshot.txPayloads = payloads;
                 snapshot.txPayloadsKnown = true;
                 % The decoded values above are model output, not measured
@@ -428,6 +432,23 @@ classdef targetSession < handle
                 obj.LastError = err.message;
                 % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
+            end
+
+            % Port 5: a genuine, target-measured count of status-cycle
+            % payloads emitted (see BUILD_INVERTER_HIL_MODEL's
+            % STATUSCYCLESCRIPT; port 4 of the same subsystem is
+            % VEHICLESTATE, not this counter). Its own try, matching the
+            % port 3 read above: this port only exists in applications
+            % built after this fix, so an older running application must
+            % leave everything read above intact and simply report the
+            % count unknown (NaN), not blank a good snapshot.
+            try
+                txCount = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 5);
+                snapshot.txMessageCount = double(txCount);
+            catch err
+                obj.LastError = err.message;
+                % TXMESSAGECOUNT stays NaN; the GUI shows dashes.
             end
 
             % What the target actually RECEIVED from the VCU, published on

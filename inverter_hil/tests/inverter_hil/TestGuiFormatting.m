@@ -275,6 +275,92 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 '0x395', '0x3A3', '0x3A5', '0x3B3', '0x3B5', '0x400'});
 
             testCase.verifyEmpty(inverterhilgui.canRowModel([], 1.0));
+
+            % COUNT is shown verbatim from the target, never fabricated: an
+            % unread count stays dashes rather than rendering as 0, which is
+            % a real count a silent-but-alive transmitter could report.
+            for index = 1:numel(rows)
+                testCase.verifyEqual(rows(index).count, '--');
+            end
+        end
+
+        function canMessageCountsAreShownVerbatimOrNotAtAll(testCase)
+            base = struct('id', uint32(hex2dec('186')), 'name', 'CTRL INV1', ...
+                'signal', 'x', 'value', 'y', 'timestampsS', 1.0, ...
+                'lastChangeS', 1.0, 'count', 8135);
+            testCase.verifyEqual( ...
+                inverterhilgui.canRowModel(base, 1.0).count, '8135');
+
+            % A genuinely zero count is real data and must render as 0, not
+            % as dashes: a transmitter that has sent nothing yet is a
+            % meaningful, reportable state.
+            zeroCount = base;
+            zeroCount.count = 0;
+            testCase.verifyEqual( ...
+                inverterhilgui.canRowModel(zeroCount, 1.0).count, '0');
+
+            % Anything that is not a whole, non-negative count is refused
+            % rather than rounded or clamped into looking real.
+            for bad = {NaN, -1, 2.5, [], [1 2], 'x'}
+                item = base;
+                item.count = bad{1};
+                testCase.verifyEqual( ...
+                    inverterhilgui.canRowModel(item, 1.0).count, '--', ...
+                    sprintf('A malformed count must not render as a number.'));
+            end
+        end
+
+        function canAckIsReportedFromControllerErrorCountersOnly(testCase)
+            healthy = struct('busOff', false, 'errorWarning', false);
+
+            % Transmitting with clean error counters is real evidence of
+            % acknowledgement: an unacknowledged transmitter cannot stay out
+            % of error-warning and bus-off (see INVERTERHILGUI.CANACKSTATUS).
+            acked = inverterhilgui.canAckStatus(healthy, true);
+            testCase.verifyTrue(acked.known);
+            testCase.verifyTrue(acked.acknowledged);
+            testCase.verifySubstring(acked.text, 'ACK OK');
+
+            % A silent bus proves nothing either way, so a stopped
+            % transmitter must never be credited with acknowledgement.
+            silent = inverterhilgui.canAckStatus(healthy, false);
+            testCase.verifyFalse(silent.known);
+            testCase.verifyEmpty(silent.acknowledged);
+            testCase.verifyEqual(silent.text, '--');
+
+            busOff = inverterhilgui.canAckStatus( ...
+                struct('busOff', true, 'errorWarning', false), true);
+            testCase.verifyTrue(busOff.known);
+            testCase.verifyFalse(busOff.acknowledged);
+            testCase.verifySubstring(busOff.text, 'NOT ACKED');
+
+            warned = inverterhilgui.canAckStatus( ...
+                struct('busOff', false, 'errorWarning', true), true);
+            testCase.verifyTrue(warned.known);
+            testCase.verifyFalse(warned.acknowledged);
+            testCase.verifySubstring(warned.text, 'ACK ERRORS');
+
+            % Bus-off outranks a clear error-warning flag: it is the
+            % terminal state of a transmitter nobody is acknowledging.
+            both = inverterhilgui.canAckStatus( ...
+                struct('busOff', true, 'errorWarning', true), true);
+            testCase.verifyFalse(both.acknowledged);
+
+            % An unread controller reports unknown, never a healthy bus, so
+            % a failed telemetry read can never look like a working one.
+            blank = inverterhilgui.blankTelemetry().can.diagnostics;
+            unread = inverterhilgui.canAckStatus(blank, true);
+            testCase.verifyFalse(unread.known);
+            testCase.verifyEmpty(unread.acknowledged);
+            testCase.verifyEqual(unread.text, '--');
+
+            for bad = {struct('busOff', false), struct('errorWarning', false), ...
+                    struct(), [], 'x'}
+                result = inverterhilgui.canAckStatus(bad{1}, true);
+                testCase.verifyFalse(result.known, ...
+                    'A partial or malformed diagnostics block must not decide.');
+                testCase.verifyEmpty(result.acknowledged);
+            end
         end
 
         function blankTelemetryContainsNoFabricatedValues(testCase)
