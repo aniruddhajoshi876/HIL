@@ -341,6 +341,12 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 TestGuiFormatting.contrastRatio( ...
                 theme.color.tabBarInactiveText, theme.color.tabBar), 7, ...
                 'Unselected tab text must meet WCAG AAA (7:1) on black.');
+            % Regression test for the active ERROR card: its fault-red
+            % background must not also be used as the font color.
+            testCase.verifyGreaterThan( ...
+                TestGuiFormatting.contrastRatio( ...
+                theme.color.background, theme.color.fault), 4.5, ...
+                'ERROR card text on its fault background must meet WCAG AA (4.5:1).');
             testCase.verifySubstring(theme.text.torqueBanner, ...
                 'TORQUE SCALE UNVERIFIED');
             testCase.verifySubstring(theme.text.torqueBanner, '1/512');
@@ -351,6 +357,48 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % CORNERLABELSUSECONFIRMEDMAPPING.
             testCase.verifyEqual(theme.text.cornerLabel, 'UNVERIFIED');
             testCase.verifyEqual(theme.text.noData, '--');
+        end
+
+        function stateCardsClassifySequence(testCase)
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'LV_ON'), 'passed');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'PRECHARGING'), 'active');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+                'PRECHARGING', 'ENABLE'), 'upcoming');
+            testCase.verifyEqual(inverterhilgui.stateCardStyle('', ...
+                'ENABLE'), 'unknown');
+        end
+
+        function vcuStateEntryResetsOnChangeAndAdvancesWhileHeld(testCase)
+            % Regression test: TIME IN STATE previously never moved because
+            % nothing ever updated app.Telemetry.vcu.timeInStateS -- it was
+            % initialized to NaN in blankTelemetry.m and left there forever.
+            [entered, elapsed] = inverterhilgui.trackVcuStateEntry( ...
+                'LV_ON', '', NaN, 100.0);
+            testCase.verifyEqual(entered, 100.0);
+            testCase.verifyEqual(elapsed, 0.0);
+
+            % Same state on a later tick: entry timestamp is held, elapsed
+            % time keeps advancing -- this is the live-incrementing timer.
+            [entered2, elapsed2] = inverterhilgui.trackVcuStateEntry( ...
+                'LV_ON', 'LV_ON', entered, 102.5);
+            testCase.verifyEqual(entered2, 100.0);
+            testCase.verifyEqual(elapsed2, 2.5);
+
+            % A real state change resets the clock to 0 s elapsed.
+            [entered3, elapsed3] = inverterhilgui.trackVcuStateEntry( ...
+                'PRECHARGING', 'LV_ON', entered2, 102.5);
+            testCase.verifyEqual(entered3, 102.5);
+            testCase.verifyEqual(elapsed3, 0.0);
+
+            % Reconnecting with a stale/unknown previous timestamp (NaN)
+            % also resets, even if the state string happens to match --
+            % guards against a fabricated elapsed time across a disconnect.
+            [entered4, elapsed4] = inverterhilgui.trackVcuStateEntry( ...
+                'PRECHARGING', 'PRECHARGING', NaN, 200.0);
+            testCase.verifyEqual(entered4, 200.0);
+            testCase.verifyEqual(elapsed4, 0.0);
         end
     end
 

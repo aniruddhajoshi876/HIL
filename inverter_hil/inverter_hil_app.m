@@ -105,6 +105,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
         InverterExpanded = false(1, 4)
         InverterStatusGrids
         InverterDisclosureButtons
+        % Host time the VCU was last observed entering its current state.
+        % NaN whenever state is not currently known, so time-in-state never
+        % holds a stale value across a disconnect. See REFRESHLIVEIO.
+        VcuStateEnteredS = NaN
+        VcuStateLast = ''
         % Resolved at startup from inverterhilgui.hostHeartbeatTimeout so the
         % host can never report healthy longer than the target-side fallback.
         HeartbeatTimeoutS
@@ -927,6 +932,26 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 for index = 1:numel(app.Telemetry.pins)
                     app.Telemetry.pins(index).state = live.pins(index);
                 end
+                if live.vcuStateKnown
+                    names = [app.VcuStateNames {'ERROR_SHUTDOWN'}];
+                    stateIndex = round(live.vcuStateId) + 1;
+                    if stateIndex >= 1 && stateIndex <= numel(names)
+                        newState = names{stateIndex};
+                        [app.VcuStateEnteredS, timeInStateS] = ...
+                            inverterhilgui.trackVcuStateEntry(newState, ...
+                            app.VcuStateLast, app.VcuStateEnteredS, ...
+                            app.hostTimeS());
+                        app.VcuStateLast = newState;
+                        app.Telemetry.vcu.state = newState;
+                        app.Telemetry.vcu.timeInStateS = timeInStateS;
+                        app.Telemetry.vcu.errorKnown = stateIndex == 6;
+                        app.Telemetry.vcu.errorActive = stateIndex == 6;
+                    end
+                else
+                    app.VcuStateEnteredS = NaN;
+                    app.VcuStateLast = '';
+                    app.Telemetry.vcu.timeInStateS = NaN;
+                end
                 app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
@@ -966,6 +991,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.applyLiveRxFrames(live.rx);
                 end
             else
+                app.VcuStateEnteredS = NaN;
+                app.VcuStateLast = '';
+                app.Telemetry.vcu.timeInStateS = NaN;
                 app.Telemetry.io.healthy = false;
                 app.Telemetry.io.healthyKnown = false;
                 for index = 1:numel(app.Telemetry.pins)
@@ -1236,26 +1264,43 @@ classdef inverter_hil_app < matlab.apps.AppBase
         end
 
         function refreshStateStrip(app)
-            %REFRESHSTATESTRIP Highlight the observed VCU state, if known.
+            %REFRESHSTATESTRIP Paint graphical active/passed/upcoming cards.
             theme = app.Theme;
             current = app.Telemetry.vcu.state;
             for index = 1:numel(app.VcuStateNames)
-                if strcmpi(current, app.VcuStateNames{index})
-                    app.StateStripLabels(index).FontColor = ...
-                        theme.color.healthy;
-                    app.StateStripLabels(index).FontWeight = 'bold';
-                else
-                    app.StateStripLabels(index).FontColor = ...
-                        theme.color.disabledText;
-                    app.StateStripLabels(index).FontWeight = 'normal';
+                status = inverterhilgui.stateCardStyle(current, ...
+                    app.VcuStateNames{index}, ...
+                    app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive);
+                switch status
+                    case 'active'
+                        color = theme.color.healthy;
+                        background = theme.color.highlight;
+                        weight = 'bold';
+                    case 'passed'
+                        color = theme.color.electrical;
+                        background = theme.color.panel;
+                        weight = 'normal';
+                    case 'upcoming'
+                        color = theme.color.disabledText;
+                        background = theme.color.background;
+                        weight = 'normal';
+                    otherwise
+                        color = theme.color.secondaryText;
+                        background = theme.color.background;
+                        weight = 'normal';
                 end
+                app.StateStripLabels(index).FontColor = color;
+                app.StateStripLabels(index).BackgroundColor = background;
+                app.StateStripLabels(index).FontWeight = weight;
             end
             if app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive
-                app.StateErrorLabel.FontColor = theme.color.fault;
+                app.StateErrorLabel.FontColor = theme.color.background;
                 app.StateErrorLabel.FontWeight = 'bold';
+                app.StateErrorLabel.BackgroundColor = theme.color.fault;
             else
                 app.StateErrorLabel.FontColor = theme.color.disabledText;
                 app.StateErrorLabel.FontWeight = 'normal';
+                app.StateErrorLabel.BackgroundColor = theme.color.background;
             end
             app.TimeInStateLabel.Text = ['TIME IN STATE ' ...
                 app.formatSeconds(app.Telemetry.vcu.timeInStateS)];
