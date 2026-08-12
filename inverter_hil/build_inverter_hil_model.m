@@ -439,9 +439,22 @@ add_line(path, 'Ephorus Status Cycle/2', 'ReceivedControlObservation/1');
 % INVERTERHIL.STEPMODEL/the plant.
 add_block('simulink/Signal Routing/From', [path '/Analog Inputs From'], ...
     'GotoTag', 'AnalogInputsV', 'Position', [300 240 420 260]);
+% AnalogInputsV is a bare passthrough with no other consumer in the model
+% (same shape as the Virtual VCU state observers PATCH_VIRTUAL_VCU_STATE_
+% OUTPUTS.M documents), so Simulink's block-IO optimization collapses its
+% storage onto the upstream signal and GETSIGNAL on the Out1 below fails
+% with "Add a SignalCopy block". Fix is the same one that script uses: a
+% Signal Conversion block (ConversionOutput='Signal copy') with its output
+% port TestPoint='on', which forces independent, non-optimizable storage.
+copyBlock = add_block('simulink/Signal Attributes/Signal Conversion', ...
+    [path '/Analog Inputs Signal Copy'], 'ConversionOutput', 'Signal copy', ...
+    'Position', [445 240 475 260]);
+copyPorts = get_param(copyBlock, 'PortHandles');
+set_param(copyPorts.Outport, 'TestPoint', 'on');
 add_block('simulink/Sinks/Out1', [path '/AnalogInputTelemetry'], ...
     'Port', '3', 'Position', [545 240 575 260]);
-add_line(path, 'Analog Inputs From/1', 'AnalogInputTelemetry/1');
+add_line(path, 'Analog Inputs From/1', 'Analog Inputs Signal Copy/1');
+add_line(path, 'Analog Inputs Signal Copy/1', 'AnalogInputTelemetry/1');
 
 % Port 4: a genuine, target-measured count of status-cycle payloads this
 % block has emitted (see STATUSCYCLESCRIPT's TXCOUNT comment) -- the CAN

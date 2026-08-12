@@ -4,7 +4,17 @@ function payloads = virtualVcuDeployStep(u)
 % virtual VCU state and its three control outputs to the model observer.
 payloads = zeros(44,1,'uint8');
 ai = u(1:4);
-raw = min(max(double(ai(:)),0),5) / 5 * 65535;
+% Raw-count thresholds below (30100/23100 etc.) are firmware ADC counts
+% derived on the 3.3 V reference the firmware's own ADS7066 uses (see
+% PINOUTS.md S4.2: sil/registry/params.hpp ADS_VREF_V = 3.3), the same
+% basis pedalCalibrationConstants.m/apply_pedal_calibration.m use elsewhere
+% in this repo. This conversion previously used 5 V (the IO183 AI range),
+% which put every voltage this bench can physically produce below the
+% pressed-side threshold no matter what was commanded, always reading
+% 100% throttle -- 5 V was the IO183 channel's own full-scale range,
+% not the firmware's ADC reference; the two happen to share units (V)
+% but are unrelated scales.
+raw = min(max(double(ai(:)),0),3.3) / 3.3 * 65535;
 t1 = min(max((30100-raw(1))/9200,0),1);
 t2 = min(max((63600-raw(2))/17100,0),1);
 b1 = min(max((raw(3)-9025)/22775,0),1);

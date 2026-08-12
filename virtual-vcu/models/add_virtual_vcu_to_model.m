@@ -46,6 +46,12 @@ for k = 1:4
     add_line(path, sprintf('Module 2 AI01-AI04/%d', k), ...
         sprintf('Module 2 Analog Mux/%d', k));
 end
+add_block('simulink/Signal Routing/Mux', [path '/Module 2 Digital Mux'], ...
+    'Inputs', '8', 'Position', [220 205 240 260]);
+for k = 1:8
+    add_line(path, sprintf('Module 2 DI01-DI08/%d', k), ...
+        sprintf('Module 2 Digital Mux/%d', k));
+end
 % IO614 has one module-level setup. The main inverter boundary owns it and
 % enables both channel 1/Port B and channel 2/Port A at the same bitrate.
 read = add_block('speedgoatlib_IO614/CAN Read ', [path '/Port A CAN FIFO Read'], ...
@@ -82,7 +88,7 @@ for k = 1:5
 end
 add_block('simulink/Sinks/Terminator', [path '/Module 2 Digital Monitor'], ...
     'Position', [220 215 240 235]);
-add_line(path, 'Module 2 DI01-DI08/1', 'Module 2 Digital Monitor/1');
+add_line(path, 'Module 2 Digital Mux/1', 'Module 2 Digital Monitor/1');
 add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU AI Telemetry'], ...
     'GotoTag', 'VirtualVcuMeasuredAI', 'TagVisibility', 'global', ...
     'Position', [520 270 680 290]);
@@ -112,11 +118,36 @@ for k = 1:5
         sprintf('Port A CAN Pack %d/1', k));
     add_line(path, sprintf('Port A CAN Pack %d/1', k), sprintf('Port A CAN Write %d/1', k));
 end
+% Genuine, target-measured transmit count for the pedal frame (0x1F5),
+% mirroring EPHORUSSYSTEMSTATUSSTEP's TXCOUNT pattern
+% (BUILD_INVERTER_HIL_MODEL.M): the CAN Write driver itself exposes no
+% cumulative counter, so this counts how many times a pedal payload was
+% actually emitted at the write path's own 5 ms rate. Tapped from the same
+% rate-transitioned signal 'Port A CAN Pack 1' consumes (k==1 is 0x1F5, the
+% first id in IDS), not the chart's 1 kHz base rate, so the count matches
+% the frame's real transmit cadence.
+counter = add_block('simulink/User-Defined Functions/MATLAB Function', ...
+    [path '/Port A Pedal TX Counter'], 'Position', [920 900 1030 940]);
+setCounterScript(counter, pedalTxCounterScript());
+add_line(path, 'Port A Payload Rate Transition 1/1', ...
+    'Port A Pedal TX Counter/1', 'autorouting', 'on');
+add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU Pedal TX Count'], ...
+    'GotoTag', 'VirtualVcuPedalTxCount', 'TagVisibility', 'global', ...
+    'Position', [1060 900 1230 920]);
+add_line(path, 'Port A Pedal TX Counter/1', ...
+    'Virtual VCU Pedal TX Count/1', 'autorouting', 'on');
 set_param(path, 'Commented', 'off');
 % Re-assert the chart source after all signal connections; R2024b may
 % refresh a MATLAB Function block's default template when a downstream
-% vector-width diagnostic is first evaluated.
+% vector-width diagnostic is first evaluated. The same bug hit the pedal
+% TX counter: its script was set right after creation but before its
+% 8-wide input line was connected, so the vector-width diagnostic quietly
+% reverted it to the default `function y=fcn(u)` passthrough template --
+% compiled evidence: the counter's OUTPORT read back as uint8 width 8
+% (identical to its input) instead of a scalar uint32, and getsignal on
+% the observability port it feeds returned the pedal payload's own shape.
 setMatlabFunctionScript(fcn, vcuScript());
+setCounterScript(counter, pedalTxCounterScript());
 save_system(model, modelPath);
 % Persist the chart source once more after a close/reopen. This mirrors the
 % R2024b App/Stateflow serialization behavior and prevents a stale default
@@ -124,6 +155,7 @@ save_system(model, modelPath);
 close_system(model, 0);
 load_system(modelPath);
 setMatlabFunctionScript([path], vcuScript());
+setCounterScript([path '/Port A Pedal TX Counter'], pedalTxCounterScript());
 save_system(model, modelPath);
 end
 
@@ -157,6 +189,29 @@ end
 function script = vcuScript()
 script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
     'virtualVcuDeployStep.m'));
+end
+
+function setCounterScript(blockPath, script)
+%SETCOUNTERSCRIPT Install a MATLAB Function block script without
+%   SETMATLABFUNCTIONSCRIPT's hardcoded assertion, which checks for the
+%   main chart's own function signature and does not apply here.
+rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+chart(1).Script = script;
+if ~contains(chart(1).Script, 'function count = pedalTxCountStep(payload)')
+    error('virtualvcu:CounterScript', 'Pedal TX counter script was not installed.');
+end
+end
+
+function script = pedalTxCounterScript()
+script = sprintf(['function count = pedalTxCountStep(payload) %%#ok<INUSD>\n' ...
+    '%%#codegen\n' ...
+    'persistent n\n' ...
+    'if isempty(n)\n' ...
+    '    n = uint32(0);\n' ...
+    'end\n' ...
+    'n = n + 1;\n' ...
+    'count = n;\n' ...
+    'end\n']);
 end
 
 function setMatlabFunctionScript(blockPath, script)

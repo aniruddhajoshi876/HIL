@@ -272,6 +272,7 @@ classdef targetSession < handle
                 'vcuStateId', NaN, 'vcuStateKnown', false, ...
                 'pedalPayload', zeros(1, 0, 'uint8'), ...
                 'pedalPayloadKnown', false, ...
+                'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN);
@@ -354,7 +355,8 @@ classdef targetSession < handle
             % top-level Out1 block -- see the "Ephorus System Status"
             % pattern this now matches. Ports: 1=pedal payload,
             % 2=state ID, 3=main enable, 4=precharge enable,
-            % 5=inverter control enable (patch_virtual_vcu_state_outputs.m).
+            % 5=inverter control enable, 6=pedal TX count
+            % (patch_virtual_vcu_state_outputs.m).
             try
                 obsPath = 'inverter_hil/Virtual VCU Observability';
                 pedal = obj.Backend.getsignal(obsPath, 1);
@@ -370,6 +372,25 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 % Observer outputs are optional on older applications.
+            end
+
+            % Port 6: a genuine, target-measured count of pedal (0x1F5)
+            % frames emitted by the Virtual VCU's own CAN Write path (see
+            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port A Pedal TX Counter). Its own
+            % try, matching the pattern used for newer optional ports
+            % elsewhere in this method: this port only exists in
+            % applications built after this fix, so an older running
+            % application must leave the reads above intact and simply
+            % report the count unknown, not blank a good snapshot.
+            try
+                txCount = obj.Backend.getsignal(obsPath, 6);
+                if isnumeric(txCount) && isscalar(txCount) && isfinite(txCount)
+                    snapshot.pedalTxCount = double(txCount);
+                    snapshot.pedalTxCountKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % PEDALTXCOUNT/PEDALTXCOUNTKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the

@@ -85,10 +85,15 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             clear('virtualVcuDeployStep'); %#ok<CLFUN>
 
             c = virtualvcu.config();
-            % virtualVcuDeployStep.m takes u(1:4) as volts (0-5 V), unlike
-            % the raw ADC counts in c.*Raw -- convert the same way
-            % stateMachineUsesDigitalInputs (above) does for step.m.
-            toVolts = @(raw) double(raw) / c.adcFullScale * c.io183FullScaleV;
+            % virtualVcuDeployStep.m takes u(1:4) as volts, converted back to
+            % raw counts internally on the firmware's real 3.3 V ADC
+            % reference (PINOUTS.md S4.2: ADS7066 VREF, ADS_VREF_V=3.3) --
+            % NOT c.io183FullScaleV (5 V), which is the IO183 channel's own
+            % electrical range and only applies to the separate host/SIL
+            % voltageToRaw.m round trip that step.m (above) uses. Using
+            % c.io183FullScaleV here would regenerate the pre-fix scale bug
+            % this test exists to catch, just relocated into the test itself.
+            toVolts = @(raw) double(raw) / c.adcFullScale * 3.3;
             throttleRestV = toVolts(c.throttleRestRaw(1));
             brakePressedV = toVolts(c.brakePressedRaw(1));
 
