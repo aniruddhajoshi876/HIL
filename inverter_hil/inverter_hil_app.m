@@ -55,7 +55,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
         PedalVoltageLabels
         PlausibilityCheckBox      matlab.ui.control.CheckBox
         ExpertModeCheckBox        matlab.ui.control.CheckBox
-        MainButtonSwitch          matlab.ui.control.CheckBox
         CoolingSwitch             matlab.ui.control.CheckBox
         ShutdownFeedbackSwitch    matlab.ui.control.CheckBox
         DigitalAppliedLabels
@@ -103,6 +102,15 @@ classdef inverter_hil_app < matlab.apps.AppBase
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
+        % Host timestamp of the last MAIN BUTTON momentary press, used to
+        % show the NEXT TRANSITION guard's "Main button" row as PRESSED for
+        % a short window after each push. MAIN_BTN_IN is now driven purely
+        % by a ~200 ms edge pulse (see build_inverter_hil_model.m's Main
+        % Button Pulse Generator), not a held level, so there is no
+        % steady-state pin value worth polling -- a 200 ms pulse is also
+        % shorter than this app's 250 ms poll period and could otherwise be
+        % missed entirely between polls.
+        MainButtonLastPressedS = -Inf
         % Previous poll's target transmit count, and whether it advanced
         % between the last two polls. INVERTERHILGUI.CANACKSTATUS requires
         % that genuine observation before it will report frames as
@@ -123,8 +131,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         VcuStateNames = {'LV_ON', 'PRECHARGING', 'ENABLE', 'BUZZING', 'RTD'}
         PedalChannelNames = {'AO01 THR1', 'AO02 THR2', 'AO03 BRK1', ...
             'AO04 BRK2'}
-        DigitalNames = {'main_button', 'cooling_switch', ...
-            'shutdown_feedback'}
+        DigitalNames = {'cooling_switch', 'shutdown_feedback'}
         InverterFieldNames = {'STATE', 'READY', 'CMD AGE', 'TORQUE CMD', ...
             'TORQUE ACT', 'SPEED', 'Id set/act', 'Iq set/act', ...
             'MOTOR TEMP', 'SWITCH TEMP', 'DERATING', 'ACTIVE FAULT'}
@@ -451,8 +458,10 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             app.makeLabel(grid, 'DIGITAL STIMULI', theme.font.body, ...
                 theme.color.primaryText);
-            app.MainButtonSwitch = app.makeCheckBox(grid, 'MAIN_BTN_IN', ...
-                @onMainButtonChanged);
+            % MAIN_BTN_IN has no checkbox here: a held-level control was
+            % inert on hardware (the chart only reacts to the momentary
+            % MAIN BUTTON pulse below), so it was removed rather than kept
+            % as a control that visibly does nothing when clicked.
             app.CoolingSwitch = app.makeCheckBox(grid, 'COOLING_SW_IN', ...
                 @onCoolingSwitchChanged);
             app.ShutdownFeedbackSwitch = app.makeCheckBox(grid, ...
@@ -460,8 +469,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             app.makeLabel(grid, 'APPLIED', theme.font.body, ...
                 theme.color.primaryText);
-            app.DigitalAppliedLabels = gobjects(1, 3);
-            for index = 1:3
+            app.DigitalAppliedLabels = gobjects(1, 2);
+            for index = 1:2
                 app.DigitalAppliedLabels(index) = app.makeLabel(grid, ...
                     theme.text.noData, theme.font.small, ...
                     theme.color.secondaryText);
@@ -1049,6 +1058,46 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.appliedPedalPercent(1, 'v1');
             app.Telemetry.pedals.brakeAppliedPercent = ...
                 app.appliedPedalPercent(3, 'v3');
+            app.Telemetry.dcLink = inverterhilgui.blankTelemetry().dcLink;
+            status = struct('dcLink12V', NaN, 'dcLink34V', NaN, ...
+                'dcLink12AboveMinimum', [], 'dcLink34AboveMinimum', []);
+            if live.known && isstruct(live.systemStatus)
+                status = live.systemStatus;
+            end
+            voltageFields = {'dcLink12V', 'dcLink34V'};
+            flagFields = {'dcLink12AboveMinimum', ...
+                'dcLink34AboveMinimum'};
+            for index = 1:2
+                voltage = status.(voltageFields{index});
+                aboveMinimum = status.(flagFields{index});
+                if isnumeric(voltage) && isscalar(voltage) && ...
+                        isfinite(voltage)
+                    app.Telemetry.dcLink(index).voltageV = double(voltage);
+                    app.Telemetry.dcLink(index).rawCount = round( ...
+                        double(voltage) * 64);
+                    app.Telemetry.dcLink(index).capturePending = false;
+                end
+                if (islogical(aboveMinimum) || isnumeric(aboveMinimum)) && ...
+                        isscalar(aboveMinimum) && isfinite(double(aboveMinimum))
+                    app.Telemetry.dcLink(index).aboveMinimum = ...
+                        logical(aboveMinimum);
+                end
+            end
+            [~, plausibilityOk] = app.pedalSensorPercentages();
+            % MAIN_BTN_IN is edge-pulsed (see MainButtonLastPressedS above),
+            % so "pressed" here means "pressed recently enough to still be
+            % the operator's most recent action" rather than a live pin
+            % level. 1 s comfortably covers several 250 ms poll cycles so a
+            % press is never silently missed between polls.
+            mainButtonPressWindowS = 1.0;
+            app.Telemetry.guards.mainButton = ...
+                (app.hostTimeS() - app.MainButtonLastPressedS) <= ...
+                mainButtonPressWindowS;
+            app.Telemetry.guards.brakePercent = ...
+                app.Telemetry.pedals.brakeAppliedPercent;
+            app.Telemetry.guards.dcLink12V = status.dcLink12V;
+            app.Telemetry.guards.dcLink34V = status.dcLink34V;
+            app.Telemetry.guards.plausibilityOk = plausibilityOk;
         end
 
         function applyLiveTxFrames(app, live)
@@ -1312,6 +1361,34 @@ classdef inverter_hil_app < matlab.apps.AppBase
             percent = min(max(fraction, 0), 1) * 100;
         end
 
+        function [percentages, plausibilityOk] = pedalSensorPercentages(app)
+            %PEDALSENSORPERCENTAGES Mirror the VCU pedal plausibility math
+            %   for display only, using the already-read pedal voltages.
+            percentages = nan(1, 4);
+            plausibilityOk = [];
+            voltages = app.Telemetry.pedals.appliedV;
+            if ~isnumeric(voltages) || numel(voltages) < 4
+                return;
+            end
+            raw = double(voltages(1:4)) / 3.3 * 65535;
+            valid = isfinite(raw);
+            if valid(1)
+                percentages(1) = 100 * min(max((30100 - raw(1)) / 9200, 0), 1);
+            end
+            if valid(2)
+                percentages(2) = 100 * min(max((63600 - raw(2)) / 17100, 0), 1);
+            end
+            if valid(3)
+                percentages(3) = 100 * min(max((raw(3) - 9025) / 22775, 0), 1);
+            end
+            if valid(4)
+                percentages(4) = 100 * min(max((raw(4) - 8280) / 23520, 0), 1);
+            end
+            if valid(1) && valid(2)
+                plausibilityOk = logical(abs(percentages(1) - percentages(2)) <= 20);
+            end
+        end
+
         function refreshPolicy(app)
             %REFRESHPOLICY Apply the single control-enable authority.
             lifecycle = app.Session.describeState();
@@ -1325,7 +1402,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.Telemetry.vcu.state, interlocks);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
-            app.applyEnable([app.MainButtonSwitch app.CoolingSwitch ...
+            app.applyEnable([app.CoolingSwitch ...
                 app.ShutdownFeedbackSwitch], app.Policy.digitalStimuli);
             app.applyEnable([app.PrechargeButton app.MainMomentaryButton], ...
                 app.Policy.momentary);
@@ -1456,11 +1533,22 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.formatPercent(pedals.throttleAppliedPercent));
             app.BrakeAppliedLabel.Text = sprintf('APPLIED %s', ...
                 app.formatPercent(pedals.brakeAppliedPercent));
+            [sensorPercentages, ~] = app.pedalSensorPercentages();
+            throttleMismatch = isfinite(sensorPercentages(1)) && ...
+                isfinite(sensorPercentages(2)) && ...
+                abs(sensorPercentages(1) - sensorPercentages(2)) > 20;
             for index = 1:4
                 measurement = inverterhilgui.formatMeasurement( ...
                     pedals.appliedV(index), NaN, 'V', false);
-                app.PedalVoltageLabels(index).Text = sprintf('%s %s', ...
-                    app.PedalChannelNames{index}, measurement.value);
+                app.PedalVoltageLabels(index).Text = sprintf('%s %s | %s', ...
+                    app.PedalChannelNames{index}, measurement.value, ...
+                    app.formatPercent(sensorPercentages(index)));
+                if throttleMismatch && index <= 2
+                    app.PedalVoltageLabels(index).FontColor = theme.color.fault;
+                else
+                    app.PedalVoltageLabels(index).FontColor = ...
+                        theme.color.electrical;
+                end
             end
             for index = 1:numel(app.DigitalNames)
                 [value, known] = app.Session.readCached( ...
@@ -1865,13 +1953,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.refreshAll();
         end
 
-        function onMainButtonChanged(app, ~)
-            %ONMAINBUTTONCHANGED Drive MAIN_BTN_IN.
-            app.commitWrite('digital.main_button', ...
-                app.MainButtonSwitch.Value, true);
-            app.refreshDriverInputs();
-        end
-
         function onCoolingSwitchChanged(app, ~)
             %ONCOOLINGSWITCHCHANGED Drive COOLING_SW_IN.
             app.commitWrite('digital.cooling_switch', ...
@@ -1899,6 +1980,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %ONMAINMOMENTARYPUSHED Increment the main-button sequence counter.
             app.MainButtonSequence = ...
                 inverterhilgui.sequenceCommand(app.MainButtonSequence);
+            app.MainButtonLastPressedS = app.hostTimeS();
             app.commitWrite('digital.main_button_sequence', ...
                 app.MainButtonSequence, true);
             app.refreshDriverInputs();

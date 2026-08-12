@@ -14,7 +14,21 @@ ai = u(1:4);
 % 100% throttle -- 5 V was the IO183 channel's own full-scale range,
 % not the firmware's ADC reference; the two happen to share units (V)
 % but are unrelated scales.
-raw = min(max(double(ai(:)),0),3.3) / 3.3 * 65535;
+rawRead = min(max(double(ai(:)),0),3.3) / 3.3 * 65535;
+persistent state ticks rawFilt
+if isempty(state)
+    state = uint8(0); ticks = uint32(0); rawFilt = rawRead;
+end
+% First-order low-pass on the raw ADC counts, matching how real VCU
+% firmware filters pedal sensors before computing torque. This bench's
+% physical throttle/brake self-loop jumpers pick up genuine electrical
+% noise; an unfiltered pass-through (the original behavior) reflected
+% every count of that noise straight into the torque number every tick.
+% alpha = 1 - exp(-dt/tau) with dt = 1 ms (the chart's own tick rate, per
+% the 7500-tick/7.5 s precharge timeout below) and tau = 20 ms.
+filterAlpha = 0.05;
+rawFilt = rawFilt + filterAlpha * (rawRead - rawFilt);
+raw = rawFilt;
 t1 = min(max((30100-raw(1))/9200,0),1);
 t2 = min(max((63600-raw(2))/17100,0),1);
 b1 = min(max((raw(3)-9025)/22775,0),1);
@@ -22,14 +36,18 @@ b2 = min(max((raw(4)-8280)/23520,0),1);
 appsOk = abs(t1-t2) <= 0.20;
 brakeOk = (raw(3) >= 9025 && raw(3) <= 31800) && ...
     (raw(4) >= 8280 && raw(4) <= 31800);
+% APPS+brake plausibility (UN R13-H / FMVSS 124 brake-override style rule):
+% throttle and brake pressed together beyond a nominal deadband/threshold
+% must cut torque authority immediately, independent of appsOk/brakeOk.
+% 0.25 matches the existing ENABLE->BUZZING brake-applied threshold so one
+% number governs "brake is meaningfully applied" everywhere in this chart.
+appsBrakeFault = mean([t1 t2]) > 0.05 && mean([b1 b2]) >= 0.25;
 precharge = u(5) > 0.5;
 mainButton = u(6) > 0.5;
 shutdownFeedback = u(9) > 0.5;
 if ~isfinite(raw(1)) || ~isfinite(raw(2)) || ~isfinite(raw(3)) || ~isfinite(raw(4))
     appsOk = false; brakeOk = false;
 end
-persistent state ticks
-if isempty(state), state = uint8(0); ticks = uint32(0); end
 rxId = uint32(max(u(13),0));
 rxLength = uint32(max(u(16),0));
 rxStatus3x3 = rxLength == 8 && (rxId == 899 || rxId == 915 || ...
@@ -56,7 +74,7 @@ elseif state == 4 && precharge
     state = uint8(1); ticks = uint32(0);
 end
 active = state >= 2 && state <= 4;
-drive = state == 4 && appsOk && brakeOk;
+drive = state == 4 && appsOk && brakeOk && ~appsBrakeFault;
 t = uint8(round(100*mean([t1 t2])));
 brake = uint16(round(650*mean([b1 b2])));
 payloads(1) = t;

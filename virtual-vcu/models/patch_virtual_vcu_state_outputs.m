@@ -136,12 +136,14 @@ end
 % tapped for observability -- port 3 there is a bare passthrough like
 % this one was, and correctly fails with the "Add a SignalCopy block"
 % diagnostic rather than silently returning wrong data.
-% Pedal TX Count is a 6th observer, published directly as a global Goto
-% inside "Virtual VCU" by ADD_VIRTUAL_VCU_TO_MODEL.M (not republished here
-% like the other four, since it has no VCU Payload Split source port to
-% read from) -- reused via the same Signal Copy pattern as the rest.
-obsNames = [{'Pedal Payload'}, names, {'Pedal TX Count'}];
-obsTags = [{pedalTag}, tags, {'VirtualVcuPedalTxCount'}];
+% Pedal TX Count (6th) and Control Frame 1 (7th, carries torque at local
+% bytes 5-6) are published directly as global Gotos inside "Virtual VCU"
+% by ADD_VIRTUAL_VCU_TO_MODEL.M (not republished here like the first five,
+% since Control Frame 1 already has its own Goto from VCU Payload Split
+% port 2, and Pedal TX Count has no VCU Payload Split source at all) --
+% both reused via the same Signal Copy pattern as the rest.
+obsNames = [{'Pedal Payload'}, names, {'Pedal TX Count', 'Control Frame 1'}];
+obsTags = [{pedalTag}, tags, {'VirtualVcuPedalTxCount', 'VirtualVcuControlFrame1'}];
 for k = 1:numel(obsNames)
     fromName = [obsPath '/From ' obsNames{k}];
     copyName = [obsPath '/Signal Copy ' obsNames{k}];
