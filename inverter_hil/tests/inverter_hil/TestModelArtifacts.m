@@ -196,11 +196,18 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'canChn3', 'Disabled'; ...
                 'canChn4', 'Disabled'; ...
                 'arbBdrChn1', '1.0 MBaud'});
-            % useBusOut ON and ts 0.005 are both required by the RX path, not
-            % incidental: the Rx Bus Selector can only split port 2 when it
-            % is a CAN_MESSAGE bus, and reading at 0.001 put the status-cycle
-            % chain it drives on a 1 ms rate that collided with the 5 ms CAN
-            % writes. Asserted here so neither can be reverted silently.
+            % useBusOut ON is required by the RX path, not incidental: the Rx
+            % Bus Selector can only split port 2 when it is a CAN_MESSAGE
+            % bus. ts is 0.001 (the model's base rate): a commanding VCU can
+            % transmit fast enough that a single 5 ms FIFO pop (200 msg/s)
+            % permanently falls behind. A naive fix that just raised this ts
+            % put the WHOLE status-cycle chain -- state machine, plant, CAN
+            % Pack/Write -- on a 1 ms rate that collided with the CAN Write
+            % blocks' own explicit 5 ms rate; ephorusRxRetentionRunsFaster-
+            % ThanStatusCycle below locks in the actual fix (retention split
+            % into its own 1 ms block, joined to the unchanged 5 ms status-
+            % cycle block by a Rate Transition) so neither half of that
+            % split can drift back out of sync silently.
             TestModelArtifacts.verifyParameters(testCase, read, { ...
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
@@ -208,7 +215,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'canType', 'CAN (HS)'; ...
                 'useBusOut', 'on'; ...
                 'HasMulRead', 'Single Read from Buffer (FIFO)'; ...
-                'ts', '0.005'});
+                'ts', '0.001'});
             TestModelArtifacts.verifyParameters(testCase, status, { ...
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
@@ -240,6 +247,43 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
             testCase.verifyEqual(actualIds, expectedIds, ...
                 'CAN Write UserData IDs must retain status-cycle order.');
+        end
+
+        function ephorusRxRetentionRunsFasterThanStatusCycle(testCase)
+            % Locks in the CAN RX drain-rate fix: retention (EPHORUS RX
+            % RETENTION) must run at the 1 ms base rate so it can pop the
+            % FIFO fast enough to keep up with a commanding VCU's CAN
+            % traffic; the state machine/plant/CAN-write chain (EPHORUS
+            % STATUS CYCLE) must stay on the original 5 ms status-cycle
+            % rate the CAN Write blocks require, joined to the fast block
+            % by an explicit Rate Transition rather than a silently-
+            % inherited one. If either half of this drifts back onto a
+            % single shared rate, either the FIFO backs up again or the CAN
+            % Write rate collision this split exists to avoid comes back.
+            statusPath = [testCase.Model '/Ephorus System Status'];
+            retention = [statusPath '/Ephorus RX Retention'];
+            statusCycle = [statusPath '/Ephorus Status Cycle'];
+            rateTransition = [statusPath '/Ephorus RX Observation RT'];
+            testCase.verifyNotEqual(getSimulinkBlockHandle(retention), -1);
+            testCase.verifyNotEqual(getSimulinkBlockHandle(statusCycle), -1);
+            testCase.verifyNotEqual(getSimulinkBlockHandle(rateTransition), -1);
+
+            testCase.verifyEqual(get_param(retention, 'CompiledSampleTime'), ...
+                [0.001 0], 'Ephorus RX Retention must run at the 1 ms base rate.');
+            testCase.verifyEqual(get_param(statusCycle, 'CompiledSampleTime'), ...
+                [0.005 0], ['Ephorus Status Cycle must stay on the 5 ms ' ...
+                'status-cycle rate the CAN Write blocks require.']);
+
+            portHandles = get_param(retention, 'PortHandles');
+            testCase.verifyNumElements(portHandles.Inport, 7, ...
+                ['Ephorus RX Retention takes the 6 physical RX fields plus ' ...
+                'the CAN control-frame drop mask.']);
+            statusPorts = get_param(statusCycle, 'PortHandles');
+            testCase.verifyNumElements(statusPorts.Inport, 12, ...
+                ['Ephorus Status Cycle takes the rate-transitioned ' ...
+                'observation matrix plus the 11 remaining GUI-command ' ...
+                'inputs (load torque x4, connected x4, dc-link x2, ' ...
+                'steering angle).']);
         end
 
         function dictionaryContractAndSafeDefaultsAreExact(testCase)
