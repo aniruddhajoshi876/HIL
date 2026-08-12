@@ -486,7 +486,21 @@ classdef targetSession < handle
                 % values if a real CAN round-trip observation is ever wired
                 % up, so this is a floor, not a ceiling, on data quality.
                 snapshot.inverterKnown = true;
-                snapshot.systemStatus = blankLiveSystemStatus();
+                % SNAPSHOT.SYSTEMSTATUS is NOT blanked here (an earlier
+                % version of this fix did, matching the "not independently
+                % confirmed" caveat above). dcLink12V/34V/switchingFrequency
+                % are not an inverter feedback claim at all -- they are this
+                % rig's own GUI-commanded values (HIL_CMD_DC_LINK12_V/34_V),
+                % packed into the same frame purely to be broadcast, with no
+                % ambiguity about their truthfulness the way channel state/
+                % torque/ready genuinely have. Blanking them meant the NEXT
+                % TRANSITION and TWIN DC-LINK panels could never show
+                % anything but dashes on a bench with no second node to
+                % produce a "genuinely received" 0x400 frame (the FRESH(9)
+                % branch below). The "genuinely received" branch still
+                % overwrites this with independently verified data first if
+                % that path is ever wired up, so this remains a floor, not a
+                % ceiling.
             catch err
                 obj.LastError = err.message;
                 % INVERTERKNOWN stays false: a partial or failed read must present as
