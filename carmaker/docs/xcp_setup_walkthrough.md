@@ -95,25 +95,55 @@ until that follow-up work lands.
 - Creating/updating the A2L itself (Speedgoat-side, physical-target-dependent).
 - Any physical network/cabling work between the CarMaker host and the
   Speedgoat target.
-- **`hil_cmd_xcp_pedals_active` (model-side) and `XcpDriving` (GUI-side,
-  `inverter_hil_app.m`) are two separate flags that are not wired together.**
-  Once CarMaker sets `hil_cmd_xcp_pedals_active` true, the model-side Switch
-  genuinely redirects AO01–04 to the XCP-sourced pedal values regardless of
-  the GUI — that part is real and functional. But the GUI's own
-  `XcpDriving` property (which gates whether the GUI's *own* pedal writes
-  reach `Session.write`, and whether the sliders show as read-only) stays a
-  permanent-false placeholder; it does not read `hil_cmd_xcp_pedals_active`
-  back from the target. Consequence: while CarMaker drives, the GUI sliders
-  will keep looking live and keep writing to `hil_cmd_pedals_throttle`/
-  `brake` — harmlessly, since the model Switch has already cut those
-  entries out of the AO01–04 path — but the GUI experience will be
-  misleading (an operator could believe the slider is in control when it
-  is not) and the audit log will keep recording GUI writes that have no
-  physical effect. Closing this requires wiring `app.XcpDriving` to a live,
-  per-poll `Backend.getparam('hil_cmd_xcp_pedals_active')` read (the
-  existing `TargetValues`/`readAllTargetValues` mechanism in
-  `+inverterhilgui/targetSession.m` is a one-time snapshot taken at
-  connect, not a live poll, so it is not a drop-in fit) inside whatever
-  method drives `app.Telemetry`'s live refresh cycle — deliberately not
-  attempted here without first fully understanding that refresh loop, given
-  this is a live-polling change in the same GUI safety-relevant path.
+- **Resolved: `hil_cmd_xcp_pedals_active` (model-side) and `XcpDriving`
+  (GUI-side) are now wired together, not two independent flags.**
+  `TargetSession.readLiveIo` reads `hil_cmd_xcp_pedals_active` live each
+  poll cycle (`Backend.getparam`, same optional/try-catch pattern as the
+  existing `appsBrakeFault` port read), and `inverter_hil_app.refreshLiveIo`
+  sets `app.XcpDriving` from it every cycle, failing closed to `false`
+  (GUI keeps/regains pedal write ownership) on any read failure or
+  disconnect. The GUI and the model-side Switch now read the same
+  underlying source of truth and cannot disagree. This has not been
+  exercised against a real target — the read path is real, but nothing has
+  actually called it against live hardware, since none is reachable from
+  this environment.
+- **The deployed chart (`virtualVcuDeployStep.m`) still has no CAN-RX
+  decode path at all.** `valid`, `appsPlausible`, `brakePlausible`, and
+  `can.dcLink12V`/`dcLink34V`/`inverterReady`/`inverterFault` exist only in
+  the host/SIL reference (`+virtualvcu/step.m`, via
+  `virtualvcu.decodeStatusFrame`). Adding these to the deployed path means
+  giving the chart a genuinely new CAN RX input (it currently takes only
+  physical AI/DI, `u`), porting the decode logic, and adding persistent
+  CAN state alongside the existing `state`/`ticks` persistents — real new
+  Simulink topology (a new input port, a MUX change upstream), not just a
+  new output tap like `torqueRequestNm` was. This was deliberately not
+  attempted: it cannot be verified against a real model build in this
+  environment (no Speedgoat target block library here at all), and
+  unverifiable topology surgery risks landing something that looks
+  complete in the `.m` script but is subtly wrong at actual build time —
+  worse than leaving it honestly undone. Whoever picks this up should plan
+  to iterate against a real `build_inverter_hil_model` run, not trust a
+  from-scratch attempt without one.
+- **A2L export marking**: checked, not changed. The existing convention
+  already applied consistently to every tunable/signal this branch added
+  (`hil_cmd_xcp_pedals_throttle/brake/active`, `torqueRequestNm`) is
+  `Simulink.Parameter.CoderInfo.StorageClass = 'SimulinkGlobal'` for
+  dictionary parameters and `TestPoint = 'on'` on the Signal Copy outputs
+  in `Virtual VCU Observability` — both already in place via the same
+  helper functions (`parameter()`, the observability loop) every other
+  entry uses. No distinct additional ASAP2-specific marking mechanism was
+  found in the local model beyond this. Whether Simulink Real-Time's
+  "Generate Calibration Files" tool actually honors exactly this
+  combination can only be confirmed once a real build exists to run it
+  against.
+- **No integration test proves `pollCoalescers` suppresses `Session.write`
+  end-to-end.** No existing test in this suite instantiates the full
+  `inverter_hil_app` class (every GUI test works against the underlying
+  `inverterhilgui.*` helper functions directly) — there is no established
+  pattern for constructing the app headlessly, and doing so for the first
+  time carries real risk of introducing figure/graphics flakiness into a
+  batch-mode test suite. What exists instead: `controlPolicy`'s own test
+  proves the policy logic is correct, and `pollCoalescers`'s gating
+  condition (`~app.XcpDriving`) reads the identical property `controlPolicy`
+  is given, so the two cannot diverge by construction — but this is
+  reasoning from code inspection, not a running assertion.

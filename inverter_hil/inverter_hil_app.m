@@ -100,18 +100,22 @@ classdef inverter_hil_app < matlab.apps.AppBase
         ThrottleCoalescer
         BrakeCoalescer
         % True while an XCP master (e.g. CarMaker over Ethernet) is
-        % connected and actively driving pedal demand, in which case it
-        % owns hil_cmd_pedals_throttle/brake and the GUI becomes
+        % actively driving pedal demand, in which case it owns
+        % hil_cmd_pedals_throttle/brake and the GUI becomes
         % diagnostic/read-only for that group (see
-        % inverterhilgui.controlPolicy and POLLCOALESCERS). PLACEHOLDER:
-        % nothing in this app currently sets this true -- the real XCP
-        % connection-status signal does not exist yet (it requires a live
-        % Speedgoat XCP server, which requires physical target access this
-        % codebase cannot provide -- see
-        % virtual-vcu/docs/carmaker_speedgoat_interface.md, section 7's
-        % "Items not confirmed locally"). Reverts to GUI write control the
-        % instant this is false, with no separate re-arm step, as soon as a
-        % real driver sets it.
+        % inverterhilgui.controlPolicy and POLLCOALESCERS). Set each poll
+        % cycle by REFRESHLIVEIO from the live hil_cmd_xcp_pedals_active
+        % target parameter (see TargetSession.readLiveIo) -- the same
+        % model-side source-select flag the AO01-04 Switch blocks in
+        % build_inverter_hil_model.m already read directly, so the GUI and
+        % the model can no longer disagree about which source is live. Not
+        % yet exercised against a real target (this codebase cannot reach
+        % one -- see virtual-vcu/docs/carmaker_speedgoat_interface.md,
+        % section 7's "Items not confirmed locally"), but the read path is
+        % real and fails closed to false (GUI keeps/regains pedal write
+        % ownership) on any read failure or disconnect. Reverts to GUI
+        % write control the instant this goes false, with no separate
+        % re-arm step.
         XcpDriving = false
         Heartbeat
         PrechargeSequence = uint32(0)
@@ -1032,6 +1036,18 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 else
                     app.Telemetry.appsBrakeFault = [];
                 end
+                % XcpDriving now reflects the live hil_cmd_xcp_pedals_active
+                % target parameter (see TargetSession.readLiveIo) instead of
+                % being a permanent placeholder. Unknown (read failed, or an
+                % application built before this parameter existed) fails
+                % closed to false -- GUI keeps/regains pedal write
+                % ownership, matching the resolved policy's default-to-GUI
+                % behavior in controlPolicy.m.
+                if live.xcpPedalsActiveKnown
+                    app.XcpDriving = live.xcpPedalsActive;
+                else
+                    app.XcpDriving = false;
+                end
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
                 % hardware self-check measurement of the same lines AO01-04
@@ -1096,6 +1112,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.Telemetry.appsBrakeFault = [];
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
+                % Read failed or not connected: fail closed to GUI-owned
+                % pedals, same as the unknown case above.
+                app.XcpDriving = false;
             end
             app.Telemetry.pedals.throttleAppliedPercent = ...
                 app.appliedPedalPercent(1, 'v1');
