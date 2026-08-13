@@ -1,0 +1,16 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = Scenario-LaneConfig 2.0
+FileCreator = CarMaker for Simulink 12.0.1
+
+Name = FSAE
+Prio = 1
+
+LaneL = roadside 1.5
+LaneR = roadside 1.5
+
+RoadMarkingC = none 2.0 4.0 0.15 {1.0 1.0 1.0} 0.0 center
+
+TrafficBarrierC = none sigma 0.155 0.75 3.0 0.0 center
+
+GuidePostL = none 50.0 0.0 left
+GuidePostR = none 50.0 0.0 right
