@@ -26,12 +26,14 @@ cannot be completed until that A2L is in hand.
 ## The signal contract this walkthrough assumes
 
 Implemented on the Speedgoat side (this repo, `virtual-vcu`/`inverter_hil`,
-commits `2e502ff` and `ca906c6`):
+commits `2e502ff`, `ca906c6`, and the XCP-tunable-parameters follow-up in
+`build_inverter_hil_model.m`):
 
 | Direction | A2L variable (name TBD from the actual generated A2L) | Maps to |
 |---|---|---|
-| CarMaker → Speedgoat (stimulation) | throttle demand, 0–100% | `hil_cmd_pedals_throttle` dictionary entry, via a new selectable-source tunable — see `add_virtual_vcu_to_model.m`/GUI XCP-driving gate |
-| CarMaker → Speedgoat (stimulation) | brake demand, 0–100% | `hil_cmd_pedals_brake` dictionary entry, same mechanism |
+| CarMaker → Speedgoat (stimulation) | throttle demand, 0–100% | `hil_cmd_xcp_pedals_throttle` dictionary entry (distinct from the GUI-owned `hil_cmd_pedals_throttle`) |
+| CarMaker → Speedgoat (stimulation) | brake demand, 0–100% | `hil_cmd_xcp_pedals_brake` dictionary entry (distinct from the GUI-owned `hil_cmd_pedals_brake`) |
+| CarMaker → Speedgoat (stimulation) | source-select flag | `hil_cmd_xcp_pedals_active` (boolean) — set true once CarMaker is actively driving pedals; a Switch block in `build_inverter_hil_model.m` then routes the normalized (÷100) XCP values, instead of the GUI-owned entries, into `Pedal Voltage Calibration`. Default false, so an unwritten build behaves exactly as before this parameter existed. |
 | Speedgoat → CarMaker (measurement) | decoded torque request (Nm) | `VirtualVcuTorqueRequestNm` global tag, `Virtual VCU Observability` subsystem port 9 |
 | Speedgoat → CarMaker (measurement) | VCU state ID | `VirtualVcuStateId` global tag, `Virtual VCU Observability` port 2 |
 | Speedgoat → CarMaker (measurement) | main/precharge/inverter-control enable | `VirtualVcuMainEnable`/`VirtualVcuPrechargeEnable`/`VirtualVcuInverterControlEnable`, ports 3–5 |
@@ -73,9 +75,14 @@ until that follow-up work lands.
    is a separate manual step from selecting it as a UAQ; do not assume UAQ
    selection alone creates the mapping (unconfirmed either way locally,
    verify in the GUI).
-10. **Map the two stimulation variables** to `hil_cmd_pedals_throttle` and
-    `hil_cmd_pedals_brake` directly (same Mapping tab, STIM direction). This
-    is the one step whose exact GUI behavior for a STIM-direction write the
+10. **Map the three stimulation variables** to `hil_cmd_xcp_pedals_throttle`,
+    `hil_cmd_xcp_pedals_brake`, and `hil_cmd_xcp_pedals_active` (same Mapping
+    tab, STIM direction) — **not** the GUI-owned `hil_cmd_pedals_throttle`/
+    `brake` entries, which stay reserved for the GUI. Set `active` true only
+    once CarMaker is genuinely ready to drive both pedals continuously: the
+    model-side Switch cuts the GUI out of the AO01–04 path the instant it
+    sees `active` true, regardless of what the GUI itself is doing. This is
+    the one step whose exact GUI behavior for a STIM-direction write the
     manual doesn't separately illustrate — confirm it writes through
     correctly on the bench before relying on it.
 11. **Enable XCP acquisition** (XCP LED to orange, "XCP On") and start the
@@ -88,6 +95,25 @@ until that follow-up work lands.
 - Creating/updating the A2L itself (Speedgoat-side, physical-target-dependent).
 - Any physical network/cabling work between the CarMaker host and the
   Speedgoat target.
-- The "XCP connected and driving" detection signal the GUI write-ownership
-  gate (`inverter_hil_app.m`'s `XcpDriving` property) needs — that is a
-  placeholder today (always false) pending this real XCP link existing.
+- **`hil_cmd_xcp_pedals_active` (model-side) and `XcpDriving` (GUI-side,
+  `inverter_hil_app.m`) are two separate flags that are not wired together.**
+  Once CarMaker sets `hil_cmd_xcp_pedals_active` true, the model-side Switch
+  genuinely redirects AO01–04 to the XCP-sourced pedal values regardless of
+  the GUI — that part is real and functional. But the GUI's own
+  `XcpDriving` property (which gates whether the GUI's *own* pedal writes
+  reach `Session.write`, and whether the sliders show as read-only) stays a
+  permanent-false placeholder; it does not read `hil_cmd_xcp_pedals_active`
+  back from the target. Consequence: while CarMaker drives, the GUI sliders
+  will keep looking live and keep writing to `hil_cmd_pedals_throttle`/
+  `brake` — harmlessly, since the model Switch has already cut those
+  entries out of the AO01–04 path — but the GUI experience will be
+  misleading (an operator could believe the slider is in control when it
+  is not) and the audit log will keep recording GUI writes that have no
+  physical effect. Closing this requires wiring `app.XcpDriving` to a live,
+  per-poll `Backend.getparam('hil_cmd_xcp_pedals_active')` read (the
+  existing `TargetValues`/`readAllTargetValues` mechanism in
+  `+inverterhilgui/targetSession.m` is a one-time snapshot taken at
+  connect, not a live poll, so it is not a drop-in fit) inside whatever
+  method drives `app.Telemetry`'s live refresh cycle — deliberately not
+  attempted here without first fully understanding that refresh loop, given
+  this is a live-polling change in the same GUI safety-relevant path.

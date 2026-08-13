@@ -97,6 +97,16 @@ addEntry(section, 'hil_status_sample_s', parameter(statusPeriodS(), ...
 % referencing it (see ADDGUICOMMANDPARAMETERS) survives code generation.
 addEntry(section, 'hil_cmd_pedals_throttle', parameter(0, 0, 1));
 addEntry(section, 'hil_cmd_pedals_brake', parameter(0, 0, 1));
+% XCP-tunable pedal demand (0-100%, CarMaker's own units) and the
+% source-select flag choosing whether Pedal Voltage Calibration reads these
+% (normalized to 0-1) or the GUI-owned hil_cmd_pedals_throttle/brake above.
+% Distinct entries, not an alias for the GUI ones -- see
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 2. Default
+% inactive (false), so a build with nothing driving these behaves exactly as
+% before this entry existed.
+addEntry(section, 'hil_cmd_xcp_pedals_throttle', parameter(0, 0, 100));
+addEntry(section, 'hil_cmd_xcp_pedals_brake', parameter(0, 0, 100));
+addEntry(section, 'hil_cmd_xcp_pedals_active', parameter(false, false, true));
 addEntry(section, 'hil_cmd_pedals_plausibility_override', ...
     parameter(false, false, true));
 addEntry(section, 'hil_cmd_digital_main_button', parameter(false, false, true));
@@ -807,6 +817,36 @@ end
 % free of new Inports.
 throttleRef = addNamedParameterSource(path, 'hil_cmd_pedals_throttle', 470);
 brakeRef = addNamedParameterSource(path, 'hil_cmd_pedals_brake', 500);
+% XCP source-select: hil_cmd_xcp_pedals_active picks between the GUI-owned
+% throttle/brake above (default, active=false) and the new
+% hil_cmd_xcp_pedals_throttle/brake tunables (0-100%, normalized to 0-1
+% here) once an XCP master sets active=true. Two Switch blocks share one
+% control tap from the same Ref block (Simulink signal fan-out), so both
+% pedals always agree on which source is live -- see
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 2.
+xcpThrottleRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_throttle', 350);
+xcpBrakeRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_brake', 375);
+xcpActiveRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_active', 400, 'boolean');
+xcpThrottleGain = [path '/XCP Throttle Percent To Fraction'];
+add_block('simulink/Math Operations/Gain', xcpThrottleGain, 'Gain', '1/100', ...
+    'Position', [185 350 235 370]);
+add_line(path, [xcpThrottleRef '/1'], 'XCP Throttle Percent To Fraction/1');
+xcpBrakeGain = [path '/XCP Brake Percent To Fraction'];
+add_block('simulink/Math Operations/Gain', xcpBrakeGain, 'Gain', '1/100', ...
+    'Position', [185 375 235 395]);
+add_line(path, [xcpBrakeRef '/1'], 'XCP Brake Percent To Fraction/1');
+throttleSwitch = [path '/Throttle Source Switch'];
+add_block('simulink/Signal Routing/Switch', throttleSwitch, ...
+    'Criteria', 'u2 ~= 0', 'Position', [280 345 330 385]);
+add_line(path, 'XCP Throttle Percent To Fraction/1', 'Throttle Source Switch/1');
+add_line(path, [xcpActiveRef '/1'], 'Throttle Source Switch/2');
+add_line(path, [throttleRef '/1'], 'Throttle Source Switch/3');
+brakeSwitch = [path '/Brake Source Switch'];
+add_block('simulink/Signal Routing/Switch', brakeSwitch, ...
+    'Criteria', 'u2 ~= 0', 'Position', [280 400 330 440]);
+add_line(path, 'XCP Brake Percent To Fraction/1', 'Brake Source Switch/1');
+add_line(path, [xcpActiveRef '/1'], 'Brake Source Switch/2');
+add_line(path, [brakeRef '/1'], 'Brake Source Switch/3');
 calRefs = cell(4, 2);
 for channel = 1:4
     calRefs{channel, 1} = addNamedParameterSource(path, ...
@@ -818,8 +858,8 @@ pedalFcnPath = [path '/Pedal Voltage Calibration'];
 add_block('simulink/User-Defined Functions/MATLAB Function', pedalFcnPath, ...
     'Position', [790 460 990 620]);
 setMatlabFunctionScript(pedalFcnPath, pedalCalibrationScript());
-add_line(path, [throttleRef '/1'], 'Pedal Voltage Calibration/1');
-add_line(path, [brakeRef '/1'], 'Pedal Voltage Calibration/2');
+add_line(path, 'Throttle Source Switch/1', 'Pedal Voltage Calibration/1');
+add_line(path, 'Brake Source Switch/1', 'Pedal Voltage Calibration/2');
 for channel = 1:4
     add_line(path, [calRefs{channel, 1} '/1'], ...
         sprintf('Pedal Voltage Calibration/%d', 1 + 2 * channel));
