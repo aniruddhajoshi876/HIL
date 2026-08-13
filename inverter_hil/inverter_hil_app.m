@@ -99,6 +99,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
         TargetBusy = false
         ThrottleCoalescer
         BrakeCoalescer
+        % True while an XCP master (e.g. CarMaker over Ethernet) is
+        % connected and actively driving pedal demand, in which case it
+        % owns hil_cmd_pedals_throttle/brake and the GUI becomes
+        % diagnostic/read-only for that group (see
+        % inverterhilgui.controlPolicy and POLLCOALESCERS). PLACEHOLDER:
+        % nothing in this app currently sets this true -- the real XCP
+        % connection-status signal does not exist yet (it requires a live
+        % Speedgoat XCP server, which requires physical target access this
+        % codebase cannot provide -- see
+        % virtual-vcu/docs/carmaker_speedgoat_interface.md, section 7's
+        % "Items not confirmed locally"). Reverts to GUI write control the
+        % instant this is false, with no separate re-arm step, as soon as a
+        % real driver sets it.
+        XcpDriving = false
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
@@ -897,12 +911,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function pollCoalescers(app)
             %POLLCOALESCERS Emit any pedal value held by the 30 ms window.
+            %
+            %   Both POLL calls always run, draining each coalescer's queued
+            %   window regardless of XCPDRIVING, so a value queued while the
+            %   GUI still owned pedals never leaks a stale COMMITWRITE the
+            %   moment XCPDRIVING clears. Only the COMMITWRITE itself is
+            %   gated: while an XCP master owns hil_cmd_pedals_throttle/
+            %   brake, GUI slider movement must not reach SESSION.WRITE at
+            %   all, matching inverterhilgui.controlPolicy's POLICY.PEDALS
+            %   (which independently disables the slider widgets) -- this is
+            %   the actual enforcement point, not merely the widget Enable
+            %   state.
             emission = app.ThrottleCoalescer.poll(app.hostTimeS());
-            if emission.hasValue
+            if emission.hasValue && ~app.XcpDriving
                 app.commitWrite('pedals.throttle', emission.value / 100, true);
             end
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
-            if emission.hasValue
+            if emission.hasValue && ~app.XcpDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
             end
         end
@@ -1417,7 +1442,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
             app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
-                app.Telemetry.vcu.state, interlocks);
+                app.Telemetry.vcu.state, interlocks, app.XcpDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.CoolingSwitch ...
