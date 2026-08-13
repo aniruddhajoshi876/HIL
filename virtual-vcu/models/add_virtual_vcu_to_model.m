@@ -109,6 +109,16 @@ add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU APPS Brake Fault']
     'GotoTag', 'VirtualVcuAppsBrakeFault', 'TagVisibility', 'global', ...
     'Position', [780 370 950 390]);
 add_line(path, 'Virtual VCU LV_ON/3', 'Virtual VCU APPS Brake Fault/1', 'autorouting', 'on');
+% TORQUEREQUESTNM (port 4): same physical Nm value already packed into the
+% control-frame payload bytes, published here as its own typed double so
+% it can be marked for XCP measurement directly -- see
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
+% Republished through VIRTUAL VCU OBSERVABILITY like APPSBRAKEFAULT (see
+% PATCH_VIRTUAL_VCU_STATE_OUTPUTS.M).
+add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU Torque Request Nm'], ...
+    'GotoTag', 'VirtualVcuTorqueRequestNm', 'TagVisibility', 'global', ...
+    'Position', [780 400 950 420]);
+add_line(path, 'Virtual VCU LV_ON/4', 'Virtual VCU Torque Request Nm/1', 'autorouting', 'on');
 statusPath = [model '/Ephorus System Status'];
 for dcName = {'GuiCmdDcLink12V From', 'GuiCmdDcLink34V From'}
     dcFromPath = [statusPath '/' dcName{1}];
@@ -301,7 +311,7 @@ assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
     'No Stateflow chart found at %s.', blockPath);
 chart(1).Script = script;
 if ~contains(chart(1).Script, ...
-        'function [payloads, dcLinkV, appsBrakeFault] = virtualVcuDeployStep(u)')
+        'function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeployStep(u)')
     error('virtualvcu:ChartScript', 'Virtual VCU chart script was not installed.');
 end
 end

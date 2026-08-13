@@ -125,6 +125,104 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             testCase.verifyEqual(payloads(41), uint8(4)); % RTD
         end
 
+        function torqueRequestNmIsNamedAndGatedLikeControlPayloads(testCase)
+            % out.torqueRequestNm (host/SIL step.m) must be the same
+            % quantity packed into controlPayloads -- named, not a separate
+            % derivation -- and zero whenever drive is false, exactly like
+            % those payloads already are.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
+            volts2 = [c.throttlePressedRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
+            di = false(1,8); di(1) = true;
+            out = virtualvcu.step(volts, true, di);
+            testCase.verifyEqual(out.torqueRequestNm, 0, ...
+                'Not RTD yet: torque request must be zero.');
+
+            ctx = out.context; ctx.ticks = c.prechargeTicks - 1;
+            di(1) = false; out = virtualvcu.step(volts, true, di, [], ctx);
+            di(2) = true; out = virtualvcu.step(volts, true, di, [], out.context);
+            ctx = out.context; ctx.ticks = c.buzzingTicks - 1;
+            out = virtualvcu.step(volts, true, di, [], ctx);
+            testCase.verifyEqual(out.state, 'RTD');
+            testCase.verifyEqual(out.torqueRequestNm, 0, ...
+                'RTD but throttle still at rest: expected zero torque request.');
+
+            out = virtualvcu.step(volts2, true, di, [], out.context);
+            testCase.verifyEqual(out.state, 'RTD');
+            testCase.verifyGreaterThan(out.torqueRequestNm, 0, ...
+                'RTD with throttle pressed: expected nonzero torque request.');
+            expectedNm = 15 * mean(out.pedalPct(1:2)) / 100;
+            testCase.verifyEqual(out.torqueRequestNm, expectedNm, 'AbsTol', 1e-9);
+            % controlPayloads' torque bytes (5-6 of each 8-byte frame) must
+            % decode back to the same Nm value at the DBC's 1/256 Nm/count
+            % scale (suppliedDbcMatchesFirmwareContract already asserts
+            % this scale factor).
+            countsFromPayload = double(out.controlPayloads(1,5)) + ...
+                256 * double(out.controlPayloads(1,6));
+            testCase.verifyEqual(countsFromPayload / 256, out.torqueRequestNm, ...
+                'AbsTol', 1/256);
+
+            out = virtualvcu.step(volts2, false, di, [], out.context);
+            testCase.verifyEqual(out.torqueRequestNm, 0, ...
+                'Disabled: torque request must be zero.');
+        end
+
+        function deployedChartTorqueRequestNmMatchesControlPayload(testCase)
+            % Same property as the host/SIL test above, but for the
+            % separately-maintained deployed chart script -- see
+            % deployedChartScriptReachesRtdOnBrakeHeld's header for why a
+            % divergence here needs its own direct test.
+            here = fileparts(mfilename('fullpath'));
+            modelsDir = fullfile(fileparts(here), 'models');
+            testCase.applyFixture( ...
+                matlab.unittest.fixtures.PathFixture(modelsDir));
+            clear('virtualVcuDeployStep'); %#ok<CLFUN>
+
+            c = virtualvcu.config();
+            toVolts = @(raw) double(raw) / c.adcFullScale * 3.3;
+            % Both throttle channels use their OWN rest/pressed raw counts
+            % (channel 1 and channel 2 have different spans -- see
+            % config.m) so appsOk's dual-sensor-agreement check actually
+            % passes and DRIVE can go true; deployedChartScriptReachesRtd-
+            % OnBrakeHeld reuses channel 1's rest value for both channels,
+            % which is fine there since it never checks torque/drive, only
+            % the state transition (brake-gated, not throttle-gated).
+            throttleRestV = toVolts(c.throttleRestRaw);
+            throttlePressedV = toVolts(c.throttlePressedRaw);
+            brakePressedV = toVolts(c.brakePressedRaw(1));
+            u = zeros(17, 1);
+            u(1) = throttleRestV(1); u(2) = throttleRestV(2);
+            u(3) = brakePressedV; u(4) = brakePressedV;
+
+            u(5) = 1; virtualVcuDeployStep(u); % precharge button
+            u(5) = 0;
+            for k = 1:double(c.prechargeTicks)
+                virtualVcuDeployStep(u);
+            end
+            u(6) = 1; % main button, brake already held
+            virtualVcuDeployStep(u);
+            [payloads, ~, ~, torqueRequestNm] = deal([], [], [], []);
+            for k = 1:double(c.buzzingTicks)
+                [payloads, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
+            end
+            testCase.verifyEqual(payloads(41), uint8(4)); % RTD
+            testCase.verifyEqual(torqueRequestNm, 0, ...
+                'RTD but throttle still at rest: expected zero torque request.');
+
+            u(1) = throttlePressedV(1); u(2) = throttlePressedV(2);
+            [payloads, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
+            testCase.verifyEqual(payloads(41), uint8(4)); % still RTD
+            testCase.verifyGreaterThan(torqueRequestNm, 0, ...
+                'RTD with throttle pressed: expected nonzero torque request.');
+            countsFromPayload = double(payloads(13)) + 256 * double(payloads(14));
+            testCase.verifyEqual(countsFromPayload / 256, torqueRequestNm, ...
+                'AbsTol', 1/256);
+
+            u(6) = 0; u(5) = 1; % re-enter PRECHARGING: drive must clear
+            [~, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
+            testCase.verifyEqual(torqueRequestNm, 0);
+        end
+
         function canStatusIsDecodedAndRetained(testCase)
             payload = uint8([4 0 4 0 0 0 0 0]);
             out = virtualvcu.step(zeros(1,4), true, false(1,8), ...

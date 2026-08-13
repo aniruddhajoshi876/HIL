@@ -65,17 +65,28 @@ end
 
 active = context.state >= 2 && context.state <= 4;
 drive = context.state == 4 && appsPlausible && brakePlausible;
+% Named Nm value, not inlined: this is the same quantity packControlFrame
+% packs into the four control payloads below, now also exposed as its own
+% typed field (out.torqueRequestNm) rather than existing only inside a
+% raw CAN payload byte pair -- see
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 5's "Proposed
+% minimal XCP boundary". Formula unchanged from before this field existed.
+torqueRequestNm = 15 * mean([t1 t2]) / 100 * double(drive);
 out = struct('state', c.stateNames{double(context.state)+1}, ...
     'stateId', context.state, 'enabled', logical(enabled), 'context', context, ...
     'raw', raw, 'pedalPct', [t1 t2 b1 b2], 'valid', pedalValid, ...
     'appsPlausible', appsPlausible, 'brakePlausible', brakePlausible, ...
     'digitalInputs', di, 'can', context.can, ...
+    'torqueRequestNm', torqueRequestNm, ...
     'pedalPayload', virtualvcu.packPedalFrame(mean([t1 t2]), ...
     mean([b1 b2]) / 100), ...
     'controlPayloads', zeros(4, 8, 'uint8'));
 for i = 1:4
     out.controlPayloads(i,:) = virtualvcu.packControlFrame(i, active, 18000, ...
-        15 * mean([t1 t2]) / 100 * double(drive));
+        torqueRequestNm);
 end
-if ~enabled, out.pedalPayload(:) = 0; out.controlPayloads(:) = 0; end
+if ~enabled
+    out.pedalPayload(:) = 0; out.controlPayloads(:) = 0;
+    out.torqueRequestNm = 0;
+end
 end

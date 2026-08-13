@@ -147,10 +147,17 @@ end
 % as the rest, so the GUI can show a real fault indicator instead of the
 % operator having to infer the interlock from a torque number going to
 % zero.
+% Torque Request Nm (9th): virtualVcuDeployStep.m's 4th output, published
+% directly as a global Goto by ADD_VIRTUAL_VCU_TO_MODEL.M like APPS Brake
+% Fault -- reused via the same Signal Copy pattern so it can be marked for
+% XCP measurement without decoding a raw CAN payload byte pair. See
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-6.
 obsNames = [{'Pedal Payload'}, names, ...
-    {'Pedal TX Count', 'Control Frame 1', 'APPS Brake Fault'}];
+    {'Pedal TX Count', 'Control Frame 1', 'APPS Brake Fault', ...
+    'Torque Request Nm'}];
 obsTags = [{pedalTag}, tags, {'VirtualVcuPedalTxCount', ...
-    'VirtualVcuControlFrame1', 'VirtualVcuAppsBrakeFault'}];
+    'VirtualVcuControlFrame1', 'VirtualVcuAppsBrakeFault', ...
+    'VirtualVcuTorqueRequestNm'}];
 for k = 1:numel(obsNames)
     fromName = [obsPath '/From ' obsNames{k}];
     copyName = [obsPath '/Signal Copy ' obsNames{k}];

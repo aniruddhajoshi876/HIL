@@ -1,7 +1,12 @@
-function [payloads, dcLinkV, appsBrakeFault] = virtualVcuDeployStep(u)
+function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeployStep(u)
 %#codegen
 % Elements 1:40 are the five CAN payloads. Elements 41:44 expose the
 % virtual VCU state and its three control outputs to the model observer.
+% TORQUEREQUESTNM is a 4th, later addition: the same physical Nm value
+% packed into byte pairs 13-14/21-22/29-30/37-38 below, now also exposed
+% as its own typed double so it can be marked for XCP measurement without
+% requiring a downstream consumer to decode raw CAN bytes. See
+% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
 %
 % Pedal thresholds, plausibility rules, the APPS+brake interlock, and the
 % ERROR_SHUTDOWN fault causes below are read directly from the real VCU
@@ -182,11 +187,16 @@ payloads(2) = uint8(mod(brake,256));
 payloads(3) = uint8(floor(double(brake)/256));
 payloads(4) = payloads(2); payloads(5) = payloads(3);
 torque = uint16(round(256*15*throttleValidPct));
+% Named double alongside the uint16 CAN-count encoding above: same
+% underlying physical quantity (15 Nm full scale times throttleValidPct),
+% zeroed by the same DRIVE gate below, computed directly rather than by
+% dividing TORQUE back out of its quantized counts.
+torqueRequestNm = 15*throttleValidPct;
 payloads(9) = uint8(active); payloads(11) = 80; payloads(12) = 70;
 payloads(17) = uint8(active); payloads(19) = 80; payloads(20) = 70;
 payloads(25) = uint8(active); payloads(27) = 80; payloads(28) = 70;
 payloads(33) = uint8(active); payloads(35) = 80; payloads(36) = 70;
-if ~drive, torque = uint16(0); end
+if ~drive, torque = uint16(0); torqueRequestNm = 0; end
 payloads(13) = uint8(mod(torque,256)); payloads(14) = uint8(floor(double(torque)/256));
 payloads(21) = payloads(13); payloads(22) = payloads(14);
 payloads(29) = payloads(13); payloads(30) = payloads(14);
