@@ -215,14 +215,18 @@ Alternative differential allocation held open by the plan:
 | `5V_BP_1` | A9 / AI03 | AI03 | A12 (+), A11 (−) |
 | `5V_BP_2` | A10 / AI04 | AI04 | A14 (+), A13 (−) |
 
-**Pedal voltage generation.** `pedalVoltageCalibration` maps GUI throttle → AO01,
-AO02 and brake → AO03, AO04 via measured released/pressed endpoints, clamped to
-0–5 V. Verified routing (`verify_pinouts` checks all 10 inputs and 4 outputs):
+**Pedal voltage generation.** `pedalVoltageCalibration` maps a throttle/brake
+fraction → AO01/AO02 and AO03/AO04 via measured released/pressed endpoints,
+clamped to 0–5 V. That fraction is no longer always the GUI slider: a
+`Throttle Source Switch` / `Brake Source Switch` (Simulink `Switch`,
+`Criteria = u2 ~= 0`) selects between an XCP-driven value and the GUI-owned
+dictionary entry, gated by `hil_cmd_xcp_pedals_active`. Verified routing
+(`verify_pinouts` checks all 10 inputs and 4 outputs):
 
-| Function input | Dictionary source | Drives |
+| Function input | Source (via switch) | Drives |
 |---|---|---|
-| `throttle` | `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
-| `brake` | `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
+| `throttle` | `Throttle Source Switch`: `XCP Throttle Percent To Fraction` if `hil_cmd_xcp_pedals_active`, else `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
+| `brake` | `Brake Source Switch`: `XCP Brake Percent To Fraction` if `hil_cmd_xcp_pedals_active`, else `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
 
 #### Calibration state — all 4 channels set
 
@@ -299,8 +303,12 @@ direction is expressed by the endpoints themselves and never declared separately
 > not set the other.
 
 Digital command sources (all default to `false`/`0` at load):
-`hil_cmd_digital_main_button`, `hil_cmd_digital_cooling_switch`,
-`hil_cmd_digital_shutdown_feedback`, `hil_cmd_digital_precharge_sequence`.
+`hil_cmd_digital_cooling_switch`, `hil_cmd_digital_shutdown_feedback`,
+`hil_cmd_digital_precharge_sequence`, `hil_cmd_digital_main_button_sequence`,
+`hil_cmd_xcp_pedals_active`. `hil_cmd_digital_main_button` (the checkbox) is
+still a valid `setparam` target with a live Terminator in GUI Command
+Parameters, but is intentionally **not** wired to a DIO pin — MAIN_BTN_IN is
+driven by `hil_cmd_digital_main_button_sequence` instead (see B2 below).
 
 ### 4.3 Connector B — project signal assignment
 
@@ -309,7 +317,7 @@ Channels 1–8 are HIL→VCU outputs, 9–13 are VCU→HIL inputs, 14–16 reser
 | Pin | Channel | Direction | Schematic net | VCU pin / function | Test point | Baseline use |
 |---|---|---|---|---|---|---|
 | B1 | DIO01 | out, HIL → VCU | `PRECH_BTN_IN` | 99, `PRECH_BTN_IN` | J2 pin 1 | Precharge-button stimulus (pulse-generated) |
-| B2 | DIO02 | out, HIL → VCU | `MAIN_BTN_IN` | 101, `MAN_BTN_IN` | J2 pin 3 | Main-button stimulus |
+| B2 | DIO02 | out, HIL → VCU | `MAIN_BTN_IN` | 101, `MAN_BTN_IN` | J2 pin 3 | Main-button stimulus (pulse-generated) |
 | B3 | DIO03 | out, HIL → VCU | `COOLING_SW_IN` | 103, `COAST_IN` | J2 pin 5 | Cooling/coast switch — **polarity TBD** |
 | B4 | DIO04 | out, HIL → VCU | `SD_FB_IN` | 113, `SD_FB_IN` | J2 pin 15 | Shutdown-loop feedback stimulus |
 | B5 | DIO05 | out, HIL → VCU | `SW_IN_1` | 111, `SW_IN_1` | J2 pin 13 | Optional switch — tied to constant 0 |
@@ -331,7 +339,7 @@ Channels 1–8 are HIL→VCU outputs, 9–13 are VCU→HIL inputs, 14–16 reser
 | Port | DIO | Driven by |
 |---:|---|---|
 | 1 | DIO01 | `Precharge Pulse Generator` (edge-triggered from `hil_cmd_digital_precharge_sequence`) |
-| 2 | DIO02 | `hil_cmd_digital_main_button`, cast boolean → double |
+| 2 | DIO02 | `Main Button Pulse Generator` (edge-triggered from `hil_cmd_digital_main_button_sequence`, same pattern as DIO01 — a real start button is pressed and released, not held; `hil_cmd_digital_main_button` has no hardware effect) |
 | 3 | DIO03 | `hil_cmd_digital_cooling_switch`, cast boolean → double |
 | 4 | DIO04 | `hil_cmd_digital_shutdown_feedback`, cast boolean → double |
 | 5–8 | DIO05–08 | `Unused SW_IN_1..4` — Constant `0` |
