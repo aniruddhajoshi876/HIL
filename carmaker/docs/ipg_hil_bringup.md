@@ -13,13 +13,16 @@ to rest on a verification method that did not actually verify anything.
 | CarMaker imports the A2L, XCP ECU `SpeedgoatVirtualVCU` created and active | proven |
 | Simulation reaches `SimulationStatus = running` | proven 2026-08-14 14:17 |
 | Speedgoat AO/AI loop confirmed at the bench | proven (by hand, not by script) |
-| Throttle/brake XCP STIM mapping | **BROKEN** — see below |
+| Throttle/brake XCP STIM mapping | fixed 2026-08-14 — `DM.Gas` / `DM.Brake`, warnings gone |
 | Torque reads zero with the VCU drive gate off | **unverified** |
 | Torque → four-motor mapping approved by vehicle-dynamics owner | **not started, out of scope for automation** |
 
-The run reached `running` *while the two pedal mappings were failing*. So what
-is proven is that the model and dictionary are sound — **not** that the XCP
-pedal path works end to end.
+Scope of what "proven" means here: the model and dictionary are sound, the sim
+runs to completion, and all three XCP char mappings now bind without warnings.
+What is **not** proven is that a pedal value actually moves the simulated car,
+or that the torque readback carries a correct value — the first run reached
+`running` while both pedal mappings were still failing, which is a reminder
+that "the sim runs" and "the XCP path works" are independent claims.
 
 ## The blocking chain, and what each fix actually was
 
@@ -116,27 +119,33 @@ connect(tg); load(tg, '<...>/inverter_hil.mldatx'); start(tg);
 % want: status=running  isLoaded=1  isRunning=1
 ```
 
-## Still broken: the two pedal mappings
+## The pedal mappings (fixed)
+
+`VehicleControl.Gas` and `VehicleControl.Brake` are **C struct members**, not
+dictionary quantities — `include/VehicleControl.h` declares `tVehicleControl`,
+and `FS_race/src/ExtraModels/MyCar.c:420` does
+`Car.Driver.Throttle = VehicleControl.Gas;`. They were never going to map.
+
+The correct XCP STIM write targets are **`DM.Gas`** and **`DM.Brake`**, access
+point `DVA_DM` ("after DrivMan"). That is upstream of VehicleControl, so a write
+there overrides the TestRun's pinned `Manual` Gas/Brake = 0 and propagates into
+the model. `VC.Gas`/`VC.Brake` also exist but sit *downstream* of the
+VehicleControl computation, which is the wrong injection point for a driver
+pedal command.
 
 ```
 ASAP2_CharMapping:
-  ...hil_cmd_xcp_pedals_active    TorqueVect.XcpTorqueActive   1  0   maps clean
-  ...hil_cmd_xcp_pedals_brake     VehicleControl.Brake         1  0   FAILS
-  ...hil_cmd_xcp_pedals_throttle  VehicleControl.Gas           1  0   FAILS
+  ...hil_cmd_xcp_pedals_active    TorqueVect.XcpTorqueActive  1  0
+  ...hil_cmd_xcp_pedals_brake     DM.Brake                    1  0
+  ...hil_cmd_xcp_pedals_throttle  DM.Gas                      1  0
 ```
 
-At SIM_START CarMaker logs:
+Verified: the two `XCP: Failed to map` warnings are absent from
+`SimOutput/Shop_Computer_Sim/Log/Shop_Computer_Sim_20260814_143939.log`.
 
-```
-WARNING  XCP: Failed to map ASAP2 variable ...hil_cmd_xcp_pedals_brake to quantity VehicleControl.Brake
-WARNING  XCP: Failed to map ASAP2 variable ...hil_cmd_xcp_pedals_throttle to quantity VehicleControl.Gas
-```
-
-The `active` mapping produces no warning, so the mechanism itself works — only
-these two names are wrong. Leading hypothesis: `VehicleControl.Gas` and
-`VehicleControl.Brake` are **Simulink bus signal paths** inside `TorqueVect.mdl`
-(reached via a Bus Selector on a CarMaker bus), not Data Dictionary quantity
-names. The real dictionary names are still unidentified.
+Existence confirmed for `DM.Gas`, `DM.Brake`, `VC.Gas`, `VC.Brake`,
+`DM.Clutch`, `DM.Handbrake`, `Driver.Gas`, `Driver.Brake`. Not existing:
+`VehicleControl.Gas`, `VehicleControl.Brake`, `VC.Gas_trg`.
 
 ## Do not use `DVARead` to check whether a quantity exists
 
@@ -151,6 +160,14 @@ pedal names above had been "confirmed real". Proven with explicit controls:
   including `Time` and the bogus control.
 
 There is no sim state in which it discriminates present from absent.
+
+**But the CarMaker simulation log does answer it.** Every failed DVA read is
+logged as `DVA read: Unknown quantity '<name>'`, and known names log nothing.
+So the working existence test is: start a run, `DVARead` each candidate,
+ignore the return value entirely, then grep the newest
+`SimOutput/<host>/Log/<host>_<stamp>.log` for `Unknown quantity`. Interleave a
+uniquely-named bogus control after every real candidate — if the controls do
+not all show up as unknown, the probe did not run and silence means nothing.
 
 Two related traps:
 
@@ -188,10 +205,29 @@ Model edits to `TorqueVect.mdl` must be made in **R2022a**. Also note
 bookkeeping — a one-line logic change came out as 63 insertions / 1685
 deletions. For a reviewable diff, patch the `.mdl` text directly instead.
 
+## Open: XCP master/slave DAQ mismatch
+
+Present on every run, unrelated to the pedals and sitting directly on the
+torque-readback path:
+
+```
+XCP: ECU #0 - Detected Processor info mismatch:
+  > Overload Indication (Master: OVERLOAD_INDICATION_PID Slave: OVERLOAD_INDICATION_EVENT)
+  > TimeStamp Support   (Master: 0 Slave: 1)
+XCP: ECU #0 - Detected Resolution info mismatch:
+  > TimeStamp Fixed     (Master: 0 Slave: 1)
+  > TimeStamp Size      (Master: NO_TIME_STAMP Slave: SIZE_DWORD)
+WARNING  XCP: Difference in DAQ programming setup between Master and Slave detected
+```
+
+DAQ is the direction carrying `hil_obs_virtual_vcu_torque_request_nm` into
+`TorqueVect.XcpTorqueRequestNm`, so this needs resolving before the torque
+readback can be trusted. Not yet investigated.
+
 ## Remaining work
 
-1. Identify the correct dictionary quantity names for throttle and brake.
-2. Confirm torque reads zero with the VCU drive gate off (bench, by hand).
+1. Confirm torque reads zero with the VCU drive gate off (bench, by hand).
+2. Resolve the DAQ programming mismatch above.
 3. Vehicle-dynamics owner approves the torque-to-four-motor mapping — sign,
    saturation, regen/braking, split and normalization — before torque drives
    wheels. Explicitly out of scope for automation.

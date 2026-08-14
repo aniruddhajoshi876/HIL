@@ -20,8 +20,8 @@ ASAP2_Mapping:
 	ModuleName.hil_obs_virtual_vcu_torque_request_nm	TorqueVect.XcpTorqueRequestNm	1	0
 ASAP2_CharMapping:
 	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_active	TorqueVect.XcpTorqueActive	1	0
-	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_brake	VehicleControl.Brake	1	0
-	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_throttle	VehicleControl.Gas	1	0
+	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_brake	DM.Brake	1	0
+	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_throttle	DM.Gas	1	0
 
 # DAQ Programming
 nDAQLists = 1 1 0
