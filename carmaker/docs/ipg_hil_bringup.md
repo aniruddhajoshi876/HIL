@@ -14,6 +14,7 @@ to rest on a verification method that did not actually verify anything.
 | Simulation reaches `SimulationStatus = running` | proven 2026-08-14 14:17 |
 | Speedgoat AO/AI loop confirmed at the bench | proven (by hand, not by script) |
 | Throttle/brake XCP STIM mapping | fixed 2026-08-14 — `DM.Gas` / `DM.Brake`, warnings gone |
+| XCP master/slave DAQ mismatch | fixed 2026-08-14 — log now warning-free |
 | Torque reads zero with the VCU drive gate off | **unverified** |
 | Torque → four-motor mapping approved by vehicle-dynamics owner | **not started, out of scope for automation** |
 
@@ -205,10 +206,9 @@ Model edits to `TorqueVect.mdl` must be made in **R2022a**. Also note
 bookkeeping — a one-line logic change came out as 63 insertions / 1685
 deletions. For a reviewable diff, patch the `.mdl` text directly instead.
 
-## Open: XCP master/slave DAQ mismatch
+## XCP master/slave DAQ mismatch (fixed)
 
-Present on every run, unrelated to the pedals and sitting directly on the
-torque-readback path:
+Every run used to print:
 
 ```
 XCP: ECU #0 - Detected Processor info mismatch:
@@ -220,14 +220,51 @@ XCP: ECU #0 - Detected Resolution info mismatch:
 WARNING  XCP: Difference in DAQ programming setup between Master and Slave detected
 ```
 
-DAQ is the direction carrying `hil_obs_virtual_vcu_torque_request_nm` into
-`TorqueVect.XcpTorqueRequestNm`, so this needs resolving before the torque
-readback can be trusted. Not yet investigated.
+Cause: CarMaker's A2L importer populated `XCPParameters` with the A2L's
+`DAQ.Config` / `DAQ.Opt` / `DAQ.Settings` / `DAQ.OptODT` / `DAQ.Events` — but
+silently **dropped the `TIMESTAMP_SUPPORTED` block**, leaving the master with no
+timestamp configuration at all. The A2L itself was correct all along:
+
+```
+/begin TIMESTAMP_SUPPORTED
+  0x0001
+  SIZE_DWORD
+  UNIT_1US
+  TIMESTAMP_FIXED
+/end TIMESTAMP_SUPPORTED
+```
+
+`ECU.0.OverrideASAP2 = 1` means XCPParameters overrides the ASAP2 file
+(Programmer's Guide p. 942), so XCPParameters is the correct place to fix it —
+do **not** flip that flag to 0, which would discard the other reconciled DAQ
+values.
+
+Fix, per Programmer's Guide p. 945 (`ECU.<n>.DAQ.Timestamp = Ticks Size Unit Fixed`):
+
+```
+ECU.0.DAQ.Settings = OVERLOAD_INDICATION_EVENT PRESCALER_SUPPORTED RESUME_NOT_SUPPORTED PID_OFF_NOT_SUPPORTED
+ECU.0.DAQ.Timestamp = 1 SIZE_DWORD UNIT_1US TIMESTAMP_FIXED
+```
+
+Verified: `Shop_Computer_Sim_20260814_144727.log` contains no XCP warnings at
+all — SIM_START straight to SIMULATE to SIM_END.
+
+Two things deliberately left alone:
+
+- **The A2L still says `OVERLOAD_INDICATION_PID`** while the slave reports
+  `EVENT`. The override makes XCPParameters win, but a re-import of the A2L
+  reintroduces `PID`. Worth fixing at the generator.
+- **`DAQ.STIM` is absent from XCPParameters** even though the A2L declares
+  `GRANULARITY_ODT_ENTRY_SIZE_STIM_BYTE 0xFF`. CarMaker has a
+  `> STIM Entry Granularity` mismatch message and it never fired, so STIM is not
+  currently mismatched. The docs list only `..._DAQ_*` values for that key,
+  which looks like a doc error — not worth guessing through.
 
 ## Remaining work
 
-1. Confirm torque reads zero with the VCU drive gate off (bench, by hand).
-2. Resolve the DAQ programming mismatch above.
+1. Confirm a pedal value actually moves the simulated car, and that the torque
+   readback carries a correct value. Neither is proven yet.
+2. Confirm torque reads zero with the VCU drive gate off (bench, by hand).
 3. Vehicle-dynamics owner approves the torque-to-four-motor mapping — sign,
    saturation, regen/braking, split and normalization — before torque drives
    wheels. Explicitly out of scope for automation.
