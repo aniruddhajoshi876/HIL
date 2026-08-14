@@ -105,9 +105,20 @@ addEntry(section, 'hil_cmd_pedals_brake', parameter(0, 0, 1));
 % virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 2. Default
 % inactive (false), so a build with nothing driving these behaves exactly as
 % before this entry existed.
-addEntry(section, 'hil_cmd_xcp_pedals_throttle', parameter(0, 0, 100));
-addEntry(section, 'hil_cmd_xcp_pedals_brake', parameter(0, 0, 100));
-addEntry(section, 'hil_cmd_xcp_pedals_active', parameter(false, false, true));
+% These three are Simulink.Signal globals, NOT Simulink.Parameter tunables,
+% so coder.asap2.export emits them as A2L MEASUREMENTs rather than
+% CHARACTERISTICs. CarMaker can only write CHARACTERISTICs through its XCP
+% calibration module (GUI/XCP_Cal.tcl), which is not present in the
+% installation here, so a characteristic-based pedal path silently never
+% transfers a value. As MEASUREMENTs they can go in a STIM sample group
+% instead. Nothing in the model writes them -- they are read through Data
+% Store Read blocks, so the XCP master owns the memory.
+addEntry(section, 'hil_cmd_xcp_pedals_throttle', ...
+    xcpCommandSignal(0, 0, 100, 'double'));
+addEntry(section, 'hil_cmd_xcp_pedals_brake', ...
+    xcpCommandSignal(0, 0, 100, 'double'));
+addEntry(section, 'hil_cmd_xcp_pedals_active', ...
+    xcpCommandSignal(false, 0, 1, 'boolean'));
 % TestPoint preserves a signal for target inspection, but an ASAP2/A2L
 % measurement also needs a resolved Signal object with non-auto storage.
 % PATCH_VIRTUAL_VCU_STATE_OUTPUTS binds each Signal Copy output to one of
@@ -181,6 +192,23 @@ value = Simulink.Parameter(initialValue);
 value.Min = double(min(minimum(:)));
 value.Max = double(max(maximum(:)));
 value.CoderInfo.StorageClass = 'SimulinkGlobal';
+end
+
+function value = xcpCommandSignal(initialValue, minimum, maximum, dataType)
+%XCPCOMMANDSIGNAL Externally-written command value backed by a global data
+%store. ExportedGlobal puts it in writable RAM at a fixed address and makes
+%coder.asap2.export emit an A2L MEASUREMENT (not a CHARACTERISTIC), which is
+%what lets an XCP master place it in a STIM sample group. Nothing in the
+%model writes these; there is no Data Store Write for any of them.
+value = Simulink.Signal;
+value.DataType = dataType;
+value.Dimensions = 1;
+value.Complexity = 'real';
+value.SampleTime = -1;
+value.InitialValue = mat2str(double(initialValue));
+value.Min = double(minimum);
+value.Max = double(maximum);
+value.CoderInfo.StorageClass = 'ExportedGlobal';
 end
 
 function addVirtualVcuMeasurementSignals(section)
@@ -863,9 +891,13 @@ brakeRef = addNamedParameterSource(path, 'hil_cmd_pedals_brake', 500);
 % control tap from the same Ref block (Simulink signal fan-out), so both
 % pedals always agree on which source is live -- see
 % virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 2.
-xcpThrottleRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_throttle', 350);
-xcpBrakeRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_brake', 375);
-xcpActiveRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_active', 400, 'boolean');
+% Data Store Read, not a parameter Ref: these three are Simulink.Signal
+% globals so the A2L declares them as MEASUREMENTs and CarMaker can stimulate
+% them via a STIM sample group (see the dictionary section). No Data Store
+% Write exists anywhere in the model -- the XCP master is the only writer.
+xcpThrottleRef = addNamedDataStoreSource(path, 'hil_cmd_xcp_pedals_throttle', 350);
+xcpBrakeRef = addNamedDataStoreSource(path, 'hil_cmd_xcp_pedals_brake', 375);
+xcpActiveRef = addNamedDataStoreSource(path, 'hil_cmd_xcp_pedals_active', 400);
 xcpThrottleGain = [path '/XCP Throttle Percent To Fraction'];
 add_block('simulink/Math Operations/Gain', xcpThrottleGain, 'Gain', '1/100', ...
     'Position', [185 350 235 370]);
@@ -974,6 +1006,19 @@ if ~isempty(dataType)
     options = [options, {'OutDataTypeStr', dataType}]; %#ok<AGROW>
 end
 add_block('simulink/Sources/Constant', [path '/' name], options{:});
+end
+
+function name = addNamedDataStoreSource(path, storeName, y)
+%ADDNAMEDDATASTORESOURCE Read an XCP-written global data store into a
+%subsystem. Counterpart to ADDNAMEDPARAMETERSOURCE for the values that are
+%Simulink.Signal globals rather than tunable parameters -- the Data Store
+%Read is also the live reference that keeps the global in generated code.
+%Type and dimensions come from the dictionary Signal object, so they are not
+%restated here.
+name = ['Ref ' storeName];
+add_block('simulink/Signal Routing/Data Store Read', [path '/' name], ...
+    'DataStoreName', storeName, 'SampleTime', '0.001', ...
+    'Position', [25 y 155 y + 20]);
 end
 
 function name = addDoubleCast(path, sourceName, y)
@@ -1364,14 +1409,18 @@ add_block('simulink/Ports & Subsystems/Subsystem', path, ...
     'Position', [1560 90 1900 480]);
 clearSubsystem(path);
 
+% hil_cmd_xcp_pedals_throttle/brake/active are deliberately absent here:
+% they are Simulink.Signal global data stores, not Simulink.Parameter
+% tunables, so ADDPARAMETERGROUP's Constant-block-per-name convention cannot
+% resolve them. Their live reference comes from the Data Store Read blocks in
+% the pedal source-select instead.
 scalarDouble = { ...
     'hil_cmd_pedals_throttle'; 'hil_cmd_pedals_brake'; ...
-    'hil_cmd_xcp_pedals_throttle'; 'hil_cmd_xcp_pedals_brake'; ...
     'hil_cmd_dc_link12_v'; 'hil_cmd_dc_link34_v'};
 scalarBoolean = { ...
     'hil_cmd_pedals_plausibility_override'; ...
     'hil_cmd_digital_main_button'; 'hil_cmd_digital_cooling_switch'; ...
-    'hil_cmd_digital_shutdown_feedback'; 'hil_cmd_xcp_pedals_active'};
+    'hil_cmd_digital_shutdown_feedback'};
 scalarUint32 = { ...
     'hil_cmd_digital_precharge_sequence'; ...
     'hil_cmd_digital_main_button_sequence'; 'hil_cmd_gui_heartbeat'};

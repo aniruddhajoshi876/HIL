@@ -6,11 +6,11 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * Code generation for model inverter_hil.
+ * Code generation for model "inverter_hil".
  *
  * Model version              : 1.6
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Thu Aug 13 22:26:25 2026
+ * C source code generated on : Fri Aug 14 15:31:57 2026
  *
  * Target selection: speedgoat.tlc
  * Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -770,7 +770,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
           "1 ms"
           "1 ms"
           0x0000
-          DAQ
+          DAQ_STIM
           0xFF
           0x01
           0x06
@@ -782,7 +782,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
           "5 ms"
           "5 ms"
           0x0001
-          DAQ
+          DAQ_STIM
           0xFF
           0x05
           0x06
@@ -795,6 +795,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       /begin XCP_ON_UDP_IP
         0x0100
         0x15B3
+        ADDRESS "10.10.10.5"
       /end XCP_ON_UDP_IP
 
     /end IF_DATA
@@ -809,7 +810,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
        FLASH
        INTERN
        0x002AA400
-       0xB8
+       0xA8
        -1 -1 -1 -1 -1
        /begin IF_DATA XCP
          /begin SEGMENT
@@ -839,7 +840,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
        FLASH
        INTERN
        0x002A9100
-       0x12E0
+       0x12F0
        -1 -1 -1 -1 -1
        /begin IF_DATA XCP
          /begin SEGMENT
@@ -976,7 +977,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_can_drop_control_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B7
+    /* ECU Address            */      0x002AA4A6
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -988,7 +989,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_can_drop_status_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4AC
+    /* ECU Address            */      0x002AA49C
     /* Record Layout          */      Record_UWORD
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint16
@@ -1024,7 +1025,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_digital_cooling_switch
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4AE
+    /* ECU Address            */      0x002AA49E
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1036,7 +1037,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_digital_main_button
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4AF
+    /* ECU Address            */      0x002AA49F
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1048,7 +1049,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_digital_main_button_sequence
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA490
+    /* ECU Address            */      0x002AA480
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1060,7 +1061,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_digital_precharge_sequence
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA494
+    /* ECU Address            */      0x002AA484
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1072,7 +1073,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_digital_shutdown_feedback
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B0
+    /* ECU Address            */      0x002AA4A0
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1084,7 +1085,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_gui_heartbeat
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA498
+    /* ECU Address            */      0x002AA488
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1096,7 +1097,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter1_connected
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B1
+    /* ECU Address            */      0x002AA4A1
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1108,7 +1109,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter1_fault_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA49C
+    /* ECU Address            */      0x002AA48C
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1132,7 +1133,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter2_connected
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B2
+    /* ECU Address            */      0x002AA4A2
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1144,7 +1145,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter2_fault_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4A0
+    /* ECU Address            */      0x002AA490
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1168,7 +1169,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter3_connected
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B3
+    /* ECU Address            */      0x002AA4A3
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1180,7 +1181,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter3_fault_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4A4
+    /* ECU Address            */      0x002AA494
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1204,7 +1205,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter4_connected
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B4
+    /* ECU Address            */      0x002AA4A4
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1216,7 +1217,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_inverter4_fault_mask
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4A8
+    /* ECU Address            */      0x002AA498
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -1252,7 +1253,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      RTE_Param_Service.hil_cmd_pedals_plausibility_override
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B5
+    /* ECU Address            */      0x002AA4A5
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_boolean
@@ -1273,46 +1274,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
   /end CHARACTERISTIC 
 
   /begin CHARACTERISTIC 
-    /* Name                   */      RTE_Param_Service.hil_cmd_xcp_pedals_active
-    /* Long Identifier        */      ""
-    /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA4B6
-    /* Record Layout          */      Record_BOOLEAN
-    /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_boolean
-    /* Lower Limit            */      0.000000
-    /* Upper Limit            */      1.000000
-  /end CHARACTERISTIC 
-
-  /begin CHARACTERISTIC 
-    /* Name                   */      RTE_Param_Service.hil_cmd_xcp_pedals_brake
-    /* Long Identifier        */      ""
-    /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA480
-    /* Record Layout          */      Record_FLOAT64_IEEE
-    /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_double
-    /* Lower Limit            */      0.000000
-    /* Upper Limit            */      100.000000
-  /end CHARACTERISTIC 
-
-  /begin CHARACTERISTIC 
-    /* Name                   */      RTE_Param_Service.hil_cmd_xcp_pedals_throttle
-    /* Long Identifier        */      ""
-    /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA488
-    /* Record Layout          */      Record_FLOAT64_IEEE
-    /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_double
-    /* Lower Limit            */      0.000000
-    /* Upper Limit            */      100.000000
-  /end CHARACTERISTIC 
-
-  /begin CHARACTERISTIC 
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x383_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9FC0
+    /* ECU Address            */      0x002A9FD0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1325,7 +1290,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x385_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA020
+    /* ECU Address            */      0x002AA030
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1338,7 +1303,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x393_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA080
+    /* ECU Address            */      0x002AA090
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1351,7 +1316,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x395_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA0E0
+    /* ECU Address            */      0x002AA0F0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1364,7 +1329,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x3A3_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA140
+    /* ECU Address            */      0x002AA150
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1377,7 +1342,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x3A5_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA1A0
+    /* ECU Address            */      0x002AA1B0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1390,7 +1355,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x3B3_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA200
+    /* ECU Address            */      0x002AA210
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1403,7 +1368,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x3B5_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA260
+    /* ECU Address            */      0x002AA270
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1416,7 +1381,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.CANWrite0x400_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA2C0
+    /* ECU Address            */      0x002AA2D0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -1429,7 +1394,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.DropStatusMaskRT_InitialConditi
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA340
+    /* ECU Address            */      0x002AA350
     /* Record Layout          */      Record_UWORD
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint16
@@ -1477,10 +1442,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.GuiCmdInverter1ConnectedRT_Init
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA342
+    /* ECU Address            */      0x002AA352
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
   /end CHARACTERISTIC 
@@ -1501,10 +1466,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.GuiCmdInverter2ConnectedRT_Init
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA343
+    /* ECU Address            */      0x002AA353
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
   /end CHARACTERISTIC 
@@ -1525,10 +1490,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.GuiCmdInverter3ConnectedRT_Init
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA344
+    /* ECU Address            */      0x002AA354
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
   /end CHARACTERISTIC 
@@ -1549,10 +1514,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.GuiCmdInverter4ConnectedRT_Init
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA345
+    /* ECU Address            */      0x002AA355
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
   /end CHARACTERISTIC 
@@ -2355,7 +2320,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortACANWrite1_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9DE0
+    /* ECU Address            */      0x002A9DF0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -2368,7 +2333,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortACANWrite2_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9E40
+    /* ECU Address            */      0x002A9E50
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -2381,7 +2346,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortACANWrite3_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9EA0
+    /* ECU Address            */      0x002A9EB0
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -2394,7 +2359,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortACANWrite4_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9F00
+    /* ECU Address            */      0x002A9F10
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -2407,7 +2372,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortACANWrite5_P1
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002A9F60
+    /* ECU Address            */      0x002A9F70
     /* Record Layout          */      Record_FLOAT64_IEEE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_double
@@ -2420,7 +2385,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortAPayloadRateTransition1_Ini
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA357
+    /* ECU Address            */      0x002AA368
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2432,7 +2397,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortAPayloadRateTransition2_Ini
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA358
+    /* ECU Address            */      0x002AA369
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2444,7 +2409,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortAPayloadRateTransition3_Ini
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA359
+    /* ECU Address            */      0x002AA36A
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2456,7 +2421,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortAPayloadRateTransition4_Ini
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA35A
+    /* ECU Address            */      0x002AA36B
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2468,7 +2433,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.PortAPayloadRateTransition5_Ini
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA35B
+    /* ECU Address            */      0x002AA36C
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2480,7 +2445,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeCANDiagnostics_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA320
+    /* ECU Address            */      0x002AA330
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -2493,7 +2458,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeControlFrames_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA3BC
+    /* ECU Address            */      0x002AA3CD
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2519,7 +2484,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeDecodedCommands_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA39C
+    /* ECU Address            */      0x002AA3AD
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2532,10 +2497,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeDigitalCommand_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA347
+    /* ECU Address            */      0x002AA357
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
     MATRIX_DIM                        8 1 
@@ -2545,10 +2510,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeDigitalStimulus_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA34F
+    /* ECU Address            */      0x002AA35F
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
     MATRIX_DIM                        8 1 
@@ -2558,7 +2523,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeFaultMask_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA310
+    /* ECU Address            */      0x002AA320
     /* Record Layout          */      Record_ULONG
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint32
@@ -2662,10 +2627,10 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafePreflightSafe_Value
     /* Long Identifier        */      ""
     /* Type                   */      VALUE
-    /* ECU Address            */      0x002AA346
+    /* ECU Address            */      0x002AA356
     /* Record Layout          */      Record_BOOLEAN
     /* Maximum Difference     */      0
-    /* Conversion Method      */      inverter_hil_CM_logical
+    /* Conversion Method      */      inverter_hil_CM_boolean
     /* Lower Limit            */      0
     /* Upper Limit            */      1
   /end CHARACTERISTIC 
@@ -2674,7 +2639,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X3_Ch1_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA35C
+    /* ECU Address            */      0x002AA36D
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2687,7 +2652,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X3_Ch2_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA36C
+    /* ECU Address            */      0x002AA37D
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2700,7 +2665,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X3_Ch3_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA37C
+    /* ECU Address            */      0x002AA38D
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2713,7 +2678,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X3_Ch4_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA38C
+    /* ECU Address            */      0x002AA39D
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2726,7 +2691,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X5_Ch1_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA364
+    /* ECU Address            */      0x002AA375
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2739,7 +2704,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X5_Ch2_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA374
+    /* ECU Address            */      0x002AA385
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2752,7 +2717,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X5_Ch3_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA384
+    /* ECU Address            */      0x002AA395
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2765,7 +2730,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_cal_impl.SafeStatus3X5_Ch4_Value
     /* Long Identifier        */      ""
     /* Type                   */      VAL_BLK
-    /* ECU Address            */      0x002AA394
+    /* ECU Address            */      0x002AA3A5
     /* Record Layout          */      Record_UBYTE
     /* Maximum Difference     */      0
     /* Conversion Method      */      inverter_hil_CM_uint8
@@ -2846,16 +2811,109 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper Limit            */      1.7E+308
   /end CHARACTERISTIC 
 
+  /begin CHARACTERISTIC 
+    /* Name                   */      inverter_hil_cal_impl.hil_cmd_xcp_pedals_active_Initi
+    /* Long Identifier        */      ""
+    /* Type                   */      VALUE
+    /* ECU Address            */      0x002AA367
+    /* Record Layout          */      Record_BOOLEAN
+    /* Maximum Difference     */      0
+    /* Conversion Method      */      inverter_hil_CM_boolean
+    /* Lower Limit            */      0
+    /* Upper Limit            */      1
+  /end CHARACTERISTIC 
+
+  /begin CHARACTERISTIC 
+    /* Name                   */      inverter_hil_cal_impl.hil_cmd_xcp_pedals_brake_Initia
+    /* Long Identifier        */      ""
+    /* Type                   */      VALUE
+    /* ECU Address            */      0x002A9DD0
+    /* Record Layout          */      Record_FLOAT64_IEEE
+    /* Maximum Difference     */      0
+    /* Conversion Method      */      inverter_hil_CM_double
+    /* Lower Limit            */      -1.7E+308
+    /* Upper Limit            */      1.7E+308
+  /end CHARACTERISTIC 
+
+  /begin CHARACTERISTIC 
+    /* Name                   */      inverter_hil_cal_impl.hil_cmd_xcp_pedals_throttle_Ini
+    /* Long Identifier        */      ""
+    /* Type                   */      VALUE
+    /* ECU Address            */      0x002A9DD8
+    /* Record Layout          */      Record_FLOAT64_IEEE
+    /* Maximum Difference     */      0
+    /* Conversion Method      */      inverter_hil_CM_double
+    /* Lower Limit            */      -1.7E+308
+    /* Upper Limit            */      1.7E+308
+  /end CHARACTERISTIC 
+
+  /begin MEASUREMENT 
+    /* Name                   */      hil_cmd_xcp_pedals_active
+    /* Long identifier        */      ""
+    /* Data type              */      UBYTE
+    /* Conversion method      */      inverter_hil_CM_boolean
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      0.000000
+    /* Upper limit            */      1.000000
+    ECU_ADDRESS                       0x002BA2C8
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      hil_cmd_xcp_pedals_brake
+    /* Long identifier        */      ""
+    /* Data type              */      FLOAT64_IEEE
+    /* Conversion method      */      inverter_hil_CM_double
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      0.000000
+    /* Upper limit            */      100.000000
+    ECU_ADDRESS                       0x002BA2F0
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      hil_cmd_xcp_pedals_throttle
+    /* Long identifier        */      ""
+    /* Data type              */      FLOAT64_IEEE
+    /* Conversion method      */      inverter_hil_CM_double
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      0.000000
+    /* Upper limit            */      100.000000
+    ECU_ADDRESS                       0x002BA2E8
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
   /begin MEASUREMENT 
     /* Name                   */      hil_obs_virtual_vcu_apps_brake_fault
     /* Long identifier        */      "Virtual VCU APPS/brake plausibility-fault indicator."
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2E8
+    ECU_ADDRESS                       0x002BA2F8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2876,7 +2934,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA2F0
+    ECU_ADDRESS                       0x002BA300
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2895,7 +2953,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002BA2F8
+    ECU_ADDRESS                       0x002BA308
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2914,7 +2972,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002BA2FA
+    ECU_ADDRESS                       0x002BA30A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2935,7 +2993,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA300
+    ECU_ADDRESS                       0x002BA310
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2954,7 +3012,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA308
+    ECU_ADDRESS                       0x002BA318
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2973,7 +3031,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002BA2F9
+    ECU_ADDRESS                       0x002BA309
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -2992,7 +3050,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002BA2FB
+    ECU_ADDRESS                       0x002BA30B
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3011,7 +3069,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002BA310
+    ECU_ADDRESS                       0x002BA320
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3032,7 +3090,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        4 
-    ECU_ADDRESS                       0x002B8D90
+    ECU_ADDRESS                       0x002B8D80
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3051,7 +3109,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B50
+    ECU_ADDRESS                       0x002B8B40
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3065,12 +3123,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x383
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D7
+    ECU_ADDRESS                       0x002BA2B7
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3084,12 +3142,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x385
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D8
+    ECU_ADDRESS                       0x002BA2B8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3103,12 +3161,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x393
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D9
+    ECU_ADDRESS                       0x002BA2B9
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3122,12 +3180,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x395
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DA
+    ECU_ADDRESS                       0x002BA2BA
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3141,12 +3199,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x3A3
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DB
+    ECU_ADDRESS                       0x002BA2BB
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3160,12 +3218,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x3A5
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DC
+    ECU_ADDRESS                       0x002BA2BC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3179,12 +3237,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x3B3
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DD
+    ECU_ADDRESS                       0x002BA2BD
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3198,12 +3256,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x3B5
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DE
+    ECU_ADDRESS                       0x002BA2BE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3217,12 +3275,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.CANWrite0x400
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2DF
+    ECU_ADDRESS                       0x002BA2BF
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3241,7 +3299,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B58
+    ECU_ADDRESS                       0x002B8B48
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3260,7 +3318,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B60
+    ECU_ADDRESS                       0x002B8B50
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3279,7 +3337,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E10
+    ECU_ADDRESS                       0x002B8E00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3298,7 +3356,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E18
+    ECU_ADDRESS                       0x002B8E08
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3317,7 +3375,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E20
+    ECU_ADDRESS                       0x002B8E10
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3336,7 +3394,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E28
+    ECU_ADDRESS                       0x002B8E18
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3355,7 +3413,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E30
+    ECU_ADDRESS                       0x002B8E20
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3374,7 +3432,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E38
+    ECU_ADDRESS                       0x002B8E28
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3393,7 +3451,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E40
+    ECU_ADDRESS                       0x002B8E30
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3412,7 +3470,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E48
+    ECU_ADDRESS                       0x002B8E38
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3431,7 +3489,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E50
+    ECU_ADDRESS                       0x002B8E40
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3450,7 +3508,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E58
+    ECU_ADDRESS                       0x002B8E48
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3464,12 +3522,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.Cmdhil_cmd_digital_cooling_swit
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2C9
+    ECU_ADDRESS                       0x002BA2AA
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3483,12 +3541,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.Cmdhil_cmd_digital_main_button
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CA
+    ECU_ADDRESS                       0x002BA2AB
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3507,7 +3565,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA104
+    ECU_ADDRESS                       0x002BA0E4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3526,7 +3584,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA108
+    ECU_ADDRESS                       0x002BA0E8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3540,12 +3598,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.Cmdhil_cmd_digital_shutdown_fee
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CB
+    ECU_ADDRESS                       0x002BA2AC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3564,7 +3622,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA10C
+    ECU_ADDRESS                       0x002BA0EC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3583,7 +3641,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA110
+    ECU_ADDRESS                       0x002BA0F0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3602,7 +3660,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA114
+    ECU_ADDRESS                       0x002BA0F4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3621,7 +3679,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA118
+    ECU_ADDRESS                       0x002BA0F8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3640,7 +3698,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA11C
+    ECU_ADDRESS                       0x002BA0FC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3659,7 +3717,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E60
+    ECU_ADDRESS                       0x002B8E50
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3673,12 +3731,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.Cmdhil_cmd_pedals_plausibility_
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CC
+    ECU_ADDRESS                       0x002BA2AD
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3697,64 +3755,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E68
-    /begin IF_DATA XCP
-      /begin DAQ_EVENT VARIABLE
-          /begin DEFAULT_EVENT_LIST
-            EVENT  0x0000
-          /end DEFAULT_EVENT_LIST
-      /end DAQ_EVENT
-    /end IF_DATA
-  /end MEASUREMENT 
-
-  /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_B.Cmdhil_cmd_xcp_pedals_active
-    /* Long identifier        */      ""
-    /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
-    /* Resolution (Not used)  */      0      
-    /* Accuracy (Not used)    */      0      
-    /* Lower limit            */      0
-    /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CD
-    /begin IF_DATA XCP
-      /begin DAQ_EVENT VARIABLE
-          /begin DEFAULT_EVENT_LIST
-            EVENT  0x0000
-          /end DEFAULT_EVENT_LIST
-      /end DAQ_EVENT
-    /end IF_DATA
-  /end MEASUREMENT 
-
-  /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_B.Cmdhil_cmd_xcp_pedals_brake
-    /* Long identifier        */      ""
-    /* Data type              */      FLOAT64_IEEE
-    /* Conversion method      */      inverter_hil_CM_double
-    /* Resolution (Not used)  */      0      
-    /* Accuracy (Not used)    */      0      
-    /* Lower limit            */      -1.7E+308
-    /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E70
-    /begin IF_DATA XCP
-      /begin DAQ_EVENT VARIABLE
-          /begin DEFAULT_EVENT_LIST
-            EVENT  0x0000
-          /end DEFAULT_EVENT_LIST
-      /end DAQ_EVENT
-    /end IF_DATA
-  /end MEASUREMENT 
-
-  /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_B.Cmdhil_cmd_xcp_pedals_throttle
-    /* Long identifier        */      ""
-    /* Data type              */      FLOAT64_IEEE
-    /* Conversion method      */      inverter_hil_CM_double
-    /* Resolution (Not used)  */      0      
-    /* Accuracy (Not used)    */      0      
-    /* Lower limit            */      -1.7E+308
-    /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8E78
+    ECU_ADDRESS                       0x002B8E58
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3773,7 +3774,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      65535
-    ECU_ADDRESS                       0x002BA14C
+    ECU_ADDRESS                       0x002BA12C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3794,7 +3795,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        14 13 
-    ECU_ADDRESS                       0x002B8E80
+    ECU_ADDRESS                       0x002B8E60
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3813,7 +3814,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9450
+    ECU_ADDRESS                       0x002B9430
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3832,7 +3833,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9458
+    ECU_ADDRESS                       0x002B9438
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3846,12 +3847,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.GuiCmdInverter1ConnectedRT
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D3
+    ECU_ADDRESS                       0x002BA2B3
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3870,7 +3871,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9430
+    ECU_ADDRESS                       0x002B9410
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3884,12 +3885,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.GuiCmdInverter2ConnectedRT
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D4
+    ECU_ADDRESS                       0x002BA2B4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3908,7 +3909,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9438
+    ECU_ADDRESS                       0x002B9418
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3922,12 +3923,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.GuiCmdInverter3ConnectedRT
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D5
+    ECU_ADDRESS                       0x002BA2B5
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3946,7 +3947,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9440
+    ECU_ADDRESS                       0x002B9420
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3960,12 +3961,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.GuiCmdInverter4ConnectedRT
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D6
+    ECU_ADDRESS                       0x002BA2B6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -3984,7 +3985,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9448
+    ECU_ADDRESS                       0x002B9428
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4003,7 +4004,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A20
+    ECU_ADDRESS                       0x002B8A00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4022,7 +4023,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A28
+    ECU_ADDRESS                       0x002B8A08
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4041,7 +4042,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A30
+    ECU_ADDRESS                       0x002B8A10
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4060,7 +4061,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A38
+    ECU_ADDRESS                       0x002B8A18
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4079,7 +4080,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A40
+    ECU_ADDRESS                       0x002B8A20
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4098,7 +4099,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A48
+    ECU_ADDRESS                       0x002B8A28
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4117,7 +4118,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A50
+    ECU_ADDRESS                       0x002B8A30
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4136,7 +4137,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A58
+    ECU_ADDRESS                       0x002B8A38
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4155,7 +4156,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A60
+    ECU_ADDRESS                       0x002B8A40
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4174,7 +4175,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B88
+    ECU_ADDRESS                       0x002B8B78
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4188,12 +4189,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.IO614CANDiagnostics_o2
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B4
+    ECU_ADDRESS                       0x002BA295
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4212,7 +4213,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA0D0
+    ECU_ADDRESS                       0x002BA0B0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4226,12 +4227,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.IO614CANDiagnostics_o4
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B5
+    ECU_ADDRESS                       0x002BA296
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4245,12 +4246,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.IO614CANDiagnostics_o5
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B6
+    ECU_ADDRESS                       0x002BA297
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4264,12 +4265,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.IO614CANDiagnostics_o6
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B7
+    ECU_ADDRESS                       0x002BA298
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4283,12 +4284,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.IO614CANFIFOReadRaw_o1
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B3
+    ECU_ADDRESS                       0x002BA294
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4309,7 +4310,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002B88A8
+    ECU_ADDRESS                       0x002B8888
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4328,7 +4329,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B889B
+    ECU_ADDRESS                       0x002B887B
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4347,7 +4348,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8898
+    ECU_ADDRESS                       0x002B8878
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4366,7 +4367,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B889C
+    ECU_ADDRESS                       0x002B887C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4385,7 +4386,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8899
+    ECU_ADDRESS                       0x002B8879
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4404,7 +4405,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B889A
+    ECU_ADDRESS                       0x002B887A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4423,7 +4424,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B88A0
+    ECU_ADDRESS                       0x002B8880
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4442,7 +4443,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A00
+    ECU_ADDRESS                       0x002B89E0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4461,7 +4462,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A08
+    ECU_ADDRESS                       0x002B89E8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4480,7 +4481,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A10
+    ECU_ADDRESS                       0x002B89F0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4499,7 +4500,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8A18
+    ECU_ADDRESS                       0x002B89F8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4518,7 +4519,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B08
+    ECU_ADDRESS                       0x002B8AE8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4537,7 +4538,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B10
+    ECU_ADDRESS                       0x002B8AF0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4556,7 +4557,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B18
+    ECU_ADDRESS                       0x002B8AF8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4575,7 +4576,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B20
+    ECU_ADDRESS                       0x002B8B00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4594,7 +4595,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B28
+    ECU_ADDRESS                       0x002B8B08
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4613,7 +4614,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B30
+    ECU_ADDRESS                       0x002B8B10
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4632,7 +4633,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B38
+    ECU_ADDRESS                       0x002B8B18
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4651,7 +4652,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B40
+    ECU_ADDRESS                       0x002B8B20
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4665,12 +4666,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANFIFORead_o1
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B2
+    ECU_ADDRESS                       0x002BA292
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4691,7 +4692,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002B8890
+    ECU_ADDRESS                       0x002B8870
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4710,7 +4711,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8883
+    ECU_ADDRESS                       0x002B8863
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4729,7 +4730,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8880
+    ECU_ADDRESS                       0x002B8860
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4748,7 +4749,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8884
+    ECU_ADDRESS                       0x002B8864
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4767,7 +4768,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8881
+    ECU_ADDRESS                       0x002B8861
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4786,7 +4787,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B8882
+    ECU_ADDRESS                       0x002B8862
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4805,7 +4806,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8888
+    ECU_ADDRESS                       0x002B8868
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4819,12 +4820,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANWrite1
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CE
+    ECU_ADDRESS                       0x002BA2AE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4838,12 +4839,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANWrite2
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2CF
+    ECU_ADDRESS                       0x002BA2AF
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4857,12 +4858,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANWrite3
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D0
+    ECU_ADDRESS                       0x002BA2B0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4876,12 +4877,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANWrite4
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D1
+    ECU_ADDRESS                       0x002BA2B1
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4895,12 +4896,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.PortACANWrite5
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2D2
+    ECU_ADDRESS                       0x002BA2B2
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4921,7 +4922,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA1CE
+    ECU_ADDRESS                       0x002BA1AE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4942,7 +4943,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA1D6
+    ECU_ADDRESS                       0x002BA1B6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4963,7 +4964,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA1DE
+    ECU_ADDRESS                       0x002BA1BE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -4984,7 +4985,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA1E6
+    ECU_ADDRESS                       0x002BA1C6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5005,11 +5006,68 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 8 
-    ECU_ADDRESS                       0x002BA1EE
+    ECU_ADDRESS                       0x002BA1CE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
             EVENT  0x0001
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      inverter_hil_B.Refhil_cmd_xcp_pedals_active
+    /* Long identifier        */      ""
+    /* Data type              */      UBYTE
+    /* Conversion method      */      inverter_hil_CM_boolean
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      0
+    /* Upper limit            */      1
+    ECU_ADDRESS                       0x002BA293
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      inverter_hil_B.Refhil_cmd_xcp_pedals_brake
+    /* Long identifier        */      ""
+    /* Data type              */      FLOAT64_IEEE
+    /* Conversion method      */      inverter_hil_CM_double
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      -1.7E+308
+    /* Upper limit            */      1.7E+308
+    ECU_ADDRESS                       0x002B8B38
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      inverter_hil_B.Refhil_cmd_xcp_pedals_throttle
+    /* Long identifier        */      ""
+    /* Data type              */      FLOAT64_IEEE
+    /* Conversion method      */      inverter_hil_CM_double
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      -1.7E+308
+    /* Upper limit            */      1.7E+308
+    ECU_ADDRESS                       0x002B8B28
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0000
           /end DEFAULT_EVENT_LIST
       /end DAQ_EVENT
     /end IF_DATA
@@ -5026,7 +5084,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      4294967295
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA0E4
+    ECU_ADDRESS                       0x002BA0C4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5047,7 +5105,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 4 
-    ECU_ADDRESS                       0x002BA1AE
+    ECU_ADDRESS                       0x002BA18E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5068,7 +5126,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8E00
+    ECU_ADDRESS                       0x002B8DF0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5089,7 +5147,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 4 
-    ECU_ADDRESS                       0x002BA18E
+    ECU_ADDRESS                       0x002BA16E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5103,14 +5161,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.SafeDigitalCommand
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA2B9
+    ECU_ADDRESS                       0x002BA29A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5124,14 +5182,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.SafeDigitalStimulus
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA2C1
+    ECU_ADDRESS                       0x002BA2A2
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5152,7 +5210,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      4294967295
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        4 
-    ECU_ADDRESS                       0x002BA0D4
+    ECU_ADDRESS                       0x002BA0B4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5173,7 +5231,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        4 
-    ECU_ADDRESS                       0x002B8DE0
+    ECU_ADDRESS                       0x002B8DD0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5194,7 +5252,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B8B90
+    ECU_ADDRESS                       0x002B8B80
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5215,7 +5273,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B8C10
+    ECU_ADDRESS                       0x002B8C00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5236,7 +5294,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B8C90
+    ECU_ADDRESS                       0x002B8C80
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5257,7 +5315,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B8D10
+    ECU_ADDRESS                       0x002B8D00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5278,7 +5336,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8DD0
+    ECU_ADDRESS                       0x002B8DC0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5299,7 +5357,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        4 
-    ECU_ADDRESS                       0x002B8DB0
+    ECU_ADDRESS                       0x002B8DA0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5313,12 +5371,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.SafePreflightSafe
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2B8
+    ECU_ADDRESS                       0x002BA299
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5339,7 +5397,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA14E
+    ECU_ADDRESS                       0x002BA12E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5360,7 +5418,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA15E
+    ECU_ADDRESS                       0x002BA13E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5381,7 +5439,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA16E
+    ECU_ADDRESS                       0x002BA14E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5402,7 +5460,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA17E
+    ECU_ADDRESS                       0x002BA15E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5423,7 +5481,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA156
+    ECU_ADDRESS                       0x002BA136
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5444,7 +5502,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA166
+    ECU_ADDRESS                       0x002BA146
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5465,7 +5523,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA176
+    ECU_ADDRESS                       0x002BA156
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5486,7 +5544,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002BA186
+    ECU_ADDRESS                       0x002BA166
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5505,7 +5563,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B48
+    ECU_ADDRESS                       0x002B8B30
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5526,7 +5584,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        24 
-    ECU_ADDRESS                       0x002B9460
+    ECU_ADDRESS                       0x002B9440
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5545,7 +5603,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B68
+    ECU_ADDRESS                       0x002B8B58
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5564,7 +5622,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B70
+    ECU_ADDRESS                       0x002B8B60
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5583,7 +5641,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B78
+    ECU_ADDRESS                       0x002B8B68
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5602,7 +5660,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8B80
+    ECU_ADDRESS                       0x002B8B70
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5623,7 +5681,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002B8A68
+    ECU_ADDRESS                       0x002B8A48
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5642,7 +5700,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8AA8
+    ECU_ADDRESS                       0x002B8A88
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5661,7 +5719,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8AB0
+    ECU_ADDRESS                       0x002B8A90
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5680,7 +5738,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8AB8
+    ECU_ADDRESS                       0x002B8A98
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5699,7 +5757,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B8AC0
+    ECU_ADDRESS                       0x002B8AA0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5720,7 +5778,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 
-    ECU_ADDRESS                       0x002B8AC8
+    ECU_ADDRESS                       0x002B8AA8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5739,7 +5797,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9538
+    ECU_ADDRESS                       0x002B9518
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5758,7 +5816,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9530
+    ECU_ADDRESS                       0x002B9510
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5777,7 +5835,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9540
+    ECU_ADDRESS                       0x002B9520
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5796,7 +5854,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9568
+    ECU_ADDRESS                       0x002B9548
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5815,7 +5873,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9548
+    ECU_ADDRESS                       0x002B9528
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5834,7 +5892,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9550
+    ECU_ADDRESS                       0x002B9530
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5853,7 +5911,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9558
+    ECU_ADDRESS                       0x002B9538
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5872,7 +5930,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9560
+    ECU_ADDRESS                       0x002B9540
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5886,12 +5944,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_B.appsBrakeFault
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002BA2E0
+    ECU_ADDRESS                       0x002BA2C0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5910,7 +5968,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA120
+    ECU_ADDRESS                       0x002BA100
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5929,7 +5987,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9520
+    ECU_ADDRESS                       0x002B9500
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5950,7 +6008,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA222
+    ECU_ADDRESS                       0x002BA202
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5971,7 +6029,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA22A
+    ECU_ADDRESS                       0x002BA20A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -5992,7 +6050,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA232
+    ECU_ADDRESS                       0x002BA212
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6013,7 +6071,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA23A
+    ECU_ADDRESS                       0x002BA21A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6034,7 +6092,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA242
+    ECU_ADDRESS                       0x002BA222
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6055,7 +6113,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA24A
+    ECU_ADDRESS                       0x002BA22A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6076,7 +6134,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA252
+    ECU_ADDRESS                       0x002BA232
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6097,7 +6155,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA25A
+    ECU_ADDRESS                       0x002BA23A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6118,7 +6176,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 1 
-    ECU_ADDRESS                       0x002BA262
+    ECU_ADDRESS                       0x002BA242
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6137,7 +6195,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA124
+    ECU_ADDRESS                       0x002BA104
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6156,7 +6214,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA128
+    ECU_ADDRESS                       0x002BA108
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6175,7 +6233,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA12C
+    ECU_ADDRESS                       0x002BA10C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6194,7 +6252,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA130
+    ECU_ADDRESS                       0x002BA110
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6213,7 +6271,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA134
+    ECU_ADDRESS                       0x002BA114
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6232,7 +6290,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA138
+    ECU_ADDRESS                       0x002BA118
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6251,7 +6309,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA13C
+    ECU_ADDRESS                       0x002BA11C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6270,7 +6328,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA140
+    ECU_ADDRESS                       0x002BA120
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6289,7 +6347,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA144
+    ECU_ADDRESS                       0x002BA124
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6310,7 +6368,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        1 44 
-    ECU_ADDRESS                       0x002BA1F6
+    ECU_ADDRESS                       0x002BA1D6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6331,7 +6389,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        8 9 
-    ECU_ADDRESS                       0x002BA26A
+    ECU_ADDRESS                       0x002BA24A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6352,7 +6410,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        14 13 
-    ECU_ADDRESS                       0x002B9B20
+    ECU_ADDRESS                       0x002B9B00
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6373,7 +6431,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        14 13 
-    ECU_ADDRESS                       0x002B9570
+    ECU_ADDRESS                       0x002B9550
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6392,7 +6450,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B9528
+    ECU_ADDRESS                       0x002B9508
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6411,7 +6469,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002BA148
+    ECU_ADDRESS                       0x002BA128
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6432,7 +6490,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      65535
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B87C8
+    ECU_ADDRESS                       0x002B87A8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6451,7 +6509,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D6
+    ECU_ADDRESS                       0x002B87B6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6470,7 +6528,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D7
+    ECU_ADDRESS                       0x002B87B7
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6491,7 +6549,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        364 
-    ECU_ADDRESS                       0x002B7AE0
+    ECU_ADDRESS                       0x002B7AC0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6510,7 +6568,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D8
+    ECU_ADDRESS                       0x002B87B8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6529,7 +6587,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D9
+    ECU_ADDRESS                       0x002B87B9
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6550,7 +6608,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8640
+    ECU_ADDRESS                       0x002B8620
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6569,7 +6627,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DA
+    ECU_ADDRESS                       0x002B87BA
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6588,7 +6646,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DB
+    ECU_ADDRESS                       0x002B87BB
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6609,7 +6667,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8650
+    ECU_ADDRESS                       0x002B8630
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6628,7 +6686,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DC
+    ECU_ADDRESS                       0x002B87BC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6647,7 +6705,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DD
+    ECU_ADDRESS                       0x002B87BD
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6661,14 +6719,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.GuiCmdInverter1ConnectedRT_Buf
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B883F
+    ECU_ADDRESS                       0x002B881F
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6687,7 +6745,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DE
+    ECU_ADDRESS                       0x002B87BE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6706,7 +6764,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87DF
+    ECU_ADDRESS                       0x002B87BF
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6727,7 +6785,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8660
+    ECU_ADDRESS                       0x002B8640
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6746,7 +6804,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E0
+    ECU_ADDRESS                       0x002B87C0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6765,7 +6823,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E1
+    ECU_ADDRESS                       0x002B87C1
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6779,14 +6837,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.GuiCmdInverter2ConnectedRT_Buf
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8841
+    ECU_ADDRESS                       0x002B8821
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6805,7 +6863,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E2
+    ECU_ADDRESS                       0x002B87C2
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6824,7 +6882,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E3
+    ECU_ADDRESS                       0x002B87C3
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6845,7 +6903,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8670
+    ECU_ADDRESS                       0x002B8650
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6864,7 +6922,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E4
+    ECU_ADDRESS                       0x002B87C4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6883,7 +6941,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E5
+    ECU_ADDRESS                       0x002B87C5
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6897,14 +6955,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.GuiCmdInverter3ConnectedRT_Buf
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8843
+    ECU_ADDRESS                       0x002B8823
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6923,7 +6981,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E6
+    ECU_ADDRESS                       0x002B87C6
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6942,7 +7000,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E7
+    ECU_ADDRESS                       0x002B87C7
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6963,7 +7021,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8680
+    ECU_ADDRESS                       0x002B8660
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -6982,7 +7040,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E8
+    ECU_ADDRESS                       0x002B87C8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7001,7 +7059,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87E9
+    ECU_ADDRESS                       0x002B87C9
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7015,14 +7073,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.GuiCmdInverter4ConnectedRT_Buf
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8845
+    ECU_ADDRESS                       0x002B8825
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7041,7 +7099,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87EA
+    ECU_ADDRESS                       0x002B87CA
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7060,7 +7118,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87EB
+    ECU_ADDRESS                       0x002B87CB
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7081,7 +7139,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        2 
-    ECU_ADDRESS                       0x002B8690
+    ECU_ADDRESS                       0x002B8670
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7100,7 +7158,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87EC
+    ECU_ADDRESS                       0x002B87CC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7119,7 +7177,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87ED
+    ECU_ADDRESS                       0x002B87CD
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7140,7 +7198,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B87EE
+    ECU_ADDRESS                       0x002B87CE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7159,7 +7217,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87CC
+    ECU_ADDRESS                       0x002B87AC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7178,7 +7236,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87CD
+    ECU_ADDRESS                       0x002B87AD
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7199,7 +7257,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B87FE
+    ECU_ADDRESS                       0x002B87DE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7218,7 +7276,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87CE
+    ECU_ADDRESS                       0x002B87AE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7237,7 +7295,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87CF
+    ECU_ADDRESS                       0x002B87AF
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7258,7 +7316,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B880E
+    ECU_ADDRESS                       0x002B87EE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7277,7 +7335,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D0
+    ECU_ADDRESS                       0x002B87B0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7296,7 +7354,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D1
+    ECU_ADDRESS                       0x002B87B1
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7317,7 +7375,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B881E
+    ECU_ADDRESS                       0x002B87FE
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7336,7 +7394,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D2
+    ECU_ADDRESS                       0x002B87B2
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7355,7 +7413,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D3
+    ECU_ADDRESS                       0x002B87B3
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7376,7 +7434,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      255
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        16 
-    ECU_ADDRESS                       0x002B882E
+    ECU_ADDRESS                       0x002B880E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7395,7 +7453,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D4
+    ECU_ADDRESS                       0x002B87B4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7414,7 +7472,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -128
     /* Upper limit            */      127
-    ECU_ADDRESS                       0x002B87D5
+    ECU_ADDRESS                       0x002B87B5
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7428,12 +7486,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.appsErrorLatch
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884C
+    ECU_ADDRESS                       0x002B882C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7447,12 +7505,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.appsErrorLatch_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884D
+    ECU_ADDRESS                       0x002B882D
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7466,12 +7524,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.bank_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8860
+    ECU_ADDRESS                       0x002B8840
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7485,12 +7543,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.bank_not_empty_f
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8863
+    ECU_ADDRESS                       0x002B8843
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7509,7 +7567,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -1.7E+308
     /* Upper limit            */      1.7E+308
-    ECU_ADDRESS                       0x002B86C0
+    ECU_ADDRESS                       0x002B86A0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7523,12 +7581,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.dcLinkAccum_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884B
+    ECU_ADDRESS                       0x002B882B
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7542,12 +7600,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8847
+    ECU_ADDRESS                       0x002B8827
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7561,31 +7619,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_b
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884E
-    /begin IF_DATA XCP
-      /begin DAQ_EVENT VARIABLE
-          /begin DEFAULT_EVENT_LIST
-            EVENT  0x0001
-          /end DEFAULT_EVENT_LIST
-      /end DAQ_EVENT
-    /end IF_DATA
-  /end MEASUREMENT 
-
-  /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_bm
-    /* Long identifier        */      ""
-    /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
-    /* Resolution (Not used)  */      0      
-    /* Accuracy (Not used)    */      0      
-    /* Lower limit            */      0
-    /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8857
+    ECU_ADDRESS                       0x002B8837
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7599,12 +7638,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_c
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8862
+    ECU_ADDRESS                       0x002B8842
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7618,12 +7657,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_d
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8850
+    ECU_ADDRESS                       0x002B8830
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7637,12 +7676,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_e
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8851
+    ECU_ADDRESS                       0x002B8831
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7656,12 +7695,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_j
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885D
+    ECU_ADDRESS                       0x002B883D
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7675,12 +7714,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_m
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8856
+    ECU_ADDRESS                       0x002B8836
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7691,15 +7730,34 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
   /end MEASUREMENT 
 
   /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_p
+    /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_n
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885C
+    ECU_ADDRESS                       0x002B882E
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0001
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      inverter_hil_DW.doneDoubleBufferReInit_p
+    /* Long identifier        */      ""
+    /* Data type              */      UBYTE
+    /* Conversion method      */      inverter_hil_CM_boolean
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      0
+    /* Upper limit            */      1
+    ECU_ADDRESS                       0x002B883C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7713,12 +7771,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.initialized
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8854
+    ECU_ADDRESS                       0x002B8834
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7732,12 +7790,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.initialized_a
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885A
+    ECU_ADDRESS                       0x002B883A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7751,12 +7809,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.initialized_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8855
+    ECU_ADDRESS                       0x002B8835
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7770,12 +7828,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.initialized_not_empty_m
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885B
+    ECU_ADDRESS                       0x002B883B
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7794,7 +7852,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8730
+    ECU_ADDRESS                       0x002B8710
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7808,12 +7866,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.n_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884F
+    ECU_ADDRESS                       0x002B882F
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7827,12 +7885,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.plantState_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885F
+    ECU_ADDRESS                       0x002B883F
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7851,7 +7909,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8734
+    ECU_ADDRESS                       0x002B8714
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7870,7 +7928,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B873C
+    ECU_ADDRESS                       0x002B871C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7884,12 +7942,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.prevCounter_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8852
+    ECU_ADDRESS                       0x002B8832
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7903,12 +7961,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.prevCounter_not_empty_k
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8858
+    ECU_ADDRESS                       0x002B8838
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7929,7 +7987,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Upper limit            */      1.7E+308
     LAYOUT                            COLUMN_DIR
     MATRIX_DIM                        4 
-    ECU_ADDRESS                       0x002B86A0
+    ECU_ADDRESS                       0x002B8680
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7943,12 +8001,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.rawFilt_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B884A
+    ECU_ADDRESS                       0x002B882A
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7967,7 +8025,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8708
+    ECU_ADDRESS                       0x002B86E8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -7986,30 +8044,11 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8728
+    ECU_ADDRESS                       0x002B8708
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
             EVENT  0x0000
-          /end DEFAULT_EVENT_LIST
-      /end DAQ_EVENT
-    /end IF_DATA
-  /end MEASUREMENT 
-
-  /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_DW.sfEvent_g
-    /* Long identifier        */      ""
-    /* Data type              */      SLONG
-    /* Conversion method      */      inverter_hil_CM_int32
-    /* Resolution (Not used)  */      0      
-    /* Accuracy (Not used)    */      0      
-    /* Lower limit            */      -2147483648
-    /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B870C
-    /begin IF_DATA XCP
-      /begin DAQ_EVENT VARIABLE
-          /begin DEFAULT_EVENT_LIST
-            EVENT  0x0001
           /end DEFAULT_EVENT_LIST
       /end DAQ_EVENT
     /end IF_DATA
@@ -8024,7 +8063,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8724
+    ECU_ADDRESS                       0x002B8704
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8043,7 +8082,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8720
+    ECU_ADDRESS                       0x002B8700
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8062,7 +8101,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8710
+    ECU_ADDRESS                       0x002B86F0
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8081,7 +8120,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8718
+    ECU_ADDRESS                       0x002B86F8
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8100,7 +8139,26 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B8714
+    ECU_ADDRESS                       0x002B86EC
+    /begin IF_DATA XCP
+      /begin DAQ_EVENT VARIABLE
+          /begin DEFAULT_EVENT_LIST
+            EVENT  0x0001
+          /end DEFAULT_EVENT_LIST
+      /end DAQ_EVENT
+    /end IF_DATA
+  /end MEASUREMENT 
+
+  /begin MEASUREMENT 
+    /* Name                   */      inverter_hil_DW.sfEvent_mr
+    /* Long identifier        */      ""
+    /* Data type              */      SLONG
+    /* Conversion method      */      inverter_hil_CM_int32
+    /* Resolution (Not used)  */      0      
+    /* Accuracy (Not used)    */      0      
+    /* Lower limit            */      -2147483648
+    /* Upper limit            */      2147483647
+    ECU_ADDRESS                       0x002B86F4
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8119,7 +8177,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      -2147483648
     /* Upper limit            */      2147483647
-    ECU_ADDRESS                       0x002B871C
+    ECU_ADDRESS                       0x002B86FC
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8130,7 +8188,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
   /end MEASUREMENT 
 
   /begin MEASUREMENT 
-    /* Name                   */      inverter_hil_DW.state_g
+    /* Name                   */      inverter_hil_DW.state_j
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
     /* Conversion method      */      inverter_hil_CM_uint8
@@ -8138,7 +8196,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      255
-    ECU_ADDRESS                       0x002B883E
+    ECU_ADDRESS                       0x002B881E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8152,12 +8210,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.state_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8848
+    ECU_ADDRESS                       0x002B8828
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8171,12 +8229,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.state_not_empty_b
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B885E
+    ECU_ADDRESS                       0x002B883E
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8190,12 +8248,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.statusBank_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8864
+    ECU_ADDRESS                       0x002B8844
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8214,7 +8272,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8748
+    ECU_ADDRESS                       0x002B8728
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8228,12 +8286,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.tickMs_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8865
+    ECU_ADDRESS                       0x002B8845
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8252,7 +8310,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B872C
+    ECU_ADDRESS                       0x002B870C
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8271,7 +8329,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8738
+    ECU_ADDRESS                       0x002B8718
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8290,7 +8348,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8740
+    ECU_ADDRESS                       0x002B8720
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8304,12 +8362,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.ticksRemaining_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8853
+    ECU_ADDRESS                       0x002B8833
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8323,12 +8381,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.ticksRemaining_not_empty_n
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8859
+    ECU_ADDRESS                       0x002B8839
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8342,12 +8400,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.ticks_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8849
+    ECU_ADDRESS                       0x002B8829
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8366,7 +8424,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      4294967295
-    ECU_ADDRESS                       0x002B8744
+    ECU_ADDRESS                       0x002B8724
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8380,12 +8438,12 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Name                   */      inverter_hil_DW.txCounter_not_empty
     /* Long identifier        */      ""
     /* Data type              */      UBYTE
-    /* Conversion method      */      inverter_hil_CM_logical
+    /* Conversion method      */      inverter_hil_CM_boolean
     /* Resolution (Not used)  */      0      
     /* Accuracy (Not used)    */      0      
     /* Lower limit            */      0
     /* Upper limit            */      1
-    ECU_ADDRESS                       0x002B8861
+    ECU_ADDRESS                       0x002B8841
     /begin IF_DATA XCP
       /begin DAQ_EVENT VARIABLE
           /begin DEFAULT_EVENT_LIST
@@ -8424,14 +8482,6 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
     /* Long identifier        */      "Q = V"
     /* Conversion Type        */      IDENTICAL
     /* Format                 */      "%3.0"
-    /* Units                  */      ""
-  /end COMPU_METHOD
-
-  /begin COMPU_METHOD
-    /* Name of CompuMethod    */      inverter_hil_CM_logical
-    /* Long identifier        */      "Q = V"
-    /* Conversion Type        */      IDENTICAL
-    /* Format                 */      "%1.0"
     /* Units                  */      ""
   /end COMPU_METHOD
 
@@ -8721,9 +8771,6 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_B.Cmdhil_cmd_pedals_brake
       inverter_hil_B.Cmdhil_cmd_pedals_plausibility_
       inverter_hil_B.Cmdhil_cmd_pedals_throttle
-      inverter_hil_B.Cmdhil_cmd_xcp_pedals_active
-      inverter_hil_B.Cmdhil_cmd_xcp_pedals_brake
-      inverter_hil_B.Cmdhil_cmd_xcp_pedals_throttle
     /end REF_MEASUREMENT
   /end GROUP
 
@@ -8787,6 +8834,9 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_cal_impl.XCPThrottlePercentToFraction_Ga
     /end REF_CHARACTERISTIC
     /begin REF_MEASUREMENT
+      hil_cmd_xcp_pedals_active
+      hil_cmd_xcp_pedals_brake
+      hil_cmd_xcp_pedals_throttle
       inverter_hil_B.BrakeSourceSwitch
       inverter_hil_B.CastRefhil_cmd_digital_cooling_
       inverter_hil_B.CastRefhil_cmd_digital_shutdown
@@ -8801,6 +8851,9 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_B.IO183DIO09DIO13VCUMonitor_o4
       inverter_hil_B.IO183DIO09DIO13VCUMonitor_o5
       inverter_hil_B.IO614CANFIFOReadRaw_o1
+      inverter_hil_B.Refhil_cmd_xcp_pedals_active
+      inverter_hil_B.Refhil_cmd_xcp_pedals_brake
+      inverter_hil_B.Refhil_cmd_xcp_pedals_throttle
       inverter_hil_B.ThrottleSourceSwitch
       inverter_hil_B.UnusedSW_IN_1
       inverter_hil_B.UnusedSW_IN_2
@@ -8836,7 +8889,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_DW.DropStatusMaskRT_Buf
       inverter_hil_DW.DropStatusMaskRT_RdBufIdx
       inverter_hil_DW.DropStatusMaskRT_WrBufIdx
-      inverter_hil_DW.doneDoubleBufferReInit_bm
+      inverter_hil_DW.doneDoubleBufferReInit_b
       inverter_hil_DW.doneDoubleBufferReInit_d
       inverter_hil_DW.doneDoubleBufferReInit_e
       inverter_hil_DW.doneDoubleBufferReInit_m
@@ -8852,7 +8905,7 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_DW.sfEvent_j
       inverter_hil_DW.sfEvent_l
       inverter_hil_DW.sfEvent_l3
-      inverter_hil_DW.sfEvent_m
+      inverter_hil_DW.sfEvent_mr
       inverter_hil_DW.sfEvent_p
       inverter_hil_DW.ticksRemaining
       inverter_hil_DW.ticksRemaining_h
@@ -9005,14 +9058,14 @@ ASAP2_VERSION  1 71     /* Version 1.71 */
       inverter_hil_DW.dcLinkAccum
       inverter_hil_DW.dcLinkAccum_not_empty
       inverter_hil_DW.doneDoubleBufferReInit
-      inverter_hil_DW.doneDoubleBufferReInit_b
+      inverter_hil_DW.doneDoubleBufferReInit_n
       inverter_hil_DW.n
       inverter_hil_DW.n_not_empty
       inverter_hil_DW.rawFilt
       inverter_hil_DW.rawFilt_not_empty
       inverter_hil_DW.sfEvent
-      inverter_hil_DW.sfEvent_g
-      inverter_hil_DW.state_g
+      inverter_hil_DW.sfEvent_m
+      inverter_hil_DW.state_j
       inverter_hil_DW.state_not_empty
       inverter_hil_DW.ticks
       inverter_hil_DW.ticks_not_empty

@@ -414,14 +414,17 @@ classdef targetSession < handle
                 % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
             end
 
-            % hil_cmd_xcp_pedals_active is a dictionary PARAMETER (an XCP
-            % master's own source-select flag, see
-            % virtual-vcu/docs/carmaker_speedgoat_interface.md section 7
-            % item 2), not an observability signal, so it is read with
+            % KNOWN REGRESSION (2026-08-14): hil_cmd_xcp_pedals_active used
+            % to be a dictionary PARAMETER, which is why it is read with
             % GETPARAM rather than GETSIGNAL(OBSPATH, N) like the ports
-            % above. Same optional-read pattern: an application built
-            % before this entry existed must leave the reads above intact
-            % and simply report this value unknown.
+            % above. It is now a Simulink.Signal ExportedGlobal data store
+            % instead -- CarMaker cannot write CHARACTERISTICs without its
+            % XCP calibration module, which is absent here, so the three
+            % hil_cmd_xcp_pedals_* entries became MEASUREMENTs so they can
+            % be driven by a STIM sample group. GETPARAM therefore fails on
+            % this name now and the catch below reports it unknown, which
+            % is degraded but safe. Needs re-pointing at whatever the
+            % correct read API for an ExportedGlobal global is.
             try
                 active = obj.Backend.getparam('hil_cmd_xcp_pedals_active');
                 if (islogical(active) || isnumeric(active)) && isscalar(active) && ...
