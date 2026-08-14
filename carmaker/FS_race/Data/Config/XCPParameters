@@ -1,0 +1,59 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = CarMaker-XCPParameters	1
+
+nECU = 1
+
+ECU.0.Name = SpeedgoatVirtualVCU
+ECU.0.ASAP2_File = C:/Users/MFE-HPC/Documents/GitHub/HIL/inverter_hil/inverter_hil.a2l
+ECU.0.ASAP2Parameters = Data/Config/XCPParameters.SpeedgoatVirtualVCU.a2l.info
+ECU.0.SaveMode = off
+ECU.0.SaveCtrl = auto
+ECU.0.SaveFile = %o/%r/%p_%m_%d_%c.mf4
+ECU.0.TimeChannel_DT = uint32
+ECU.0.DAQ_Mode = single
+ECU.0.DAQ_MinBufSize = 1048576
+ECU.0.Protocol.Timings = 1000 200 0 0 0 0 0
+ECU.0.Protocol.Params = 255 1400 MSB_LAST ADDRESS_GRANULARITY_BYTE
+ECU.0.Protocol.OptCmd:
+	SET_MTA
+	UPLOAD
+	SHORT_UPLOAD
+	GET_DAQ_CLOCK
+	GET_DAQ_PROCESSOR_INFO
+	GET_DAQ_RESOLUTION_INFO
+	FREE_DAQ
+	ALLOC_DAQ
+	ALLOC_ODT
+	ALLOC_ODT_ENTRY
+	DOWNLOAD_MAX
+	SHORT_DOWNLOAD
+	MODIFY_BITS
+	GET_PAG_PROCESSOR_INFO
+	GET_SEGMENT_INFO
+	GET_PAGE_INFO
+	SET_SEGMENT_MODE
+	GET_SEGMENT_MODE
+	COPY_CAL_PAGE
+ECU.0.DAQ.Config = DYNAMIC 0 128 0
+ECU.0.DAQ.Opt = OPTIMISATION_TYPE_DEFAULT ADDRESS_EXTENSION_FREE IDENTIFICATION_FIELD_TYPE_RELATIVE_WORD_ALIGNED
+ECU.0.DAQ.Settings = OVERLOAD_INDICATION_PID PRESCALER_SUPPORTED RESUME_NOT_SUPPORTED PID_OFF_NOT_SUPPORTED
+ECU.0.DAQ.OptODT = GRANULARITY_ODT_ENTRY_SIZE_DAQ_BYTE 255
+ECU.0.DAQ.nEvents = 2
+ECU.0.DAQ.Events:
+	1_ms 0 DAQ 255 1 6 0
+	5_ms 1 DAQ 255 5 6 0
+ECU.0.ErrorHandling.DAQ_Timeout = enabled
+ECU.0.DAQParameters = Data/Config/XCPParameters.SpeedgoatVirtualVCU.daq.info
+ECU.0.OverrideASAP2 = 1
+
+ECU.0.TransportLayer = Ethernet
+ECU.0.TransportLayer.AutoReset = 0
+ECU.0.TransportLayer.Ethernet = 0x0100
+ECU.0.TransportLayer.Ethernet.Preferred = udp
+ECU.0.TransportLayer.Ethernet.Port = 5555
+ECU.0.TransportLayer.Ethernet.IP = 10.10.10.5
+ECU.0.TransportLayer.Ethernet.HostName = (null)
+
+ECU.0.ASAP2_Filter = ddict
+ECU.0.ASAP2_Keys = (null)
+ECU.0.ASAP2_CharKeys = (null)

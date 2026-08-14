@@ -1,0 +1,31 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = CarMaker-DAQParameters	2
+FileCreator = XCP Configuration 4.2.2 2023-05-11
+
+# ECU SpeedgoatVirtualVCU
+Active = 1
+UnlockRequired = 0
+
+# Sample Groups
+SampleGroup.G1.Enable = 1
+SampleGroup.G1.Event = 0x0
+SampleGroup.G1.Prescaler = 1
+SampleGroup.G1.SRate = 1
+SampleGroup.G1.Direction = DAQ
+SampleGroup.G1.Variables:
+	ModuleName.hil_obs_virtual_vcu_torque_request_nm
+
+# ASAP2 Mapping
+ASAP2_Mapping:
+	ModuleName.hil_obs_virtual_vcu_torque_request_nm	TorqueVect.XcpTorqueRequestNm	1	0
+ASAP2_CharMapping:
+	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_active	TorqueVect.XcpTorqueActive	1	0
+	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_brake	VehicleControl.Brake	1	0
+	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_throttle	VehicleControl.Gas	1	0
+
+# DAQ Programming
+nDAQLists = 1 1 0
+DAQList.0 = 1 0x0 1 8 0
+DAQList.0.ODT.0 = 1 8
+DAQList.0.ODT.0.Entries:
+	0x2ba310 0x0 8 0 8

@@ -5,3 +5,4 @@ FileIdent =	CarMaker-ECUParameters	3
 IOParameters =
 CANIfParameters =
 FlexCardParameters =
+XCP.XCPParameters = XCPParameters
