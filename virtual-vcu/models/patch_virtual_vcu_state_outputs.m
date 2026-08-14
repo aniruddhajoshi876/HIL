@@ -206,8 +206,7 @@ for k = 1:numel(obsNames)
     % TestPoint alone does not cause SLRT's calibration-file generator to
     % emit an A2L measurement. Resolve this Signal Copy output to the
     % ExportedGlobal Simulink.Signal object created by the model builder.
-    copyOutputLine = get_param(copyPorts.Outport, 'Line');
-    set_param(copyOutputLine, 'Name', measurementNames{k}, ...
+    set_param(copyPorts.Outport, 'Name', measurementNames{k}, ...
         'MustResolveToSignalObject', 'on');
 end
 
