@@ -1,10 +1,15 @@
 function p = lwsProtocol()
 %PROTOCOL Independent Bosch F02U.V02.894-01 LWS CAN contract.
+%   This runs inside a MATLAB Function block, so every field must be created
+%   before ANY field of P is read: code generation rejects a struct that
+%   grows after it has been read or used. Values that are derived from
+%   another field therefore come from a local variable, never from P itself.
+updatePeriodS = 0.010;
 p.standardId = uint32(hex2dec('2B0'));
 p.standardDlc = uint8(5);
 p.configId = uint32(hex2dec('7C0'));
 p.configDlc = uint8(2);
-p.updatePeriodS = 0.010;
+p.updatePeriodS = updatePeriodS;
 p.angleScaleDegPerCount = 0.1;
 p.speedScaleDegPerSPerCount = 4;
 p.minimumAngleDeg = -780;
@@ -13,6 +18,11 @@ p.minimumSpeedDegPerS = 0;
 p.maximumSpeedDegPerS = 1016;
 p.ccwResetCalibration = uint8(hex2dec('05'));
 p.ccwZeroAngle = uint8(hex2dec('03'));
+% Bosch specifies ordering but no delay. The target sequencer's conservative
+% HIL policy waits ten standard-frame periods before its reset result check.
+p.calibrationInterCommandS = 0.100;
+p.calibrationResultCheckPeriodS = updatePeriodS;
+p.calibrationResultTimeoutS = 0.100;
 p.status.trimMask = uint8(4);
 p.status.calMask = uint8(2);
 p.status.okMask = uint8(1);

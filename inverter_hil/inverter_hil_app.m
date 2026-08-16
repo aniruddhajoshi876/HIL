@@ -82,8 +82,17 @@ classdef inverter_hil_app < matlab.apps.AppBase
         SensorImuAccelLabel       matlab.ui.control.Label
         SensorImuRateLabel        matlab.ui.control.Label
         SensorImuVelocityLabel    matlab.ui.control.Label
+        SensorCalibrationLabel    matlab.ui.control.Label
         SteeringDropoutCheckBox   matlab.ui.control.CheckBox
+        SteeringStaleCheckBox     matlab.ui.control.CheckBox
+        SteeringMalformedCheckBox matlab.ui.control.CheckBox
+        SteeringInvalidStatusCheckBox matlab.ui.control.CheckBox
+        SteeringAngleSentinelCheckBox matlab.ui.control.CheckBox
+        SteeringSpeedSentinelCheckBox matlab.ui.control.CheckBox
         ImuDropoutCheckBox        matlab.ui.control.CheckBox
+        ImuStaleCheckBox          matlab.ui.control.CheckBox
+        ImuMalformedCheckBox      matlab.ui.control.CheckBox
+        LwsCalibrationButton      matlab.ui.control.Button
         FaultMaskFields
         LoadTorqueFields
         ConnectedCheckBoxes
@@ -136,6 +145,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
+        LwsCalibrationSequence = uint32(0)
         % Host timestamp of the last MAIN BUTTON momentary press, used to
         % show the NEXT TRANSITION guard's "Main button" row as PRESSED for
         % a short window after each push. MAIN_BTN_IN is now driven purely
@@ -732,7 +742,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function createIoCanTab(app)
             %CREATEIOCANTAB Split CAN tables and the diagnostics strip.
             theme = app.Theme;
-            outer = app.makeGrid(app.IoCanTab, {18, '1x', 104, 30}, ...
+            outer = app.makeGrid(app.IoCanTab, {18, '1x', 150, 30}, ...
                 {'1x', '1x'});
 
             % Same honesty standard as the torque banner: state plainly that
@@ -755,7 +765,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             txPanel = app.makePanel(outer, ...
                 ['HIL TX / VCU RX  0x383 0x385 0x393 0x395 0x3A3 0x3A5 ' ...
-                '0x3B3 0x3B5 0x400  |  SENSORS 0x034 0x032 0x076 0x2B0']);
+                '0x3B3 0x3B5 0x400  |  SENSORS 0x034 0x032 0x076 0x2B0 0x7C0']);
             txPanel.Layout.Row = 2;
             txPanel.Layout.Column = 2;
             txGrid = app.makeGrid(txPanel, {'1x'}, {'1x'});
@@ -785,23 +795,73 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'SENSOR SIMULATION - MTi-680G / BOSCH LWS');
             panel.Layout.Row = 3;
             panel.Layout.Column = [1 2];
-            grid = app.makeGrid(panel, {20, 20, 20}, {'1x', 220});
+            grid = app.makeGrid(panel, {20, 20, 20, 20, 24}, ...
+                {'1x', 220, 260});
 
             app.SensorSteeringLabel = app.makeLabel(grid, ...
                 'STEERING --', theme.font.small, theme.color.primaryText);
+            app.SensorSteeringLabel.Layout.Row = 1;
+            app.SensorSteeringLabel.Layout.Column = 1;
             app.SteeringDropoutCheckBox = app.makeCheckBox(grid, ...
                 'INJECT: LWS 0x2B0 dropout', @onSteeringDropoutChanged);
+            app.SteeringDropoutCheckBox.Layout.Row = 1;
+            app.SteeringDropoutCheckBox.Layout.Column = 2;
+            app.SteeringStaleCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS stale payload', @onSteeringStaleChanged);
+            app.SteeringStaleCheckBox.Layout.Row = 1;
+            app.SteeringStaleCheckBox.Layout.Column = 3;
 
             app.SensorImuAccelLabel = app.makeLabel(grid, ...
                 'MTi ACCEL --', theme.font.small, theme.color.electrical);
-            app.ImuDropoutCheckBox = app.makeCheckBox(grid, ...
-                'INJECT: MTi 0x034/0x032/0x076 dropout', ...
-                @onImuDropoutChanged);
+            app.SensorImuAccelLabel.Layout.Row = 2;
+            app.SensorImuAccelLabel.Layout.Column = 1;
+            app.SteeringMalformedCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS wrong DLC', @onSteeringMalformedChanged);
+            app.SteeringMalformedCheckBox.Layout.Row = 2;
+            app.SteeringMalformedCheckBox.Layout.Column = 2;
+            app.SteeringInvalidStatusCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: illegal TRIM/CAL/OK', @onSteeringInvalidStatusChanged);
+            app.SteeringInvalidStatusCheckBox.Layout.Row = 2;
+            app.SteeringInvalidStatusCheckBox.Layout.Column = 3;
 
             app.SensorImuRateLabel = app.makeLabel(grid, ...
                 'MTi RATE --', theme.font.small, theme.color.electrical);
+            app.SensorImuRateLabel.Layout.Row = 3;
+            app.SensorImuRateLabel.Layout.Column = 1;
+            app.SteeringAngleSentinelCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS angle 0x7FFF', @onSteeringAngleSentinelChanged);
+            app.SteeringAngleSentinelCheckBox.Layout.Row = 3;
+            app.SteeringAngleSentinelCheckBox.Layout.Column = 2;
+            app.SteeringSpeedSentinelCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS speed 0xFF', @onSteeringSpeedSentinelChanged);
+            app.SteeringSpeedSentinelCheckBox.Layout.Row = 3;
+            app.SteeringSpeedSentinelCheckBox.Layout.Column = 3;
+
             app.SensorImuVelocityLabel = app.makeLabel(grid, ...
                 'MTi VELOCITY --', theme.font.small, theme.color.electrical);
+            app.SensorImuVelocityLabel.Layout.Row = 4;
+            app.SensorImuVelocityLabel.Layout.Column = 1;
+            app.ImuDropoutCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi all-frame dropout', @onImuDropoutChanged);
+            app.ImuDropoutCheckBox.Layout.Row = 4;
+            app.ImuDropoutCheckBox.Layout.Column = 2;
+            app.ImuStaleCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi stale payloads', @onImuStaleChanged);
+            app.ImuStaleCheckBox.Layout.Row = 4;
+            app.ImuStaleCheckBox.Layout.Column = 3;
+
+            app.SensorCalibrationLabel = app.makeLabel(grid, ...
+                'LWS CALIBRATION --', theme.font.small, theme.color.secondaryText);
+            app.SensorCalibrationLabel.Layout.Row = 5;
+            app.SensorCalibrationLabel.Layout.Column = 1;
+            app.ImuMalformedCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi wrong DLC', @onImuMalformedChanged);
+            app.ImuMalformedCheckBox.Layout.Row = 5;
+            app.ImuMalformedCheckBox.Layout.Column = 2;
+            app.LwsCalibrationButton = app.makeButton(grid, ...
+                'RESET 0x05 -> CHECK -> ZERO 0x03', @onLwsCalibrationPushed);
+            app.LwsCalibrationButton.Layout.Row = 5;
+            app.LwsCalibrationButton.Layout.Column = 3;
         end
 
         function createFaultsTab(app)
@@ -1310,6 +1370,19 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if index > size(payloads, 1)
                     break;
                 end
+                if index > 9 && isfield(live, 'sensorTxCounts')
+                    sensorIndex = index - 9;
+                    if numel(live.sensorTxCounts) >= sensorIndex && ...
+                            live.sensorTxCounts(sensorIndex) == 0
+                        % A cached payload exists from model initialization,
+                        % but count zero proves it has never been offered to
+                        % this CAN Write. Show the genuine zero count while
+                        % leaving bytes/live state as NO DATA.
+                        observations(index).count = 0;
+                        observations(index).timestampsS = [];
+                        continue;
+                    end
+                end
                 bytes = payloads(index, 1:lengths(index));
                 value = sprintf('%02X ', bytes);
                 previous = observations(index).value;
@@ -1319,16 +1392,32 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if ~strcmp(previous, observations(index).value)
                     observations(index).lastChangeS = now;
                 end
-                observations(index).timestampsS = now;
-                % TXMESSAGECOUNT is EPHORUSSYSTEMSTATUSSTEP's counter and
-                % counts the status frames ONLY. Attributing it to a sensor
-                % row would report a count that frame never had, so sensor
-                % rows keep NaN and render as dashes until a per-sensor
-                % counter genuinely exists on the target.
                 if index <= 9
+                    observations(index).timestampsS = now;
                     observations(index).count = live.txMessageCount;
                 else
+                    sensorIndex = index - 9;
+                    % SENSORCOUNTS and SENSORAGESS are maintained by the
+                    % target's 5 ms sensor producer. Host poll timestamps
+                    % are never counted, differenced, or treated as sensor
+                    % time. NOW merely anchors the target-measured age for
+                    % CANROWMODEL's LIVE/STALE presentation; the single
+                    % timestamp cannot produce a fabricated rate.
                     observations(index).count = NaN;
+                    observations(index).timestampsS = [];
+                    if isfield(live, 'sensorTxCounts') && ...
+                            numel(live.sensorTxCounts) >= sensorIndex
+                        observations(index).count = ...
+                            live.sensorTxCounts(sensorIndex);
+                    end
+                    if isfield(live, 'sensorAgesS') && ...
+                            numel(live.sensorAgesS) >= sensorIndex
+                        targetAgeS = live.sensorAgesS(sensorIndex);
+                        if isnumeric(targetAgeS) && isscalar(targetAgeS) && ...
+                                isfinite(targetAgeS) && targetAgeS >= 0
+                            observations(index).timestampsS = now - targetAgeS;
+                        end
+                    end
                 end
             end
             app.Telemetry.can.tx = observations;
@@ -1571,11 +1660,16 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...
                 app.Policy.sensorStimulus);
-            % Dropout injection is sensor stimulus, not a CAN fault: it stops
-            % a simulated sensor's own frames rather than corrupting the bus,
-            % so it follows the dial's enable rather than CANFAULTS.
+            % Sensor-local dropout, stale payload, wrong DLC, illegal status,
+            % and sentinel injection all follow the sensorStimulus policy.
             app.applyEnable([app.SteeringDropoutCheckBox ...
-                app.ImuDropoutCheckBox], app.Policy.sensorStimulus);
+                app.SteeringStaleCheckBox app.SteeringMalformedCheckBox ...
+                app.SteeringInvalidStatusCheckBox ...
+                app.SteeringAngleSentinelCheckBox ...
+                app.SteeringSpeedSentinelCheckBox app.ImuDropoutCheckBox ...
+                app.ImuStaleCheckBox app.ImuMalformedCheckBox], ...
+                app.Policy.sensorStimulus);
+            app.applyEnable(app.LwsCalibrationButton, app.Policy.calibration);
             app.applyEnable([app.CoolingSwitch ...
                 app.ShutdownFeedbackSwitch], app.Policy.digitalStimuli);
             app.applyEnable([app.PrechargeButton app.MainMomentaryButton], ...
@@ -1861,19 +1955,28 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
 
             app.SensorSteeringLabel.Text = sprintf( ...
-                'STEERING  REQUESTED %s | APPLIED %s | SPEED %s | LWS %s', ...
+                ['STEERING  REQUESTED %s | APPLIED %s | SPEED %s | ' ...
+                'LWS %s | VALID %s | AGE %s'], ...
                 app.formatSteeringValue(app.RequestedSteeringDeg, 'deg'), ...
                 app.formatSteeringValue(steering.appliedAngleDeg, 'deg'), ...
                 app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
-                app.formatSteeringValue(steering.observedAngleDeg, 'deg'));
+                app.formatSteeringValue(steering.observedAngleDeg, 'deg'), ...
+                app.sensorValidityText(steering.valid), ...
+                app.formatSeconds(steering.ageS));
 
-            app.SensorImuAccelLabel.Text = sprintf('MTi ACCEL 0x034  %s', ...
-                app.formatVector(imu.accelerationMps2, 'm/s^2'));
+            app.SensorImuAccelLabel.Text = sprintf( ...
+                'MTi ACCEL 0x034  %s | VALID %s | AGE %s', ...
+                app.formatVector(imu.accelerationMps2, 'm/s^2'), ...
+                app.sensorValidityText(imu.valid), ...
+                app.formatSeconds(imu.ageS));
             app.SensorImuRateLabel.Text = sprintf('MTi RATE 0x032   %s', ...
                 app.formatVector(imu.rateOfTurnRadPerS, 'rad/s'));
             app.SensorImuVelocityLabel.Text = sprintf( ...
                 'MTi VELOCITY 0x076  %s', ...
                 app.formatVector(imu.velocityMps, 'm/s'));
+            app.SensorCalibrationLabel.Text = sprintf( ...
+                'LWS CALIBRATION  %s', ...
+                app.lwsCalibrationStateText(steering.calibrationState));
 
             % A dropout the operator injected is a commanded state, not a
             % fault, so it is called out plainly rather than coloured as an
@@ -1895,6 +1998,35 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
             text = sprintf('X %.2f  Y %.2f  Z %.2f %s', ...
                 values(1), values(2), values(3), unit);
+        end
+
+        function text = lwsCalibrationStateText(app, value)
+            %LWSCALIBRATIONSTATETEXT Decode target sequencer state only.
+            labels = {'IDLE', 'RESET 0x05 PENDING', ...
+                'WAITING 100 ms + RESET CHECK', 'ZERO 0x03 PENDING', ...
+                'WAITING ZERO RESULT CHECK', 'PASSED (TARGET-SIDE)', ...
+                'FAILED RESULT CHECK'};
+            if isnumeric(value) && isscalar(value) && isfinite(value) && ...
+                    value >= 0 && value <= 6 && value == floor(value)
+                text = labels{value + 1};
+            else
+                text = app.Theme.text.noData;
+            end
+        end
+
+        function text = sensorValidityText(app, value)
+            %SENSORVALIDITYTEXT Preserve unknown instead of assuming false.
+            if (islogical(value) || isnumeric(value)) && isscalar(value) && ...
+                    isfinite(double(value)) && ...
+                    (double(value) == 0 || double(value) == 1)
+                if logical(value)
+                    text = 'YES';
+                else
+                    text = 'NO';
+                end
+            else
+                text = app.Theme.text.noData;
+            end
         end
 
         function refreshCan(app)
@@ -1940,8 +2072,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
             diagnostics = snapshot.can.diagnostics;
             if diagnostics.writeKnown
                 % Denominator comes from the flag vector itself, not a
-                % literal 9: the model now has thirteen CAN Write blocks
-                % (nine Ephorus status frames plus four sensor frames) and a
+                % literal 9: the model now has fourteen CAN Write blocks
+                % (nine Ephorus, four sensor, one LWS config) and a
                 % hard-coded 9 under-reported every one of them.
                 writeText = sprintf('%d/%d OK', ...
                     sum(diagnostics.writeSucceeded), ...
@@ -2269,6 +2401,41 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.refreshAll();
         end
 
+        function onSteeringStaleChanged(app, ~)
+            %ONSTEERINGSTALECHANGED Keep transmitting the last LWS payload.
+            app.commitWrite('steering.stale', ...
+                app.SteeringStaleCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringMalformedChanged(app, ~)
+            %ONSTEERINGMALFORMEDCHANGED Transmit 0x2B0 with DLC 4, not 5.
+            app.commitWrite('steering.malformed', ...
+                app.SteeringMalformedCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringInvalidStatusChanged(app, ~)
+            %ONSTEERINGINVALIDSTATUSCHANGED Emit illegal status byte 0x02.
+            app.commitWrite('steering.invalid_status', ...
+                app.SteeringInvalidStatusCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringAngleSentinelChanged(app, ~)
+            %ONSTEERINGANGLESENTINELCHANGED Force documented 0x7FFF.
+            app.commitWrite('steering.angle_sentinel', ...
+                app.SteeringAngleSentinelCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringSpeedSentinelChanged(app, ~)
+            %ONSTEERINGSPEEDSENTINELCHANGED Force documented 0xFF.
+            app.commitWrite('steering.speed_sentinel', ...
+                app.SteeringSpeedSentinelCheckBox.Value, true);
+            app.refreshAll();
+        end
+
         function onImuDropoutChanged(app, ~)
             %ONIMUDROPOUTCHANGED Stop or resume all three MTi frames.
             %   One flag gates 0x034, 0x032 and 0x076 together, matching
@@ -2276,6 +2443,33 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   sensor's dropout must never stop the other's frames.
             app.commitWrite('imu.dropout', ...
                 app.ImuDropoutCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuStaleChanged(app, ~)
+            %ONIMUSTALECHANGED Keep transmitting all three cached MTi frames.
+            app.commitWrite('imu.stale', app.ImuStaleCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuMalformedChanged(app, ~)
+            %ONIMUMALFORMEDCHANGED Transmit each MTi frame with DLC 5, not 6.
+            app.commitWrite('imu.malformed', ...
+                app.ImuMalformedCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onLwsCalibrationPushed(app, ~)
+            %ONLWSCALIBRATIONPUSHED Request the enforced target sequence.
+            %   One token starts reset 0x05, a target-clock 100 ms hold and
+            %   uncalibrated-frame result check, then a separate zero 0x03
+            %   transmit and zero-frame result check. This callback never
+            %   sends command bytes and cannot collapse the pair into one
+            %   backend call.
+            app.LwsCalibrationSequence = inverterhilgui.sequenceCommand( ...
+                app.LwsCalibrationSequence);
+            app.commitWrite('steering.calibration_sequence', ...
+                app.LwsCalibrationSequence, true);
             app.refreshAll();
         end
 

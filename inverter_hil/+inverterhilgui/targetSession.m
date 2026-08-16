@@ -277,7 +277,10 @@ classdef targetSession < handle
                 'xcpPedalsActive', [], 'xcpPedalsActiveKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
-                'txMessageCount', NaN);
+                'txMessageCount', NaN, ...
+                'sensorTxCounts', nan(1, 5), ...
+                'sensorAgesS', nan(1, 5), ...
+                'lwsCalibrationState', NaN);
             % Sensor blocks start from the same honest no-data snapshot the
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
@@ -333,8 +336,8 @@ classdef targetSession < handle
                 % reads as "no overrun" rather than being reported backwards.
                 writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
                     '3B3', '3B5', '400'};
-                % The four sensor frames are transmitted by CAN Write blocks
-                % too, and were previously left out of this poll entirely --
+                % The four sensor frames and LWS config frame are transmitted
+                % by CAN Write blocks too --
                 % so an overrunning sensor write reported as healthy. Their
                 % blocks are named "CAN Write Sensor 0x..." (see
                 % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
@@ -562,14 +565,28 @@ classdef targetSession < handle
                 catch
                     % Leave the blank IMU block: dashes, never zeros.
                 end
-                % The four encoded sensor payloads leave SYNCHRONIZED
-                % SENSOR PAYLOADS on ports 1-4, in INVERTERHIL.SENSORTXIDS
-                % order. These are the exact bytes handed to the CAN Pack /
+                % Four encoded sensor payloads and the most recent LWS
+                % config payload leave SYNCHRONIZED SENSOR PAYLOADS on
+                % ports 1-5, in INVERTERHIL.SENSORTXIDS order. These are the
+                % exact bytes handed to the CAN Pack /
                 % CAN Write pairs, so the TX table shows what is genuinely
                 % on the wire rather than a host-side re-encode.
                 try
                     [~, sensorDlc] = inverterhil.sensorTxIds();
                     sensorDlc = double(sensorDlc);
+                    % Ports 14-18 are the target-selected wire DLCs. These
+                    % differ from the nominal contract only during malformed
+                    % injection; reading them is what makes the GUI report
+                    % the actual short frame rather than the nominal length.
+                    for k = 1:numel(sensorDlc)
+                        runtimeDlc = obj.Backend.getsignal( ...
+                            [hw '/Synchronized Sensor Payloads'], 13 + k);
+                        if isnumeric(runtimeDlc) && isscalar(runtimeDlc) && ...
+                                isfinite(double(runtimeDlc)) && ...
+                                runtimeDlc >= 0 && runtimeDlc <= 8
+                            sensorDlc(k) = double(runtimeDlc);
+                        end
+                    end
                     rows = zeros(numel(sensorDlc), 8, 'uint8');
                     for k = 1:numel(sensorDlc)
                         raw = obj.Backend.getsignal( ...
@@ -581,6 +598,36 @@ classdef targetSession < handle
                     snapshot.sensorPayloads = rows;
                     snapshot.sensorPayloadLengths = sensorDlc;
                     snapshot.sensorPayloadsKnown = true;
+                    % Ports 11 and 12 are target-maintained counters and
+                    % target-clock ages. They are never reconstructed from
+                    % this host's poll cadence. Port 13 is the enforced LWS
+                    % reset/wait/zero/result-check sequencer state.
+                    counts = double(obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 11));
+                    ages = double(obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 12));
+                    if numel(counts) == numel(sensorDlc)
+                        snapshot.sensorTxCounts = reshape(counts, 1, []);
+                    end
+                    if numel(ages) == numel(sensorDlc)
+                        snapshot.sensorAgesS = reshape(ages, 1, []);
+                        if all(isfinite(snapshot.sensorAgesS(1:3)))
+                            snapshot.imu.ageS = max(snapshot.sensorAgesS(1:3));
+                        end
+                        if isfinite(snapshot.sensorAgesS(4))
+                            snapshot.steering.ageS = snapshot.sensorAgesS(4);
+                        end
+                    end
+                    calibrationState = obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 13);
+                    if isnumeric(calibrationState) && ...
+                            isscalar(calibrationState) && ...
+                            isfinite(double(calibrationState))
+                        snapshot.lwsCalibrationState = ...
+                            double(calibrationState);
+                        snapshot.steering.calibrationState = ...
+                            double(calibrationState);
+                    end
                     % Decode the LWS frame we actually transmitted, using
                     % the simulator's own decoder. The layout is
                     % deliberately NOT restated here: a second copy in the
@@ -618,13 +665,29 @@ classdef targetSession < handle
                 catch
                     % Unknown stays NaN; the panel shows a dash.
                 end
-                for name = {'steering', 'imu'}
+                faultFields = { ...
+                    'steering', 'dropout'; ...
+                    'steering', 'stale'; ...
+                    'steering', 'malformed'; ...
+                    'steering', 'invalid_status'; ...
+                    'steering', 'angle_sentinel'; ...
+                    'steering', 'speed_sentinel'; ...
+                    'imu', 'dropout'; ...
+                    'imu', 'stale'; ...
+                    'imu', 'malformed'};
+                for faultIndex = 1:size(faultFields, 1)
+                    sensorName = faultFields{faultIndex, 1};
+                    parameterName = faultFields{faultIndex, 2};
                     try
                         flag = obj.Backend.getparam( ...
-                            sprintf('hil_cmd_%s_dropout', name{1}));
+                            sprintf('hil_cmd_%s_%s', sensorName, parameterName));
                         if (islogical(flag) || isnumeric(flag)) && ...
                                 isscalar(flag) && isfinite(double(flag))
-                            snapshot.(name{1}).dropout = logical(flag);
+                            telemetryName = strrep(parameterName, ...
+                                '_status', 'Status');
+                            telemetryName = strrep(telemetryName, ...
+                                '_sentinel', 'Sentinel');
+                            snapshot.(sensorName).(telemetryName) = logical(flag);
                         end
                     catch
                         % Leave false: an unread flag must not read as an

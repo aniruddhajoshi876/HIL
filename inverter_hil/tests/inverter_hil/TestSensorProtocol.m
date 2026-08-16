@@ -9,7 +9,7 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
 
     methods (Test)
         function SensorTxIdsMatchTheProtocolContracts(testCase)
-            %   INVERTERHIL.SENSORTXIDS states the four transmitted IDs
+            %   INVERTERHIL.SENSORTXIDS states the sensor/config IDs
             %   literally so INVERTERHILGUI.BLANKTELEMETRY does not have to
             %   put IMU/ and STEERING-SENSOR/ on the path. This test is what
             %   stops that duplication from drifting: it runs where those
@@ -17,10 +17,25 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
             imu = imuProtocol();
             lws = lwsProtocol();
             expected = uint32([imu.acceleration.id, imu.rateOfTurn.id, ...
-                imu.velocityXyz.id, lws.standardId]);
-            testCase.verifyEqual(inverterhil.sensorTxIds(), expected, ...
+                imu.velocityXyz.id, lws.standardId, lws.configId]);
+            [actual, dlc] = inverterhil.sensorTxIds();
+            testCase.verifyEqual(actual, expected, ...
                 ['sensorTxIds must match imuProtocol/lwsProtocol in both ' ...
                 'value and transmit order.']);
+            testCase.verifyEqual(dlc, uint8([6 6 6 5 2]));
+        end
+
+
+        function LwsConfigCommandsAreSeparateTwoBytePayloads(testCase)
+            p = lwsProtocol();
+            reset = packLwsConfigPayload(p.ccwResetCalibration);
+            zero = packLwsConfigPayload(p.ccwZeroAngle);
+            testCase.verifyEqual(reset, uint8([hex2dec('05') 0]));
+            testCase.verifyEqual(zero, uint8([hex2dec('03') 0]));
+            testCase.verifyNumElements(reset, double(p.configDlc));
+            testCase.verifyNumElements(zero, double(p.configDlc));
+            testCase.verifyError(@() packLwsConfigPayload(uint8(4)), ...
+                'lws:InvalidConfigCommand');
         end
 
         function LwsGoldenFrame(testCase)

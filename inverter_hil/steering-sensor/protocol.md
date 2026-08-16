@@ -64,8 +64,17 @@ Command code word `CCW` in the low bits: `0x05` resets the calibration
 status of the angle, `0x03` sets `LWS_Angle` to 0 deg. The datasheet's
 zeroing procedure is ordered -- reset with `0x05` first, then calibrate
 with `0x03` -- and a zero adjustment is required after every assembly.
-This repository models the two commands but does not yet enforce the
-ordering or the inter-command timing.
+The model enforces the ordering. It transmits `0x05` once, waits at least
+**100 ms** (ten nominal 0x2B0 update periods), and requires its target-side
+0x2B0 response to show the legal uncalibrated row (`ANGLE=0x7FFF`, status
+`0x05`) before a later CAN Write invocation transmits `0x03` once. After
+`0x03`, it requires a subsequent 0x2B0 update with angle zero and calibrated
+status `0x07`; absence of that update for 100 ms fails the sequence. The
+100 ms hold/timeout is an explicit conservative HIL policy; Bosch
+does not specify a delay in the available datasheet. Stale, dropout, illegal
+status, and sentinel injection can make the result check fail, but can never
+skip it or collapse both commands into one transmit call. These are simulator
+self-checks, not CAN acknowledgement and not physical-calibration evidence.
 
 ## Corrections applied relative to the original `master` implementation
 
