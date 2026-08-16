@@ -20,7 +20,11 @@ if speedRaw < p.minimumSpeedDegPerS / p.speedScaleDegPerSPerCount || ...
 end
 angleCount = int16(angleRaw);
 speedCount = uint8(speedRaw);
-payload = zeros(1, 8, 'uint8');
+% Length matches the CAN Pack block's declared MsgLength (5; see
+% build_inverter_hil_model.m's sensorLengths), not the 8-byte DLC used by
+% the Ephorus status frames. Byte 5 stays zero: angle/speed/status fill
+% bytes 1-4 and nothing populates a fifth field.
+payload = zeros(1, 5, 'uint8');
 raw = typecast(angleCount, 'uint8');
 payload(1:2) = raw; % Bosch LWS angle is little-endian.
 payload(3) = speedCount;
