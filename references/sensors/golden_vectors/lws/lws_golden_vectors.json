@@ -1,0 +1,362 @@
+{
+  "contract": "Bosch Motorsport Steering Wheel Angle Sensor LWS, order number F02U.V02.894-01",
+  "sourceDocument": "Bosch Motorsport datasheet \"Steering Wheel Angle Sensor LWS\", document 54425995, en, 26 Aug 2025",
+  "derivation": "Hand-derived from the Bosch datasheet tables only. NOT produced by running or transcribing the MFE26-VC LWSSteering decoder or the inverter_hil packLws encoder.",
+  "byteOrder": "little-endian (\"Byte order LSB (Intel)\", CAN Parameters table). Explicitly stated by the datasheet, unlike the MTi.",
+  "bitrate": "500 kbaud (stated twice: Electrical Data and CAN Parameters)",
+  "updateRate": "100 Hz / 10 ms (CAN Parameters table)",
+  "layout": "byte 0-1 LWS_ANGLE int16 LE, byte 2 LWS_SPEED uint8, byte 3 bit2 TRIM / bit1 CAL / bit0 OK with bits 7:3 reserved, byte 4 reserved",
+  "scaling": "LWS_ANGLE 0.1 deg/count, LWS_SPEED 4 deg/s per count. See mti680_can_contract.md ASSUMPTION A7: the datasheet gives these as \"Absolute physical resolution\", not as an explicit LSB scaling.",
+  "invalidSentinels": "LWS_ANGLE = 0x7FFF and LWS_SPEED = 0xFF whenever the truth table says the value is not valid",
+  "vectors": {
+    "standardFrames": [
+      {
+        "name": "lws_centred_still",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 0.0,
+        "angleCounts": 0,
+        "speedDegPerS": 0.0,
+        "speedCounts": 0,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "00 00 00 07 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          7,
+          0
+        ],
+        "note": "nominal calibrated zero"
+      },
+      {
+        "name": "lws_one_lsb_angle",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 0.1,
+        "angleCounts": 1,
+        "speedDegPerS": 0.0,
+        "speedCounts": 0,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "01 00 00 07 00",
+        "payloadBytes": [
+          1,
+          0,
+          0,
+          7,
+          0
+        ],
+        "note": "angle LSB = 0.1 deg (datasheet \"Absolute physical resolution\")"
+      },
+      {
+        "name": "lws_plus90_100dps",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 90.0,
+        "angleCounts": 900,
+        "speedDegPerS": 100.0,
+        "speedCounts": 25,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "84 03 19 07 00",
+        "payloadBytes": [
+          132,
+          3,
+          25,
+          7,
+          0
+        ],
+        "note": "900 counts = 0x0384, little-endian on the wire"
+      },
+      {
+        "name": "lws_minus90_100dps",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": -90.0,
+        "angleCounts": -900,
+        "speedDegPerS": 100.0,
+        "speedCounts": 25,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "7C FC 19 07 00",
+        "payloadBytes": [
+          124,
+          252,
+          25,
+          7,
+          0
+        ],
+        "note": "twos-complement -900 = 0xFC7C, little-endian"
+      },
+      {
+        "name": "lws_full_left",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 780.0,
+        "angleCounts": 7800,
+        "speedDegPerS": 0.0,
+        "speedCounts": 0,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "78 1E 00 07 00",
+        "payloadBytes": [
+          120,
+          30,
+          0,
+          7,
+          0
+        ],
+        "note": "datasheet measuring range +780 deg"
+      },
+      {
+        "name": "lws_full_right",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": -780.0,
+        "angleCounts": -7800,
+        "speedDegPerS": 0.0,
+        "speedCounts": 0,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "88 E1 00 07 00",
+        "payloadBytes": [
+          136,
+          225,
+          0,
+          7,
+          0
+        ],
+        "note": "datasheet measuring range -780 deg"
+      },
+      {
+        "name": "lws_speed_508dps",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 0.0,
+        "angleCounts": 0,
+        "speedDegPerS": 508.0,
+        "speedCounts": 127,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "00 00 7F 07 00",
+        "payloadBytes": [
+          0,
+          0,
+          127,
+          7,
+          0
+        ],
+        "note": "speed count 127 = 0x7F, the last value that survives an int8 cast"
+      },
+      {
+        "name": "lws_speed_512dps",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 0.0,
+        "angleCounts": 0,
+        "speedDegPerS": 512.0,
+        "speedCounts": 128,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "00 00 80 07 00",
+        "payloadBytes": [
+          0,
+          0,
+          128,
+          7,
+          0
+        ],
+        "note": "speed count 128 = 0x80. LWS_SPEED is UNSIGNED; an int8 receiver reads -128 here. First value that breaks a signed receiver."
+      },
+      {
+        "name": "lws_speed_max_1016dps",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": 0.0,
+        "angleCounts": 0,
+        "speedDegPerS": 1016.0,
+        "speedCounts": 254,
+        "status": {
+          "TRIM": 1,
+          "CAL": 1,
+          "OK": 1,
+          "byte3": "0x07"
+        },
+        "payloadHex": "00 00 FE 07 00",
+        "payloadBytes": [
+          0,
+          0,
+          254,
+          7,
+          0
+        ],
+        "note": "speed count 254 = 0xFE, top of the documented 0..1016 deg/s range. An int8 receiver reads -2."
+      },
+      {
+        "name": "lws_uncalibrated",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": null,
+        "angleCounts": 32767,
+        "speedDegPerS": 200.0,
+        "speedCounts": 50,
+        "status": {
+          "TRIM": 1,
+          "CAL": 0,
+          "OK": 1,
+          "byte3": "0x05"
+        },
+        "payloadHex": "FF 7F 32 05 00",
+        "payloadBytes": [
+          255,
+          127,
+          50,
+          5,
+          0
+        ],
+        "note": "Truth table row TRIM=1 OK=1 CAL=0: LWS_ANGLE is forced to the 0x7FFF sentinel, LWS_SPEED stays valid."
+      },
+      {
+        "name": "lws_failure_trim_only",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": null,
+        "angleCounts": 32767,
+        "speedDegPerS": null,
+        "speedCounts": 255,
+        "status": {
+          "TRIM": 1,
+          "CAL": 0,
+          "OK": 0,
+          "byte3": "0x04"
+        },
+        "payloadHex": "FF 7F FF 04 00",
+        "payloadBytes": [
+          255,
+          127,
+          255,
+          4,
+          0
+        ],
+        "note": "Truth table row TRIM=1 OK=0 CAL=0: angle 0x7FFF, speed 0xFF, sensor in failure mode."
+      },
+      {
+        "name": "lws_failure_all_clear",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "angleDeg": null,
+        "angleCounts": 32767,
+        "speedDegPerS": null,
+        "speedCounts": 255,
+        "status": {
+          "TRIM": 0,
+          "CAL": 0,
+          "OK": 0,
+          "byte3": "0x00"
+        },
+        "payloadHex": "FF 7F FF 00 00",
+        "payloadBytes": [
+          255,
+          127,
+          255,
+          0,
+          0
+        ],
+        "note": "Truth table row TRIM=0 OK=0 CAL=0: angle 0x7FFF, speed 0xFF, sensor in failure mode."
+      }
+    ],
+    "invalidAndEdge": [
+      {
+        "name": "lws_invalid_short_dlc",
+        "canId": "0x2B0",
+        "dlc": 4,
+        "payloadHex": "00 00 00 07",
+        "expectation": "REJECT. LWS_Standard is a 5-byte message (Bosch F02U.V02.894-01, CAN Message table)."
+      },
+      {
+        "name": "lws_invalid_long_dlc",
+        "canId": "0x2B0",
+        "dlc": 8,
+        "payloadHex": "84 03 19 07 00 00 00 00",
+        "expectation": "REJECT or accept-first-5 - the datasheet fixes the length at 5 and says nothing about padding. The MFE26-VC driver requires length == 5 exactly, so a simulator MUST emit DLC 5."
+      },
+      {
+        "name": "lws_invalid_status_combo_010",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "payloadHex": "84 03 19 02 00",
+        "expectation": "REJECT. TRIM=0 CAL=1 OK=0 is listed under \"Other combinations for TRIM, OK and CAL are not valid\"."
+      },
+      {
+        "name": "lws_invalid_status_combo_011",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "payloadHex": "84 03 19 03 00",
+        "expectation": "REJECT. TRIM=0 CAL=1 OK=1 is not a valid combination."
+      },
+      {
+        "name": "lws_unknown_id",
+        "canId": "0x2B1",
+        "dlc": 5,
+        "payloadHex": "84 03 19 07 00",
+        "expectation": "IGNORE. Only 0x2B0 (LWS_Standard) and 0x7C0 (LWS_Config) are defined."
+      },
+      {
+        "name": "lws_endianness_probe",
+        "canId": "0x2B0",
+        "dlc": 5,
+        "payloadHex": "03 84 19 07 00",
+        "expectation": "A correct little-endian receiver decodes 0x8403 = -31741 counts = -3174.1 deg, far outside the +/-780 deg range. A wrongly big-endian receiver decodes 900 counts = +90.0 deg.",
+        "note": "Byte-swapped twin of lws_plus90_100dps. Use it to prove byte order on real hardware."
+      },
+      {
+        "name": "lws_config_zero_angle",
+        "canId": "0x7C0",
+        "dlc": 2,
+        "payloadHex": "03 00",
+        "expectation": "LWS_Config, CCW = 3h, sets LWS_Angle to 0 deg. VCU-to-sensor direction."
+      },
+      {
+        "name": "lws_config_reset_calibration",
+        "canId": "0x7C0",
+        "dlc": 2,
+        "payloadHex": "05 00",
+        "expectation": "LWS_Config, CCW = 5h, resets the calibration status of the angle. VCU-to-sensor direction."
+      }
+    ]
+  }
+}
