@@ -1,5 +1,9 @@
-function ids = sensorTxIds()
+function [ids, dlc] = sensorTxIds()
 %SENSORTXIDS The synchronized sensor CAN IDs, in model transmit order.
+%   [IDS, DLC] also returns each frame's declared data length. DLC matters
+%   wherever payload bytes are displayed: three of these frames are shorter
+%   than the eight-byte Ephorus status frames, and padding shown as real
+%   bytes would misreport what is on the wire.
 %   Single source of truth for the four sensor frames this HIL transmits, so
 %   the model builder, the GUI TX table and the CAN write diagnostics cannot
 %   drift apart. The ORDER is significant: INVERTERHILGUI.APPLYLIVETXFRAMES
@@ -20,4 +24,5 @@ ids = uint32([hex2dec('034'), ...   % MTi-680G acceleration
               hex2dec('032'), ...   % MTi-680G rate of turn
               hex2dec('076'), ...   % MTi-680G velocity XYZ (assumption A3)
               hex2dec('2B0')]);     % Bosch LWS standard frame
+dlc = uint8([6, 6, 6, 5]);
 end

@@ -42,6 +42,9 @@ snapshot.steering.speedDegPerS = NaN;
 snapshot.steering.valid = [];
 snapshot.steering.ageS = NaN;
 snapshot.steering.dropout = false;
+% Whether the transmitted LWS frame was genuinely read and decoded this
+% poll, as opposed to the fields above still being their no-data defaults.
+snapshot.steering.known = false;
 
 snapshot.imu.accelerationMps2 = nan(1, 3);
 snapshot.imu.rateOfTurnRadPerS = nan(1, 3);

@@ -278,6 +278,17 @@ classdef targetSession < handle
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN);
+            % Sensor blocks start from the same honest no-data snapshot the
+            % dashboard uses, so an unread sensor is dashes here too rather
+            % than a zero that looks like a real measurement.
+            blank = inverterhilgui.blankTelemetry();
+            [~, sensorDlcInit] = inverterhil.sensorTxIds();
+            snapshot.steering = blank.steering;
+            snapshot.imu = blank.imu;
+            snapshot.sensorPayloads = ...
+                zeros(numel(sensorDlcInit), 8, 'uint8');
+            snapshot.sensorPayloadLengths = double(sensorDlcInit);
+            snapshot.sensorPayloadsKnown = false;
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -550,6 +561,75 @@ classdef targetSession < handle
                     end
                 catch
                     % Leave the blank IMU block: dashes, never zeros.
+                end
+                % The four encoded sensor payloads leave SYNCHRONIZED
+                % SENSOR PAYLOADS on ports 1-4, in INVERTERHIL.SENSORTXIDS
+                % order. These are the exact bytes handed to the CAN Pack /
+                % CAN Write pairs, so the TX table shows what is genuinely
+                % on the wire rather than a host-side re-encode.
+                try
+                    [~, sensorDlc] = inverterhil.sensorTxIds();
+                    sensorDlc = double(sensorDlc);
+                    rows = zeros(numel(sensorDlc), 8, 'uint8');
+                    for k = 1:numel(sensorDlc)
+                        raw = obj.Backend.getsignal( ...
+                            [hw '/Synchronized Sensor Payloads'], k);
+                        raw = uint8(raw(:))';
+                        take = min(numel(raw), sensorDlc(k));
+                        rows(k, 1:take) = raw(1:take);
+                    end
+                    snapshot.sensorPayloads = rows;
+                    snapshot.sensorPayloadLengths = sensorDlc;
+                    snapshot.sensorPayloadsKnown = true;
+                    % Decode the LWS frame we actually transmitted, using
+                    % the simulator's own decoder. The layout is
+                    % deliberately NOT restated here: a second copy in the
+                    % GUI is exactly how the byte-3/byte-4 status bug went
+                    % unnoticed once already.
+                    measurement = decodeTransmittedLws( ...
+                        rows(4, 1:sensorDlc(4)));
+                    if ~isempty(measurement)
+                        snapshot.steering.observedAngleDeg = ...
+                            measurement.angleDeg;
+                        snapshot.steering.speedDegPerS = ...
+                            measurement.speedDegPerS;
+                        snapshot.steering.valid = measurement.valid;
+                        snapshot.steering.known = true;
+                    end
+                catch
+                    % Leave the blank steering/sensor block.
+                end
+                % APPLIED is the steering angle the TARGET actually holds,
+                % read back with GETPARAM. It is a different quantity from
+                % REQUESTED (the app's local dial value, which has not
+                % necessarily been emitted by the 30 ms coalescer yet, and
+                % may have been clamped or rejected on write) and from
+                % OBSERVED (the LWS frame value above, quantised to the
+                % encoder's 0.1 deg and absent entirely during a dropout).
+                % SYNCHRONIZEDSENSORPAYLOADS applies no rate limit, so
+                % APPLIED is what drove the shared vehicle state this tick.
+                try
+                    applied = obj.Backend.getparam( ...
+                        'hil_cmd_steering_angle_deg');
+                    if isnumeric(applied) && isscalar(applied) && ...
+                            isfinite(double(applied))
+                        snapshot.steering.appliedAngleDeg = double(applied);
+                    end
+                catch
+                    % Unknown stays NaN; the panel shows a dash.
+                end
+                for name = {'steering', 'imu'}
+                    try
+                        flag = obj.Backend.getparam( ...
+                            sprintf('hil_cmd_%s_dropout', name{1}));
+                        if (islogical(flag) || isnumeric(flag)) && ...
+                                isscalar(flag) && isfinite(double(flag))
+                            snapshot.(name{1}).dropout = logical(flag);
+                        end
+                    catch
+                        % Leave false: an unread flag must not read as an
+                        % injected dropout the operator never commanded.
+                    end
                 end
                 % The decoded values above are this rig's own generated
                 % inverter-side output (STEPMODEL/STEPPLANT), not an
@@ -825,6 +905,39 @@ status = struct( ...
     'dcLink34AboveMinimum', [], ...
     'controlEnable', [], ...
     'controlDisable', []);
+end
+
+function measurement = decodeTransmittedLws(payload)
+%DECODETRANSMITTEDLWS Decode a transmitted LWS payload, or return empty.
+%   Calls the simulator's own DECODELWSFRAME rather than restating the
+%   Bosch layout here. That folder is a sibling of INVERTER_HIL and is put
+%   on the path by INVERTER_HIL_SETUP -- but the app does not call that
+%   function, so the decoder may genuinely be unavailable at runtime. It is
+%   located relative to this file and added once rather than assumed,
+%   because falling back to a local copy of the byte layout is precisely
+%   how the status byte ended up written to the wrong byte once already.
+%
+%   Returns [] when the decoder cannot be reached or the frame is
+%   unreadable, so every caller renders dashes instead of a guess.
+
+measurement = [];
+if isempty(which('decodeLwsFrame'))
+    here = fileparts(fileparts(mfilename('fullpath')));
+    candidate = fullfile(here, 'steering-sensor');
+    if isfolder(candidate)
+        addpath(candidate);
+    end
+end
+if isempty(which('decodeLwsFrame')) || isempty(which('lwsProtocol'))
+    return;
+end
+try
+    contract = lwsProtocol();
+    measurement = decodeLwsFrame(struct( ...
+        'id', contract.standardId, 'payload', uint8(payload)), contract);
+catch
+    measurement = [];
+end
 end
 
 function can = blankLiveCan()

@@ -1144,6 +1144,17 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 % panel.
                 app.Telemetry.pedals.appliedV = live.analogInV;
                 app.Telemetry.analogInV = live.analogInV;
+                % Synchronized sensor state. REQUESTEDANGLEDEG is owned by
+                % the app (the dial), so it is deliberately not overwritten
+                % from the target -- everything else here is measured.
+                if isfield(live, 'imu')
+                    app.Telemetry.imu = live.imu;
+                end
+                if isfield(live, 'steering')
+                    requested = app.Telemetry.steering.requestedAngleDeg;
+                    app.Telemetry.steering = live.steering;
+                    app.Telemetry.steering.requestedAngleDeg = requested;
+                end
                 if live.can.known
                     d = live.can.diagnostics;
                     app.Telemetry.can.diagnostics.busLoadPercent = ...
@@ -1285,11 +1296,21 @@ classdef inverter_hil_app < matlab.apps.AppBase
             ack = inverterhilgui.canAckStatus( ...
                 app.Telemetry.can.diagnostics, app.TxTransmitting);
 
+            % Rows past the Ephorus block are the sensor frames, whose
+            % payloads arrive separately and are SHORTER than eight bytes.
+            % They are appended here rather than padded into LIVE.TXPAYLOADS
+            % so the table never shows padding as though it were on the wire.
+            lengths = repmat(8, 1, size(payloads, 1));
+            if isfield(live, 'sensorPayloadsKnown') && live.sensorPayloadsKnown
+                payloads = [payloads; live.sensorPayloads];
+                lengths = [lengths, live.sensorPayloadLengths(:)'];
+            end
+
             for index = 1:numel(observations)
                 if index > size(payloads, 1)
                     break;
                 end
-                bytes = payloads(index, :);
+                bytes = payloads(index, 1:lengths(index));
                 value = sprintf('%02X ', bytes);
                 previous = observations(index).value;
                 observations(index).value = strtrim(value);
@@ -1299,7 +1320,16 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     observations(index).lastChangeS = now;
                 end
                 observations(index).timestampsS = now;
-                observations(index).count = live.txMessageCount;
+                % TXMESSAGECOUNT is EPHORUSSYSTEMSTATUSSTEP's counter and
+                % counts the status frames ONLY. Attributing it to a sensor
+                % row would report a count that frame never had, so sensor
+                % rows keep NaN and render as dashes until a per-sensor
+                % counter genuinely exists on the target.
+                if index <= 9
+                    observations(index).count = live.txMessageCount;
+                else
+                    observations(index).count = NaN;
+                end
             end
             app.Telemetry.can.tx = observations;
         end
