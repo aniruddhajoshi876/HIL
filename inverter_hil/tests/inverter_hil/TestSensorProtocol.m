@@ -13,8 +13,14 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
                 struct('trim', true, 'cal', true, 'ok', true));
             testCase.verifyEqual(frame.id, uint32(hex2dec('2B0')));
             testCase.verifyEqual(frame.dlc, uint8(5));
+            % Byte 3 is the status byte and byte 4 is reserved, per the
+            % Bosch CAN Message table and the independently derived vector
+            % set in references/sensors/golden_vectors/lws/. This expectation
+            % previously read [.. 5 0 7], which put the status into the
+            % RESERVED byte; it round-tripped only because decodeLwsFrame
+            % read it back from the same wrong offset.
             testCase.verifyEqual(frame.payload, uint8([hex2dec('85') ...
-                hex2dec('FF') 5 0 7]));
+                hex2dec('FF') 5 7 0]));
             measurement = decodeLwsFrame(frame);
             testCase.verifyEqual(measurement.angleDeg, -12.3, 'AbsTol', 0.05);
             testCase.verifyEqual(measurement.speedDegPerS, 20, 'AbsTol', 2);
@@ -29,6 +35,99 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
             testCase.verifyTrue(measurement.trim);
             testCase.verifyFalse(measurement.cal);
             testCase.verifyFalse(measurement.ok);
+        end
+
+        function LwsMatchesDerivedGoldenVectors(testCase)
+            %LWSMATCHESDERIVEDGOLDENVECTORS Check the encoder against the
+            %   vectors derived from the Bosch datasheet alone (see
+            %   references/sensors/golden_vectors/lws/derive_lws_vectors.py).
+            %   These are the oracle; the encoder is what changes if they
+            %   disagree.
+            cases = { ...
+                'lws_centred_still',      0,     0,    [1 1 1], ...
+                    uint8([0 0 0 7 0]); ...
+                'lws_one_lsb_angle',      0.1,   0,    [1 1 1], ...
+                    uint8([1 0 0 7 0]); ...
+                'lws_plus90_100dps',      90,    100,  [1 1 1], ...
+                    uint8([hex2dec('84') 3 25 7 0]); ...
+                'lws_minus90_100dps',    -90,    100,  [1 1 1], ...
+                    uint8([hex2dec('7C') hex2dec('FC') 25 7 0]); ...
+                'lws_full_left',          780,   0,    [1 1 1], ...
+                    uint8([hex2dec('78') hex2dec('1E') 0 7 0]); ...
+                'lws_full_right',        -780,   0,    [1 1 1], ...
+                    uint8([hex2dec('88') hex2dec('E1') 0 7 0]); ...
+                'lws_speed_max_1016dps',  0,     1016, [1 1 1], ...
+                    uint8([0 0 hex2dec('FE') 7 0])};
+            for index = 1:size(cases, 1)
+                bits = cases{index, 4};
+                status = struct('trim', logical(bits(1)), ...
+                    'ok', logical(bits(2)), 'cal', logical(bits(3)));
+                frame = packLwsFrame(cases{index, 2}, cases{index, 3}, status);
+                testCase.verifyEqual(frame.payload, cases{index, 5}, ...
+                    sprintf('Golden vector %s disagrees.', cases{index, 1}));
+            end
+        end
+
+        function LwsTruthTableSentinelsAreEncoded(testCase)
+            %LWSTRUTHTABLESENTINELSAREENCODED The datasheet truth table says
+            %   an invalid value is transmitted as 0x7FFF / 0xFF, not as a
+            %   live reading with the status bits cleared.
+
+            % TRIM=1 OK=1 CAL=0: angle sentinel, speed still valid.
+            frame = packLwsFrame(123.4, 200, ...
+                struct('trim', true, 'ok', true, 'cal', false));
+            testCase.verifyEqual(frame.payload(1:2), ...
+                uint8([hex2dec('FF') hex2dec('7F')]));
+            testCase.verifyEqual(frame.payload(3), uint8(50));
+            testCase.verifyEqual(frame.payload(4), uint8(5));
+            measurement = decodeLwsFrame(frame);
+            testCase.verifyTrue(measurement.angleIsSentinel);
+            testCase.verifyFalse(measurement.speedIsSentinel);
+            testCase.verifyEqual(measurement.speedDegPerS, 200, 'AbsTol', 2);
+            testCase.verifyFalse(measurement.valid);
+
+            % TRIM=1 OK=0 CAL=0 and TRIM=0 OK=0 CAL=0: both sentinels.
+            for trim = [true false]
+                frame = packLwsFrame(123.4, 200, ...
+                    struct('trim', trim, 'ok', false, 'cal', false));
+                testCase.verifyEqual(frame.payload(1:3), ...
+                    uint8([hex2dec('FF') hex2dec('7F') hex2dec('FF')]));
+                measurement = decodeLwsFrame(frame);
+                testCase.verifyTrue(measurement.angleIsSentinel);
+                testCase.verifyTrue(measurement.speedIsSentinel);
+                testCase.verifyFalse(measurement.valid);
+            end
+        end
+
+        function LwsInvalidStatusCombinationIsRejected(testCase)
+            %LWSINVALIDSTATUSCOMBINATIONISREJECTED "Other combinations for
+            %   TRIM, OK and CAL are not valid" -- the encoder must refuse
+            %   them rather than invent a frame the sensor cannot send.
+            testCase.verifyError(@() packLwsFrame(0, 0, ...
+                struct('trim', false, 'ok', false, 'cal', true)), ...
+                'lws:InvalidStatusCombination');
+            testCase.verifyError(@() packLwsFrame(0, 0, ...
+                struct('trim', false, 'ok', true, 'cal', true)), ...
+                'lws:InvalidStatusCombination');
+
+            % A decoder must flag one that arrives from the wire anyway.
+            frame = struct('id', uint32(hex2dec('2B0')), ...
+                'payload', uint8([hex2dec('84') 3 25 2 0]));
+            measurement = decodeLwsFrame(frame);
+            testCase.verifyFalse(measurement.statusCombinationValid);
+            testCase.verifyFalse(measurement.valid);
+        end
+
+        function LwsReservedByteIsNotTheStatusByte(testCase)
+            %LWSRESERVEDBYTEISNOTTHESTATUSBYTE Mutation guard: moving the
+            %   status into the reserved byte must not still decode as valid.
+            frame = packLwsFrame(0, 0, ...
+                struct('trim', true, 'ok', true, 'cal', true));
+            testCase.verifyEqual(frame.payload(5), uint8(0));
+            frame.payload(4) = uint8(0);
+            frame.payload(5) = uint8(7);
+            measurement = decodeLwsFrame(frame);
+            testCase.verifyFalse(measurement.valid);
         end
 
         function LwsRangeIsRejected(testCase)

@@ -1,7 +1,9 @@
 # MTi-680G HIL protocol
 
 The independent contract in `imuProtocol.m` is based on Xsens **MT CAN
-Protocol Documentation**, document MT1604P revision 2020.A.
+Protocol Documentation**, document MT1604P, Revision A, 16 Sept 2019
+(`references/sensors/datasheets/MTCANProtocolDocumentation.pdf`). No
+`2020.A` revision of this document exists; that earlier citation was wrong.
 
 Implemented message contracts:
 

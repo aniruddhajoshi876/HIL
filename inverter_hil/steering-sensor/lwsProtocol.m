@@ -16,4 +16,15 @@ p.ccwZeroAngle = uint8(hex2dec('03'));
 p.status.trimMask = uint8(4);
 p.status.calMask = uint8(2);
 p.status.okMask = uint8(1);
+% Byte offsets, 1-based for MATLAB indexing. The datasheet numbers these
+% bytes 0-4; the status byte is datasheet byte 3, NOT byte 4.
+p.byteIndex.angleLow = 1;
+p.byteIndex.angleHigh = 2;
+p.byteIndex.speed = 3;
+p.byteIndex.status = 4;
+p.byteIndex.reserved = 5;
+% Truth-table sentinels: whenever the status combination says a value is
+% not valid, the sensor transmits these instead of a measurement.
+p.angleFailureSentinel = uint16(hex2dec('7FFF'));
+p.speedFailureSentinel = uint8(hex2dec('FF'));
 end

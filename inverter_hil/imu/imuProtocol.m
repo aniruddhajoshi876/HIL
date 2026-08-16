@@ -1,9 +1,12 @@
 function p = imuProtocol()
 %PROTOCOL Independent MTi-680G CAN output contract.
 %   Contract source: Xsens MT CAN Protocol Documentation, MT1604P,
-%   revision 2020.A. This file is deliberately independent of VCU source.
+%   Revision A, 16 Sept 2019 (references/sensors/datasheets/
+%   MTCANProtocolDocumentation.pdf). There is no 2020.A revision of this
+%   document; the earlier citation was wrong. This file is deliberately
+%   independent of VCU source.
 
-p.source = 'Xsens MT CAN Protocol Documentation MT1604P 2020.A';
+p.source = 'Xsens MT CAN Protocol Documentation MT1604P Rev A, 16 Sept 2019';
 p.acceleration = message(uint32(hex2dec('034')), uint8(6), 2^-8, 'm/s^2');
 p.rateOfTurn = message(uint32(hex2dec('032')), uint8(6), 2^-9, 'rad/s');
 p.eulerAngles = message(uint32(hex2dec('022')), uint8(6), 2^-7, 'deg');
