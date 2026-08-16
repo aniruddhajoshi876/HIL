@@ -322,11 +322,24 @@ classdef targetSession < handle
                 % reads as "no overrun" rather than being reported backwards.
                 writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
                     '3B3', '3B5', '400'};
-                writeNoOverrun = false(1, numel(writeIds));
+                % The four sensor frames are transmitted by CAN Write blocks
+                % too, and were previously left out of this poll entirely --
+                % so an overrunning sensor write reported as healthy. Their
+                % blocks are named "CAN Write Sensor 0x..." (see
+                % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
+                % than one combined ID list.
+                sensorIds = inverterhil.sensorTxIds();
+                writeNoOverrun = false(1, numel(writeIds) + numel(sensorIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
                         writeIds{k});
                     writeNoOverrun(k) = ...
+                        ~logical(obj.Backend.getsignal(writeBlock, 1));
+                end
+                for k = 1:numel(sensorIds)
+                    writeBlock = sprintf('%s/CAN Write Sensor 0x%03X', hw, ...
+                        double(sensorIds(k)));
+                    writeNoOverrun(numel(writeIds) + k) = ...
                         ~logical(obj.Backend.getsignal(writeBlock, 1));
                 end
 
@@ -515,6 +528,29 @@ classdef targetSession < handle
                 % counters read below.
                 snapshot.txPayloads = payloads;
                 snapshot.txPayloadsKnown = true;
+                % Port 5 of the same subsystem is the shared vehicle state
+                % INVERTERHIL.STEPVEHICLESTATE advances -- the exact vector
+                % the MTi encoders sample, laid out
+                % [ax ay az | wx wy wz | vx vy vz]. Reading it here is what
+                % makes the IMU panel show measured values instead of
+                % permanent dashes. Guarded separately so a failure leaves
+                % the inverter and CAN data above intact.
+                try
+                    vehicleState = obj.Backend.getsignal( ...
+                        'inverter_hil/Ephorus System Status', 5);
+                    vehicleState = double(vehicleState(:))';
+                    if numel(vehicleState) == 9 && all(isfinite(vehicleState))
+                        snapshot.imu.accelerationMps2 = vehicleState(1:3);
+                        snapshot.imu.rateOfTurnRadPerS = vehicleState(4:6);
+                        snapshot.imu.velocityMps = vehicleState(7:9);
+                        % VALID states that this snapshot carries a genuine
+                        % reading, not that the frame was acknowledged on the
+                        % bus -- acknowledgement is CANACKSTATUS's job.
+                        snapshot.imu.valid = true;
+                    end
+                catch
+                    % Leave the blank IMU block: dashes, never zeros.
+                end
                 % The decoded values above are this rig's own generated
                 % inverter-side output (STEPMODEL/STEPPLANT), not an
                 % independently confirmed measurement -- there is no
@@ -801,7 +837,7 @@ can = struct('known', false, 'diagnostics', struct( ...
     'transmitOverrun', [], ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
-    'writeSucceeded', false(1, 9), ...
+    'writeSucceeded', false(1, 9 + numel(inverterhil.sensorTxIds())), ...
     'writeKnown', false));
 end
 

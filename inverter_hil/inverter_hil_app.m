@@ -78,6 +78,12 @@ classdef inverter_hil_app < matlab.apps.AppBase
         CanTxTable                matlab.ui.control.Table
         CanDiagnosticsLabel       matlab.ui.control.Label
         InstrumentStatusLabel     matlab.ui.control.Label
+        SensorSteeringLabel       matlab.ui.control.Label
+        SensorImuAccelLabel       matlab.ui.control.Label
+        SensorImuRateLabel        matlab.ui.control.Label
+        SensorImuVelocityLabel    matlab.ui.control.Label
+        SteeringDropoutCheckBox   matlab.ui.control.CheckBox
+        ImuDropoutCheckBox        matlab.ui.control.CheckBox
         FaultMaskFields
         LoadTorqueFields
         ConnectedCheckBoxes
@@ -726,7 +732,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function createIoCanTab(app)
             %CREATEIOCANTAB Split CAN tables and the diagnostics strip.
             theme = app.Theme;
-            outer = app.makeGrid(app.IoCanTab, {18, '1x', 30}, {'1x', '1x'});
+            outer = app.makeGrid(app.IoCanTab, {18, '1x', 104, 30}, ...
+                {'1x', '1x'});
 
             % Same honesty standard as the torque banner: state plainly that
             % no high-rate feed is registered, so the empty tables below are
@@ -748,18 +755,53 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             txPanel = app.makePanel(outer, ...
                 ['HIL TX / VCU RX  0x383 0x385 0x393 0x395 0x3A3 0x3A5 ' ...
-                '0x3B3 0x3B5 0x400']);
+                '0x3B3 0x3B5 0x400  |  SENSORS 0x034 0x032 0x076 0x2B0']);
             txPanel.Layout.Row = 2;
             txPanel.Layout.Column = 2;
             txGrid = app.makeGrid(txPanel, {'1x'}, {'1x'});
             app.CanTxTable = app.makeCanTable(txGrid);
 
+            app.createSensorHealthPanel(outer);
+
             app.CanDiagnosticsLabel = app.makeLabel(outer, ...
                 app.canDiagnosticsText(inverterhilgui.blankTelemetry()), ...
                 theme.font.small, theme.color.secondaryText);
-            app.CanDiagnosticsLabel.Layout.Row = 3;
+            app.CanDiagnosticsLabel.Layout.Row = 4;
             app.CanDiagnosticsLabel.Layout.Column = [1 2];
             app.CanDiagnosticsLabel.BackgroundColor = theme.color.panel;
+        end
+
+        function createSensorHealthPanel(app, outer)
+            %CREATESENSORHEALTHPANEL Synchronized MTi/LWS readout and dropout.
+            %
+            %   The four readouts are deliberately separate quantities, not
+            %   one summary line: REQUESTED is the dial, APPLIED is what the
+            %   virtual car actually steered to, SPEED is derived, and LWS is
+            %   what the encoded 0x2B0 frame carries. Every one renders as
+            %   dashes until genuinely read -- see INVERTERHILGUI.
+            %   BLANKTELEMETRY's no-invented-values rule.
+            theme = app.Theme;
+            panel = app.makePanel(outer, ...
+                'SENSOR SIMULATION - MTi-680G / BOSCH LWS');
+            panel.Layout.Row = 3;
+            panel.Layout.Column = [1 2];
+            grid = app.makeGrid(panel, {20, 20, 20}, {'1x', 220});
+
+            app.SensorSteeringLabel = app.makeLabel(grid, ...
+                'STEERING --', theme.font.small, theme.color.primaryText);
+            app.SteeringDropoutCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS 0x2B0 dropout', @onSteeringDropoutChanged);
+
+            app.SensorImuAccelLabel = app.makeLabel(grid, ...
+                'MTi ACCEL --', theme.font.small, theme.color.electrical);
+            app.ImuDropoutCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi 0x034/0x032/0x076 dropout', ...
+                @onImuDropoutChanged);
+
+            app.SensorImuRateLabel = app.makeLabel(grid, ...
+                'MTi RATE --', theme.font.small, theme.color.electrical);
+            app.SensorImuVelocityLabel = app.makeLabel(grid, ...
+                'MTi VELOCITY --', theme.font.small, theme.color.electrical);
         end
 
         function createFaultsTab(app)
@@ -1023,6 +1065,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.refreshDriverInputs();
             app.refreshElectrical();
             app.refreshInverters();
+            app.refreshSensors();
             app.refreshCan();
             app.refreshLog();
         end
@@ -1498,6 +1541,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...
                 app.Policy.sensorStimulus);
+            % Dropout injection is sensor stimulus, not a CAN fault: it stops
+            % a simulated sensor's own frames rather than corrupting the bus,
+            % so it follows the dial's enable rather than CANFAULTS.
+            app.applyEnable([app.SteeringDropoutCheckBox ...
+                app.ImuDropoutCheckBox], app.Policy.sensorStimulus);
             app.applyEnable([app.CoolingSwitch ...
                 app.ShutdownFeedbackSwitch], app.Policy.digitalStimuli);
             app.applyEnable([app.PrechargeButton app.MainMomentaryButton], ...
@@ -1767,6 +1815,58 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
         end
 
+        function refreshSensors(app)
+            %REFRESHSENSORS Repaint the synchronized MTi/LWS health readout.
+            theme = app.Theme;
+            blank = inverterhilgui.blankTelemetry();
+            if isfield(app.Telemetry, 'steering')
+                steering = app.Telemetry.steering;
+            else
+                steering = blank.steering;
+            end
+            if isfield(app.Telemetry, 'imu')
+                imu = app.Telemetry.imu;
+            else
+                imu = blank.imu;
+            end
+
+            app.SensorSteeringLabel.Text = sprintf( ...
+                'STEERING  REQUESTED %s | APPLIED %s | SPEED %s | LWS %s', ...
+                app.formatSteeringValue(app.RequestedSteeringDeg, 'deg'), ...
+                app.formatSteeringValue(steering.appliedAngleDeg, 'deg'), ...
+                app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
+                app.formatSteeringValue(steering.observedAngleDeg, 'deg'));
+
+            app.SensorImuAccelLabel.Text = sprintf('MTi ACCEL 0x034  %s', ...
+                app.formatVector(imu.accelerationMps2, 'm/s^2'));
+            app.SensorImuRateLabel.Text = sprintf('MTi RATE 0x032   %s', ...
+                app.formatVector(imu.rateOfTurnRadPerS, 'rad/s'));
+            app.SensorImuVelocityLabel.Text = sprintf( ...
+                'MTi VELOCITY 0x076  %s', ...
+                app.formatVector(imu.velocityMps, 'm/s'));
+
+            % A dropout the operator injected is a commanded state, not a
+            % fault, so it is called out plainly rather than coloured as an
+            % error the rig discovered by itself.
+            if isfield(steering, 'dropout') && islogical(steering.dropout) ...
+                    && steering.dropout
+                app.SensorSteeringLabel.FontColor = theme.color.fault;
+            else
+                app.SensorSteeringLabel.FontColor = theme.color.primaryText;
+            end
+        end
+
+        function text = formatVector(app, values, unit)
+            %FORMATVECTOR One XYZ sensor readout, dashes when unknown.
+            if ~isnumeric(values) || numel(values) ~= 3 || ...
+                    ~all(isfinite(values))
+                text = app.Theme.text.noData;
+                return;
+            end
+            text = sprintf('X %.2f  Y %.2f  Z %.2f %s', ...
+                values(1), values(2), values(3), unit);
+        end
+
         function refreshCan(app)
             %REFRESHCAN Repaint both CAN tables and the diagnostics strip.
             now = app.hostTimeS();
@@ -1809,7 +1909,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %CANDIAGNOSTICSTEXT One-line CAN diagnostics strip.
             diagnostics = snapshot.can.diagnostics;
             if diagnostics.writeKnown
-                writeText = sprintf('%d/9 OK', sum(diagnostics.writeSucceeded));
+                % Denominator comes from the flag vector itself, not a
+                % literal 9: the model now has thirteen CAN Write blocks
+                % (nine Ephorus status frames plus four sensor frames) and a
+                % hard-coded 9 under-reported every one of them.
+                writeText = sprintf('%d/%d OK', ...
+                    sum(diagnostics.writeSucceeded), ...
+                    numel(diagnostics.writeSucceeded));
             else
                 writeText = '--';
             end
@@ -2120,6 +2226,27 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.commitWrite(name, emission.value / 100, true);
             end
             app.refreshDriverInputs();
+        end
+
+        function onSteeringDropoutChanged(app, ~)
+            %ONSTEERINGDROPOUTCHANGED Stop or resume the LWS 0x2B0 frame.
+            %   Writes the dictionary parameter the model's Tx Control gate
+            %   already reads: with the flag set, that CAN Write genuinely
+            %   does not transmit, so this is a real bus dropout rather than
+            %   a display effect.
+            app.commitWrite('steering.dropout', ...
+                app.SteeringDropoutCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuDropoutChanged(app, ~)
+            %ONIMUDROPOUTCHANGED Stop or resume all three MTi frames.
+            %   One flag gates 0x034, 0x032 and 0x076 together, matching
+            %   SYNCHRONIZEDSENSORPAYLOADS. The LWS is unaffected: one
+            %   sensor's dropout must never stop the other's frames.
+            app.commitWrite('imu.dropout', ...
+                app.ImuDropoutCheckBox.Value, true);
+            app.refreshAll();
         end
 
         function onPlausibilityChanged(app, ~)

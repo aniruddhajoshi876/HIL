@@ -45,6 +45,10 @@ snapshot.steering.dropout = false;
 
 snapshot.imu.accelerationMps2 = nan(1, 3);
 snapshot.imu.rateOfTurnRadPerS = nan(1, 3);
+% VelocityXYZ (MTi 0x076). Present because the model genuinely transmits it
+% and the MFE26-VC firmware decodes it -- leaving it out of the snapshot made
+% a frame that is actually on the wire invisible to the operator.
+snapshot.imu.velocityMps = nan(1, 3);
 snapshot.imu.valid = [];
 snapshot.imu.ageS = NaN;
 snapshot.imu.dropout = false;
@@ -81,9 +85,21 @@ snapshot.can.rx = blankCanObservations( ...
 statusIds = inverterhil.protocol().statusCycleIds;
 statusNames = {'3X3 INV1', '3X5 INV1', '3X3 INV2', '3X5 INV2', ...
     '3X3 INV3', '3X5 INV3', '3X3 INV4', '3X5 INV4', 'GENERAL'};
-snapshot.can.tx = blankCanObservations(statusIds, statusNames);
+% The four synchronized sensor frames are transmitted by the same CAN
+% interface and must appear in the TX table too, in the SAME order the model
+% writes them (BUILD_INVERTER_HIL_MODEL's SENSORIDS), because
+% APPLYLIVETXFRAMES indexes payload rows positionally against this list.
+sensorIds = inverterhil.sensorTxIds();
+sensorNames = {'MTI ACCEL', 'MTI RATE', 'MTI VELOCITY', 'LWS STEERING'};
+snapshot.can.tx = blankCanObservations( ...
+    [uint32(statusIds(:)); uint32(sensorIds(:))]', ...
+    [statusNames, sensorNames]);
 
-snapshot.can.diagnostics.writeSucceeded = false(1, 9);
+% One flag per CAN Write block in the model: the nine Ephorus status frames
+% plus the four sensor frames. Sized from the shared ID lists rather than a
+% literal so it cannot drift out of step with the model again.
+snapshot.can.diagnostics.writeSucceeded = ...
+    false(1, numel(statusIds) + numel(sensorIds));
 snapshot.can.diagnostics.writeKnown = false;
 snapshot.can.diagnostics.receiveOverrun = [];
 snapshot.can.diagnostics.errorWarning = [];

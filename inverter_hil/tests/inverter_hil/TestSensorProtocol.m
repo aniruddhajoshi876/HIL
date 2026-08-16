@@ -8,6 +8,21 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
     end
 
     methods (Test)
+        function SensorTxIdsMatchTheProtocolContracts(testCase)
+            %   INVERTERHIL.SENSORTXIDS states the four transmitted IDs
+            %   literally so INVERTERHILGUI.BLANKTELEMETRY does not have to
+            %   put IMU/ and STEERING-SENSOR/ on the path. This test is what
+            %   stops that duplication from drifting: it runs where those
+            %   folders ARE on the path and compares the two.
+            imu = imuProtocol();
+            lws = lwsProtocol();
+            expected = uint32([imu.acceleration.id, imu.rateOfTurn.id, ...
+                imu.velocityXyz.id, lws.standardId]);
+            testCase.verifyEqual(inverterhil.sensorTxIds(), expected, ...
+                ['sensorTxIds must match imuProtocol/lwsProtocol in both ' ...
+                'value and transmit order.']);
+        end
+
         function LwsGoldenFrame(testCase)
             frame = packLwsFrame(-12.3, 20, ...
                 struct('trim', true, 'cal', true, 'ok', true));
