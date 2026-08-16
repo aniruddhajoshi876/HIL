@@ -114,15 +114,15 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN and LIN Setup '; ...
                 'speedgoatlib_IO614/CAN Read '; ...
                 'speedgoatlib_IO614/CAN Status '};
-            % Nine Ephorus status frames plus the three synchronized sensor
-            % frames (MTi-680G 0x034 acceleration and 0x032 rate-of-turn,
-            % Bosch LWS 0x2B0).
+            % Nine Ephorus status frames plus the four synchronized sensor
+            % frames (MTi-680G 0x034 acceleration, 0x032 rate-of-turn and
+            % 0x076 velocity, Bosch LWS 0x2B0).
             expected = [expected; repmat( ...
-                {'speedgoatlib_IO614/CAN Write '}, 12, 1)];
+                {'speedgoatlib_IO614/CAN Write '}, 13, 1)];
             % Added from canlib, but the link resolves to the underlying
             % shared CAN message library that canlib forwards to.
             expected = [expected; repmat( ...
-                {'canmsglib/CAN Pack'}, 12, 1)];
+                {'canmsglib/CAN Pack'}, 13, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -135,7 +135,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 32);
+            testCase.verifyNumElements(linked, 34);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...

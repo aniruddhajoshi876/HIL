@@ -3,14 +3,23 @@ function payload = packMti680Payload(kind, values)
 protocol = imuProtocol();
 switch lower(char(kind))
     case 'acceleration'
-        scale = protocol.acceleration.scale;
+        item = protocol.acceleration;
     case 'rateofturn'
-        scale = protocol.rateOfTurn.scale;
+        item = protocol.rateOfTurn;
+    case 'velocityxyz'
+        item = protocol.velocityXyz;
     otherwise
         error('mti680:UnsupportedPayload', 'Unsupported MTi payload kind.');
 end
+scale = item.scale;
+% Documented physical range first: it is narrower than the int16 limit and
+% the MFE26 VCU discards any frame with an axis outside it.
+if numel(values) ~= 3 || any(abs(double(values(:))) > item.rangeMax)
+    error('mti680:PayloadRange', ...
+        'MTi payload requires three values inside the documented range.');
+end
 rawCounts = round(double(values(:)) ./ scale);
-if numel(rawCounts) ~= 3 || any(rawCounts < double(intmin('int16'))) || ...
+if any(rawCounts < double(intmin('int16'))) || ...
         any(rawCounts > double(intmax('int16')))
     error('mti680:PayloadRange', 'MTi payload requires three int16 values.');
 end

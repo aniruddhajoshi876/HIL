@@ -27,4 +27,17 @@ p.byteIndex.reserved = 5;
 % not valid, the sensor transmits these instead of a measurement.
 p.angleFailureSentinel = uint16(hex2dec('7FFF'));
 p.speedFailureSentinel = uint8(hex2dec('FF'));
+% The four legal status bytes. Datasheet column order is TRIM, OK, CAL.
+p.status.calibratedByte   = uint8(7);  % TRIM=1 OK=1 CAL=1, angle+speed valid
+p.status.uncalibratedByte = uint8(5);  % TRIM=1 OK=1 CAL=0, angle = sentinel
+p.status.failureByte      = uint8(4);  % TRIM=1 OK=0 CAL=0, both = sentinel
+p.status.failureAltByte   = uint8(0);  % TRIM=0 OK=0 CAL=0, both = sentinel
+% LWS_SPEED is UNSIGNED: 0..254 counts, 0xFF = invalid. The MFE26-VC driver
+% casts it to int8_t, which corrupts every value above 508 deg/s -- finding
+% D-L1 in references/sensors/imu_contract_delta.md. That is a firmware bug,
+% not a simulator one; this encoder emits the correct unsigned byte.
+p.speedSigned = false;
+p.speedMaxRaw = uint8(254);
+p.byteOrder = 'little';   % stated explicitly: "Byte order LSB (Intel)"
+p.bitrateBitsPerSecond = 500000;
 end

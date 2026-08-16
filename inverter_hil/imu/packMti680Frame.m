@@ -14,9 +14,26 @@ if ~isfield(contract, kind)
     error('mti680:UnknownKind', 'Unsupported MTi message kind: %s.', kind);
 end
 item = contract.(kind);
+% Only the three-axis vector messages are packed here. Without this gate the
+% scalar entries (groupCounter, sampleTime, statusWord, errorCode) would pass
+% the isfield check above and then fail the "three finite values" test with a
+% confusing message.
+if ~isstruct(item) || ~isfield(item, 'fieldCount') || item.fieldCount ~= 3
+    error('mti680:UnknownKind', ...
+        'MTi message %s is not a three-axis vector message.', kind);
+end
 values = double(values(:).');
 if numel(values) ~= 3 || any(~isfinite(values))
     error('mti680:InvalidValues', 'MTi vector must contain three finite values.');
+end
+% The DOCUMENTED physical range is narrower than the int16 encoding limit,
+% and the MFE26 VCU rejects the whole frame if any axis exceeds it. Checking
+% only the int16 limit would let the simulator emit frames the VCU silently
+% drops, which looks like a dead sensor rather than an out-of-range stimulus.
+if isfield(item, 'rangeMax') && any(abs(values) > item.rangeMax)
+    error('mti680:DocRange', ...
+        ['MTi %s value exceeds the documented +/-%g %s range; the VCU ' ...
+        'discards the entire frame.'], kind, item.rangeMax, item.unit);
 end
 counts = round(values ./ item.scale);
 if any(counts < -32768 | counts > 32767)

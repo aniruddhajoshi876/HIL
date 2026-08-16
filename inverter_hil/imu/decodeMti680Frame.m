@@ -6,7 +6,7 @@ end
 if ~isstruct(frame) || ~isfield(frame, 'id') || ~isfield(frame, 'payload')
     error('mti680:InvalidFrame', 'Frame must contain id and payload.');
 end
-names = {'acceleration', 'rateOfTurn', 'eulerAngles'};
+names = {'acceleration', 'rateOfTurn', 'eulerAngles', 'velocityXyz'};
 kind = '';
 for index = 1:numel(names)
     if uint32(frame.id) == contract.(names{index}).id

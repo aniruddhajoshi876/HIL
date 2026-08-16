@@ -163,6 +163,62 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
             testCase.verifyNotEqual(values(1), 1);
         end
 
+        function MtiVelocityXyzGoldenFrame(testCase)
+            %MTIVELOCITYXYZGOLDENFRAME 0x076 is the message the MFE26-VC
+            %   firmware decodes for its velocity path; without it that
+            %   input receives nothing. Scale is 2^-6 m/s per count.
+            frame = packMti680Frame('velocityXyz', [1 -2 0.5]);
+            testCase.verifyEqual(frame.id, uint32(hex2dec('076')));
+            testCase.verifyEqual(frame.dlc, uint8(6));
+            % 1 m/s = 64 counts = 0x0040; -2 = -128 = 0xFF80; 0.5 = 32 = 0x0020.
+            testCase.verifyEqual(frame.payload, ...
+                uint8([0 hex2dec('40') hex2dec('FF') hex2dec('80') 0 hex2dec('20')]));
+            values = decodeMti680Frame(frame);
+            testCase.verifyEqual(values, [1 -2 0.5], 'AbsTol', 1e-12);
+        end
+
+        function MtiDocumentedRangeViolationIsVisible(testCase)
+            %MTIDOCUMENTEDRANGEVIOLATIONISVISIBLE The VCU discards the whole
+            %   frame if any axis exceeds the documented Range column, which
+            %   is narrower than the int16 encoding limit. Saturating only at
+            %   int16 would emit frames the VCU silently drops.
+            testCase.verifyError(@() packMti680Frame('acceleration', ...
+                [101 0 0]), 'mti680:DocRange');
+            testCase.verifyError(@() packMti680Frame('rateOfTurn', ...
+                [0 36 0]), 'mti680:DocRange');
+            testCase.verifyError(@() packMti680Frame('velocityXyz', ...
+                [0 0 501]), 'mti680:DocRange');
+            % Inside the documented range still encodes.
+            testCase.verifyEqual(packMti680Frame('acceleration', ...
+                [100 0 0]).id, uint32(hex2dec('034')));
+            % The payload encoders enforce the same bound.
+            testCase.verifyError(@() packMti680Payload('velocityxyz', ...
+                [501 0 0]), 'mti680:PayloadRange');
+        end
+
+        function MtiScalarMessagesAreNotVectorPacked(testCase)
+            %MTISCALARMESSAGESARENOTVECTORPACKED groupCounter/sampleTime and
+            %   friends are scalar messages; asking the vector packer for one
+            %   must fail clearly rather than with a "three finite values"
+            %   complaint.
+            testCase.verifyError(@() packMti680Frame('groupCounter', ...
+                [1 2 3]), 'mti680:UnknownKind');
+            testCase.verifyError(@() packMti680Frame('statusWord', ...
+                [1 2 3]), 'mti680:UnknownKind');
+        end
+
+        function MtiByteOrderIsRecordedAsUnverified(testCase)
+            %MTIBYTEORDERISRECORDEDASUNVERIFIED MT1604P never states CAN
+            %   payload endianness. Both this simulator and the VCU assume
+            %   big-endian, so agreement between them proves nothing. The
+            %   contract must not claim it is verified.
+            p = imuProtocol();
+            testCase.verifyEqual(p.byteOrder, 'big');
+            testCase.verifyFalse(p.byteOrderVerified);
+            testCase.verifyEqual(p.defaultOutputRateHz.eulerAngles, 0, ...
+                'Euler 0x022 has no VCU handler and must default to 0 Hz.');
+        end
+
         function MtiUnknownIdIsRejected(testCase)
             frame = struct('id', uint32(1), 'payload', zeros(1, 6, 'uint8'));
             testCase.verifyError(@() decodeMti680Frame(frame), ...
