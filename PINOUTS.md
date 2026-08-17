@@ -218,10 +218,13 @@ Alternative differential allocation held open by the plan:
 **Confirmed - pedal voltage generation.** `pedalVoltageCalibration` maps selected
 throttle → AO01/AO02 and selected brake → AO03/AO04 via measured released/pressed
 endpoints, clamped to 0–5 V. **Proposed design not built -** `CarMakerPedalDemand`
-is standard DLC-8 CAN ID `0x500`: bytes 1/2 are 0–100 %% throttle/brake, byte 3
-contains active plus a modulo-16 alive counter, byte 4 is CRC-8/SAE-J1850 over
-bytes 1–3, and bytes 5–8 are zero. CAN owns both pedals only with active, an
-advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+is standard DLC-8 CAN ID `0x500`, cyclic 10 ms, Intel/little-endian: bytes 1–2 are
+throttle and bytes 3–4 brake, each `uint16` raw 0–10000 at 0.01 %/bit; byte 5 holds
+active in bit 0, a modulo-16 alive counter in bits 1–4, and zeros in bits 5–7; byte 6
+is CRC-8/SAE-J1850 over bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with
+active, an advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`;
+the CarMaker DBC on branch `IPG-CAN` matches it byte for byte.
 `verify_pinouts` checks the common selector control source plus all calibration/AO
 routing. Local source: `inverter_hil/build_inverter_hil_model.m`.
 
