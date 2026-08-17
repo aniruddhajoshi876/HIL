@@ -4,6 +4,14 @@ Status: bench procedure; record evidence before closing A1, A3, A9, or the
 MTi configuration gate. Host tests and HIL-generated frames do not satisfy
 this procedure.
 
+**2026-08-17 team decision:** the MTi 500 kbit/s configuration, A1 byte
+order, and the A9 sign conventions below were fixed by team assumption
+rather than by running this procedure on the bench, to unblock integration.
+They are marked ASSUMED, not PASS, in every table below. None of the
+underlying physical risks (wiring, termination, bitrate mismatch, mounting
+error, calibration) have been retired — treat any bench anomaly in these
+areas as grounds to reopen the corresponding item.
+
 Primary contract: `mti680_can_contract.md` and `imu_contract_delta.md`.
 Protocol citation: **MT1604P Revision A, 16 September 2019**. Do not cite a
 "2020.A" revision; no such document has been located.
@@ -88,6 +96,12 @@ Configuration is over UART/RS232 in Config State, not over CAN.
 Do not close this gate merely because a simulator and VCU communicate at
 500 kbit/s. The physical MTi read-back and power-cycle capture are required.
 
+**ASSUMED (2026-08-17, not bench-verified):** MTi is configured for CAN
+output enabled at 500 kbit/s (`0x0A`). No pre-change read-back, no
+250 kbit/s-silent / 500 kbit/s-clean capture pair, and no post-cycle
+read-back have been recorded. Reopen this gate the first time bench
+evidence is actually taken.
+
 ## 3. A1 -- payload byte order
 
 The decisive observation must come from the physical MTi or an Xsens-supplied
@@ -119,6 +133,11 @@ DBC/decoder, not from agreement between this simulator and MFE26-VC.
 Close A1 only after recording the physical raw bytes and the independently
 correct interpretation. Keep A1 open if only repository-owned decoders agree.
 
+**ASSUMED (2026-08-17, not bench-verified):** MTi payload byte order is
+**big-endian**. No physical +X-down/+X-up capture and no independent
+Xsens-decoder run of the `CF 09 00 00 00 00` probe have been recorded.
+Reopen this item if a bench capture disagrees.
+
 ## 4. A3 -- VelocityXYZ ID `0x075` versus `0x076`
 
 MT1604P Table 4 says `0x075`; section 6.8.3 says `0x076`. Do not resolve the
@@ -144,6 +163,11 @@ contradiction from firmware or simulator behavior.
 
 Close A3 only if the enable/disable/re-enable capture isolates exactly one
 candidate. Record an unexpected ID rather than forcing either expected answer.
+
+**ASSUMED (2026-08-17, not bench-verified):** VelocityXYZ is ID **`0x076`**
+(matches `#define MTI680G_ID_VELOCITY_RAW 0x076u` in the firmware contract).
+No enable/disable/re-enable capture has been recorded to confirm `0x075`
+does not also carry traffic. Reopen this item if a bench capture disagrees.
 
 ## 5. A9 -- axes, signs, and installed mounting orientation
 
@@ -175,12 +199,33 @@ on the bare sensor and then with the production bracket installed.
 
 | Vehicle quantity / action | Responding sensor axis or signal | Expected magnitude | Actual sign / mapping | Evidence |
 |---|---|---:|---|---|
-| Gravity with vehicle Up downward | one accel axis | about 9.81 m/s^2 | | |
-| Positive vehicle yaw | one gyro axis | rate-table setting | | |
-| Positive vehicle pitch | one gyro axis | rate-table setting | | |
-| Positive vehicle roll | one gyro axis | rate-table setting | | |
-| Wheel 90 deg left | LWS angle | about 90 deg | | |
-| Wheel 90 deg right | LWS angle | about 90 deg opposite sign | | |
+| Gravity with vehicle Up downward | one accel axis | about 9.81 m/s^2 | ASSUMED: Z axis, reads **-9.81 m/s^2** when level (vehicle Up = MTi +Z, stationary/level) | none |
+| Positive vehicle yaw | one gyro axis | rate-table setting | ASSUMED: MTi +Z gyro, **positive-in = positive-out** (no sign flip) | none |
+| Positive vehicle pitch | one gyro axis | rate-table setting | ASSUMED: MTi +Y gyro, **positive-in = positive-out** (no sign flip) | none |
+| Positive vehicle roll | one gyro axis | rate-table setting | ASSUMED: MTi +X gyro, **positive-in = positive-out** (no sign flip) | none |
+| Wheel 90 deg left | LWS angle | about 90 deg | ASSUMED: left turn = **positive** angle (chosen for consistency with positive-yaw-left) | none |
+| Wheel 90 deg right | LWS angle | about 90 deg opposite sign | ASSUMED: right turn = **negative** angle | none |
+
+**ASSUMED (2026-08-17, not bench-verified), full set:**
+- Mounting: MTi +X = vehicle forward (nose), +Y = vehicle left, +Z = vehicle
+  up. No bracket-installed capture, no bare-sensor gravity-pose capture, no
+  rate-table capture.
+- Accelerometer sign: stationary and level, MTi Z reads -9.81 m/s^2 (not
+  +9.81). Not derived from a gravity-pose test; asserted as team convention.
+- Gyro sign: positive vehicle yaw/pitch/roll (right-hand rule about
+  +Z/+Y/+X respectively) reads positive on the corresponding MTi gyro axis,
+  i.e. no axis is inverted between vehicle and sensor frame. Not derived
+  from a rate-table test.
+- LWS sign: chosen to match the gyro convention above — steering left
+  (which produces positive/left yaw) reads a positive LWS angle; steering
+  right reads negative. Not derived from a physical 90 deg left/right
+  capture on `0x2B0`.
+
+Any of these can be wrong in a way host tests cannot catch (inverted axis,
+swapped channel, mislabeled sign). Prioritize the A9 bench capture the first
+time real hardware is available, since it is the item with no measurement
+behind it at all — the others at least cite a code contract or a physical
+spec sentence.
 
 ## 6. Completion record
 
@@ -189,12 +234,14 @@ For each item mark PASS only when the expected-versus-actual table is filled.
 
 | Gate | Result | Reviewer / date |
 |---|---|---|
-| MTi CAN enabled and persisted at 500 kbit/s (`0x0A`) | OPEN | |
-| A1 payload byte order | OPEN | |
-| A3 VelocityXYZ physical ID | OPEN | |
-| A9 vehicle axes/signs and mounting transform | OPEN | |
+| MTi CAN enabled and persisted at 500 kbit/s (`0x0A`) | ASSUMED, not PASS | team, 2026-08-17 |
+| A1 payload byte order | ASSUMED (big-endian), not PASS | team, 2026-08-17 |
+| A3 VelocityXYZ physical ID | ASSUMED (`0x076`), not PASS | team, 2026-08-17 |
+| A9 vehicle axes/signs and mounting transform | ASSUMED, not PASS | team, 2026-08-17 |
 
-Until those rows pass, retain A1, A3, A9, and MTi reconfiguration as open
-hardware gates. HIL host tests may verify packing, sequencing, counters, ages,
-and GUI behavior; they do not establish wiring, termination, bitrate, CAN ACK,
-physical mounting, or calibration correctness.
+None of these rows are PASS. "ASSUMED" means integration can proceed on
+these values, but they are unverified team decisions, not bench evidence.
+HIL host tests may verify packing, sequencing, counters, ages, and GUI
+behavior; they do not establish wiring, termination, bitrate, CAN ACK,
+physical mounting, or calibration correctness. Run this procedure for real
+at the first opportunity and flip each row to PASS or a corrected value.
