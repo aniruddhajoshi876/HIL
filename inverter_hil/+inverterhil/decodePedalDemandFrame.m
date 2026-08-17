@@ -1,8 +1,10 @@
 function [accepted, demand, reason] = decodePedalDemandFrame( ...
         canId, dlc, payload, isExtended, isRemote)
 %DECODEPEDALDEMANDFRAME Decode the isolated CarMakerPedalDemand CAN frame.
-% Wire: 0x500/DLC8; B1/B2 percent, B3 active+counter, B4 CRC-8/J1850,
-% B5:B8 reserved zero. Counter is B3 bits 2:5, active is B3 bit 1.
+% Wire contract: see inverter_hil/docs/can_pedal_demand_frame_spec.m~2.
+% 0x500/DLC8, Intel/little-endian. B1:B2 throttle uint16 raw 0..10000 at
+% 0.01 %/bit; B3:B4 brake likewise; B5 bit0 active, bits1..4 alive counter,
+% bits5..7 reserved zero; B6 CRC-8/SAE-J1850 over B1..B5; B7:B8 reserved zero.
 accepted = false;
 demand = emptyDemand();
 if nargin < 4, isExtended = false; end
@@ -20,15 +22,22 @@ if ~(isnumeric(canId) || islogical(canId)) || ~isscalar(canId) || ~isreal(canId)
         double(canId) ~= double(inverterhil.protocol().pedalDemandId)
     reason = 'wrong_id'; return;
 end
-if payload(1) > uint8(100) || payload(2) > uint8(100), reason = 'out_of_range'; return; end
-if bitand(payload(3), uint8(224)) ~= 0 || any(payload(5:8) ~= 0)
+
+% Least-significant byte first, per the Intel/little-endian wire convention.
+throttleRaw = double(payload(1)) + 256 * double(payload(2));
+brakeRaw = double(payload(3)) + 256 * double(payload(4));
+if throttleRaw > 10000 || brakeRaw > 10000, reason = 'out_of_range'; return; end
+
+% Both reserved regions must be zero: B5 bits 5..7 and the whole of B7:B8.
+if bitand(payload(5), uint8(224)) ~= 0 || any(payload(7:8) ~= 0)
     reason = 'reserved_nonzero'; return;
 end
-if payload(4) ~= crc8(payload(1:3)), reason = 'integrity_failure'; return; end
-demand.throttlePercent = double(payload(1));
-demand.brakePercent = double(payload(2));
-demand.active = bitget(payload(3), 1) ~= 0;
-demand.aliveCounter = bitshift(bitand(payload(3), uint8(30)), -1);
+if payload(6) ~= crc8(payload(1:5)), reason = 'integrity_failure'; return; end
+
+demand.throttlePercent = throttleRaw * 0.01;
+demand.brakePercent = brakeRaw * 0.01;
+demand.active = bitget(payload(5), 1) ~= 0;
+demand.aliveCounter = bitshift(bitand(payload(5), uint8(30)), -1);
 accepted = true; reason = 'accepted';
 end
 
@@ -38,6 +47,7 @@ demand = struct('throttlePercent', 0, 'brakePercent', 0, 'active', false, ...
 end
 
 function value = crc8(bytes)
+% CRC-8/SAE-J1850: width 8, poly 0x1D, init 0xFF, no reflection, final XOR 0xFF.
 value = uint8(255);
 for index = 1:numel(bytes)
     value = bitxor(value, bytes(index));
