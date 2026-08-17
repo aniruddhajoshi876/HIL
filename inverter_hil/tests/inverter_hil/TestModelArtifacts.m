@@ -63,6 +63,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'SearchDepth', 1, 'BlockType', 'Inport'));
             testCase.verifyEmpty(find_system(testCase.Hardware, ...
                 'SearchDepth', 1, 'BlockType', 'Outport'));
+            % The installed Speedgoat IO183 blocks announce their own
+            % end-of-support with a warning on every diagram update. That
+            % says nothing about this model, so silence that one identifier
+            % and let every other warning still fail the check -- the point
+            % of this assertion is that the model updates cleanly, not that
+            % the vendor library is on a current release.
+            previousWarnings = warning('off', 'Speedgoat:Deprecation');
+            restoreWarnings = onCleanup(@() warning(previousWarnings)); %#ok<NASGU>
             testCase.verifyWarningFree(@() set_param(testCase.Model, ...
                 'SimulationCommand', 'update'));
         end
@@ -114,12 +122,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN and LIN Setup '; ...
                 'speedgoatlib_IO614/CAN Read '; ...
                 'speedgoatlib_IO614/CAN Status '};
+            % Nine inverter status frames (0x383..0x400) plus the three
+            % sensor frames (0x032, 0x034, 0x2B0).
             expected = [expected; repmat( ...
-                {'speedgoatlib_IO614/CAN Write '}, 9, 1)];
+                {'speedgoatlib_IO614/CAN Write '}, 12, 1)];
             % Added from canlib, but the link resolves to the underlying
             % shared CAN message library that canlib forwards to.
             expected = [expected; repmat( ...
-                {'canmsglib/CAN Pack'}, 9, 1)];
+                {'canmsglib/CAN Pack'}, 12, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -132,7 +142,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 26);
+            testCase.verifyNumElements(linked, 32);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...
