@@ -102,6 +102,8 @@ tUser	User;
 
 extern double MFE_CAN_InverterTorqueSetpointNm[4];
 extern unsigned char MFE_CAN_InverterReady[4];
+extern double MFE_CAN_TorqueRequestTotalNm;
+extern unsigned char MFE_CAN_DriveActive;
 
 
 
@@ -252,6 +254,17 @@ User_DeclQuants (void)
 	sprintf (sbuf, "MFE_CAN.Inverter%dReady", i+1);
 	DDefUChar (NULL, sbuf, "boolean", &MFE_CAN_InverterReady[i], DVA_IO_In);
     }
+
+    /* Aggregates consumed by TorqueVect.mdl in place of the superseded
+    ** TorqueVect.XcpTorqueRequestNm / TorqueVect.XcpTorqueActive pair.
+    ** Summing and gating happen in IO_In rather than as extra Simulink
+    ** blocks, so the model keeps its existing single-scalar Switch/Gain
+    ** topology and the repoint stays a rename.
+    */
+    DDefDouble (NULL, "MFE_CAN.TorqueRequestTotalNm", "N*m",
+		&MFE_CAN_TorqueRequestTotalNm, DVA_IO_In);
+    DDefUChar (NULL, "MFE_CAN.DriveActive", "boolean",
+		&MFE_CAN_DriveActive, DVA_IO_In);
 }
 
 

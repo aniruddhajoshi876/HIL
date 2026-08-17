@@ -73,6 +73,13 @@ tIOVec IO;
 double MFE_CAN_InverterTorqueSetpointNm[4];
 unsigned char MFE_CAN_InverterReady[4];
 
+/* Aggregates of the four per-inverter values above, maintained here rather
+** than as extra Simulink blocks so the vehicle model keeps a single scalar
+** demand and a single gate, exactly as the superseded XCP path provided.
+*/
+double MFE_CAN_TorqueRequestTotalNm;
+unsigned char MFE_CAN_DriveActive;
+
 static int MFE_PCAN_Initialized;
 static unsigned char MFE_PCAN_AliveCounter;
 
@@ -439,6 +446,12 @@ IO_In (unsigned CycleNo)
 	    if (raw & 0x8000)
 		raw -= 0x10000;
 	    MFE_CAN_InverterTorqueSetpointNm[3] = raw / 32.0;
+
+	    MFE_CAN_TorqueRequestTotalNm =
+		MFE_CAN_InverterTorqueSetpointNm[0]
+		+ MFE_CAN_InverterTorqueSetpointNm[1]
+		+ MFE_CAN_InverterTorqueSetpointNm[2]
+		+ MFE_CAN_InverterTorqueSetpointNm[3];
 	} else if (Msg.MsgId == 0x502) {
 	    if ((Msg.Data[0] & 0xf0) != 0 || Msg.Data[1] != 0 ||
 		Msg.Data[2] != 0 || Msg.Data[3] != 0 || Msg.Data[4] != 0 ||
@@ -449,6 +462,13 @@ IO_In (unsigned CycleNo)
 	    MFE_CAN_InverterReady[1] = (Msg.Data[0] >> 1) & 0x01;
 	    MFE_CAN_InverterReady[2] = (Msg.Data[0] >> 2) & 0x01;
 	    MFE_CAN_InverterReady[3] = (Msg.Data[0] >> 3) & 0x01;
+
+	    /* Gate the vehicle model only when every inverter reports ready;
+	    ** a partial set means the drive chain is not commanding.
+	    */
+	    MFE_CAN_DriveActive = (unsigned char)
+		(MFE_CAN_InverterReady[0] && MFE_CAN_InverterReady[1]
+		 && MFE_CAN_InverterReady[2] && MFE_CAN_InverterReady[3]);
 	}
     }
 
