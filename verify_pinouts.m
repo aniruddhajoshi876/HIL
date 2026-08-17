@@ -143,8 +143,19 @@ end
 % pedalVoltageCalibration(throttle, brake, released1, pressed1, ... pressed4)
 % assigns ao1/ao2 from throttle and ao3/ao4 from brake, so the input order below
 % is what makes "throttle -> AO01/AO02, brake -> AO03/AO04" true. Inputs 1/2
-% arrive through Throttle/Brake Source Switch, not directly from the GUI
-% dictionary entries -- see the "Pedal voltage generation" prose above.
+% arrive through the final CAN-priority Throttle/Brake Source Switch blocks,
+% not directly from either XCP or GUI values.
+% The two final selector control ports must share CarMakerPedalDemand's atomic
+% ownership flag; independent sources could split throttle/brake authority.
+for item = {'Throttle', 'Brake'}
+    selector = [hw '/' item{1} ' Source Switch'];
+    results = check(results, [item{1} ' selector criterion'], ...
+        get_param(selector, 'Criteria'), 'u2 ~= 0');
+    [source, sourcePort] = sourceBlockForInport(selector, 2);
+    results(end + 1) = struct('label', [item{1} ' selector ownership port'], ...
+        'pass', contains(source, 'CarMaker Pedal Demand Demux') && sourcePort == 3, ...
+        'detail', sprintf('expected CarMaker Pedal Demand Demux port 3, got "%s" port %d', source, sourcePort)); %#ok<AGROW>
+end
 expectedPedalInputs = { ...
     1,  'Throttle Source Switch'; ...
     2,  'Brake Source Switch'; ...

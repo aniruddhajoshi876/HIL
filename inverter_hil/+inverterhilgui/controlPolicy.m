@@ -1,4 +1,4 @@
-function policy = controlPolicy(applicationState, vcuState, interlocks, xcpDriving)
+function policy = controlPolicy(applicationState, vcuState, interlocks, xcpDriving, canDriving)
 %CONTROLPOLICY Single authority for which GUI control groups are enabled.
 %
 %   POLICY = CONTROLPOLICY(APPLICATIONSTATE, VCUSTATE, INTERLOCKS) returns one
@@ -58,6 +58,7 @@ policy = struct( ...
     'canFaults', false, ...
     'logExport', true, ...
     'xcpDriving', false, ...
+    'canDriving', false, ...
     'expertGroupsUnlocked', false, ...
     'reason', 'malformed_input');
 
@@ -71,6 +72,17 @@ if ~(islogical(xcpDriving) || isnumeric(xcpDriving)) || ~isscalar(xcpDriving) ||
     return;
 end
 xcpDriving = logical(xcpDriving);
+
+if nargin < 5 || isempty(canDriving)
+    canDriving = false;
+end
+if ~(islogical(canDriving) || isnumeric(canDriving)) || ~isscalar(canDriving) || ...
+        ~isreal(canDriving) || ~isfinite(double(canDriving)) || ...
+        ~(double(canDriving) == 0 || double(canDriving) == 1)
+    policy.reason = 'malformed_canDriving';
+    return;
+end
+canDriving = logical(canDriving);
 
 applicationState = normalizeText(applicationState);
 vcuState = upper(normalizeText(vcuState));
@@ -141,12 +153,12 @@ end
 %   enabling those widgets would only produce write errors.
 running = lifecycle.isRunning;
 
-% Pedals: while xcpDriving is true, an XCP master owns
-% hil_cmd_pedals_throttle/brake and the GUI is diagnostic/read-only for
-% that group -- write-ownership arbitration, not a safety interlock (see
-% this function's header). Every other group is unaffected by xcpDriving.
-policy.pedals = running && ~xcpDriving;
+% Pedals are writable from the GUI only while neither external command
+% source owns them. CAN and XCP ownership are writer-arbitration facts, not
+% safety interlocks; every other control group is unaffected.
+policy.pedals = running && ~xcpDriving && ~canDriving;
 policy.xcpDriving = xcpDriving;
+policy.canDriving = canDriving;
 policy.digitalStimuli = running;
 policy.sensorStimulus = running;
 policy.momentary = running;

@@ -117,6 +117,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
         TargetBusy = false
         ThrottleCoalescer
         BrakeCoalescer
+        % True only while the target's 1-ms CarMakerPedalDemand retainer owns
+        % both pedals. This is the model selector's own liveness decision.
+        CanPedalsDriving = false
         SteeringCoalescer
         % Last steering angle the operator REQUESTED via the dial or the
         % numeric field. Held here rather than read back off the widget so
@@ -1057,11 +1060,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   the actual enforcement point, not merely the widget Enable
             %   state.
             emission = app.ThrottleCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.XcpDriving
+            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
                 app.commitWrite('pedals.throttle', emission.value / 100, true);
             end
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.XcpDriving
+            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
             end
             emission = app.SteeringCoalescer.poll(app.hostTimeS());
@@ -1183,6 +1186,25 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 else
                     app.XcpDriving = false;
                 end
+                wasCanDriving = app.CanPedalsDriving;
+                if live.canPedalsKnown
+                    app.CanPedalsDriving = live.canPedalsDriving;
+                    if app.CanPedalsDriving
+                        % Sliders are diagnostic/read-only during CAN
+                        % ownership, so display the live target values.
+                        app.ThrottleSlider.Value = live.canPedals(1);
+                        app.ThrottleField.Value = live.canPedals(1);
+                        app.BrakeSlider.Value = live.canPedals(2);
+                        app.BrakeField.Value = live.canPedals(2);
+                    elseif wasCanDriving
+                        % A dead CAN link must never pick up an old GUI slider
+                        % position. Reset the GUI-owned fallback at handover.
+                        app.commitWrite('pedals.throttle', 0, true);
+                        app.commitWrite('pedals.brake', 0, true);
+                    end
+                else
+                    app.CanPedalsDriving = false;
+                end
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
                 % hardware self-check measurement of the same lines AO01-04
@@ -1259,8 +1281,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
                 % Read failed or not connected: fail closed to GUI-owned
-                % pedals, same as the unknown case above.
+                % pedals only when neither external source reports ownership.
                 app.XcpDriving = false;
+                app.CanPedalsDriving = false;
             end
             app.Telemetry.pedals.throttleAppliedPercent = ...
                 app.appliedPedalPercent(1, 'v1');
@@ -1655,7 +1678,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
             app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
-                app.Telemetry.vcu.state, interlocks, app.XcpDriving);
+                app.Telemetry.vcu.state, interlocks, app.XcpDriving, ...
+                app.CanPedalsDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...

@@ -484,6 +484,31 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'hil_torque_results_provisional'));
         end
 
+        function carMakerPedalSelectorIsAtomicAndImmediatelyUpstream(testCase)
+            hw = [testCase.Model '/Hardware I O - PRE-FLIGHT DISABLED'];
+            pedal = [hw '/Pedal Voltage Calibration'];
+            selectors = {'Throttle Source Switch', 'Brake Source Switch'};
+            for index = 1:numel(selectors)
+                selector = [hw '/' selectors{index}];
+                testCase.verifyNotEqual(getSimulinkBlockHandle(selector), -1);
+                testCase.verifyEqual(get_param(selector, 'Criteria'), 'u2 ~= 0');
+                handles = get_param(selector, 'PortHandles');
+                ownershipLine = get_param(handles.Inport(2), 'Line');
+                ownershipSource = get_param( ...
+                    get_param(ownershipLine, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(ownershipSource, ...
+                    matlab.unittest.constraints.ContainsSubstring( ...
+                    'CarMaker Pedal Demand Demux'));
+            end
+            pedalHandles = get_param(pedal, 'PortHandles');
+            for port = 1:2
+                line = get_param(pedalHandles.Inport(port), 'Line');
+                source = get_param(get_param(line, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(source, ...
+                    matlab.unittest.constraints.ContainsSubstring(selectors{port}));
+            end
+        end
+
         function preflightGateIsEnforcedByTopology(testCase)
             dictionary = Simulink.data.dictionary.open(fullfile( ...
                 testCase.Root, 'inverter_hil.sldd'));
