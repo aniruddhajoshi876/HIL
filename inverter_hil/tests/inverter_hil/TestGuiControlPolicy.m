@@ -214,6 +214,20 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             testCase.verifyFalse(policy.connectionControls);
         end
 
+        function canDrivingLocksOnlyPedalsAndDefaultsFalse(testCase)
+            interlocks = TestGuiControlPolicy.healthyInterlocks();
+            withoutArg = inverterhilgui.controlPolicy('running', 'RTD', interlocks);
+            explicitFalse = inverterhilgui.controlPolicy('running', 'RTD', interlocks, false);
+            testCase.verifyEqual(withoutArg, explicitFalse);
+            driving = inverterhilgui.controlPolicy('running', 'RTD', interlocks, true);
+            testCase.verifyFalse(driving.pedals);
+            testCase.verifyTrue(driving.canDriving);
+            testCase.verifyTrue(driving.digitalStimuli);
+            testCase.verifyTrue(driving.momentary);
+            malformed = inverterhilgui.controlPolicy('running', 'RTD', interlocks, 2);
+            testCase.verifyEqual(malformed.reason, 'malformed_canDriving');
+        end
+
         function policyIsTheOnlyEnableAuthorityInTheAppClass(testCase)
             root = TestGuiControlPolicy.workspaceRoot();
             text = fileread(fullfile(root, 'inverter_hil_app.m'));

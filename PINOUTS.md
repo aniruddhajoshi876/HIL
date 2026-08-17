@@ -215,14 +215,20 @@ Alternative differential allocation held open by the plan:
 | `5V_BP_1` | A9 / AI03 | AI03 | A12 (+), A11 (−) |
 | `5V_BP_2` | A10 / AI04 | AI04 | A14 (+), A13 (−) |
 
-**Pedal voltage generation.** `pedalVoltageCalibration` maps GUI throttle → AO01,
-AO02 and brake → AO03, AO04 via measured released/pressed endpoints, clamped to
-0–5 V. Verified routing (`verify_pinouts` checks all 10 inputs and 4 outputs):
+**Confirmed - pedal voltage generation.** `pedalVoltageCalibration` maps selected
+throttle → AO01/AO02 and selected brake → AO03/AO04 via measured released/pressed
+endpoints, clamped to 0–5 V. **Proposed design not built -** `CarMakerPedalDemand`
+is standard DLC-8 CAN ID `0x500`: bytes 1/2 are 0–100 %% throttle/brake, byte 3
+contains active plus a modulo-16 alive counter, byte 4 is CRC-8/SAE-J1850 over
+bytes 1–3, and bytes 5–8 are zero. CAN owns both pedals only with active, an
+advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+`verify_pinouts` checks the common selector control source plus all calibration/AO
+routing. Local source: `inverter_hil/build_inverter_hil_model.m`.
 
 | Function input | Dictionary source | Drives |
 |---|---|---|
-| `throttle` | `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
-| `brake` | `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
+| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
+| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
 
 #### Calibration state — all 4 channels set
 
@@ -301,6 +307,10 @@ direction is expressed by the endpoints themselves and never declared separately
 Digital command sources (all default to `false`/`0` at load):
 `hil_cmd_digital_main_button`, `hil_cmd_digital_cooling_switch`,
 `hil_cmd_digital_shutdown_feedback`, `hil_cmd_digital_precharge_sequence`.
+Pedal command sources are separate: GUI writes `hil_cmd_pedals_throttle` and
+`hil_cmd_pedals_brake`; **Proposed design not built -** CAN ID `0x500` may
+atomically select its validated demand pair ahead of those GUI values. Local
+source: `inverter_hil/build_inverter_hil_model.m`.
 
 ### 4.3 Connector B — project signal assignment
 

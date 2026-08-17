@@ -101,6 +101,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
         TargetBusy = false
         ThrottleCoalescer
         BrakeCoalescer
+        % True only while the target's 1-ms CarMakerPedalDemand retainer owns
+        % both pedals. This is the model selector's own liveness decision.
+        CanPedalsDriving = false
         SteeringCoalescer
         Heartbeat
         PrechargeSequence = uint32(0)
@@ -881,11 +884,11 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function pollCoalescers(app)
             %POLLCOALESCERS Emit any pedal value held by the 30 ms window.
             emission = app.ThrottleCoalescer.poll(app.hostTimeS());
-            if emission.hasValue
+            if emission.hasValue && ~app.CanPedalsDriving
                 app.commitWrite('pedals.throttle', emission.value / 100, true);
             end
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
-            if emission.hasValue
+            if emission.hasValue && ~app.CanPedalsDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
             end
             emission = app.SteeringCoalescer.poll(app.hostTimeS());
@@ -990,6 +993,27 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.Telemetry.vcu.timeInStateS = NaN;
                 end
                 app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
+                wasCanDriving = app.CanPedalsDriving;
+                if live.canPedalsKnown
+                    app.CanPedalsDriving = live.canPedalsDriving;
+                    if app.CanPedalsDriving
+                        % Sliders are diagnostic/read-only during CAN
+                        % ownership, so display the live target values.
+                        app.ThrottleSlider.Value = live.canPedals(1);
+                        app.ThrottleField.Value = live.canPedals(1);
+                        app.BrakeSlider.Value = live.canPedals(2);
+                        app.BrakeField.Value = live.canPedals(2);
+                    elseif wasCanDriving
+                        % A dead CAN link must never pick up an old GUI slider
+                        % position. Reset the GUI-owned dictionary pair at the
+                        % handover; normal slider movement then resumes writes
+                        % without a separate operator re-arm.
+                        app.commitWrite('pedals.throttle', 0, true);
+                        app.commitWrite('pedals.brake', 0, true);
+                    end
+                else
+                    app.CanPedalsDriving = false;
+                end
                 % Fix 1: the IO183 Rail Monitor AI readback of the pedal
                 % harness taps (5V_THROTTLE_1/2, 5V_BP_1/2), a genuine
                 % hardware self-check measurement of the same lines AO01-04
@@ -1040,6 +1064,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.Telemetry.analogInV = nan(1, 4);
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
+                app.CanPedalsDriving = false;
             end
             app.Telemetry.pedals.throttleAppliedPercent = ...
                 app.appliedPedalPercent(1, 'v1');
@@ -1286,7 +1311,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
             app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
-                app.Telemetry.vcu.state, interlocks);
+                app.Telemetry.vcu.state, interlocks, app.CanPedalsDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...

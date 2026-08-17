@@ -1,4 +1,4 @@
-function policy = controlPolicy(applicationState, vcuState, interlocks)
+function policy = controlPolicy(applicationState, vcuState, interlocks, canDriving)
 %CONTROLPOLICY Single authority for which GUI control groups are enabled.
 %
 %   POLICY = CONTROLPOLICY(APPLICATIONSTATE, VCUSTATE, INTERLOCKS) returns one
@@ -48,8 +48,20 @@ policy = struct( ...
     'faultInjection', false, ...
     'canFaults', false, ...
     'logExport', true, ...
+    'canDriving', false, ...
     'expertGroupsUnlocked', false, ...
     'reason', 'malformed_input');
+
+if nargin < 4 || isempty(canDriving)
+    canDriving = false;
+end
+if ~(islogical(canDriving) || isnumeric(canDriving)) || ~isscalar(canDriving) || ...
+        ~isreal(canDriving) || ~isfinite(double(canDriving)) || ...
+        ~(double(canDriving) == 0 || double(canDriving) == 1)
+    policy.reason = 'malformed_canDriving';
+    return;
+end
+canDriving = logical(canDriving);
 
 applicationState = normalizeText(applicationState);
 vcuState = upper(normalizeText(vcuState));
@@ -120,7 +132,10 @@ end
 %   enabling those widgets would only produce write errors.
 running = lifecycle.isRunning;
 
-policy.pedals = running;
+% CAN ownership is a writer-arbitration fact, not a safety interlock. It
+% affects only the two pedal widgets; all other GUI controls keep policy.
+policy.pedals = running && ~canDriving;
+policy.canDriving = canDriving;
 policy.digitalStimuli = running;
 policy.sensorStimulus = running;
 policy.momentary = running;

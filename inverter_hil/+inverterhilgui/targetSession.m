@@ -271,7 +271,9 @@ classdef targetSession < handle
                 'vcuStateKnown', false, 'vcuStateId', 0, ... % stays false until a real VCU's CAN status decode is wired up here
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
-                'txMessageCount', NaN);
+                'txMessageCount', NaN, ...
+                'canPedals', [NaN NaN], 'canPedalsKnown', false, ...
+                'canPedalsDriving', false);
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -449,6 +451,24 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 % TXMESSAGECOUNT stays NaN; the GUI shows dashes.
+            end
+
+            % Port 6 is the target's retained CarMakerPedalDemand state:
+            % percent throttle, percent brake, and the exact atomic ownership
+            % flag used by the model-side selectors. A failed optional lookup
+            % remains unknown; it is never interpreted as a healthy dead link.
+            try
+                canPedals = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 6);
+                if isnumeric(canPedals) && numel(canPedals) == 3 && ...
+                        all(isfinite(double(canPedals(1:2)))) && ...
+                        (double(canPedals(3)) == 0 || double(canPedals(3)) == 1)
+                    snapshot.canPedals = reshape(double(canPedals(1:2)), 1, 2);
+                    snapshot.canPedalsDriving = logical(canPedals(3));
+                    snapshot.canPedalsKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
             end
 
             % What the target actually RECEIVED from the VCU, published on
