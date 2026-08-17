@@ -98,10 +98,11 @@ BO_ 1280 CarMakerPedalDemand: 8 CarMaker
  SG_ BrakeDemand : 16|16@1+ (0.01,0) [0|100] "%" SpeedgoatHIL
  SG_ Active : 32|1@1+ (1,0) [0|1] "" SpeedgoatHIL
  SG_ AliveCounter : 33|4@1+ (1,0) [0|15] "" SpeedgoatHIL
+ SG_ Reserved0 : 37|3@1+ (1,0) [0|0] "" SpeedgoatHIL
  SG_ Integrity : 40|8@1+ (1,0) [0|255] "" SpeedgoatHIL
- SG_ Reserved : 48|16@1+ (1,0) [0|65535] "" SpeedgoatHIL
+ SG_ Reserved1 : 48|16@1+ (1,0) [0|0] "" SpeedgoatHIL
 
-CM_ BO_ 1280 "Proposed design not built. Standard 11-bit ID 0x500, DLC 8, cyclic period and integrity algorithm must be agreed before release. Receiver grants both pedal values CAN authority only when Active, alive-counter progression, integrity verification, range validation, and age are valid; otherwise it atomically returns both pedals to the non-CAN source after the agreed timeout.";
+CM_ BO_ 1280 "Proposed design not built. Standard 11-bit ID 0x500, DLC 8, cyclic 10 ms, Intel/little-endian. Authoritative contract: inverter_hil/docs/can_pedal_demand_frame_spec.md on branch SG-CAN. Integrity is CRC-8/SAE-J1850 over bytes 1..5 in transmission order: width 8, poly 0x1D, init 0xFF, RefIn=false, RefOut=false, final XOR 0xFF; check value for five zero bytes is 0x10. Sender increments AliveCounter modulo 16 every emission, zeroes both reserved regions, and computes the CRC last. Receiver grants both pedal values CAN authority only when Active, alive-counter progression, integrity verification, range validation, and reserved-zero checks pass and age is under 100 ms; otherwise it atomically returns both pedals to the non-CAN source.";
 CM_ BO_ 52 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
 CM_ BO_ 50 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
 CM_ BO_ 688 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
