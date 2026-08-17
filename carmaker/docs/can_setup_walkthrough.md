@@ -1,57 +1,97 @@
-# CarMaker CAN Rest Bus Simulation setup — real VC bench
+# CarMaker CAN / RBS setup — MFE HIL bench
 
-## Status and boundary
+## Verified physical baseline
 
-**Confirmed.** The intended topology is one CarMaker physical CAN node, joined as a third node on the existing 1-Mbaud Speedgoat IO614-channel-1 / real-VC bus. CarMaker passively receives the VC control frames and Speedgoat status frames; it must not transmit any existing inverter or sensor ID. RBS imports DBC, classifies ECUs as real or simulated, maps signals to Data Dictionary quantities/functions, and selects one active physical CAN channel. UsersGuide_HIL.pdf, section 4, pp. 53, 55-62; section 4.5.2 “CAN”, p. 68.
+**Confirmed.** Connect the PCAN-USB FD to IO614 connector **B**, which is CAN
+channel 1; connector A is channel 2.  The lettering does not follow channel
+order.  A 4-second, 1-Mbaud capture on connector B contained 9,561 frames:
+status IDs `0x383`, `0x385`, `0x393`, `0x395`, `0x3A3`, `0x3A5`, `0x3B3`,
+`0x3B5`, `0x400` at about 207 Hz (5 ms), plus `0x032`, `0x034`, `0x2B0`, with
+`0x2B0` at about 105 Hz (10 ms).  Receiver status was No Error and payloads
+decoded sensibly.  This is the healthy passive-reception baseline.
 
-**Proposed design not built.** The sole new transmission is standard-ID `0x500` (`CarMakerPedalDemand`), DLC 8, from CarMaker to SpeedgoatHIL. `carmaker/config/MFE26_Inverter_CarMaker.dbc` is placed beside this walkthrough—not under `FS_race`—because it is the bench CAN contract imported by the project, rather than a generated project configuration. It retains source DBC scaling for limits (1/256 Nm), status torque (1/32 Nm), and DC link (1/64 V). Local source: `virtual-vcu/config/MFE26_Inverter.dbc:71-161` (historical tree).
+**Confirmed.** The CarMaker host has one usable `PCAN_USBBUS1`: PEAK PCAN-USB
+FD, USB `VID_0C72 PID_0012`, PnP status OK, and
+`C:\Windows\System32\PCANBasic.dll` version 4.9.0.942.  CarMaker 12.0.1
+declares `pcan_usb = 5` and PCANIO classic/FD APIs in `pcanio.h`; PCANIO
+symbols are linked in `libcarmaker.a`.  Local source:
+`C:\IPG\carmaker\win64-12.0.1\include\pcanio.h:31-70`.
 
-**Open question.** `0x500` is provisional until the complete vehicle namespace/live bus is audited. The cycle time shown in the DBC (10 ms) is a proposal, and its counter/integrity algorithm and timeout are not agreed. Do not treat `Active` or transport freshness as real-VC pedal plausibility.
+**Open question.** Speedgoat persistently reports `busLoad=88`, `txOverrun=1`,
+and `busWarning=1`, even after application restart, while measured traffic is
+only about 2,390 frames/s of approximately 120-us frames (about 29% utilisation).
+This is not fixed.  Inspect termination first: the IO614 supplies none and the
+bus requires exactly two 120-ohm terminators across pins 2 and 7.  Local source:
+`PINOUTS.md:section 5.2`.
 
-## Before starting the GUI
+## RBS configuration
 
-**Confirmed.** CarMaker holds configuration in memory and rewrites the generated configuration at TestRun load. Close CarMaker before editing or copying configuration; after a run, re-read the generated file to learn what CarMaker retained. A clean mapping log only proves names resolved, not that data flowed.
+**Confirmed.** RBS supports cyclic CAN frames/PDUs; its frame timing derives
+from the smallest assigned cyclic PDU time.  Use the already-settled DBC
+`CarMakerPedalDemand` as standard ID `0x500`, DLC 8, 10 ms.  Local source:
+`carmaker/config/MFE26_Inverter_CarMaker.dbc:97-110`.  Manual citation:
+CarMaker/HIL User's Guide 12.0.1, section 4.9, pp. 73-75.
 
-**Proposed design not built.** `Data/Config/CANIfParameters` is deliberately only an InfoFile skeleton, and `ECUParameters` points `CANIfParameters` at it. No RBS-specific keys are hand-authored because no local GUI-generated CANIf InfoFile establishes their syntax. Let the Rest Bus Configurator create and overwrite it.
+**Proposed design not built.** In the Rest Bus Configurator import
+`carmaker/config/MFE26_Inverter_CarMaker.dbc`; set `VC` and `SpeedgoatHIL` as
+real ECUs and `CarMaker` as simulated.  Receive the observed inverter/sensor
+IDs only; only CarMaker transmits `0x500`.  Map `DM.Gas` and `DM.Brake` to the
+percent signals using factor 100 and offset 0.  Map `Active` as the explicitly
+armed command; reserved fields must remain zero.
 
-## GUI procedure
+**Confirmed.** Native RBS mapping supports `CRC J1850 [Start Count]` and
+`RollCnt Std [Min Max Incr]`.  Configure `Integrity` as `CRC J1850 1 5` only
+after confirming the GUI/generated mapping uses the manual's byte numbering
+(the contract calls its first data byte “byte 1”); configure `AliveCounter` as
+`RollCnt Std 0 15 1`.  Manual citation: CarMaker Programmer's Guide 12.0.1,
+section 17.6, pp. 900-901.
 
-1. **Confirmed — the CarMaker-side adapter exists and is supported.** This was the largest open risk in the plan; it is now closed by direct inspection of this machine, not by assumption. The full chain is present:
+**Open question.** The documented CANIf file supports only M51, M410, and
+vCAN, not PCAN-USB.  Do not invent `CAN.<n>` syntax for PCAN.  The physical
+PCAN setup is the reviewed `PCANIO_*` helper in
+`carmaker/src/IO_Init_can_snippet.c`; validate how a GUI-created RBS interface
+binds to it before treating RBS traffic as available.  Manual citation:
+CarMaker Programmer's Guide 12.0.1, section 15.1, pp. 686-690.
 
-   | Layer | Evidence |
-   |---|---|
-   | Hardware | `PCAN-USB FD` (PEAK-System, `USB\VID_0C72&PID_0012`), `Get-PnpDevice` status `OK` |
-   | Vendor driver | `C:\Windows\System32\PCANBasic.dll`, version 4.9.0.942 |
-   | CarMaker API | `C:\IPG\carmaker\win64-12.0.1\include\pcanio.h`, which declares `pcan_usb = 5` and CAN-FD structs |
-   | CarMaker implementation | `PCANIO_*` symbols are present in `C:\IPG\carmaker\win64-12.0.1\lib\libcarmaker.a` — compiled in, not merely declared |
+## CRC and C-code fallback
 
-   So CarMaker 12.0.1 on this installation can drive a physical CAN channel through the connected PCAN-USB FD. **Confirmed — the Speedgoat IO614 still does not satisfy CarMaker's side**; that remains true and is precisely why this separate adapter is required.
+**Confirmed.** SAE J1850 is native, and is the same named algorithm required
+by the contract (poly `0x1D`, init `0xFF`, non-reflected, xorout `0xFF`; five
+zero bytes produce `0x10`).  Local source:
+`carmaker/config/MFE26_Inverter_CarMaker.dbc:105-110`; read-only authority:
+`SG-CAN:inverter_hil/docs/can_pedal_demand_frame_spec.md:authoritative wire contract`.
 
-   In the IO Configurator, select that channel and activate it at 1 Mbaud, classic CAN (the bench bus is not CAN FD, even though the adapter and `pcanio.h` both support it). If the channel is otherwise unused, extend `FS_race/src/IO.c` in IPG-MFE to initialize it in `IO_Init()` and rebuild the CarMaker executable. UsersGuide_HIL.pdf, section 4.5.2 “CAN”, p. 68.
+**Proposed design not built.** Prefer native `CRC J1850 1 5`; do not change
+the integrity algorithm.  If the generated result fails the zero-byte vector,
+use a registered `RBS_Register_MapFunc()` CRC hook and map it with `CRCFunc`.
+RBS calls such a Tx CRC hook after signals are encoded and permits it to write
+the payload/signal.  Manual citation: CarMaker Programmer's Guide 12.0.1,
+section 17.6, pp. 901, 905; local source:
+`C:\IPG\carmaker\win64-12.0.1\include\rbs.h:42-63,678-685`.
 
-   **Confirmed — the API that `IO_Init()` must call**, from `pcanio.h`:
+## ScriptControl result
 
-   ```c
-   int PCANIO_Init(void);
-   int PCANIO_SetCommParam(int device, int channel, int rate, int is_canfd,
-           struct pcanfd_cfg *nominal, struct pcanfd_cfg *data);
-   int PCANIO_Send(int device, int channel, struct CAN_Msg *msg);
-   int PCANIO_Recv(int device, int channel, struct CAN_Msg *msg);
-   int PCANIO_CloseComm(int device, int channel);
-   unsigned int PCANIO_GetStatus(int device, int channel, char *status_text);
-   ```
+**Open question.** No documented `RBS::`, `CANIf::`, or Rest Bus Configurator
+ScriptControl namespace/command was found in the installed GUI Tcl files or the
+Programmer's Guide ScriptControl command reference.  ScriptControl can modify
+and flush InfoFile keys, but that is not an RBS configuration API.  Keep the
+documented GUI path and archive the generated files.  Manual citation:
+CarMaker Programmer's Guide 12.0.1, section 24.4.5, pp. 1164-1167.
 
-   Use `device = pcan_usb` (5), `rate = 1000000`, `is_canfd = 0`.
+## IPG-MFE handoff — model change only in supported tooling
 
-   **Open question — channel index and termination.** Which `channel` value maps to the physical port, and whether the bus is correctly terminated once CarMaker joins as a third node, are still unverified. `PINOUTS.md` section 5.2 is explicit that the IO614 provides no termination itself and that a bus needs exactly two 120 Ω end terminators between pins 2 and 7; adding a third node must not add a third terminator. Missing or excess termination shows up as roughly 100 % bus load with `transmit_pending` stuck true and no successful ACK — check `PCANIO_GetStatus` before blaming the mapping.
-2. **Confirmed — create/import RBS.** Open the Rest Bus Configurator and import `carmaker/config/MFE26_Inverter_CarMaker.dbc` as a CANdb database. Select the active physical channel.
-3. **Proposed design not built — declare ownership.** Classify `VC` and `SpeedgoatHIL` as real ECUs, and `CarMaker` as the simulated ECU. Configure all existing control/status/sensor IDs as receive-only at CarMaker. Configure only `0x500` for CarMaker transmission.
-4. **Proposed design not built — map signals.** Map received torque limits, status torque/state/ready, d/q current/speed, and DC-link signals to approved Data Dictionary names. Map `DM.Gas` to `ThrottleDemand` and `DM.Brake` to `BrakeDemand` with **factor 100 and offset 0**: `DM.Gas`/`DM.Brake` are **0..1** (CarMaker ReferenceManual), whereas `ThrottleDemand`/`BrakeDemand` are defined in **percent, range [0|100]**, in `carmaker/config/MFE26_Inverter_CarMaker.dbc:97-98`. **Confirmed — this exact conversion was already got wrong once on the XCP path, where factor 1 delivered full throttle as 1 %.** Verify the resulting percent value on the wire rather than trusting the mapping dialog. Map `Active`, counter, and integrity according to the approved receiver contract. RBS supports Data Dictionary mapping including factor/offset/min/max conversion. UsersGuide_HIL.pdf, section 4.5, pp. 58-62.
-5. **Open question — sensor semantics.** The DBC contains `0x034`, `0x032`, and `0x2B0` as raw payload only because their signal layouts are not grounded here. Do not create semantic mappings until their authoritative definitions are supplied.
-6. **Proposed design not built — timing/integrity.** Set `CarMakerPedalDemand` cyclic at the reviewed period and configure the approved alive-counter and integrity behavior. The RBS UI can configure cyclic/event transmission and has counter/CRC hooks; it does not supply the bench’s contract. UsersGuide_HIL.pdf, section 4.9, pp. 73-75.
-7. **Confirmed — save and activate.** Save the GUI-generated CAN communication/interface information under `Data/Config`, then keep/activate its name through `ECUParameters`’ `CANIfParameters` entry. UsersGuide_HIL.pdf, section 4.2, pp. 55-56; section 4.6, pp. 70-71.
-8. **Proposed design not built — proof order.** First prove passive reception with no unexpected CarMaker transmission. Then run `HIL/CAN_Bringup`, which ramps and holds a non-zero pedal demand. Capture `0x500` and confirm its values, counter, integrity, timing, and receiver fallback after cable loss/timeout.
+**Proposed design not built.** Replace the two `Read CM Dict` inputs named
+`TorqueVect.XcpTorqueRequestNm` and `TorqueVect.XcpTorqueActive` with RBS
+receive quantities for **each motor**, not a fabricated aggregate:
+`CAN.SpeedgoatHIL.Inverter{1,2,3,4}StatusA.TorqueSetpoint` (N.m) and
+`CAN.SpeedgoatHIL.Inverter{1,2,3,4}StatusA.InverterReady` (boolean).  The
+first replaces the corresponding per-motor torque request; the second gates it
+only as an inverter-ready indication.  Local source:
+`carmaker/config/MFE26_Inverter_CarMaker.dbc:49-80`; read-only observation:
+`C:\Users\MFE-HPC\Documents\GitHub\IPG-MFE\FCM_Projects\FS_race\src_cm4sl\TorqueVect.mdl:120291-120555`.
 
-## IPG-MFE handoff — do not implement in this repository
-
-**Proposed design not built.** In IPG-MFE, add physical CAN initialization to `FS_race/src/IO.c` (`IO_Init()`), rebuild the CarMaker executable, and replace `TorqueVect.mdl`’s existing Read CM Dict inputs `TorqueVect.XcpTorqueRequestNm` and `TorqueVect.XcpTorqueActive` with CAN-sourced equivalents. Do not hand-edit `TorqueVect.mdl`; make that model change in its supported toolchain. The CAN source must not fabricate a single torque-request scalar, authoritative VCU state/stateId, or pedal-validity/plausibility feedback: each remains an open real-VC publication question.
+**Open question.** The exact RBS Data Dictionary prefix/name must be read from
+the GUI-generated configuration: defaults include prefix `CAN` and ECU names,
+but the final mapping can change them.  The model owner must not hand-edit any
+`.mdl`, `.slx`, `.sldd`, or `.mlapp`; make the block substitutions in the
+supported model toolchain.
