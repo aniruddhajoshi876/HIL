@@ -424,7 +424,10 @@ uses channel 1 only.
 > with `transmit_pending` stuck true and no successful ACK.
 
 CAN IDs in `inverter_hil`: HIL TX `0x383 0x385 0x393 0x395 0x3A3 0x3A5 0x3B3
-0x3B5 0x400`; HIL RX `0x186 0x196 0x1A6 0x1B6`.
+0x3B5 0x400` plus CarMaker telemetry `0x501` (four torque setpoints) and
+`0x502` (four ready bits), all on CAN 1; HIL RX `0x186 0x196 0x1A6 0x1B6`
+plus CarMaker pedal demand `0x500`. The telemetry contract is authoritative in
+`inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
 ---
 

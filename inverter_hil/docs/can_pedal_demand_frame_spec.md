@@ -235,3 +235,61 @@ firmware-mandated minimum granularity.
 **Open question.** The fallback behavior after CAN ownership withdrawal (zero,
 immediate GUI, or operator-armed GUI) remains a safety/product decision. The
 frame contract only requires withdrawal of both pedals atomically.
+
+## 5. CarMaker inverter telemetry wire contract
+
+**Confirmed.** `TorqueVect` defines one `TorqueVect.XcpTorqueRequestNm` value
+in N.m and one `TorqueVect.XcpTorqueActive` UChar value, reads both, scales the
+request by `1/(4*T_i_max)`, and uses the active value as the control input of a
+switch. Local source: `C:/Users/MFE-HPC/Documents/GitHub/IPG-MFE/FCM_Projects/FS_race/src_cm4sl/TorqueVect.mdl:120291-120330,120526-120556,120572-120583,120921-120950`.
+
+**Proposed design built.** The replacement publishes the underlying four
+per-inverter values instead of fabricating one aggregate: the torque-setpoint
+value and ready bit of each transmitted 3X3 status payload. This lets the
+CarMaker-side decoder preserve motor identity while it derives its existing
+single request/active inputs. Local source: `inverter_hil/+inverterhil/packStatus3X3.m:22-25`;
+`inverter_hil/+inverterhil/decodeStatus3X3.m:25-30`.
+
+All requirements below are normative. “Byte 1” is the first CAN data byte, and
+DBC bit 0 is its least-significant bit. Both frames are standard (11-bit) data
+frames, not extended and not remote, DLC exactly 8, Intel/little-endian DBC
+(`@1`), transmitted cyclically every 5 ms on IO614 CAN channel 1. The 5-ms
+period is the existing Ephorus status-cycle / CAN Write period, so the telemetry
+is sampled from and emitted alongside the corresponding status cycle. Local
+source: `inverter_hil/build_inverter_hil_model.m:817-899,1308-1318`.
+
+| CAN ID | Byte(s), DBC start bit | Signal | Wire type and raw range | Physical value / constraint |
+|---|---|---|---|---|
+| `0x501` | 1..2, bit 0 | `Inverter1TorqueSetpointNm` | signed 16-bit, -32768..32767 | `raw * 1/32 N.m`; range -1024.000..1023.96875 N.m. |
+| `0x501` | 3..4, bit 16 | `Inverter2TorqueSetpointNm` | signed 16-bit, -32768..32767 | `raw * 1/32 N.m`; range -1024.000..1023.96875 N.m. |
+| `0x501` | 5..6, bit 32 | `Inverter3TorqueSetpointNm` | signed 16-bit, -32768..32767 | `raw * 1/32 N.m`; range -1024.000..1023.96875 N.m. |
+| `0x501` | 7..8, bit 48 | `Inverter4TorqueSetpointNm` | signed 16-bit, -32768..32767 | `raw * 1/32 N.m`; range -1024.000..1023.96875 N.m. |
+| `0x502` | 1 bit 0, bit 0 | `Inverter1Ready` | unsigned 1-bit, 0 or 1 | 1 means the channel's 3X3 ready bit is set. |
+| `0x502` | 1 bit 1, bit 1 | `Inverter2Ready` | unsigned 1-bit, 0 or 1 | 1 means the channel's 3X3 ready bit is set. |
+| `0x502` | 1 bit 2, bit 2 | `Inverter3Ready` | unsigned 1-bit, 0 or 1 | 1 means the channel's 3X3 ready bit is set. |
+| `0x502` | 1 bit 3, bit 3 | `Inverter4Ready` | unsigned 1-bit, 0 or 1 | 1 means the channel's 3X3 ready bit is set. |
+| `0x502` | 1 bits 4..7 and 2..8, bits 4..63 | `Reserved` | unsigned 60-bit | Sender shall transmit zero; receiver shall reject a nonzero value. |
+
+Sender rule: on each 5-ms status cycle, take torque setpoint and ready directly
+from the same four 3X3 payloads selected for transmission, encode `0x501`
+little-endian signed int16 values at 1/32 N.m (round to nearest count and clamp
+to the signed-16 range), and encode the four ready bits in `0x502`; all 60
+reserved bits are zero. `0x501` and `0x502` form one same-cycle sample but have
+no application CRC or alive counter. This matches existing status-frame house
+style, which has neither mechanism. Local source:
+`inverter_hil/+inverterhil/packStatus3X3.m:16-30`;
+`inverter_hil/+inverterhil/packCarMakerTelemetry.m:1-39`.
+
+Receiver rule: accept only standard, non-remote, DLC-8 frames with the stated
+ID. Decode signed little-endian int16 torque fields at 1/32 N.m and decode the
+four ready bits; reject `0x502` when any reserved bit is nonzero. Retain the
+latest valid payload for each ID. The two payloads are emitted from the same
+Speedgoat status step, but their separate CAN frames are not application-level
+atomic: a receiver may expose a complete four-torque/four-ready sample only
+after it has received a valid frame of both IDs since startup. No CRC, alive
+counter, timeout, or cross-frame sequence is defined beyond normal CAN
+reception.
+
+`0x501` alone cannot carry the required field list: its four signed-16 torque
+values consume all 64 payload bits, leaving no bit for any inverter-ready state.
+`0x502` is therefore required and is not an optional extension.
