@@ -45,6 +45,8 @@
 #include <string.h>
 
 #include <CarMaker.h>
+#include <pcanio.h>
+#include <E2E.h>
 
 #if defined(XENO)
 #include <mio.h>
@@ -59,6 +61,20 @@
 
 /*** I/O vector */
 tIOVec IO;
+
+
+/*** CarMaker CAN interface */
+
+#define MFE_PCAN_DEVICE		pcan_usb
+#define MFE_PCAN_CHANNEL	1
+#define MFE_PCAN_BITRATE	1000000
+#define MFE_PCAN_RX_MAX	16
+
+double MFE_CAN_InverterTorqueSetpointNm[4];
+unsigned char MFE_CAN_InverterReady[4];
+
+static int MFE_PCAN_Initialized;
+static unsigned char MFE_PCAN_AliveCounter;
 
 
 /*** I/O configuration */
@@ -232,6 +248,9 @@ IO_Init_First (void)
 int
 IO_Init (void)
 {
+    char status_text[256] = { 0 };
+    unsigned int status;
+
     Log("I/O Configuration: %s\n", IO_ListNames(NULL, 1));
 
 #if defined(XENO)
@@ -266,6 +285,35 @@ IO_Init (void)
     /*** FailSafeTester */
     FST_ConfigureCAN();
 #endif /* defined(XENO) */
+
+    if (PCANIO_Init() != 0) {
+	LogErrF(EC_Init, "PCANIO_Init failed");
+	IO_SelectNone();
+	return -1;
+    }
+
+    if (PCANIO_SetCommParam(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL,
+			    MFE_PCAN_BITRATE, 0, NULL, NULL) != 0) {
+	LogErrF(EC_Init, "PCAN-USB FD channel %d: 1 Mbit/s classic-CAN setup failed",
+		MFE_PCAN_CHANNEL);
+	PCANIO_Terminate();
+	IO_SelectNone();
+	return -1;
+    }
+
+    status = PCANIO_GetStatus(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, status_text);
+    if (status != 0) {
+	LogErrF(EC_Init, "PCAN-USB FD channel %d status 0x%x: %s",
+		MFE_PCAN_CHANNEL, status, status_text);
+	PCANIO_CloseComm(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL);
+	PCANIO_Terminate();
+	IO_SelectNone();
+	return -1;
+    }
+
+    MFE_PCAN_Initialized = 1;
+    Log("PCAN-USB FD channel %d initialized: 1 Mbit/s classic CAN (%s)\n",
+	MFE_PCAN_CHANNEL, status_text);
 
     return 0;
 }
@@ -342,9 +390,11 @@ IO_BeginCycle (void)
 void
 IO_In (unsigned CycleNo)
 {
-#if defined(CM_HIL)
+    int i;
+    int raw;
     CAN_Msg Msg;
 
+#if defined(CM_HIL)
     IO.DeltaT = SimCore.DeltaT;
     IO.T      = TimeGlobal;
 #if defined(XENO)
@@ -361,6 +411,46 @@ IO_In (unsigned CycleNo)
 #endif /* defined(XENO) */
     }
 #endif /* defined(CM_HIL) */
+
+    for (i=0; i<MFE_PCAN_RX_MAX; i++) {
+	if (PCANIO_Recv(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, &Msg) != 0)
+	    break;
+
+	if (Msg.FrameFmt != 0 || Msg.RTR != 0 || Msg.FrameLen != 8)
+	    continue;
+
+	if (Msg.MsgId == 0x501) {
+	    raw = (int)Msg.Data[0] | ((int)Msg.Data[1] << 8);
+	    if (raw & 0x8000)
+		raw -= 0x10000;
+	    MFE_CAN_InverterTorqueSetpointNm[0] = raw / 32.0;
+
+	    raw = (int)Msg.Data[2] | ((int)Msg.Data[3] << 8);
+	    if (raw & 0x8000)
+		raw -= 0x10000;
+	    MFE_CAN_InverterTorqueSetpointNm[1] = raw / 32.0;
+
+	    raw = (int)Msg.Data[4] | ((int)Msg.Data[5] << 8);
+	    if (raw & 0x8000)
+		raw -= 0x10000;
+	    MFE_CAN_InverterTorqueSetpointNm[2] = raw / 32.0;
+
+	    raw = (int)Msg.Data[6] | ((int)Msg.Data[7] << 8);
+	    if (raw & 0x8000)
+		raw -= 0x10000;
+	    MFE_CAN_InverterTorqueSetpointNm[3] = raw / 32.0;
+	} else if (Msg.MsgId == 0x502) {
+	    if ((Msg.Data[0] & 0xf0) != 0 || Msg.Data[1] != 0 ||
+		Msg.Data[2] != 0 || Msg.Data[3] != 0 || Msg.Data[4] != 0 ||
+		Msg.Data[5] != 0 || Msg.Data[6] != 0 || Msg.Data[7] != 0)
+		continue;
+
+	    MFE_CAN_InverterReady[0] = Msg.Data[0] & 0x01;
+	    MFE_CAN_InverterReady[1] = (Msg.Data[0] >> 1) & 0x01;
+	    MFE_CAN_InverterReady[2] = (Msg.Data[0] >> 2) & 0x01;
+	    MFE_CAN_InverterReady[3] = (Msg.Data[0] >> 3) & 0x01;
+	}
+    }
 
 }
 
@@ -383,6 +473,10 @@ IO_In (unsigned CycleNo)
 void
 IO_Out (unsigned CycleNo)
 {
+    CAN_Msg Msg;
+    int throttle;
+    int brake;
+
 #if defined(XENO)
     IOConf_Out(CycleNo);
 #endif /* defined(XENO) */
@@ -392,6 +486,29 @@ IO_Out (unsigned CycleNo)
     /*** Messages to the FailSafeTester */
     FST_MsgOut(CycleNo);
 #endif /* defined(CM_HIL) */
+
+    if (CycleNo % 10 != 0)
+	return;
+
+    throttle = LimitInt((float)(DrivMan.Gas * 10000.0 + 0.5), 0, 10000);
+    brake    = LimitInt((float)(DrivMan.Brake * 10000.0 + 0.5), 0, 10000);
+
+    memset(&Msg, 0, sizeof(Msg));
+    Msg.MsgId    = 0x500;
+    Msg.FrameFmt = 0;
+    Msg.RTR      = 0;
+    Msg.FrameLen = 8;
+    Msg.Data[0]  = throttle & 0xff;
+    Msg.Data[1]  = (throttle >> 8) & 0xff;
+    Msg.Data[2]  = brake & 0xff;
+    Msg.Data[3]  = (brake >> 8) & 0xff;
+    Msg.Data[4]  = 0x01 | ((MFE_PCAN_AliveCounter & 0x0f) << 1);
+    MFE_PCAN_AliveCounter = (MFE_PCAN_AliveCounter + 1) & 0x0f;
+    Msg.Data[5] = GetCRC_J1850_User(Msg.Data, 5, 0xff, 0xff);
+
+    if (PCANIO_Send(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, &Msg) != 0)
+	LogErrF(EC_General, "PCAN-USB FD channel %d: CAN send failed",
+		MFE_PCAN_CHANNEL);
 
 }
 
@@ -419,6 +536,12 @@ IO_Cleanup (void)
     MIO_ResetModules();
     MIO_DeleteAll();
 #endif /* defined(CM_HIL) */
+
+    if (MFE_PCAN_Initialized) {
+	PCANIO_CloseComm(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL);
+	PCANIO_Terminate();
+	MFE_PCAN_Initialized = 0;
+    }
 
   EndReturn:
     return;

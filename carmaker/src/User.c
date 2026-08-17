@@ -100,6 +100,9 @@ int UserCalcCalledByAppTestRunCalc = 0;
 
 tUser	User;
 
+extern double MFE_CAN_InverterTorqueSetpointNm[4];
+extern unsigned char MFE_CAN_InverterReady[4];
+
 
 
 /*
@@ -240,6 +243,14 @@ User_DeclQuants (void)
 	char sbuf[32];
 	sprintf (sbuf, "UserOut_%02d", i);
 	DDefDouble (NULL, sbuf, "", &User.Out[i], DVA_IO_Out);
+    }
+
+    for (i=0; i<4; i++) {
+	char sbuf[48];
+	sprintf (sbuf, "MFE_CAN.Inverter%dTorqueSetpointNm", i+1);
+	DDefDouble (NULL, sbuf, "N*m", &MFE_CAN_InverterTorqueSetpointNm[i], DVA_IO_In);
+	sprintf (sbuf, "MFE_CAN.Inverter%dReady", i+1);
+	DDefUChar (NULL, sbuf, "boolean", &MFE_CAN_InverterReady[i], DVA_IO_In);
     }
 }
 
