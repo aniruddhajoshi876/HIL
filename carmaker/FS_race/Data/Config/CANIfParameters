@@ -1,0 +1,9 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+#
+# Proposed design not built: GUI-owned CarMaker CAN Rest Bus Simulation
+# placeholder. ECUParameters references this name so the configuration slot
+# is explicit, but no RBS-specific keys are hand-authored: no locally grounded
+# GUI-generated CANIf InfoFile exists. Generate and save the real content using
+# the exact procedure in carmaker/docs/can_setup_walkthrough.md, then review
+# the resulting file after a TestRun reload. Local source:
+# carmaker/FS_race/Data/Config/ECUParameters:5-8.

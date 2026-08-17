@@ -1,0 +1,109 @@
+VERSION "MFE26 real-VC / CarMaker RBS contract"
+
+NS_ :
+    CM_
+    BA_DEF_
+    BA_
+    BA_DEF_DEF_
+    BU_SG_REL_
+    BU_BO_REL_
+
+BS_:
+
+BU_: VC SpeedgoatHIL CarMaker
+
+BO_ 390 Inverter1Control: 8 VC
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+BO_ 406 Inverter2Control: 8 VC
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+BO_ 422 Inverter3Control: 8 VC
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+BO_ 438 Inverter4Control: 8 VC
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+
+BO_ 899 Inverter1StatusA: 8 SpeedgoatHIL
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+BO_ 915 Inverter2StatusA: 8 SpeedgoatHIL
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+BO_ 931 Inverter3StatusA: 8 SpeedgoatHIL
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+BO_ 947 Inverter4StatusA: 8 SpeedgoatHIL
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
+
+BO_ 901 Inverter1StatusB: 8 SpeedgoatHIL
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+BO_ 917 Inverter2StatusB: 8 SpeedgoatHIL
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+BO_ 933 Inverter3StatusB: 8 SpeedgoatHIL
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+BO_ 949 Inverter4StatusB: 8 SpeedgoatHIL
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+BO_ 1024 DCLinkStatus: 8 SpeedgoatHIL
+ SG_ DCLinkVoltage12Actual : 0|16@1+ (0.015625,0) [0|1023.984375] "V" VC,CarMaker
+ SG_ DCLinkVoltage34Actual : 16|16@1+ (0.015625,0) [0|1023.984375] "V" VC,CarMaker
+
+BO_ 52 Sensor034: 8 VC
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+BO_ 50 Sensor032: 8 VC
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+BO_ 688 Sensor2B0: 8 VC
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+
+BO_ 1280 CarMakerPedalDemand: 8 CarMaker
+ SG_ ThrottleDemand : 0|16@1+ (0.01,0) [0|100] "%" SpeedgoatHIL
+ SG_ BrakeDemand : 16|16@1+ (0.01,0) [0|100] "%" SpeedgoatHIL
+ SG_ Active : 32|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ AliveCounter : 33|4@1+ (1,0) [0|15] "" SpeedgoatHIL
+ SG_ Integrity : 40|8@1+ (1,0) [0|255] "" SpeedgoatHIL
+ SG_ Reserved : 48|16@1+ (1,0) [0|65535] "" SpeedgoatHIL
+
+CM_ BO_ 1280 "Proposed design not built. Standard 11-bit ID 0x500, DLC 8, cyclic period and integrity algorithm must be agreed before release. Receiver grants both pedal values CAN authority only when Active, alive-counter progression, integrity verification, range validation, and age are valid; otherwise it atomically returns both pedals to the non-CAN source after the agreed timeout.";
+CM_ BO_ 52 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
+CM_ BO_ 50 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
+CM_ BO_ 688 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 65535;
+BA_ "GenMsgCycleTime" BO_ 1280 10;

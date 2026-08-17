@@ -1,5 +1,13 @@
 # IPG CarMaker ↔ Speedgoat HIL bring-up
 
+## CAN supersedes XCP for the real-VC bench
+
+**Confirmed.** XCP-over-Ethernet is superseded for pedal commands: CarMaker cannot write the required ASAP2 CHARACTERISTICs because the opt-in calibration source `<CM>/GUI/XCP_Cal.tcl` and `XCP::Cal::*` Tcl namespace are absent; a 20-second `DM.Gas = 0.2` run left all three target pedal commands at zero. The MEASUREMENT+STIM fallback was also rejected because CarMaker rewrote its STIM SampleGroup as DAQ while retaining names/mappings, without warning. XCP DAQ readback works, but the command direction is unavailable.
+
+**Proposed design not built.** The replacement is CAN RBS as a third node on the real channel-1 bus. Follow `carmaker/docs/can_setup_walkthrough.md`, use `carmaker/config/MFE26_Inverter_CarMaker.dbc`, and prove pedal transmission with `Data/TestRun/HIL/CAN_Bringup`. Do not delete the XCP artifacts: they remain the historical record.
+
+**Open question — largest risk.** RBS requires a supported active CarMaker-side physical CAN channel; the Speedgoat IO614 does not satisfy it. UsersGuide_HIL.pdf, section 4.5.2 “CAN”, p. 68.
+
 State as of 2026-08-14. Records what is **proven**, what is **assumed**, and
 what is **still broken**, because several earlier conclusions here turned out
 to rest on a verification method that did not actually verify anything.
