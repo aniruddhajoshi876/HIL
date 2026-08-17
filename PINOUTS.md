@@ -218,12 +218,15 @@ Alternative differential allocation held open by the plan:
 **Pedal voltage generation.** `pedalVoltageCalibration` maps selected throttle
 to AO01/AO02 and selected brake to AO03/AO04 via measured released/pressed
 endpoints, clamped to 0–5 V. `CarMakerPedalDemand` is standard DLC-8 CAN ID
-`0x500`: bytes 1/2 are the pedal demand, byte 3 carries active/alive state, byte
-4 is CRC-8/SAE-J1850, and bytes 5–8 are reserved. Fresh, valid, active CAN owns
-both pedals atomically. When CAN does not own the pedals, the existing XCP
-source-select remains available ahead of the GUI dictionary values. CAN has
-priority over XCP so two external sources cannot drive different pedals.
-`verify_pinouts` checks the selector ownership and calibration/AO routing.
+`0x500`, cyclic 10 ms, Intel/little-endian: bytes 1–2 are throttle and bytes
+3–4 brake, each `uint16` raw 0–10000 at 0.01 %/bit; byte 5 holds active in bit
+0 and a modulo-16 alive counter in bits 1–4; byte 6 is CRC-8/SAE-J1850 over
+bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with active, an
+advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+The existing XCP source-select remains available ahead of the GUI values when
+CAN does not own the pedals. CAN has priority, and a model-side zero-hold keeps
+the fallback at zero after CAN loss until both fallback demands return to zero.
+The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
 | Function input | Source (via switch) | Drives |
 |---|---|---|
