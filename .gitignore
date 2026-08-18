@@ -41,3 +41,17 @@ codegen/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# CM4SL build outputs (regenerable from the .vcxproj / Makefile)
+carmaker/FS_race/src_cm4sl/Release/
+carmaker/FS_race/src_cm4sl/*.o
+carmaker/FS_race/src_cm4sl/.depend
+carmaker/FS_race/src_cm4sl/libcarmaker4sl.mexw64
+
+# The blanket examples/ rule above (aimed at the ~2 GB vendor blockset) also
+# matched CarMaker's own Data/*/Examples/ folders case-insensitively on
+# Windows, silently dropping 40 project data files -- including the tire
+# CONTINENTAL_FS_205_510_R13_80kPa that MFE24_V3 needs, which aborted
+# SIM_START with "Tire: Can't read file".
+!carmaker/**/Examples/
+!carmaker/**/Examples/**

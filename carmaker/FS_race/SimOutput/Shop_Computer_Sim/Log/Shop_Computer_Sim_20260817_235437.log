@@ -1,0 +1,9 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-17 23:42:33
+ 
+		I/O Configuration: default
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+ERROR		PCAN-USB FD channel 1: 1 Mbit/s classic-CAN setup failed
+ERROR		PCAN-USB FD channel 1 status 0xfffffffe: 
+		PCAN-USB FD channel 1 initialized: 1 Mbit/s classic CAN ()
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-1)

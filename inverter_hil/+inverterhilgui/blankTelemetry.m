@@ -15,6 +15,13 @@ snapshot.vcu.timeInStateS = NaN;
 snapshot.vcu.errorActive = false;
 snapshot.vcu.errorKnown = false;
 
+% Whether VIRTUALVCUDEPLOYSTEP.M's own APPS+brake plausibility interlock
+% is actively suppressing torque -- a genuine chart-computed value (see
+% TARGETSESSION.READLIVEIO port 8), not inferred here from a torque number
+% happening to read zero. Empty (unknown) rather than false when unread,
+% so a failed read never presents as "interlock not active".
+snapshot.appsBrakeFault = [];
+
 snapshot.guards.mainButton = [];
 snapshot.guards.brakePercent = NaN;
 snapshot.guards.dcLink12V = NaN;
@@ -68,8 +75,9 @@ for index = 1:4
     snapshot.inverter(index).index = index;
 end
 
-snapshot.can.rx = blankCanObservations(inverterhil.protocol().controlIds, ...
-    {'CTRL INV1', 'CTRL INV2', 'CTRL INV3', 'CTRL INV4'});
+snapshot.can.rx = blankCanObservations( ...
+    [uint32(hex2dec('1F5')) inverterhil.protocol().controlIds], ...
+    {'VCU PEDALS', 'CTRL INV1', 'CTRL INV2', 'CTRL INV3', 'CTRL INV4'});
 statusIds = inverterhil.protocol().statusCycleIds;
 statusNames = {'3X3 INV1', '3X5 INV1', '3X3 INV2', '3X5 INV2', ...
     '3X3 INV3', '3X5 INV3', '3X3 INV4', '3X5 INV4', 'GENERAL'};

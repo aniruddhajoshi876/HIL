@@ -1,0 +1,12 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+#
+FileIdent = CarMaker-CANIfParameters 1
+#
+# Confirmed: this header is the documented CANIfParameters identity and version.
+# CarMaker Programmer's Guide 12.0.1, section 15.1, p. 686.
+#
+# Open question: do not add CAN.<n> entries for the PCAN-USB FD here.  The
+# documented CANIf module choices are M51, M410 and vCAN; PCAN-USB is not among
+# them.  Its physical initialization is therefore kept in PCANIO user code
+# pending a GUI-generated PCAN RBS binding.  CarMaker Programmer's Guide 12.0.1,
+# section 15.1, p. 687; Local source: carmaker/src/IO_Init_can_snippet.c:1-84.
