@@ -1,8 +1,4 @@
-#INFOFILE1.1 (UTF-8) - Do not remove this line!
+#INFOFILE1.1 - Do not remove this line!
 FileIdent =	CarMaker-ECUParameters	3
 
 
-IOParameters =
-CANIfParameters = CANIfParameters
-FlexCardParameters =
-XCP.XCPParameters = XCPParameters

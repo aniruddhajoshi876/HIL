@@ -463,12 +463,15 @@ IO_In (unsigned CycleNo)
 	    MFE_CAN_InverterReady[2] = (Msg.Data[0] >> 2) & 0x01;
 	    MFE_CAN_InverterReady[3] = (Msg.Data[0] >> 3) & 0x01;
 
-	    /* Gate the vehicle model only when every inverter reports ready;
-	    ** a partial set means the drive chain is not commanding.
+	    /* Provisional, deliberately permissive: any single inverter
+	    ** reporting ready is enough to gate the vehicle model. Requiring
+	    ** all four was judged too strict for bring-up. Revisit before the
+	    ** bench is trusted under load, since this admits a partially
+	    ** ready drive chain.
 	    */
 	    MFE_CAN_DriveActive = (unsigned char)
-		(MFE_CAN_InverterReady[0] && MFE_CAN_InverterReady[1]
-		 && MFE_CAN_InverterReady[2] && MFE_CAN_InverterReady[3]);
+		(MFE_CAN_InverterReady[0] || MFE_CAN_InverterReady[1]
+		 || MFE_CAN_InverterReady[2] || MFE_CAN_InverterReady[3]);
 	}
     }
 

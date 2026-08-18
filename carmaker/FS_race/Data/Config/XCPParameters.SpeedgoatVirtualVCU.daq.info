@@ -14,18 +14,32 @@ SampleGroup.G1.SRate = 1
 SampleGroup.G1.Direction = DAQ
 SampleGroup.G1.Variables:
 	ModuleName.hil_obs_virtual_vcu_torque_request_nm
+SampleGroup.G2.Enable = 1
+SampleGroup.G2.Event = 0x0
+SampleGroup.G2.Prescaler = 1
+SampleGroup.G2.SRate = 1
+SampleGroup.G2.Direction = DAQ
+SampleGroup.G2.Variables:
+	ModuleName.hil_cmd_xcp_pedals_active
+	ModuleName.hil_cmd_xcp_pedals_brake
+	ModuleName.hil_cmd_xcp_pedals_throttle
 
 # ASAP2 Mapping
 ASAP2_Mapping:
+	ModuleName.hil_cmd_xcp_pedals_active	Const	1
+	ModuleName.hil_cmd_xcp_pedals_brake	DM.Brake	100	0
+	ModuleName.hil_cmd_xcp_pedals_throttle	DM.Gas	100	0
 	ModuleName.hil_obs_virtual_vcu_torque_request_nm	TorqueVect.XcpTorqueRequestNm	1	0
-ASAP2_CharMapping:
-	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_active	TorqueVect.XcpTorqueActive	1	0
-	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_brake	DM.Brake	1	0
-	ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_throttle	DM.Gas	1	0
 
 # DAQ Programming
-nDAQLists = 1 1 0
+nDAQLists = 2 2 0
 DAQList.0 = 1 0x0 1 8 0
 DAQList.0.ODT.0 = 1 8
 DAQList.0.ODT.0.Entries:
-	0x2ba310 0x0 8 0 8
+	0x2ba320 0x0 8 0 3
+DAQList.1 = 1 0x0 1 17 1
+DAQList.1.ODT.0 = 3 17
+DAQList.1.ODT.0.Entries:
+	0x2ba2f0 0x0 8 0 1
+	0x2ba2e8 0x0 8 0 2
+	0x2ba2c8 0x0 1 0 0
