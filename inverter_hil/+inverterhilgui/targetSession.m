@@ -407,7 +407,7 @@ classdef targetSession < handle
 
             % Port 6: a genuine, target-measured count of pedal (0x1F5)
             % frames emitted by the Virtual VCU's own CAN Write path (see
-            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port A Pedal TX Counter). Its own
+            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port B Pedal TX Counter). Its own
             % try, matching the pattern used for newer optional ports
             % elsewhere in this method: this port only exists in
             % applications built after this fix, so an older running

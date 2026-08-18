@@ -123,11 +123,11 @@ Run these from the repository root with R2024b:
 ## Virtual VCU branch integration
 
 On the `virtual-vcu` branch, the same R2024b deployable model additionally
-contains `Virtual VCU`: IO183 I/O Module 3 analog/digital inputs and IO614
-channel 2 / connector A. The existing inverter boundary remains I/O Module 1
-and IO614 channel 1 / connector B. The five Port A frames are the firmware-side
-pedal broadcast `0x1F5` plus `0x186`, `0x196`, `0x1A6`, and `0x1B6`; the nine
-inverter status IDs remain on Port B. See `../../virtual-vcu/README.md` and the
+contains `Virtual VCU`: IO183 I/O Module 2 analog/digital inputs and IO614
+channel 1 / connector B, shared with the inverter boundary. The five Port B
+frames are the firmware-side pedal broadcast `0x1F5` plus `0x186`, `0x196`,
+`0x1A6`, and `0x1B6`; the nine inverter status IDs are also on Port B. See
+`../../virtual-vcu/README.md` and the
 committed `virtual-vcu/config/MFE26_Inverter.dbc` for the contract.
 
 R2024b host tests, model verification, and Speedgoat code generation passed

@@ -37,10 +37,9 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
         function hardwareSeparationIsExplicit(testCase)
             c = virtualvcu.config();
             testCase.verifyEqual(c.moduleId, 2);
-            testCase.verifyEqual(c.canChannel, 2);
-            testCase.verifyEqual(c.canPort, 'A');
+            testCase.verifyEqual(c.canChannel, 1);
+            testCase.verifyEqual(c.canPort, 'B');
             testCase.verifyNotEqual(c.moduleId, 1);
-            testCase.verifyNotEqual(c.canChannel, 1);
         end
         function suppliedDbcMatchesFirmwareContract(testCase)
             dbc = virtualvcu.verifyDbcContract();

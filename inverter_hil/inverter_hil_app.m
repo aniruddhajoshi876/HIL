@@ -1478,7 +1478,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 observations(1).value = strtrim(sprintf('%02X ', payload));
                 observations(1).signal = app.pedalFrameSignalText(payload);
                 observations(1).timestampsS = now;
-                % Genuine, target-measured transmit count (Port A Pedal TX
+                % Genuine, target-measured transmit count (Port B Pedal TX
                 % Counter, read via PEDALTXCOUNT) when available; NaN/dashes
                 % on an older build that predates that counter, never a
                 % fabricated estimate.

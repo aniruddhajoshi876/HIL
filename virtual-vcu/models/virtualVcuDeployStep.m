@@ -42,7 +42,7 @@ raw = rawFilt;
 % instead of firmware's real 23100), convertThrottle2ToPercent
 % (throttle2Min=46500, throttle2Max=63600), convertBrakeToPercent
 % (brakeMin=9025, brakeMax=31800, brake channel 1 only -- see BRAKEOK
-% below for why channel 2 is not used).
+% below for why the shared channel-1 boundary is used).
 t1 = min(max((30100-raw(1))/7000,0),1);
 t2 = min(max((63600-raw(2))/17100,0),1);
 b1 = min(max((raw(3)-9025)/22775,0),1);

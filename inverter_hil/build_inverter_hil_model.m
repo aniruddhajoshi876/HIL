@@ -60,7 +60,7 @@ save_system(model, modelPath);
 apply_pedal_calibration(dictionaryPath);
 
 % The virtual VCU is part of the same deployable application. Add its
-% isolated Module 2 / IO614 Port A boundary after the base model has been
+% isolated Module 2 / IO614 Port B boundary after the base model has been
 % generated; the integration helper is itself R2024b-gated and idempotent.
 virtualVcuModels = fullfile(fileparts(root), 'virtual-vcu', 'models');
 addpath(virtualVcuModels);
@@ -755,9 +755,9 @@ add_line(path, 'VCU Monitor Pins Mux/1', 'VCU Monitor Pins Goto/1', ...
 setup = add_block('speedgoatlib_IO614/CAN and LIN Setup ', ...
     [path '/IO614 CAN Setup'], 'Position', [235 30 390 100]);
 set_param(setup, 'moduleType', 'IO614', 'id', '1', ...
-    'canChn1', 'CAN (HS)', 'canChn2', 'CAN (HS)', ...
+    'canChn1', 'CAN (HS)', 'canChn2', 'Disabled', ...
     'canChn3', 'Disabled', 'canChn4', 'Disabled', ...
-    'arbBdrChn1', '1.0 MBaud', 'arbBdrChn2', '1.0 MBaud');
+    'arbBdrChn1', '1.0 MBaud');
 read = add_block('speedgoatlib_IO614/CAN Read ', ...
     [path '/IO614 CAN FIFO Read Raw'], 'Position', [235 130 390 190]);
 % useBusOut is ON so port 2 is a CAN_MESSAGE bus the Rx Bus Selector can
@@ -789,6 +789,15 @@ set_param(read, 'moduleType', 'IO614', 'id', '1', 'channel', '1', ...
     'canType', 'CAN (HS)', 'useBusOut', 'on', ...
     'HasMulRead', 'Single Read from Buffer (FIFO)', ...
     'LabelInHex', 'on', 'ts', '0.001');
+% Channel 1 permits exactly one FIFO reader. Publish its message bus so the
+% Virtual VCU can consume the same physical CAN stream without adding a
+% second IO614 CAN Read block.
+sharedCanBus = add_block('simulink/Signal Routing/Goto', ...
+    [path '/Shared CAN Message Bus Goto'], ...
+    'GotoTag', 'VirtualVcuSharedCanMessage', 'TagVisibility', 'global', ...
+    'Position', [405 145 555 165]);
+add_line(path, 'IO614 CAN FIFO Read Raw/2', ...
+    'Shared CAN Message Bus Goto/1', 'autorouting', 'on');
 % Received Ephorus control frames leave the boundary through global Gotos,
 % mirroring how the transmitted payloads enter it. EPHORUSSYSTEMSTATUSSTEP
 % retains them into its decoder bank so the four channels can actually
@@ -857,17 +866,12 @@ end
 %
 % CHANNEL SELECTION -- branch-specific, see MTI680_LWS_INTEGRATION_PLAN.MD
 % "Branch-specific model locations". These writes stay on IO614 id 1,
-% channel 1 / Port B: the inverter HIL rig's own transmit boundary, the same
-% channel master uses. They are deliberately NOT moved to channel 2 / Port A.
-% Port A is the VIRTUAL VCU's transmit boundary (ADD_VIRTUAL_VCU_TO_MODEL.M),
+% channel 1 / Port B: the shared inverter-HIL and Virtual-VCU boundary.
 % and the LWS/MTi are sensors a VCU READS, not signals it sources -- putting
-% them on Port A would model the VCU transmitting its own steering sensor.
-% Port A and Port B are one bus (the internal loopback PINOUTS.MD S5 and
-% virtual-vcu/docs/carmaker_speedgoat_interface.md describe), so a frame
-% written here is received by the virtual VCU's Port A CAN Read exactly the
-% way this model's Ephorus status frames already reach it. No additional
-% Port A writes are required, and adding a second transmitter for these IDs
-% would put two drivers on one ID. Sensor IDs 0x032/0x034/0x2B0 collide with
+% them on this bus would model the VCU transmitting its own steering sensor.
+% A frame written here is received by the Virtual VCU's channel-1 CAN Read.
+% No additional transmitter is required, and adding a second transmitter for
+% these IDs would put two drivers on one ID. Sensor IDs 0x032/0x034/0x2B0 collide with
 % neither the virtual VCU's 0x186/0x196/0x1A6/0x1B6/0x1F5 nor the nine
 % Ephorus status IDs.
 sensorFrom = add_block('simulink/Signal Routing/From', ...

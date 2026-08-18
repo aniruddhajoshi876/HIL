@@ -37,7 +37,7 @@ This is a viable mechanism only in this topology:
 ```text
 CarMaker/HIL real-time host + configured physical CAN channel
        ↕ physical, terminated 1-Mbit/s CAN
-Speedgoat IO614 Port A / CAN channel 2 ↔ virtual VCU + inverter HIL
+Speedgoat IO614 Port B / CAN channel 1 ↔ virtual VCU + inverter HIL
 ```
 
 The manuals support the CarMaker half of that diagram; they do **not** state that a Windows/Office CarMaker virtual CAN network is bridgeable to a Speedgoat CAN port. The documented virtual-CAN module is a CarMaker virtual network (up to eight nodes) enabled with `-io can`; it is not documented as an Ethernet CAN tunnel or external-PC interface. [UsersGuide_HIL.pdf, §3.6.4 “virtual CAN Module - vCAN”, p. 51]
@@ -76,15 +76,15 @@ For XCP, define the ECU side/A2L, activate the ECU in the XCP configuration, sel
 
 ### Verified bench facts
 
-- TargetPC1 is `10.10.10.5`. `PINOUTS.md` identifies IO614 as the four-channel HS-CAN/LIN module, maps connector A to CAN channel 2 and connector B to CAN channel 1, and records the virtual VCU on Port A/channel 2 at 1 Mbit/s. `README.md` says the existing virtual VCU reads inverter status and transmits pedal plus four control frames on that port.
-- `virtual-vcu/+virtualvcu/config.m` sets CAN channel 2, Port A, `1e6` bit/s, DLC 8, control IDs `0x186/0x196/0x1A6/0x1B6`, status IDs `0x383/0x385/0x393/0x395/0x3A3/0x3A5/0x3B3/0x3B5/0x400`, and pedal CAN ID `0x1F5` (501 decimal). `README.md` records standard 11-bit IDs and that `0x1F5` is not in `MFE26_Inverter.dbc`.
+- TargetPC1 is `10.10.10.5`. `PINOUTS.md` identifies IO614 as the four-channel HS-CAN/LIN module; the combined model uses connector B, CAN channel 1, at 1 Mbit/s for both logical nodes. `README.md` says the Virtual VCU reads inverter status and transmits pedal plus four control frames on that shared port.
+- `virtual-vcu/+virtualvcu/config.m` sets CAN channel 1, Port B, `1e6` bit/s, DLC 8, control IDs `0x186/0x196/0x1A6/0x1B6`, status IDs `0x383/0x385/0x393/0x395/0x3A3/0x3A5/0x3B3/0x3B5/0x400`, and pedal CAN ID `0x1F5` (501 decimal). `README.md` records standard 11-bit IDs and that `0x1F5` is not in `MFE26_Inverter.dbc`.
 - The same README records a 1 ms virtual-VCU task with 7.5 s precharge and 1.5 s buzzer states. It expressly says physical CAN ACK and target deployment remain unverified. `PINOUTS.md` records that the IO614 interface itself has no termination and uses HS CANL pin 2 / CANH pin 7, so the physical bus must have two end terminators.
 
 ### Is CAN coupling plausible?
 
 **Yes, conditionally:** CarMaker 12.0.1 HIL documents a DBC-driven CAN RBS that can communicate with real ECUs and map received/transmitted DBC signals to CarMaker quantities. The bench's `MFE26_Inverter.dbc` is therefore a suitable input artifact for CarMaker's RBS configuration. [UsersGuide_HIL.pdf, §4, pp. 53-56, 58; §4.5.2 “CAN”, p. 68]
 
-**But it is not proven deployable with the installed components:** the local documentation does not say that CarMaker 12.0.1 can run its CAN RBS on the Speedgoat machine, directly use Speedgoat IO614, or bridge CarMaker virtual CAN across Ethernet into IO614. A real CAN connection requires CarMaker to run on a supported HIL/real-time platform with a configured CAN channel, then cable that channel to the Speedgoat Port A bus with bitrate, 11-bit-ID filters, grounding, and termination checked. The existing Port A already has a virtual VCU transmitter, so the CarMaker ECU assignment must prevent duplicate transmitters for `0x186/0x196/0x1A6/0x1B6`, `0x1F5`, or the status IDs.
+**But it is not proven deployable with the installed components:** the local documentation does not say that CarMaker 12.0.1 can run its CAN RBS on the Speedgoat machine, directly use Speedgoat IO614, or bridge CarMaker virtual CAN across Ethernet into IO614. A real CAN connection requires CarMaker to run on a supported HIL/real-time platform with a configured CAN channel, then cable that channel to the Speedgoat Port B bus with bitrate, 11-bit-ID filters, grounding, and termination checked. The combined Port B bus already has a Virtual VCU transmitter, so the CarMaker ECU assignment must prevent duplicate transmitters for `0x186/0x196/0x1A6/0x1B6`, `0x1F5`, or the status IDs.
 
 ### What CarMaker should calculate versus what the bench must marshal
 
@@ -107,7 +107,7 @@ If embedded CM4SL is chosen, CarMaker can provide ordinary Simulink signals/dict
 - No local manual passage found for a generic standalone CarMaker ↔ Speedgoat Ethernet real-time signal protocol, its port numbers, synchronization/clock discipline, or latency/jitter limits. The TCP 12350 reference is GUI/Matlab connection only. [ProgrammersGuide.pdf, §6.1.1, p. 174]
 - No local manual passage found that turns CarMaker virtual CAN into external CAN, an Ethernet tunnel, or a Speedgoat IO614 endpoint. Virtual CAN therefore cannot be assumed to close this physical bench loop. [UsersGuide_HIL.pdf, §3.6.4, p. 51]
 - The exact vehicle model, wheel/motor topology, torque-to-wheel mapping, pedal interpretation, and feedback signals necessary for a meaningful vehicle-dynamics loop are absent from the specified bench contract. `MFE26_Inverter.dbc` defines the inverter-side frames but does not by itself define a CarMaker vehicle interface.
-- Physical status is not confirmed: the virtual-VCU README explicitly withholds claims of target deployment, Port A/Port B CAN ACK, and analog loopback; CAN termination and transmitter ownership must be checked on the actual wiring before energizing the bus.
+- Physical status is not confirmed: the virtual-VCU README explicitly withholds claims of target deployment, Port B CAN ACK, and analog loopback; CAN termination and transmitter ownership must be checked on the actual wiring before energizing the bus.
 - XCP role compatibility is unverified: the manuals document CarMaker's A2L-based ECU configuration and CAN/Ethernet transports, but not a Speedgoat XCP counterpart or an A2L for this HIL application. [UsersGuide_HIL.pdf, §5.1-5.2, pp. 81-85, 101-107]
 
 ## 5. Addendum: XCP-over-Ethernet architecture (chosen direction, 2026-08-12)
@@ -147,9 +147,9 @@ Independently, at the CarMaker XCP dialog, the user selects only the required A2
 
 The earlier draft of this addendum flagged an open question: if CarMaker pedal demand arrived via XCP directly into the Simulink signal path, it would bypass the physical IO183 AO-to-AI loopback and make that stage software-in-the-loop instead of hardware-in-the-loop.
 
-The team has since clarified the actual plan: **the physical voltage loopback (IO183 AO01-AO04 to AI01-AI04) and the physical CAN bus (IO614) both stay in place.** `step.m` continues to receive `measuredVoltageV` from real AI hardware fed by a real analog loopback, exactly as `PINOUTS.md` and `virtual-vcu/README.md` describe today, and inverter control/status continues over the existing physical CAN contract on Port A/channel 2. [Local source: `PINOUTS.md`; `virtual-vcu/README.md`; `+virtualvcu/config.m`; `+virtualvcu/step.m`]
+The team has since clarified the actual plan: **the physical voltage loopback (IO183 AO01-AO04 to AI01-AI04) and the physical CAN bus (IO614) both stay in place.** `step.m` continues to receive `measuredVoltageV` from real AI hardware fed by a real analog loopback, exactly as `PINOUTS.md` and `virtual-vcu/README.md` describe today, and inverter control/status continues over the shared physical CAN contract on Port B/channel 1. [Local source: `PINOUTS.md`; `virtual-vcu/README.md`; `+virtualvcu/config.m`; `+virtualvcu/step.m`]
 
-This resolves the coverage question: pedal-read and CAN stay hardware-in-the-loop. It also clarifies what "the CAN loop" actually is: the IO614 Port A / Port B loopback is **internal to the Speedgoat target** — the virtual VCU transmits control frames that `inverter_hil` receives, and `inverter_hil`'s status frames feed back to the virtual VCU. This loop pre-dates and is independent of any CarMaker integration; it is not a bus CarMaker sits on. [Local source: `PINOUTS.md` §5; `virtual-vcu/README.md`]
+This resolves the coverage question: pedal-read and CAN stay hardware-in-the-loop. The combined model uses a single IO614 Port B/channel-1 CAN bus — the Virtual VCU transmits control frames that `inverter_hil` receives, and `inverter_hil`'s status frames feed back to the Virtual VCU through the shared FIFO reader. This loop is independent of any CarMaker integration. [Local source: `PINOUTS.md` §5; `virtual-vcu/README.md`]
 
 **CarMaker's only connection to this bench is the XCP-over-Ethernet link.** There is no separate physical CAN path between CarMaker and the Speedgoat, and none is needed — CarMaker does not have a reason to independently decode `MFE26_Inverter.dbc` off a bus it was never wired onto. Consequently, XCP is not merely a diagnostic side-channel: it is CarMaker's *only* source for any control-relevant data it needs (e.g. torque request/estimate, whatever feeds its vehicle-dynamics physics), alongside whatever supplementary state/fault visibility it also wants. There is no fallback data path to lean on.
 
@@ -279,7 +279,7 @@ This checklist implements the settled XCP boundary in the already-existing `inve
 
 17. **Required -- prove the minimal measurement path at the generated-A2L level.** In the XCP master, read the named decoded torque request and each selected state/plausibility/inverter signal while exercising a known state transition and pedal change; verify zero torque when its existing drive gate is false and compare the measurements with the local observer/GUI where that observer exists. [Local source: `virtual-vcu/+virtualvcu/step.m:66-80`; `virtual-vcu/models/virtualVcuDeployStep.m:177-193`; `inverter_hil/+inverterhilgui/targetSession.m:350-410`; externally sourced: [MathWorks, Calibrate Real-Time Application](https://www.mathworks.com/help/slrealtime/ug/calibrate-real-time-application.html)]
 
-18. **Only required if a rebuild changed model observability or the deployed application -- rerun the local structural verifier before live XCP testing.** It checks the `Virtual VCU` boundary, IO614 channel 2, five CAN writes, and the expected control/pedal IDs, protecting the existing physical-CAN contract while the XCP observers are added. [Local source: `virtual-vcu/models/verify_virtual_vcu_model.m:7-37`]
+18. **Only required if a rebuild changed model observability or the deployed application -- rerun the local structural verifier before live XCP testing.** It checks the `Virtual VCU` boundary, IO614 channel 1, five CAN writes, and the expected control/pedal IDs, protecting the shared physical-CAN contract while the XCP observers are added. [Local source: `virtual-vcu/models/verify_virtual_vcu_model.m:7-37`]
 
 ### Items not confirmed locally
 
