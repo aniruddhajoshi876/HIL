@@ -1,17 +1,17 @@
 #INFOFILE1.1 (UTF-8) - Do not remove this line!
 TestRun.Name =
-Vehicle =
+Vehicle = Examples_FS/MFE24_V3
 Trailer =
 Trailer2 =
 Tire.0 =
 Tire.1 =
 Tire.2 =
 Tire.3 =
-Road.FName = .tmp__alexc.1
+Road.FName = FS_Germany_2017.rd5
 Vehicle.Routing.Type = Route
-Vehicle.Routing.ObjId = 191
+Vehicle.Routing.ObjId = 258
 Vehicle.StartPos.Type = Route
-Vehicle.StartPos.ObjId = 191
+Vehicle.StartPos.ObjId = 258
 Vehicle.StartPos = 0.0 0.0
 Vehicle.StartPos.Orientation = 0.0
 DrivMan.nMan = 1

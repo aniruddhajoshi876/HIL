@@ -2,7 +2,7 @@
 FileIdent = CarMaker-TestRun 12
 FileCreator = CarMaker for Simulink 12.0.1
 Description:
-Vehicle = Examples_FS/MFE24_V3
+Vehicle = Examples_FS/MFE26_V1
 Trailer =
 Tire.0 =
 Tire.1 =
@@ -24,11 +24,11 @@ TrailerLoad.1.mass = 0
 TrailerLoad.1.pos = 0 0 0
 TrailerLoad.2.mass = 0
 TrailerLoad.2.pos = 0 0 0
-Road.FName = Decarie.rd5
+Road.FName = Brechin_2023.rd5
 Vehicle.Routing.Type = Route
-Vehicle.Routing.ObjId = 12
+Vehicle.Routing.ObjId = 191
 Vehicle.StartPos.Type = Route
-Vehicle.StartPos.ObjId = 12
+Vehicle.StartPos.ObjId = 191
 Vehicle.StartPos = 0.0 0.0
 Vehicle.StartPos.Orientation = 0.0
 DrivMan.nMan = 1

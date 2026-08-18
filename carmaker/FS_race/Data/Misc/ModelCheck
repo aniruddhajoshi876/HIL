@@ -1,6 +1,6 @@
 #INFOFILE1.1 (UTF-8) - Do not remove this line!
 FileIdent = CarMaker-ModelCheck 9
-FileCreator = CarMaker for Simulink 12.0.1 2023-5-24
+FileCreator = CarMaker 12.0.1 2023-5-24
 OutputDir = ModelCheck
 Reference.Show = 0
 VehicleConf.Hide = 0
