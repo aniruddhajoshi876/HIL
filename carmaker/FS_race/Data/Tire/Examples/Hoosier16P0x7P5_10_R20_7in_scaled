@@ -1,0 +1,207 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = CarMaker-Tire-MF52 2
+FileCreator = CarMaker for Simulink 12.0.1
+
+Description:
+
+
+## General ###############################################################
+Side = left
+StandStill.cLong = 0.01
+StandStill.cSide = 0.2
+StandStill.vMax = 2.0
+
+
+## Visualization #########################################################
+FLoadMax = 10000.0
+NomWidth = 0.1905
+RimRadius = 0.1333
+
+
+## MF-Tire ###############################################################
+muRoad = 1.0
+
+# [MDI_HEADER]
+MDI_Header.FILE_TYPE = tir
+MDI_Header.FILE_VERSION = 2.0
+MDI_Header.FILE_FORMAT = ASCII
+
+# [UNITS]
+Units.LENGTH = meter
+Units.FORCE = newton
+Units.ANGLE = radians
+Units.MASS = kg
+Units.TIME = second
+
+# [MODEL]
+Model.PROPERTY_FILE_FORMAT = MF_05
+Model.USE_MODE = 14
+Model.FITTYP = 6.2
+Model.TYRESIDE = Left
+Model.LONGVL = 16.7
+
+# [DIMENSION]
+Dim.UNLOADED_RADIUS = 0.1975
+Dim.WIDTH = 0.1905
+Dim.RIM_RADIUS = 0.1333
+Dim.RIM_WIDTH = 0.1905
+Dim.ASPECT_RATIO = 0.525
+
+# [SHAPE]
+
+# [VERTICAL]
+Vertical.VERTICAL_STIFFNESS = 306652
+Vertical.VERTICAL_DAMPING = 300
+Vertical.BREFF = 8.39
+Vertical.DREFF = 0.1975
+Vertical.FREFF = 0.07355
+Vertical.FNOMIN = 675
+
+# [RANGE]
+Range.KPUMIN = -1.5
+Range.KPUMAX = 1.5
+Range.ALPMIN = -1.5
+Range.ALPMAX = 1.5
+Range.CAMMIN = -0.175
+Range.CAMMAX = 0.175
+Range.FZMIN = 100
+Range.FZMAX = 10000
+
+# [SCALING]
+Scale.LFZO = 1
+Scale.LCX = 1
+Scale.LMUX = 1
+Scale.LEX = 1
+Scale.LKX = 1
+Scale.LHX = 1
+Scale.LVX = 1
+Scale.LGAX = 1.0
+Scale.LCY = 1
+Scale.LMUY = 0.6
+Scale.LEY = 1
+Scale.LKY = 1
+Scale.LHY = 1
+Scale.LVY = 1
+Scale.LGAY = 1.0
+Scale.LTR = 1
+Scale.LRES = 1
+Scale.LGAZ = 1.0
+Scale.LXAL = 1
+Scale.LYKA = 1
+Scale.LVYKA = 1
+Scale.LS = 1
+Scale.LSGKP = 1.0
+Scale.LSGAL = 1.0
+Scale.LGYR = 1.0
+Scale.LMX = 1
+Scale.LVMX = 1
+Scale.LMY = 1
+
+# [LONGITUDINAL]
+Long.PCX1 = 1.1110
+Long.PDX1 = 2.3687
+Long.PDX2 = 0
+Long.PDX3 = -0.3960
+Long.PEX1 = 0.8653
+Long.PEX2 = -0.3729
+Long.PEX3 = -0.1356
+Long.PEX4 = -0.0424
+Long.PKX1 = 99.0000
+Long.PKX2 = -15.0000
+Long.PKX3 = -0.5000
+Long.PHX1 = 0.0015
+Long.PHX2 = 0.0100
+Long.PVX1 = -0.0100
+Long.PVX2 = -0.0093
+Long.RBX1 = 5.4040
+Long.RBX2 = 5.2291
+Long.RCX1 = 1.1106
+Long.REX1 = -2.1658
+Long.REX2 = 5.0000
+Long.RHX1 = 0.1000
+Long.PTX1 = 1.5
+Long.PTX2 = 0.180096
+Long.PTX3 = -0.15
+
+# [OVERTURNING]
+OverTurn.QSX1 = -0.0295
+OverTurn.QSX2 = -4.2877
+OverTurn.QSX3 = -0.0854
+
+# [LATERAL]
+Lat.PCY1 = 1.3053
+Lat.PDY1 = 2.5899
+Lat.PDY2 = -0.1245
+Lat.PDY3 = 9.2755
+Lat.PEY1 = -0.1652
+Lat.PEY2 = -0.4057
+Lat.PEY3 = 0.0137
+Lat.PEY4 = 30.0000
+Lat.PKY1 = -46.8566
+Lat.PKY2 = 0.8013
+Lat.PKY3 = -1.1967
+Lat.PHY1 = -0.0001
+Lat.PHY2 = -0.0011
+Lat.PHY3 = 0.039251
+Lat.PVY1 = 0.0086
+Lat.PVY2 = -0.0100
+Lat.PVY3 = -0.9956
+Lat.PVY4 = 0.0867
+Lat.RBY1 = 15.6076
+Lat.RBY2 = 14.4515
+Lat.RBY3 = -0.0124
+Lat.RCY1 = 0.9613
+Lat.REY1 = -0.2000
+Lat.REY2 = 0.8243
+Lat.RHY1 = 0.0047
+Lat.RHY2 = 0.0163
+Lat.RVY1 = 0.0067
+Lat.RVY2 = -0.0296
+Lat.RVY3 = -0.2325
+Lat.RVY4 = 0.0482
+Lat.RVY5 = 2.2000
+Lat.RVY6 = 9.3053
+Lat.PTY1 = 1.75
+Lat.PTY2 = 1.35
+
+# [ROLLING]
+Roll.QSY1 = 0.00702
+Roll.QSY2 = 0
+Roll.QSY3 = 0.001515
+Roll.QSY4 = 8.514E-5
+
+# [ALIGNING]
+Align.QBZ1 = 28.3628
+Align.QBZ2 = -1.6811
+Align.QBZ3 = -15.0000
+Align.QBZ4 = -5.1427
+Align.QBZ5 = 1.6276
+Align.QBZ9 = 1
+Align.QBZ10 = 0.0477
+Align.QCZ1 = 1.1584
+Align.QDZ1 = 0.2500
+Align.QDZ2 = -0.0389
+Align.QDZ3 = -3.0000
+Align.QDZ4 = 9.3985
+Align.QDZ6 = 0.0150
+Align.QDZ7 = -0.0348
+Align.QDZ8 = -4.6309
+Align.QDZ9 = 0.6000
+Align.QEZ1 = 0.7294
+Align.QEZ2 = 0.0975
+Align.QEZ3 = -0.2238
+Align.QEZ4 = -0.0495
+Align.QEZ5 = 2.9444
+Align.QHZ1 = 0.0043
+Align.QHZ2 = -0.0059
+Align.QHZ3 = -0.0352
+Align.QHZ4 = 0.0058
+Align.SSZ1 = 0.0788
+Align.SSZ2 = -0.0293
+Align.SSZ3 = 1.9147
+Align.SSZ4 = -1.5932
+Align.QTZ1 = 0.3
+Align.MBELT = 7.5
+
+
+## Additional ############################################################

@@ -66,7 +66,11 @@ tIOVec IO;
 /*** CarMaker CAN interface */
 
 #define MFE_PCAN_DEVICE		pcan_usb
-#define MFE_PCAN_CHANNEL	1
+/* Probed at init: CarMaker's PCANIO channel numbering vs PCANBasic's
+** PCAN_USBBUS1 handle is not documented, so try the plausible values
+** and keep whichever the driver accepts. */
+static int MFE_PCAN_CHANNEL = 1;
+static const int MFE_PCAN_CHANNEL_CANDIDATES[] = { 0, 1, 0x51 };
 #define MFE_PCAN_BITRATE	1000000
 #define MFE_PCAN_RX_MAX	16
 
@@ -278,12 +282,26 @@ IO_Init (void)
 	MFE_PCAN_Ready = 0;
     }
 
-    if (PCANIO_SetCommParam(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL,
-			    MFE_PCAN_BITRATE, 0, NULL, NULL) != 0) {
+    {
+	int ci, ok = 0;
+	for (ci = 0; ci < (int)(sizeof MFE_PCAN_CHANNEL_CANDIDATES
+			       / sizeof MFE_PCAN_CHANNEL_CANDIDATES[0]); ci++) {
+	    int cand = MFE_PCAN_CHANNEL_CANDIDATES[ci];
+	    if (PCANIO_SetCommParam(MFE_PCAN_DEVICE, cand,
+				    MFE_PCAN_BITRATE, 0, NULL, NULL) == 0) {
+		MFE_PCAN_CHANNEL = cand;
+		ok = 1;
+		Log("PCAN-USB FD: channel index %d accepted by PCANIO\n", cand);
+		break;
+	    }
+	    Log("PCAN-USB FD: channel index %d rejected, trying next\n", cand);
+	}
+	if (!ok) {
 	LogErrF(EC_Init, "PCAN-USB FD channel %d: 1 Mbit/s classic-CAN setup failed",
 		MFE_PCAN_CHANNEL);
 	PCANIO_Terminate();
 	MFE_PCAN_Ready = 0;
+	}
     }
 
     status = PCANIO_GetStatus(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, status_text);
