@@ -1,0 +1,13 @@
+
+# Simulink / CarMaker model and data artifacts must never be line-ending
+# converted. core.autocrlf=true on this machine injected CRLF into
+# TorqueVect.mdl on checkout, growing it by ~176 KB and producing
+# "ReleaseInfo is invalid" / "invalid document structure" warnings when
+# Simulink parsed it.
+*.mdl   -text
+*.slx   binary
+*.sldd  binary
+*.mlapp binary
+*.mldatx binary
+*.slxc  binary
+*.rd5   binary
