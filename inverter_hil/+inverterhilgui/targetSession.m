@@ -57,12 +57,11 @@ classdef targetSession < handle
         end
 
         function result = connect(obj)
-            %CONNECT Connect, replace the target application, and synchronize.
-            %   CONNECT stops whatever is running, loads the current
-            %   INVERTER_HIL build (which contains inverter HIL and virtual
-            %   VCU together), then reads the target contract and values. The
-            %   separate Start button controls when the loaded application
-            %   begins driving I/O.
+            %CONNECT Connect, ensure the application is running, discover the
+            %contract, and read target values.
+            %   CONNECT loads and starts INVERTER_HIL automatically so one
+            %   Connect click always yields a usable session running the build
+            %   currently on disk (see ENSUREAPPLICATIONRUNNING).
             %
             %   The hardware boundary is now live, so starting the application
             %   does drive the IO183 outputs and transmits the Ephorus status
@@ -269,15 +268,12 @@ classdef targetSession < handle
                 'inverterKnown', false, ...
                 'systemStatus', blankLiveSystemStatus(), ...
                 'rx', blankLiveRx(), ...
-                'vcuStateId', NaN, 'vcuStateKnown', false, ...
-                'pedalPayload', zeros(1, 0, 'uint8'), ...
-                'pedalPayloadKnown', false, ...
-                'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
-                'appsBrakeFault', [], 'appsBrakeFaultKnown', false, ...
-                'xcpPedalsActive', [], 'xcpPedalsActiveKnown', false, ...
+                'vcuStateKnown', false, 'vcuStateId', 0, ... % stays false until a real VCU's CAN status decode is wired up here
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
-                'txMessageCount', NaN);
+                'txMessageCount', NaN, ...
+                'canPedals', [NaN NaN], 'canPedalsKnown', false, ...
+                'canPedalsDriving', false);
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -346,95 +342,6 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 return;
-            end
-
-            % Virtual VCU observer signals are model-generated outputs. They
-            % are useful for state/pedal diagnostics but are not physical CAN
-            % loopback or an ACK from another node.
-            %
-            % GETSIGNAL(block, port) reads port N of a SUBSYSTEM's own
-            % boundary (the Outport blocks placed inside it), not a bare
-            % top-level Out1 block -- see the "Ephorus System Status"
-            % pattern this now matches. Ports: 1=pedal payload,
-            % 2=state ID, 3=main enable, 4=precharge enable,
-            % 5=inverter control enable, 6=pedal TX count
-            % (patch_virtual_vcu_state_outputs.m).
-            try
-                obsPath = 'inverter_hil/Virtual VCU Observability';
-                pedal = obj.Backend.getsignal(obsPath, 1);
-                if numel(pedal) == 8
-                    snapshot.pedalPayload = uint8(reshape(pedal, 1, 8));
-                    snapshot.pedalPayloadKnown = true;
-                end
-                stateId = obj.Backend.getsignal(obsPath, 2);
-                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
-                    snapshot.vcuStateId = double(stateId);
-                    snapshot.vcuStateKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % Observer outputs are optional on older applications.
-            end
-
-            % Port 6: a genuine, target-measured count of pedal (0x1F5)
-            % frames emitted by the Virtual VCU's own CAN Write path (see
-            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port A Pedal TX Counter). Its own
-            % try, matching the pattern used for newer optional ports
-            % elsewhere in this method: this port only exists in
-            % applications built after this fix, so an older running
-            % application must leave the reads above intact and simply
-            % report the count unknown, not blank a good snapshot.
-            try
-                txCount = obj.Backend.getsignal(obsPath, 6);
-                if isnumeric(txCount) && isscalar(txCount) && isfinite(txCount)
-                    snapshot.pedalTxCount = double(txCount);
-                    snapshot.pedalTxCountKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % PEDALTXCOUNT/PEDALTXCOUNTKNOWN stay at their defaults.
-            end
-
-            % Port 8: VIRTUALVCUDEPLOYSTEP.M's own APPSBRAKEFAULT output --
-            % whether the throttle+brake plausibility interlock is actively
-            % suppressing torque right now, a genuine chart-computed value,
-            % not inferred GUI-side from a torque number happening to be
-            % zero. Same optional-port pattern as port 6: an older running
-            % application without this port must leave the reads above
-            % intact and simply report the fault state unknown.
-            try
-                fault = obj.Backend.getsignal(obsPath, 8);
-                if (islogical(fault) || isnumeric(fault)) && isscalar(fault) && ...
-                        isfinite(double(fault))
-                    snapshot.appsBrakeFault = logical(fault);
-                    snapshot.appsBrakeFaultKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
-            end
-
-            % KNOWN REGRESSION (2026-08-14): hil_cmd_xcp_pedals_active used
-            % to be a dictionary PARAMETER, which is why it is read with
-            % GETPARAM rather than GETSIGNAL(OBSPATH, N) like the ports
-            % above. It is now a Simulink.Signal ExportedGlobal data store
-            % instead -- CarMaker cannot write CHARACTERISTICs without its
-            % XCP calibration module, which is absent here, so the three
-            % hil_cmd_xcp_pedals_* entries became MEASUREMENTs so they can
-            % be driven by a STIM sample group. GETPARAM therefore fails on
-            % this name now and the catch below reports it unknown, which
-            % is degraded but safe. Needs re-pointing at whatever the
-            % correct read API for an ExportedGlobal global is.
-            try
-                active = obj.Backend.getparam('hil_cmd_xcp_pedals_active');
-                if (islogical(active) || isnumeric(active)) && isscalar(active) && ...
-                        isfinite(double(active))
-                    snapshot.xcpPedalsActive = logical(active);
-                    snapshot.xcpPedalsActiveKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % XCPPEDALSACTIVE/XCPPEDALSACTIVEKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the
@@ -515,56 +422,53 @@ classdef targetSession < handle
                 % successful transmission; acknowledgement is reported
                 % separately and for real by INVERTERHILGUI.CANACKSTATUS,
                 % from the CAN controller's own bus-off/error-warning
-                % counters read below.
+                % counters read above.
                 snapshot.txPayloads = payloads;
                 snapshot.txPayloadsKnown = true;
-                % The decoded values above are this rig's own generated
-                % inverter-side output (STEPMODEL/STEPPLANT), not an
-                % independently confirmed measurement -- there is no
-                % cross-channel CAN receipt signal wired up to verify it
-                % (see INVERTER_HIL_APP's CREATEINVERTERSTAB, which carries a
-                % permanent disclosure label for exactly this reason).
-                % INVERTERKNOWN is true because there genuinely is decoded
-                % data to show; the "genuinely received" branch below still
-                % overwrites individual channels with independently verified
-                % values if a real CAN round-trip observation is ever wired
-                % up, so this is a floor, not a ceiling, on data quality.
-                snapshot.inverterKnown = true;
-                % SNAPSHOT.SYSTEMSTATUS is NOT blanked here (an earlier
-                % version of this fix did, matching the "not independently
-                % confirmed" caveat above). dcLink12V/34V/switchingFrequency
-                % are not an inverter feedback claim at all -- they are this
-                % rig's own GUI-commanded values (HIL_CMD_DC_LINK12_V/34_V),
-                % packed into the same frame purely to be broadcast, with no
-                % ambiguity about their truthfulness the way channel state/
-                % torque/ready genuinely have. Blanking them meant the NEXT
-                % TRANSITION and TWIN DC-LINK panels could never show
-                % anything but dashes on a bench with no second node to
-                % produce a "genuinely received" 0x400 frame (the FRESH(9)
-                % branch below). The "genuinely received" branch still
-                % overwrites this with independently verified data first if
-                % that path is ever wired up, so this remains a floor, not a
-                % ceiling.
+                % The decoded values above are model output, not measured
+                % inverter feedback. Keep INVERTERKNOWN false so the GUI shows
+                % unavailable rather than presenting simulated state as live.
+                snapshot.inverterKnown = false;
+                snapshot.systemStatus = blankLiveSystemStatus();
             catch err
                 obj.LastError = err.message;
                 % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
             end
 
-            % Port 4: a genuine, target-measured count of status-cycle
+            % Port 5: a genuine, target-measured count of status-cycle
             % payloads emitted (see BUILD_INVERTER_HIL_MODEL's
-            % STATUSCYCLESCRIPT). Its own try, matching port 3 above: this
-            % port only exists in applications built after this fix, so an
-            % older running application must leave everything read above
-            % intact and simply report the count unknown (NaN), not blank a
-            % good snapshot.
+            % STATUSCYCLESCRIPT; port 4 of the same subsystem is
+            % VEHICLESTATE, not this counter). Its own try, matching the
+            % port 3 read above: this port only exists in applications
+            % built after this fix, so an older running application must
+            % leave everything read above intact and simply report the
+            % count unknown (NaN), not blank a good snapshot.
             try
                 txCount = obj.Backend.getsignal( ...
-                    'inverter_hil/Ephorus System Status', 4);
+                    'inverter_hil/Ephorus System Status', 5);
                 snapshot.txMessageCount = double(txCount);
             catch err
                 obj.LastError = err.message;
                 % TXMESSAGECOUNT stays NaN; the GUI shows dashes.
+            end
+
+            % Port 6 is the target's retained CarMakerPedalDemand state:
+            % percent throttle, percent brake, and the exact atomic ownership
+            % flag used by the model-side selectors. A failed optional lookup
+            % remains unknown; it is never interpreted as a healthy dead link.
+            try
+                canPedals = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 6);
+                if isnumeric(canPedals) && numel(canPedals) == 3 && ...
+                        all(isfinite(double(canPedals(1:2)))) && ...
+                        (double(canPedals(3)) == 0 || double(canPedals(3)) == 1)
+                    snapshot.canPedals = reshape(double(canPedals(1:2)), 1, 2);
+                    snapshot.canPedalsDriving = logical(canPedals(3));
+                    snapshot.canPedalsKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
             end
 
             % What the target actually RECEIVED from the VCU, published on
@@ -707,7 +611,7 @@ classdef targetSession < handle
             %ENSUREAPPLICATIONRUNNING Stop only another app, then run ours.
             %   A running INVERTER_HIL is preserved. If another model owns
             %   the target, it is stopped before the integrated inverter HIL
-            %   plus virtual VCU application is loaded and started.
+            %   application is loaded and started.
             state = obj.Backend.applicationState();
             if strcmp(state, 'running')
                 current = obj.Backend.currentApplicationName();

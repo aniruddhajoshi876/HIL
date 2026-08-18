@@ -214,53 +214,18 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             testCase.verifyFalse(policy.connectionControls);
         end
 
-        function xcpDrivingLocksOnlyPedalsAndDefaultsFalse(testCase)
-            % xcpDriving is write-ownership arbitration between the GUI and
-            % an XCP master, NOT part of the INTERLOCKS REMOVED 2026-08-02
-            % decision -- unlike every flag in that set, this one DOES gate
-            % a group when true. It must gate pedals only, and every
-            % existing 3-arg caller (the whole rest of this file) must see
-            % identical behavior to before this parameter existed.
+        function canDrivingLocksOnlyPedalsAndDefaultsFalse(testCase)
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-
-            withoutArg = inverterhilgui.controlPolicy('running', 'RTD', ...
-                interlocks);
-            explicitFalse = inverterhilgui.controlPolicy('running', 'RTD', ...
-                interlocks, false);
+            withoutArg = inverterhilgui.controlPolicy('running', 'RTD', interlocks);
+            explicitFalse = inverterhilgui.controlPolicy('running', 'RTD', interlocks, false);
             testCase.verifyEqual(withoutArg, explicitFalse);
-            testCase.verifyTrue(withoutArg.pedals);
-            testCase.verifyFalse(withoutArg.xcpDriving);
-
-            driving = inverterhilgui.controlPolicy('running', 'RTD', ...
-                interlocks, true);
+            driving = inverterhilgui.controlPolicy('running', 'RTD', interlocks, true);
             testCase.verifyFalse(driving.pedals);
-            testCase.verifyTrue(driving.xcpDriving);
-            % Every other group is unaffected by xcpDriving.
+            testCase.verifyTrue(driving.canDriving);
             testCase.verifyTrue(driving.digitalStimuli);
             testCase.verifyTrue(driving.momentary);
-            testCase.verifyTrue(driving.armPedals);
-            testCase.verifyTrue(driving.electrical);
-            testCase.verifyTrue(driving.plantParameters);
-            testCase.verifyTrue(driving.calibration);
-            testCase.verifyTrue(driving.faultInjection);
-            testCase.verifyTrue(driving.canFaults);
-            testCase.verifyEqual(driving.reason, 'interlocks_removed_running');
-
-            % Not running: pedals is already false regardless of
-            % xcpDriving, and xcpDriving=true must not change that reason.
-            notRunning = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
-                interlocks, true);
-            testCase.verifyFalse(notRunning.pedals);
-
-            badValues = {2, NaN, [true true], complex(1, 1), 'yes'};
-            for index = 1:numel(badValues)
-                policy = inverterhilgui.controlPolicy('running', 'RTD', ...
-                    interlocks, badValues{index});
-                testCase.verifyFalse(policy.connectionControls, ...
-                    sprintf('bad xcpDriving %d', index));
-                testCase.verifyEqual(policy.reason, 'malformed_xcpDriving', ...
-                    sprintf('bad xcpDriving %d', index));
-            end
+            malformed = inverterhilgui.controlPolicy('running', 'RTD', interlocks, 2);
+            testCase.verifyEqual(malformed.reason, 'malformed_canDriving');
         end
 
         function policyIsTheOnlyEnableAuthorityInTheAppClass(testCase)

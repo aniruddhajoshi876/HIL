@@ -1,18 +1,9 @@
-function policy = controlPolicy(applicationState, vcuState, interlocks, xcpDriving)
+function policy = controlPolicy(applicationState, vcuState, interlocks, canDriving)
 %CONTROLPOLICY Single authority for which GUI control groups are enabled.
 %
 %   POLICY = CONTROLPOLICY(APPLICATIONSTATE, VCUSTATE, INTERLOCKS) returns one
 %   logical enable per control group. No callback may re-derive enable state;
 %   every widget takes its Enable value from this function.
-%
-%   POLICY = CONTROLPOLICY(..., XCPDRIVING) additionally takes a scalar
-%   logical, default false when omitted, true while an XCP master (e.g.
-%   CarMaker over Ethernet) is connected and actively driving pedal demand.
-%   This is NOT part of the INTERLOCKS REMOVED 2026-08-02 decision below --
-%   it is write-ownership arbitration between two legitimate writers of the
-%   same two dictionary entries (hil_cmd_pedals_throttle/brake), not a safety
-%   gate, and only ever affects POLICY.PEDALS. See
-%   virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 3.
 %
 %   UNRESOLVED PLAN OPEN DECISION 18 - "Which GUI controls are allowed during
 %   Drive versus Idle/stopped operation" is not answered by the plan. The
@@ -49,6 +40,7 @@ policy = struct( ...
     'armPedals', false, ...
     'plausibilityViolation', false, ...
     'digitalStimuli', false, ...
+    'sensorStimulus', false, ...
     'momentary', false, ...
     'electrical', false, ...
     'plantParameters', false, ...
@@ -56,20 +48,20 @@ policy = struct( ...
     'faultInjection', false, ...
     'canFaults', false, ...
     'logExport', true, ...
-    'xcpDriving', false, ...
+    'canDriving', false, ...
     'expertGroupsUnlocked', false, ...
     'reason', 'malformed_input');
 
-if nargin < 4 || isempty(xcpDriving)
-    xcpDriving = false;
+if nargin < 4 || isempty(canDriving)
+    canDriving = false;
 end
-if ~(islogical(xcpDriving) || isnumeric(xcpDriving)) || ~isscalar(xcpDriving) || ...
-        ~isreal(xcpDriving) || ~isfinite(double(xcpDriving)) || ...
-        ~(double(xcpDriving) == 0 || double(xcpDriving) == 1)
-    policy.reason = 'malformed_xcpDriving';
+if ~(islogical(canDriving) || isnumeric(canDriving)) || ~isscalar(canDriving) || ...
+        ~isreal(canDriving) || ~isfinite(double(canDriving)) || ...
+        ~(double(canDriving) == 0 || double(canDriving) == 1)
+    policy.reason = 'malformed_canDriving';
     return;
 end
-xcpDriving = logical(xcpDriving);
+canDriving = logical(canDriving);
 
 applicationState = normalizeText(applicationState);
 vcuState = upper(normalizeText(vcuState));
@@ -140,13 +132,12 @@ end
 %   enabling those widgets would only produce write errors.
 running = lifecycle.isRunning;
 
-% Pedals: while xcpDriving is true, an XCP master owns
-% hil_cmd_pedals_throttle/brake and the GUI is diagnostic/read-only for
-% that group -- write-ownership arbitration, not a safety interlock (see
-% this function's header). Every other group is unaffected by xcpDriving.
-policy.pedals = running && ~xcpDriving;
-policy.xcpDriving = xcpDriving;
+% CAN ownership is a writer-arbitration fact, not a safety interlock. It
+% affects only the two pedal widgets; all other GUI controls keep policy.
+policy.pedals = running && ~canDriving;
+policy.canDriving = canDriving;
 policy.digitalStimuli = running;
+policy.sensorStimulus = running;
 policy.momentary = running;
 policy.armPedals = running;
 policy.plausibilityViolation = running;

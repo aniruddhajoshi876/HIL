@@ -8,6 +8,7 @@ p.status3X3Ids = uint32([hex2dec('383'), hex2dec('393'), ...
 p.status3X5Ids = uint32([hex2dec('385'), hex2dec('395'), ...
     hex2dec('3A5'), hex2dec('3B5')]);
 p.systemStatusId = uint32(hex2dec('400'));
+p.pedalDemandId = uint32(hex2dec('500'));
 p.statusCycleIds = uint32([hex2dec('383'), hex2dec('385'), ...
     hex2dec('393'), hex2dec('395'), hex2dec('3A3'), ...
     hex2dec('3A5'), hex2dec('3B3'), hex2dec('3B5'), ...
@@ -51,6 +52,10 @@ p.torqueProfiles.vcu256.verified = true;
 
 p.timing.commandTorqueZeroMs = uint32(50);
 p.timing.commandErrorMs = uint32(500);
+% CarMakerPedalDemand is a 1-ms retained input. 100 ms tolerates ordinary
+% host jitter but fails safely long before an operator can mistake a dead
+% command link for a held pedal.
+p.timing.pedalDemandTimeoutMs = uint32(100);
 p.timing.controlPinTorqueZeroS = 100e-6;
 p.timing.positionErrorS = 350e-6;
 p.timing.resetFloorS = 500e-6;

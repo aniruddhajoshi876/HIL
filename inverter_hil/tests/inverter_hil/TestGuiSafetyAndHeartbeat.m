@@ -217,8 +217,8 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 'not_connected');
 
             session.connect();
-            % CONNECT starts the integrated inverter HIL plus virtual VCU
-            % application when no target application is running.
+            % CONNECT starts the integrated inverter HIL application when no
+            % target application is running.
             testCase.verifyEqual(session.State, 'running');
             testCase.verifyTrue(session.describeState().isRunning);
             testCase.verifyEqual(session.load('inverter_hil').reason, ...

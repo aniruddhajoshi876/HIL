@@ -63,6 +63,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'SearchDepth', 1, 'BlockType', 'Inport'));
             testCase.verifyEmpty(find_system(testCase.Hardware, ...
                 'SearchDepth', 1, 'BlockType', 'Outport'));
+            % The installed Speedgoat IO183 blocks announce their own
+            % end-of-support with a warning on every diagram update. That
+            % says nothing about this model, so silence that one identifier
+            % and let every other warning still fail the check -- the point
+            % of this assertion is that the model updates cleanly, not that
+            % the vendor library is on a current release.
+            previousWarnings = warning('off', 'Speedgoat:Deprecation');
+            restoreWarnings = onCleanup(@() warning(previousWarnings)); %#ok<NASGU>
             testCase.verifyWarningFree(@() set_param(testCase.Model, ...
                 'SimulationCommand', 'update'));
         end
@@ -114,12 +122,15 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN and LIN Setup '; ...
                 'speedgoatlib_IO614/CAN Read '; ...
                 'speedgoatlib_IO614/CAN Status '};
+            % Nine inverter status frames (0x383..0x400), the two
+            % CarMaker telemetry frames (0x501, 0x502), and the three
+            % sensor frames (0x032, 0x034, 0x2B0).
             expected = [expected; repmat( ...
-                {'speedgoatlib_IO614/CAN Write '}, 9, 1)];
+                {'speedgoatlib_IO614/CAN Write '}, 14, 1)];
             % Added from canlib, but the link resolves to the underlying
             % shared CAN message library that canlib forwards to.
             expected = [expected; repmat( ...
-                {'canmsglib/CAN Pack'}, 9, 1)];
+                {'canmsglib/CAN Pack'}, 14, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -132,7 +143,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 26);
+            testCase.verifyNumElements(linked, 36);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...
@@ -192,24 +203,22 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
                 'canChn1', 'CAN (HS)'; ...
-                'canChn2', 'CAN (HS)'; ...
+                'canChn2', 'Disabled'; ...
                 'canChn3', 'Disabled'; ...
                 'canChn4', 'Disabled'; ...
-                'arbBdrChn1', '1.0 MBaud'; ...
-                'arbBdrChn2', '1.0 MBaud'});
+                'arbBdrChn1', '1.0 MBaud'});
             % useBusOut ON is required by the RX path, not incidental: the Rx
             % Bus Selector can only split port 2 when it is a CAN_MESSAGE
-            % bus. ts is 0.001 (the model's base rate): the virtual VCU
-            % transmits five CAN IDs every 5 ms (1000 msg/s), and a single
-            % FIFO pop every 5 ms (200 msg/s) permanently fell behind. A
-            % naive fix that just raised this ts put the WHOLE status-cycle
-            % chain -- state machine, plant, CAN Pack/Write -- on a 1 ms rate
-            % that collided with the CAN Write blocks' own explicit 5 ms
-            % rate; ephorusRxRetentionRunsFasterThanStatusCycle below locks
-            % in the actual fix (retention split into its own 1 ms block,
-            % joined to the unchanged 5 ms status-cycle block by a Rate
-            % Transition) so neither half of that split can drift back out
-            % of sync silently.
+            % bus. ts is 0.001 (the model's base rate): a commanding VCU can
+            % transmit fast enough that a single 5 ms FIFO pop (200 msg/s)
+            % permanently falls behind. A naive fix that just raised this ts
+            % put the WHOLE status-cycle chain -- state machine, plant, CAN
+            % Pack/Write -- on a 1 ms rate that collided with the CAN Write
+            % blocks' own explicit 5 ms rate; ephorusRxRetentionRunsFaster-
+            % ThanStatusCycle below locks in the actual fix (retention split
+            % into its own 1 ms block, joined to the unchanged 5 ms status-
+            % cycle block by a Rate Transition) so neither half of that
+            % split can drift back out of sync silently.
             TestModelArtifacts.verifyParameters(testCase, read, { ...
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
@@ -249,20 +258,37 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
             testCase.verifyEqual(actualIds, expectedIds, ...
                 'CAN Write UserData IDs must retain status-cycle order.');
+
+            telemetryIds = uint32(hex2dec({'501', '502'})).';
+            for index = 1:numel(telemetryIds)
+                path = sprintf('%s/CAN Write 0x%03X', testCase.Hardware, ...
+                    telemetryIds(index));
+                testCase.verifyNotEqual(getSimulinkBlockHandle(path), -1);
+                testCase.verifyEqual(get_param(path, 'UserData'), telemetryIds(index));
+                TestModelArtifacts.verifyParameters(testCase, path, { ...
+                    'moduleType', 'IO614'; ...
+                    'id', '1'; ...
+                    'channel', '1'; ...
+                    'canType', 'CAN (HS)'; ...
+                    'useBusIn', 'off'; ...
+                    'numOfMsg', '1'; ...
+                    'enableStatusPort', 'on'; ...
+                    'ts', '0.005'; ...
+                    'UserDataPersistent', 'on'});
+            end
         end
 
         function ephorusRxRetentionRunsFasterThanStatusCycle(testCase)
             % Locks in the CAN RX drain-rate fix: retention (EPHORUS RX
             % RETENTION) must run at the 1 ms base rate so it can pop the
-            % FIFO fast enough to keep up with the virtual VCU's five CAN
-            % IDs every 5 ms (1000 msg/s); the state machine/plant/CAN-write
-            % chain (EPHORUS STATUS CYCLE) must stay on the original 5 ms
-            % status-cycle rate the CAN Write blocks require, joined to the
-            % fast block by an explicit Rate Transition rather than a
-            % silently-inherited one. If either half of this drifts back
-            % onto a single shared rate, either the FIFO backs up again or
-            % the CAN Write rate collision this split exists to avoid comes
-            % back.
+            % FIFO fast enough to keep up with a commanding VCU's CAN
+            % traffic; the state machine/plant/CAN-write chain (EPHORUS
+            % STATUS CYCLE) must stay on the original 5 ms status-cycle
+            % rate the CAN Write blocks require, joined to the fast block
+            % by an explicit Rate Transition rather than a silently-
+            % inherited one. If either half of this drifts back onto a
+            % single shared rate, either the FIFO backs up again or the CAN
+            % Write rate collision this split exists to avoid comes back.
             statusPath = [testCase.Model '/Ephorus System Status'];
             retention = [statusPath '/Ephorus RX Retention'];
             statusCycle = [statusPath '/Ephorus Status Cycle'];
@@ -282,10 +308,11 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 ['Ephorus RX Retention takes the 6 physical RX fields plus ' ...
                 'the CAN control-frame drop mask.']);
             statusPorts = get_param(statusCycle, 'PortHandles');
-            testCase.verifyNumElements(statusPorts.Inport, 11, ...
+            testCase.verifyNumElements(statusPorts.Inport, 12, ...
                 ['Ephorus Status Cycle takes the rate-transitioned ' ...
-                'observation matrix plus the 10 remaining GUI-command ' ...
-                'inputs.']);
+                'observation matrix plus the 11 remaining GUI-command ' ...
+                'inputs (load torque x4, connected x4, dc-link x2, ' ...
+                'steering angle).']);
         end
 
         function dictionaryContractAndSafeDefaultsAreExact(testCase)
@@ -405,6 +432,31 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'hil_hardware_preflight_complete'));
             testCase.verifyTrue(TestModelArtifacts.value(section, ...
                 'hil_torque_results_provisional'));
+        end
+
+        function carMakerPedalSelectorIsAtomicAndImmediatelyUpstream(testCase)
+            hw = [testCase.Model '/Hardware I O - PRE-FLIGHT DISABLED'];
+            pedal = [hw '/Pedal Voltage Calibration'];
+            selectors = {'Throttle Source Switch', 'Brake Source Switch'};
+            for index = 1:numel(selectors)
+                selector = [hw '/' selectors{index}];
+                testCase.verifyNotEqual(getSimulinkBlockHandle(selector), -1);
+                testCase.verifyEqual(get_param(selector, 'Criteria'), 'u2 ~= 0');
+                handles = get_param(selector, 'PortHandles');
+                ownershipLine = get_param(handles.Inport(2), 'Line');
+                ownershipSource = get_param( ...
+                    get_param(ownershipLine, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(ownershipSource, ...
+                    matlab.unittest.constraints.ContainsSubstring( ...
+                    'CarMaker Pedal Demand Demux'));
+            end
+            pedalHandles = get_param(pedal, 'PortHandles');
+            for port = 1:2
+                line = get_param(pedalHandles.Inport(port), 'Line');
+                source = get_param(get_param(line, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(source, ...
+                    matlab.unittest.constraints.ContainsSubstring(selectors{port}));
+            end
         end
 
         function preflightGateIsEnforcedByTopology(testCase)
