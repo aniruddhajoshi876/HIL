@@ -1,0 +1,44 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = CarMaker-TestRun 12
+FileCreator = CarMaker 12.0.1
+Description:
+	Proposed design not built: CAN/RBS HIL bring-up for the real VC.
+	CarMaker is the SOURCE of pedals: this maneuver ramps then holds Gas, so
+	the last transmitted CarMakerPedalDemand value is non-zero. A zero-hold
+	proves no command path. Vehicle is a 4-motor BEV so TorqueVect.mdl's
+	PT.Motor{,1,2,3}.{Trq,rotv} and PT.PwrSupply.HV1.Pwr quantities exist.
+	Do not use until GUI-generated RBS configuration and physical CAN proof pass.
+Vehicle = Examples_FS/MFE24_V3
+Road.FName = straigth7500.rd5
+Vehicle.Routing.Type = Route
+Vehicle.Routing.ObjId = 12
+Vehicle.StartPos.Type = Route
+Vehicle.StartPos.ObjId = 12
+Vehicle.StartPos = 0 0
+DrivMan.nMan = 1
+DrivMan.Man.Start.Velocity = 0
+DrivMan.Man.Start.SteerAng = 0
+DrivMan.Man.Start.OperatorActive = 1
+DrivMan.Man.Start.OperatorState = drive
+DrivMan.VhclOperator.Kind = IPGOperator 1
+DrivMan.Man.0.nLongSteps = 1
+DrivMan.Man.0.nLatSteps = 1
+DrivMan.Man.0.CombinedSteps = 1
+DrivMan.Man.0.MaxExec = 1
+DrivMan.Man.0.Transition.Interrupt = end
+DrivMan.Man.0.Transition.EndCond = end
+DrivMan.Man.0.LongStep.0.Info = Ramp Gas to 20 percent over 10 s, then hold
+DrivMan.Man.0.LongStep.0.TimeLimit = 300
+DrivMan.Man.0.LongStep.0.Dyn = Manual
+DrivMan.Man.0.LongStep.0.Gas = 0.2 0.0 10.0 abs
+DrivMan.Man.0.LongStep.0.Brake = 0.0 0.0 0.0 abs
+DrivMan.Man.0.LongStep.0.Clutch = 0.0 0.0 0.0 abs
+DrivMan.Man.0.LongStep.0.BrakePark = 0.0 0.0 0.0 abs
+DrivMan.Man.0.LatStep.0.Info = Hold straight
+DrivMan.Man.0.LatStep.0.TimeLimit = 300
+DrivMan.Man.0.LatStep.0.Dyn = Step 0 0.0 1.0 abs 1
+DrivMan.Man.0.LatStep.0.SteerMode = Angle
+Traffic.SpeedUnit = ms
+Traffic.N = 0
+Traffic.SourceSink.Active = 0
+DrivMan.OW.Active = 0

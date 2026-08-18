@@ -4,6 +4,6 @@ nDialogQu = 10
 Qu.0.Name = VC.Gas
 Qu.0.Mode = - value
 Qu.0.Count = 20000
-Qu.0.Value = 0
+Qu.0.Value = 1
 Qu.0.Unit = -
 nQu = 1

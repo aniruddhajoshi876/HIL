@@ -215,18 +215,23 @@ Alternative differential allocation held open by the plan:
 | `5V_BP_1` | A9 / AI03 | AI03 | A12 (+), A11 (−) |
 | `5V_BP_2` | A10 / AI04 | AI04 | A14 (+), A13 (−) |
 
-**Pedal voltage generation.** `pedalVoltageCalibration` maps a throttle/brake
-fraction → AO01/AO02 and AO03/AO04 via measured released/pressed endpoints,
-clamped to 0–5 V. That fraction is no longer always the GUI slider: a
-`Throttle Source Switch` / `Brake Source Switch` (Simulink `Switch`,
-`Criteria = u2 ~= 0`) selects between an XCP-driven value and the GUI-owned
-dictionary entry, gated by `hil_cmd_xcp_pedals_active`. Verified routing
-(`verify_pinouts` checks all 10 inputs and 4 outputs):
+**Pedal voltage generation.** `pedalVoltageCalibration` maps selected throttle
+to AO01/AO02 and selected brake to AO03/AO04 via measured released/pressed
+endpoints, clamped to 0–5 V. `CarMakerPedalDemand` is standard DLC-8 CAN ID
+`0x500`, cyclic 10 ms, Intel/little-endian: bytes 1–2 are throttle and bytes
+3–4 brake, each `uint16` raw 0–10000 at 0.01 %/bit; byte 5 holds active in bit
+0 and a modulo-16 alive counter in bits 1–4; byte 6 is CRC-8/SAE-J1850 over
+bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with active, an
+advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+The existing XCP source-select remains available ahead of the GUI values when
+CAN does not own the pedals. CAN has priority, and a model-side zero-hold keeps
+the fallback at zero after CAN loss until both fallback demands return to zero.
+The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
 | Function input | Source (via switch) | Drives |
 |---|---|---|
-| `throttle` | `Throttle Source Switch`: `XCP Throttle Percent To Fraction` if `hil_cmd_xcp_pedals_active`, else `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
-| `brake` | `Brake Source Switch`: `XCP Brake Percent To Fraction` if `hil_cmd_xcp_pedals_active`, else `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
+| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else `XCP Throttle Source Switch` (`hil_cmd_xcp_pedals_throttle` when active, GUI `hil_cmd_pedals_throttle` otherwise) | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
+| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else `XCP Brake Source Switch` (`hil_cmd_xcp_pedals_brake` when active, GUI `hil_cmd_pedals_brake` otherwise) | AO03 (`…_v3`), AO04 (`…_v4`) |
 
 #### Calibration state — all 4 channels set
 
@@ -309,6 +314,9 @@ Digital command sources (all default to `false`/`0` at load):
 still a valid `setparam` target with a live Terminator in GUI Command
 Parameters, but is intentionally **not** wired to a DIO pin — MAIN_BTN_IN is
 driven by `hil_cmd_digital_main_button_sequence` instead (see B2 below).
+Pedal command sources are separate: GUI writes `hil_cmd_pedals_throttle` and
+`hil_cmd_pedals_brake`; XCP uses its three `hil_cmd_xcp_pedals_*` entries; CAN
+ID `0x500` atomically selects its validated demand pair ahead of both.
 
 ### 4.3 Connector B — project signal assignment
 
@@ -416,7 +424,10 @@ uses channel 1 only.
 > with `transmit_pending` stuck true and no successful ACK.
 
 CAN IDs in `inverter_hil`: HIL TX `0x383 0x385 0x393 0x395 0x3A3 0x3A5 0x3B3
-0x3B5 0x400`; HIL RX `0x186 0x196 0x1A6 0x1B6`.
+0x3B5 0x400` plus CarMaker telemetry `0x501` (four torque setpoints) and
+`0x502` (four ready bits), all on CAN 1; HIL RX `0x186 0x196 0x1A6 0x1B6`
+plus CarMaker pedal demand `0x500`. The telemetry contract is authoritative in
+`inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
 ---
 

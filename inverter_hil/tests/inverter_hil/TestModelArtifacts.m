@@ -137,16 +137,15 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN and LIN Setup '; ...
                 'speedgoatlib_IO614/CAN Read '; ...
                 'speedgoatlib_IO614/CAN Status '};
-            % Nine Ephorus status frames plus four synchronized sensor
-            % frames and the distinct Bosch configuration frame
-            % frames (MTi-680G 0x034 acceleration, 0x032 rate-of-turn and
-            % 0x076 velocity, Bosch LWS 0x2B0).
+            % Nine inverter status frames, two CarMaker telemetry frames,
+            % four synchronized sensor frames, and the Bosch configuration
+            % frame: 16 CAN Write/CAN Pack pairs in total.
             expected = [expected; repmat( ...
-                {'speedgoatlib_IO614/CAN Write '}, 14, 1)];
+                {'speedgoatlib_IO614/CAN Write '}, 16, 1)];
             % Added from canlib, but the link resolves to the underlying
             % shared CAN message library that canlib forwards to.
             expected = [expected; repmat( ...
-                {'canmsglib/CAN Pack'}, 14, 1)];
+                {'canmsglib/CAN Pack'}, 16, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -159,7 +158,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 36);
+            testCase.verifyNumElements(linked, 40);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...
@@ -276,6 +275,24 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
             testCase.verifyEqual(actualIds, expectedIds, ...
                 'CAN Write UserData IDs must retain status-cycle order.');
+
+            telemetryIds = uint32(hex2dec({'501', '502'})).';
+            for index = 1:numel(telemetryIds)
+                path = sprintf('%s/CAN Write 0x%03X', testCase.Hardware, ...
+                    telemetryIds(index));
+                testCase.verifyNotEqual(getSimulinkBlockHandle(path), -1);
+                testCase.verifyEqual(get_param(path, 'UserData'), telemetryIds(index));
+                TestModelArtifacts.verifyParameters(testCase, path, { ...
+                    'moduleType', 'IO614'; ...
+                    'id', '1'; ...
+                    'channel', '1'; ...
+                    'canType', 'CAN (HS)'; ...
+                    'useBusIn', 'off'; ...
+                    'numOfMsg', '1'; ...
+                    'enableStatusPort', 'on'; ...
+                    'ts', '0.005'; ...
+                    'UserDataPersistent', 'on'});
+            end
         end
 
         function ephorusRxRetentionRunsFasterThanStatusCycle(testCase)
@@ -484,6 +501,31 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'hil_torque_results_provisional'));
         end
 
+        function carMakerPedalSelectorIsAtomicAndImmediatelyUpstream(testCase)
+            hw = [testCase.Model '/Hardware I O - PRE-FLIGHT DISABLED'];
+            pedal = [hw '/Pedal Voltage Calibration'];
+            selectors = {'Throttle Source Switch', 'Brake Source Switch'};
+            for index = 1:numel(selectors)
+                selector = [hw '/' selectors{index}];
+                testCase.verifyNotEqual(getSimulinkBlockHandle(selector), -1);
+                testCase.verifyEqual(get_param(selector, 'Criteria'), 'u2 ~= 0');
+                handles = get_param(selector, 'PortHandles');
+                ownershipLine = get_param(handles.Inport(2), 'Line');
+                ownershipSource = get_param( ...
+                    get_param(ownershipLine, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(ownershipSource, ...
+                    matlab.unittest.constraints.ContainsSubstring( ...
+                    'CarMaker Pedal Demand Demux'));
+            end
+            pedalHandles = get_param(pedal, 'PortHandles');
+            for port = 1:2
+                line = get_param(pedalHandles.Inport(port), 'Line');
+                source = get_param(get_param(line, 'SrcPortHandle'), 'Parent');
+                testCase.verifyThat(source, ...
+                    matlab.unittest.constraints.ContainsSubstring(selectors{port}));
+            end
+        end
+
         function preflightGateIsEnforcedByTopology(testCase)
             dictionary = Simulink.data.dictionary.open(fullfile( ...
                 testCase.Root, 'inverter_hil.sldd'));
@@ -578,6 +620,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             testCase.verifyFalse(scaffoldOnly && claimsActiveMil, ...
                 ['The annotation claims an active MIL architecture, but each ' ...
                 'channel terminates every input and emits only safe constants.']);
+        end
+
+        function deploymentNeverArmsAStartupApplication(testCase)
+            source = fileread(fullfile(testCase.Root, 'deploy_inverter_hil.m'));
+            testCase.verifySubstring(source, 'clearStartupApp(target)');
+            testCase.verifyEmpty(regexp(source, ...
+                '(?m)^\s*setStartupApp\s*\(', 'once'), ...
+                'Deployment must never configure an application to auto-run.');
         end
     end
 

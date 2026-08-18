@@ -280,7 +280,9 @@ classdef targetSession < handle
                 'txMessageCount', NaN, ...
                 'sensorTxCounts', nan(1, 5), ...
                 'sensorAgesS', nan(1, 5), ...
-                'lwsCalibrationState', NaN);
+                'lwsCalibrationState', NaN, ...
+                'canPedals', [NaN NaN], 'canPedalsKnown', false, ...
+                'canPedalsDriving', false);
             % Sensor blocks start from the same honest no-data snapshot the
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
@@ -741,6 +743,24 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 % TXMESSAGECOUNT stays NaN; the GUI shows dashes.
+            end
+
+            % Port 6 is the target's retained CarMakerPedalDemand state:
+            % percent throttle, percent brake, and the exact atomic ownership
+            % flag used by the model-side selectors. A failed optional lookup
+            % remains unknown; it is never interpreted as a healthy dead link.
+            try
+                canPedals = obj.Backend.getsignal( ...
+                    'inverter_hil/Ephorus System Status', 6);
+                if isnumeric(canPedals) && numel(canPedals) == 3 && ...
+                        all(isfinite(double(canPedals(1:2)))) && ...
+                        (double(canPedals(3)) == 0 || double(canPedals(3)) == 1)
+                    snapshot.canPedals = reshape(double(canPedals(1:2)), 1, 2);
+                    snapshot.canPedalsDriving = logical(canPedals(3));
+                    snapshot.canPedalsKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
             end
 
             % What the target actually RECEIVED from the VCU, published on
