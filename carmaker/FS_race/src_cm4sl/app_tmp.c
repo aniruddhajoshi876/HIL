@@ -19,6 +19,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_DSRT) || defined(_DSRTLX)
+#  include <DsApplicationInterface.h>
+#endif
 
 #include <infoc.h>
 #include <CarMaker.h>
@@ -28,46 +31,42 @@
 extern const char *SetConnectedIO (const char *io);
 
 static const char *CompileLibs[] = {
-    /* ../../../fake/win64/lib/../../../src_lib/Portings/win64/lib/libcar4sl.a */
-    /* ../../../fake/win64/lib/../../../src_lib/Portings/win64/lib/libcarmaker4sl.a */
-    /* ../../../fake/win64/lib/../../../lib/driver/win64/lib/libipgdriver.a */
-    /* ../../../fake/win64/lib/../../../lib/road/win64/lib/libipgroad.a */
-    /* ../../../fake/win64/lib/../../../lib/tire/win64/lib/libipgtire.a */
-    "libcar4sl.a	CarMaker-Car win64 12.0.1 2023-05-24",
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libcarmaker4sl.a */
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libcar4sl.a */
+    /* C:/IPG/carmaker/win64-12.0.1/CM4SL/R2022a/libsupp4sl-win64.a */
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libipgdriver.a */
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libipgroad.a */
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libipgtire.a */
+    /* C:/IPG/carmaker/win64-12.0.1/Matlab/R2022a/libmatsupp-win64.a */
     "libcarmaker4sl.a	CarMaker win64 12.0.1 2023-05-24",
+    "libcar4sl.a	CarMaker-Car win64 12.0.1 2023-05-24",
+    "libsupp4sl-win64.a	",
     "libipgdriver.a	IPGDriver win64 12.0.1.2 2023-05-24",
     "libipgroad.a	IPGRoad win64 12.0.1 2023-05-24",
     "libipgtire.a	IPGTire win64 9.1 2023-03-24",
+    "libmatsupp-win64.a	MATSUPP win64 12.0.1 (R2022a) 2023-05-09",
     NULL
 };
 
 
 static const char *CompileFlags[] = {
-    "-m64 -O3 -DNDEBUG -DWIN32 -DWIN64 -DCM_NUMVER=120001",
-    "-DMYMODELS -Wall -Wimplicit -Wmissing-prototypes",
-    "-D__USE_MINGW_ANSI_STDIO -DUNICODE -Wlogical-op",
-    "-Wno-stringop-overflow -Wno-stringop-truncation",
-    "-Wno-array-parameter -Wno-attributes",
-    "-Wno-packed-not-aligned",
-    "-Wno-address-of-packed-member -DCM4SL",
-    "-U__STRICT_ANSI__",
-    "-I../../../lib/ipc-api/win64/include -Wall",
-    "-malign-double -fomit-frame-pointer",
+    "",
+    "Used compiler options are not available for MS Visual Studio builds.",
     NULL
 };
 
 
 tAppStartInfo   AppStartInfo = {
-    "Car_Generic default",          /* App_Version         */
-    "5",          /* App_BuildVersion    */
-    "jetbrains",     /* App_CompileUser     */
-    "66e0c34c4bd1",         /* App_CompileSystem   */
-    "2023-05-24 12:39:25",  /* App_CompileTime */
+    "Car_Generic ?.?",          /* App_Version         */
+    "3",          /* App_BuildVersion    */
+    "MFE-HPC",     /* App_CompileUser     */
+    "shop_computer_s",         /* App_CompileSystem   */
+    "2026-08-17 23:33:42",  /* App_CompileTime */
 
     CompileFlags,                /* App_CompileFlags  */
     CompileLibs,                 /* App_Libs          */
 
-    "",          /* SetVersion        */
+    "12.0.1",          /* SetVersion        */
 
     NULL,           /* TestRunName       */
     NULL,           /* TestRunFName      */
@@ -193,4 +192,11 @@ App_ExportConfig (void)
 }
 
 
+#if defined(_DS1006)
+void
+IPGRT_Board_Init (void)
+{
+    init();
+}
+#endif
 
