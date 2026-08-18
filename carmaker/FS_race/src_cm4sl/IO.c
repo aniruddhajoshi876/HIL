@@ -82,6 +82,7 @@ unsigned char MFE_CAN_DriveActive;
 
 static int MFE_PCAN_Initialized;
 static unsigned char MFE_PCAN_AliveCounter;
+static int MFE_PCAN_Ready;
 
 
 /*** I/O configuration */
@@ -265,6 +266,37 @@ IO_Init (void)
             return -1;
 #endif /* defined(XENO) */
 
+    /* PCAN link. Deliberately initialised BEFORE the IO_None early return:
+    ** this adapter is not a CarMaker MIO module, so it must not depend on
+    ** CarMaker's -io hardware mode, which is "none" for a normal CM4SL run.
+    ** Failures are logged and leave MFE_PCAN_Ready clear rather than aborting
+    ** init, so the bench still runs with no adapter attached.
+    */
+    MFE_PCAN_Ready = 1;
+    if (PCANIO_Init() != 0) {
+	LogErrF(EC_Init, "PCANIO_Init failed - CAN disabled, CarMaker continues");
+	MFE_PCAN_Ready = 0;
+    }
+
+    if (PCANIO_SetCommParam(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL,
+			    MFE_PCAN_BITRATE, 0, NULL, NULL) != 0) {
+	LogErrF(EC_Init, "PCAN-USB FD channel %d: 1 Mbit/s classic-CAN setup failed",
+		MFE_PCAN_CHANNEL);
+	PCANIO_Terminate();
+	MFE_PCAN_Ready = 0;
+    }
+
+    status = PCANIO_GetStatus(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, status_text);
+    if (status != 0) {
+	LogErrF(EC_Init, "PCAN-USB FD channel %d status 0x%x: %s",
+		MFE_PCAN_CHANNEL, status, status_text);
+	PCANIO_CloseComm(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL);
+	PCANIO_Terminate();
+	MFE_PCAN_Ready = 0;
+    }
+    if (MFE_PCAN_Ready)
+	Log("PCAN-USB FD: CAN link ready on channel %d\n", MFE_PCAN_CHANNEL);
+
     /* hardware configuration "none" */
     if (IO_None)
 	return 0;
@@ -293,30 +325,6 @@ IO_Init (void)
     FST_ConfigureCAN();
 #endif /* defined(XENO) */
 
-    if (PCANIO_Init() != 0) {
-	LogErrF(EC_Init, "PCANIO_Init failed");
-	IO_SelectNone();
-	return -1;
-    }
-
-    if (PCANIO_SetCommParam(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL,
-			    MFE_PCAN_BITRATE, 0, NULL, NULL) != 0) {
-	LogErrF(EC_Init, "PCAN-USB FD channel %d: 1 Mbit/s classic-CAN setup failed",
-		MFE_PCAN_CHANNEL);
-	PCANIO_Terminate();
-	IO_SelectNone();
-	return -1;
-    }
-
-    status = PCANIO_GetStatus(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, status_text);
-    if (status != 0) {
-	LogErrF(EC_Init, "PCAN-USB FD channel %d status 0x%x: %s",
-		MFE_PCAN_CHANNEL, status, status_text);
-	PCANIO_CloseComm(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL);
-	PCANIO_Terminate();
-	IO_SelectNone();
-	return -1;
-    }
 
     MFE_PCAN_Initialized = 1;
     Log("PCAN-USB FD channel %d initialized: 1 Mbit/s classic CAN (%s)\n",
@@ -510,7 +518,7 @@ IO_Out (unsigned CycleNo)
     FST_MsgOut(CycleNo);
 #endif /* defined(CM_HIL) */
 
-    if (CycleNo % 10 != 0)
+    if (!MFE_PCAN_Ready || CycleNo % 10 != 0)
 	return;
 
     throttle = LimitInt((float)(DrivMan.Gas * 10000.0 + 0.5), 0, 10000);
