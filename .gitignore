@@ -41,3 +41,14 @@ codegen/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# CM4SL build outputs (regenerable from the .vcxproj / Makefile)
+carmaker/FS_race/src_cm4sl/Release/
+carmaker/FS_race/src_cm4sl/*.o
+carmaker/FS_race/src_cm4sl/.depend
+carmaker/FS_race/src_cm4sl/libcarmaker4sl.mexw64
+
+# Keep CarMaker's own Data/*/Examples project inputs even though the broad
+# vendor examples/ rule above is intentionally ignored.
+!carmaker/**/Examples/
+!carmaker/**/Examples/**

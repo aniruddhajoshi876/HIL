@@ -60,7 +60,7 @@ save_system(model, modelPath);
 apply_pedal_calibration(dictionaryPath);
 
 % The virtual VCU is part of the same deployable application. Add its
-% isolated Module 3 / IO614 Port A boundary after the base model has been
+% isolated Module 2 / IO614 Port A boundary after the base model has been
 % generated; the integration helper is itself R2024b-gated and idempotent.
 virtualVcuModels = fullfile(fileparts(root), 'virtual-vcu', 'models');
 addpath(virtualVcuModels);

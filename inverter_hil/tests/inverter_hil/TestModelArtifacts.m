@@ -621,6 +621,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 ['The annotation claims an active MIL architecture, but each ' ...
                 'channel terminates every input and emits only safe constants.']);
         end
+
+        function deploymentNeverArmsAStartupApplication(testCase)
+            source = fileread(fullfile(testCase.Root, 'deploy_inverter_hil.m'));
+            testCase.verifySubstring(source, 'clearStartupApp(target)');
+            testCase.verifyEmpty(regexp(source, ...
+                '(?m)^\s*setStartupApp\s*\(', 'once'), ...
+                'Deployment must never configure an application to auto-run.');
+        end
     end
 
     methods (Static, Access = private)

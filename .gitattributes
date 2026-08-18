@@ -1,0 +1,10 @@
+# Simulink / CarMaker model and data artifacts must never be line-ending
+# converted. CarMaker's text-form .mdl files still contain release metadata
+# that is invalidated by automatic CRLF conversion.
+*.mdl   -text
+*.slx   binary
+*.sldd  binary
+*.mlapp binary
+*.mldatx binary
+*.slxc  binary
+*.rd5   binary
