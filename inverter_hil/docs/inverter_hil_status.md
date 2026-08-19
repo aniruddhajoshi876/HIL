@@ -12,8 +12,20 @@ Status date: 2026-07-31
 > resolved to 1/256 Nm/count (see below); and `hil_cmd_can_drop_control_mask`/
 > `hil_cmd_can_drop_status_mask` now genuinely gate received control frames and
 > transmitted status frames. Several claims below (test count, "constant-zero
-> scaffold", "1/512 selected") are stale as a result and are corrected inline
-> rather than rewriting this document's historical narrative wholesale.
+> placeholder", "1/512 selected") are stale as a result and are corrected
+> inline rather than rewriting this document's historical narrative wholesale.
+>
+> **Update, 2026-08-19.** The decorative "MIL architecture" tree this document
+> describes below (`Test Inputs`, `Fault Injection`, `Pedal Sensor Emulation`,
+> `VCU Digital Interface`, a fake `IO614 CAN Interface`, `Ephorus Channel 1-4`,
+> and `Measurements and Logging`) has been deleted from
+> `build_inverter_hil_model.m` rather than left in place as inert dead code:
+> every one of those subsystems terminated its inputs immediately and emitted
+> only constant zeros, with no path into the real CAN/state-machine/plant
+> logic. The real logic -- `addHardwareBoundary`'s live IO183/IO614 I/O,
+> `addGuiCommandParameters`'s GUI-driven values, and `Ephorus System Status`'s
+> `Ephorus RX Retention`/`Ephorus Status Cycle` MATLAB Function blocks -- is
+> unaffected and remains exactly as described below.
 
 ## Implemented and host-verified
 
@@ -31,15 +43,14 @@ Status date: 2026-07-31
 - Four independent PI/P torque responses, anti-windup, slew, lag, motor/load
   dynamics, Id/Iq and DC estimates, thermal states, and derating outputs.
 - `inverter_hil.slx` and `inverter_hil.sldd` saved and reopened in R2024b.
-- (2026-07-31, since superseded -- see the 2026-08-02 update above) A
-  constant-zero MIL scaffold with the required named architecture and four
-  distinct channel paths. The "Ephorus Channel 1-4" subsystem itself
-  (`buildChannel`, `Load Demux`/`DC Link Demux`/`Fault Demux`) is still this:
-  a deliberately unused, bypassed scaffold. But CAN status packing,
+- (2026-07-31, superseded -- see the 2026-08-02 and 2026-08-19 updates above)
+  This originally described a constant-zero MIL placeholder tree with a named
+  architecture and four distinct channel paths. CAN status packing,
   transmission, reception, and decode are genuinely live, driven by the
   `Ephorus Status Cycle` MATLAB Function block calling
-  `inverterhil.stepModel`, not a constant-zero placeholder; see the
-  "Deliberately not claimed" section below.
+  `inverterhil.stepModel`; the decorative, always-inert channel tree it ran
+  alongside has since been deleted outright rather than kept as dead code --
+  see the "Deliberately not claimed" section below.
 - A commented, callback-gated hardware boundary with 17 resolved installed
   Speedgoat links: IO183 setup/AO/AI/DIO and IO614 setup/read/status plus nine
   CAN writes.
@@ -56,20 +67,21 @@ threading commits and the fixes noted above) is **161+ tests, 0 failures**.
 
 ## Deliberately not claimed
 
-(2026-07-31, since substantially superseded -- see the 2026-08-02 update
-above.) At the time this was written, the Simulink channel and CAN subsystems
-were safe constant-output scaffolds and the host core had not yet been
-translated into code-generation-compatible blocks wired into those
+(2026-07-31, substantially superseded -- see the 2026-08-02 and 2026-08-19
+updates above.) At the time this was written, the Simulink channel and CAN
+subsystems were safe constant-output placeholders and the host core had not
+yet been translated into code-generation-compatible blocks wired into those
 subsystems. That is no longer true for CAN: `Ephorus Status Cycle` (a MATLAB
 Function block calling `inverterhil.stepModel`) genuinely packs, transmits,
 and receives/decodes the nine-frame status cycle and the four control frames,
 and the hardware boundary is live on the current bench
 (`hil_hardware_preflight_complete = true`; see `PINOUTS.md` for the current
 gate state). The "Ephorus Channel 1-4" subsystem
-(`buildChannel`/`Load Demux`/`DC Link Demux`/`Fault Demux`) remains the one
-genuinely-unused scaffold, deliberately bypassed rather than resurrected --
+(`buildChannel`/`Load Demux`/`DC Link Demux`/`Fault Demux`) and the rest of
+the decorative architecture tree around it have since been deleted outright:
 GUI-commanded per-channel load torque, connected flag, and DC-link voltage
-route directly into `Ephorus Status Cycle` instead.
+route directly into `Ephorus Status Cycle` instead, exactly as before, but
+there is no longer an unused subsystem in the diagram for them to bypass.
 
 The following planned deliverables remain open:
 

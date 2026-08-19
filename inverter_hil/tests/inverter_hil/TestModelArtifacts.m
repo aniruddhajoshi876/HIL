@@ -103,13 +103,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'DataDictionary'), 'inverter_hil.sldd');
         end
 
-        function requiredArchitectureAndChannelsAreDistinct(testCase)
-            required = {'Test Inputs', 'Fault Injection', ...
-                'Pedal Sensor Emulation', 'VCU Digital Interface', ...
-                'IO614 CAN Interface', 'Ephorus Channel 1', ...
-                'Ephorus Channel 2', 'Ephorus Channel 3', ...
-                'Ephorus Channel 4', 'Ephorus System Status', ...
-                'Measurements and Logging', ...
+        function requiredArchitectureIsPresent(testCase)
+            % The decorative "Test Inputs" / "Fault Injection" / "Pedal
+            % Sensor Emulation" / "VCU Digital Interface" / fake "IO614 CAN
+            % Interface" / "Ephorus Channel 1-4" / "Measurements and
+            % Logging" tree was removed: every one of those subsystems
+            % terminated its inputs immediately and emitted only constant
+            % zeros (see DEADCHANNELSWEREREMOVEDNOTJUSTRELABELED below).
+            required = {'Ephorus System Status', ...
                 'Hardware I O - PRE-FLIGHT DISABLED'};
             for index = 1:numel(required)
                 path = [testCase.Model '/' required{index}];
@@ -117,10 +118,6 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                     sprintf('Missing required architecture block %s.', path));
                 testCase.verifyEqual(get_param(path, 'BlockType'), 'SubSystem');
             end
-
-            channels = arrayfun(@(index) getSimulinkBlockHandle(sprintf( ...
-                '%s/Ephorus Channel %d', testCase.Model, index)), 1:4);
-            testCase.verifyNumElements(unique(channels), 4);
         end
 
         function hardwareBoundaryHasExactResolvedInstalledLinks(testCase)
@@ -214,15 +211,20 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             setup = [testCase.Hardware '/IO614 CAN Setup'];
             read = [testCase.Hardware '/IO614 CAN FIFO Read Raw'];
             status = [testCase.Hardware '/IO614 CAN Diagnostics'];
+            % Channel 2/Port A is deliberately Disabled: the Virtual VCU was
+            % unified onto channel 1/Port B (the inverter boundary's own
+            % transmit boundary) rather than kept on a second channel, so
+            % there is only one physical CAN bus and one arbitration rate to
+            % configure. See build_inverter_hil_model.m's "CHANNEL
+            % SELECTION" comment.
             TestModelArtifacts.verifyParameters(testCase, setup, { ...
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
                 'canChn1', 'CAN (HS)'; ...
-                'canChn2', 'CAN (HS)'; ...
+                'canChn2', 'Disabled'; ...
                 'canChn3', 'Disabled'; ...
                 'canChn4', 'Disabled'; ...
-                'arbBdrChn1', '1.0 MBaud'; ...
-                'arbBdrChn2', '1.0 MBaud'});
+                'arbBdrChn1', '1.0 MBaud'});
             % useBusOut ON is required by the RX path, not incidental: the Rx
             % Bus Selector can only split port 2 when it is a CAN_MESSAGE
             % bus. ts is 0.001 (the model's base rate): the virtual VCU
@@ -590,24 +592,35 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
         end
 
-        function annotationDoesNotOverclaimFunctionalCore(testCase)
-            channelPaths = arrayfun(@(index) sprintf( ...
-                '%s/Ephorus Channel %d', testCase.Model, index), 1:4, ...
-                'UniformOutput', false);
-            scaffoldOnly = true;
-            for index = 1:numel(channelPaths)
-                blocks = find_system(channelPaths{index}, 'SearchDepth', 1, ...
-                    'Type', 'Block');
-                blockTypes = get_param(blocks(2:end), 'BlockType');
-                allowed = {'Inport', 'Outport', 'Terminator', 'Constant'};
-                scaffoldOnly = scaffoldOnly && all(ismember(blockTypes, allowed));
-                testCase.verifyEqual(sum(strcmp(blockTypes, 'Inport')), 4);
-                testCase.verifyEqual(sum(strcmp(blockTypes, 'Terminator')), 4);
-                testCase.verifyEqual(sum(strcmp(blockTypes, 'Constant')), 3);
-                testCase.verifyEqual(sum(strcmp(blockTypes, 'Outport')), 3);
+        function deadChannelsWereRemovedNotJustRelabeled(testCase)
+            % The "Ephorus Channel 1-4" subsystems (buildChannel, plus the
+            % Load/DC Link/Fault Demux and Test Inputs/Fault Injection/
+            % Pedal Sensor Emulation/VCU Digital Interface/fake IO614 CAN
+            % Interface tree feeding them) were removed entirely: every one
+            % of them terminated its inputs immediately and emitted only
+            % constant zeros, with no path into the real CAN/state-machine/
+            % plant logic. Assert they are actually gone, not merely
+            % relabeled -- the real logic lives in Ephorus System Status
+            % (Ephorus RX Retention / Ephorus Status Cycle),
+            % ADDHARDWAREBOUNDARY, and ADDGUICOMMANDPARAMETERS.
+            removedNames = {'Ephorus Channel 1', 'Ephorus Channel 2', ...
+                'Ephorus Channel 3', 'Ephorus Channel 4', 'Test Inputs', ...
+                'Fault Injection', 'Pedal Sensor Emulation', ...
+                'VCU Digital Interface', 'Measurements and Logging', ...
+                'Load Demux', 'Fault Demux', 'DC Link Demux'};
+            topBlocks = find_system(testCase.Model, 'SearchDepth', 1, ...
+                'Type', 'Block');
+            topNames = get_param(topBlocks, 'Name');
+            for index = 1:numel(removedNames)
+                testCase.verifyFalse(any(strcmp(topNames, removedNames{index})), ...
+                    sprintf('%s is dead code and must not exist.', ...
+                    removedNames{index}));
             end
-            testCase.verifyTrue(scaffoldOnly, ...
-                'Channel topology must be classified from its saved contents.');
+            % The fake "IO614 CAN Interface" name collides with the real
+            % hardware boundary's own subsystem naming, so check its exact
+            % top-level path rather than any-depth name matching.
+            testCase.verifyEmpty(find_system(testCase.Model, 'SearchDepth', 1, ...
+                'Name', 'IO614 CAN Interface'));
 
             annotations = find_system(testCase.Model, 'FindAll', 'on', ...
                 'Type', 'annotation');
@@ -617,9 +630,9 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
             claimsActiveMil = any(cellfun(@(name) contains(name, ...
                 'MIL architecture active'), names));
-            testCase.verifyFalse(scaffoldOnly && claimsActiveMil, ...
-                ['The annotation claims an active MIL architecture, but each ' ...
-                'channel terminates every input and emits only safe constants.']);
+            testCase.verifyFalse(claimsActiveMil, ...
+                ['The annotation must not claim an active MIL architecture; ' ...
+                'the decorative channel tree was removed rather than resurrected.']);
         end
 
         function deploymentNeverArmsAStartupApplication(testCase)

@@ -892,7 +892,7 @@ execute every package in numeric order. Use this risk-first sequence:
 
 | Part | Deliverable | Suggested commit |
 |---:|---|---|
-| 1 | Create the R2024b `mfe/HIL/inverter_hil.slx`, project/setup scaffold, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): scaffold inverter HIL project` |
+| 1 | Create the R2024b `mfe/HIL/inverter_hil.slx`, project/setup skeleton, model configuration, and `inverter_hil.sldd` inside the required HIL workspace | `build(hil): initialize inverter HIL project` |
 | 2 | R2024b `setparam` single-field/scalar tuning spike | `test(slrt): verify atomic parameter tuning` |
 | 3 | Logical tunable parameter contract and defaults | `feat(hil): define runtime parameter contract` |
 | 4 | `IO183 - Setup`, hardware initial/reset values, and target-side heartbeat fallback | `feat(hil): add safe IO fallback` |
@@ -920,7 +920,7 @@ execute every package in numeric order. Use this risk-first sequence:
 | 26 | Bit-exact nine-frame tests, queue-status checks, and cross-channel isolation | `test(can): verify all Ephorus status frames` |
 | 27 | Per-channel, shared, and Config Error scope fault injection | `feat(model): add inverter fault injection` |
 | 28 | Target observability and instrument signal contract | `feat(hil): expose runtime observations` |
-| 29 | R2024b App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): scaffold VC HIL dashboard` |
+| 29 | R2024b App Designer shell, target connection, and `todo`-style dark theme | `feat(gui): initialize VC HIL dashboard` |
 | 30 | Runtime throttle, brake, and digital controls | `feat(gui): add live VCU input controls` |
 | 31 | VCU state strip, transition guards, and TP6-TP10 outputs | `feat(gui): add VCU state dashboard` |
 | 32 | Four inverter status/control panels | `feat(gui): add quad inverter view` |

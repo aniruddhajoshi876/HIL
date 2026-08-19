@@ -95,7 +95,7 @@ Two concrete implications for `+inverterhilgui/`:
 The model does not yet expose these tunables at all: `build_inverter_hil_model.m`
 builds every Constant from literal values (lines 189-266), so none of the 33
 contract names are referenced by any block and none would survive codegen.
-Wiring the dictionary parameters into the scaffold is the prerequisite for any
+Wiring the dictionary parameters into the model is the prerequisite for any
 GUI-to-target test.
 
 `confirm_decision16_on_target.m` re-checks all of the above against real

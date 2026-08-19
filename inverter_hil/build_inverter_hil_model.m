@@ -39,7 +39,6 @@ addHardwareBoundary(model);
 addGuiCommandParameters(model);
 addAnnotation(model, ...
     ['INVERTER HIL - R2024b\n' ...
-     'Ephorus Channel 1-4 remain constant-zero MIL scaffold\n' ...
      'CAN status packing and IO183 pedal/digital hardware I/O are real, ' ...
      'not placeholders; gated by Commented + hil_hardware_preflight_complete\n' ...
      'Torque scale RESOLVED 2026-08-02: 1/256 Nm/count (vcu256, verified), ' ...
@@ -240,49 +239,22 @@ end
 end
 
 function addArchitecture(model)
-blocks = { ...
-    'Test Inputs', [40 130 220 300]; ...
-    'Fault Injection', [40 370 220 485]; ...
-    'Pedal Sensor Emulation', [310 90 520 205]; ...
-    'VCU Digital Interface', [310 235 520 350]; ...
-    'IO614 CAN Interface', [310 390 520 545]; ...
-    'Ephorus Channel 1', [630 80 850 185]; ...
-    'Ephorus Channel 2', [630 220 850 325]; ...
-    'Ephorus Channel 3', [630 360 850 465]; ...
-    'Ephorus Channel 4', [630 500 850 605]; ...
-    'Ephorus System Status', [960 210 1180 430]; ...
-    'Measurements and Logging', [1280 200 1500 445]};
-for index = 1:size(blocks, 1)
-    add_block('simulink/Ports & Subsystems/Subsystem', ...
-        [model '/' blocks{index, 1}], 'Position', blocks{index, 2});
-end
-
-buildTestInputs([model '/Test Inputs']);
-buildFaultInputs([model '/Fault Injection']);
-buildSafeInterface([model '/Pedal Sensor Emulation'], 2, 1, ...
-    'zeros(1,4)', 'PedalVoltageV');
-buildSafeInterface([model '/VCU Digital Interface'], 2, 1, ...
-    'false(1,8)', 'DigitalStimulus');
-buildCanInterface([model '/IO614 CAN Interface']);
-for channel = 1:4
-    buildChannel([model sprintf('/Ephorus Channel %d', channel)], channel);
-end
+% Only "Ephorus System Status" is built here. This file previously also
+% built a "Test Inputs" / "Fault Injection" / "Pedal Sensor Emulation" /
+% "VCU Digital Interface" / "IO614 CAN Interface" / "Ephorus Channel 1-4" /
+% "Measurements and Logging" tree that existed purely to draw an MIL-style
+% architecture diagram: every one of those subsystems terminated its inputs
+% immediately and emitted only constant zeros, with no path into the real
+% CAN/state-machine/plant logic below. Removed rather than left as dead
+% code -- the real hardware I/O lives in ADDHARDWAREBOUNDARY, the
+% real GUI-commanded values in ADDGUICOMMANDPARAMETERS, and the real
+% decode/state-machine/plant/pack logic inside "Ephorus System Status"
+% itself (EPHORUS RX RETENTION and the EPHORUS STATUS CYCLE MATLAB Function
+% block, both built by BUILDSYSTEMSTATUS below).
+add_block('simulink/Ports & Subsystems/Subsystem', ...
+    [model '/Ephorus System Status'], 'Position', [960 210 1180 430]);
 buildSystemStatus([model '/Ephorus System Status']);
-buildMeasurements([model '/Measurements and Logging']);
 
-add_block('simulink/Signal Routing/Demux', [model '/Load Demux'], ...
-    'Outputs', '4', 'Position', [260 276 265 344]);
-add_block('simulink/Signal Routing/Demux', [model '/Fault Demux'], ...
-    'Outputs', '4', 'Position', [560 520 565 588]);
-add_block('simulink/Signal Routing/Demux', [model '/DC Link Demux'], ...
-    'Outputs', '2', 'Position', [560 312 565 358]);
-
-add_line(model, 'Test Inputs/1', 'Pedal Sensor Emulation/1', 'autorouting', 'on');
-add_line(model, 'Fault Injection/1', 'Pedal Sensor Emulation/2', 'autorouting', 'on');
-add_line(model, 'Test Inputs/2', 'VCU Digital Interface/1', 'autorouting', 'on');
-add_line(model, 'Fault Injection/1', 'VCU Digital Interface/2', 'autorouting', 'on');
-add_line(model, 'Test Inputs/3', 'IO614 CAN Interface/1', 'autorouting', 'on');
-add_line(model, 'Ephorus System Status/1', 'IO614 CAN Interface/2', 'autorouting', 'on');
 % The hardware boundary transmits these exact payloads over CAN. It reads
 % them through this global Goto rather than an Inport so the boundary stays
 % port-free and can be commented out (its safety gate) without disturbing
@@ -298,9 +270,9 @@ add_line(model, 'Ephorus System Status/1', 'Status Payloads Goto/1', ...
 % exists purely so the GUI can READ it -- but a subsystem output port must
 % still be connected or the diagram will not update. A Terminator is the
 % established pattern this file already uses everywhere for exactly this
-% (see ADDTERMINATEDINPUT and ADDGUICOMMANDPARAMETERS's Constant->Terminator
-% pairs): a real consumer that keeps a signal live through code generation
-% without implying anything downstream depends on its value.
+% (see ADDGUICOMMANDPARAMETERS's Constant->Terminator pairs): a real
+% consumer that keeps a signal live through code generation without
+% implying anything downstream depends on its value.
 %
 % DATALOGGING is deliberately NOT set here, though an earlier version of
 % this file did set it (alongside TESTPOINT) believing the Terminator alone
@@ -335,10 +307,11 @@ add_line(model, 'Ephorus System Status/3', ...
     'Analog Input Telemetry Terminator/1', 'autorouting', 'on');
 % Port 5 is the shared vehicle state (see BUILDSTATUSCYCLE's Port 5 note).
 % Published as a global Goto so the synchronized MTi/LWS encoders inside
-% IO614 CAN INTERFACE observe the same tick the inverter plant produced.
-% A Goto is a real consumer, so unlike ports 2 and 3 above this needs no
-% Terminator. Port 4 (TRANSMITCOUNT) is read by the GUI straight off the
-% subsystem port and has no model-level consumer either.
+% the hardware boundary's CAN interface (ADDHARDWAREBOUNDARY) observe the
+% same tick the inverter plant produced. A Goto is a real consumer, so
+% unlike ports 2 and 3 above this needs no Terminator. Port 4
+% (TRANSMITCOUNT) is read by the GUI straight off the subsystem port and
+% has no model-level consumer either.
 add_block('simulink/Signal Routing/Goto', [model '/Vehicle State Goto'], ...
     'GotoTag', 'HILSharedVehicleState', 'TagVisibility', 'global', ...
     'Position', [1220 430 1300 450]);
@@ -349,104 +322,17 @@ add_block('simulink/Sinks/Terminator', ...
     'Position', [1220 470 1240 490]);
 add_line(model, 'Ephorus System Status/6', ...
     'CarMaker Pedal Demand Terminator/1', 'autorouting', 'on');
-add_line(model, 'Test Inputs/4', 'Load Demux/1', 'autorouting', 'on');
-add_line(model, 'Test Inputs/5', 'DC Link Demux/1', 'autorouting', 'on');
-add_line(model, 'Fault Injection/2', 'Fault Demux/1', 'autorouting', 'on');
-
-for channel = 1:4
-    channelName = sprintf('Ephorus Channel %d', channel);
-    add_line(model, 'IO614 CAN Interface/1', [channelName '/1'], 'autorouting', 'on');
-    add_line(model, sprintf('Load Demux/%d', channel), ...
-        [channelName '/2'], 'autorouting', 'on');
-    dcPort = 1 + (channel > 2);
-    add_line(model, sprintf('DC Link Demux/%d', dcPort), ...
-        [channelName '/3'], 'autorouting', 'on');
-    add_line(model, sprintf('Fault Demux/%d', channel), ...
-        [channelName '/4'], 'autorouting', 'on');
-    add_line(model, [channelName '/1'], ...
-        sprintf('Ephorus System Status/%d', 2 * channel - 1), 'autorouting', 'on');
-    add_line(model, [channelName '/2'], ...
-        sprintf('Ephorus System Status/%d', 2 * channel), 'autorouting', 'on');
-    add_line(model, [channelName '/3'], ...
-        sprintf('Measurements and Logging/%d', channel + 1), 'autorouting', 'on');
-end
-add_line(model, 'IO614 CAN Interface/2', ...
-    'Measurements and Logging/1', 'autorouting', 'on');
-end
-
-function buildTestInputs(path)
-clearSubsystem(path);
-values = {'[0 0]', 'false(1,8)', 'zeros(4,8,''uint8'')', ...
-    'zeros(1,4)', '[0 0]'};
-names = {'PedalCommand', 'DigitalCommand', 'ControlFrames', ...
-    'LoadTorqueNm', 'DCLinkV'};
-for index = 1:5
-    y = 35 + 55 * (index - 1);
-    add_block('simulink/Sources/Constant', [path '/Safe ' names{index}], ...
-        'Value', values{index}, 'SampleTime', '0.001', ...
-        'Position', [35 y 115 y + 25]);
-    add_block('simulink/Sinks/Out1', [path '/' names{index}], ...
-        'Port', num2str(index), 'Position', [150 y 180 y + 20]);
-    add_line(path, ['Safe ' names{index} '/1'], [names{index} '/1']);
-end
-end
-
-function buildFaultInputs(path)
-clearSubsystem(path);
-addConstantOut(path, 'PreflightSafe', 'false', 1, 40);
-addConstantOut(path, 'FaultMask', 'zeros(1,4,''uint32'')', 2, 95);
-end
-
-function buildSafeInterface(path, inputCount, outputCount, value, outputName)
-clearSubsystem(path);
-for index = 1:inputCount
-    add_block('simulink/Sources/In1', sprintf('%s/Input%d', path, index), ...
-        'Port', num2str(index), 'Position', [25 35 + 55 * index 55 55 + 55 * index]);
-    add_block('simulink/Sinks/Terminator', sprintf('%s/Input%d Terminator', path, index), ...
-        'Position', [90 35 + 55 * index 110 55 + 55 * index]);
-    add_line(path, sprintf('Input%d/1', index), sprintf('Input%d Terminator/1', index));
-end
-for index = 1:outputCount
-    addConstantOut(path, outputName, value, index, 45);
-end
-end
-
-function buildCanInterface(path)
-clearSubsystem(path);
-addTerminatedInput(path, 'ControlFramesRaw', 1, 45);
-addTerminatedInput(path, 'StatusPayloads', 2, 100);
-addConstantOut(path, 'DecodedCommands', 'zeros(4,8,''uint8'')', 1, 45);
-addConstantOut(path, 'CANDiagnostics', 'zeros(1,8,''uint32'')', 2, 110);
-end
-
-function buildChannel(path, channel)
-clearSubsystem(path);
-inputNames = {'DecodedCommands', 'LoadTorqueNm', 'DCLinkV', 'FaultMask'};
-for index = 1:4
-    addTerminatedInput(path, inputNames{index}, index, 25 + 45 * index);
-end
-addConstantOut(path, sprintf('Status3X3_Ch%d', channel), ...
-    'zeros(1,8,''uint8'')', 1, 45);
-addConstantOut(path, sprintf('Status3X5_Ch%d', channel), ...
-    'zeros(1,8,''uint8'')', 2, 100);
-addConstantOut(path, sprintf('Observations_Ch%d', channel), ...
-    'zeros(1,16)', 3, 155);
 end
 
 function buildSystemStatus(path)
 clearSubsystem(path);
-for index = 1:8
-    addTerminatedInput(path, sprintf('StatusInput%d', index), index, 15 + 35 * index);
-end
-% StatusInput1-8 (each channel's Status3X3/Status3X5) stay terminated:
-% Ephorus Channel 1-4 remain constant-zero scaffold (see
-% ANNOTATIONDOESNOTOVERCLAIMFUNCTIONALCORE), so this cycle is computed
-% independently by INVERTERHIL.STEPMODEL using its own persistent state
-% rather than by combining those still-fake per-channel outputs.
+% This cycle is computed by INVERTERHIL.STEPMODEL using its own persistent
+% state, driven by the received CAN frames retained below -- not by
+% combining any per-channel Simulink block outputs.
 
 % Received control and status frames, published by the hardware boundary.
 % Retained in EPHORUS RX RETENTION below at the CAN Read block's own rate
-% (1 ms, BUILDCANINTERFACE): the virtual VCU transmits five CAN IDs (the
+% (1 ms, ADDHARDWAREBOUNDARY): the virtual VCU transmits five CAN IDs (the
 % pedal broadcast plus four control frames) every 5 ms, 1000 msg/s, and a
 % single FIFO pop every 5 ms only drains 200 msg/s -- the receive FIFO
 % permanently fell behind, so the retained command was stale at best and,
@@ -573,7 +459,7 @@ add_line(path, 'Ephorus Status Cycle/3', 'TransmitCount/1');
 
 % Port 5: the shared vehicle state EPHORUSSYSTEMSTATUSSTEP advances from the
 % same inverter-plant tick (INVERTERHIL.STEPVEHICLESTATE). Published so the
-% synchronized MTi/LWS encoders in BUILDCANINTERFACE observe the SAME state
+% synchronized MTi/LWS encoders in ADDHARDWAREBOUNDARY observe the SAME state
 % the inverter plant produced this step instead of running as an unrelated
 % signal generator -- that shared tick is the whole point of the sensor
 % co-simulation. Port 4 is TRANSMITCOUNT above, so this continues at 5;
@@ -583,11 +469,9 @@ add_block('simulink/Sinks/Out1', [path '/VehicleStateFromStatusCycle'], ...
 add_line(path, 'Ephorus Status Cycle/4', 'VehicleStateFromStatusCycle/1');
 
 % GUI-commanded per-channel load torque, connected flag, and pair DC-link
-% voltage (Fix 2): sourced from GUI COMMAND PARAMETERS' Gotos (see
-% GUICOMMANDGOTOTAGS) rather than the dead "Ephorus Channel 1-4" scaffold's
-% Load/DC Link/Fault Demux inputs, matching how the CAN RX path above
-% already bypasses that scaffold. Port 1 is the rate-transitioned
-% observation matrix above; these continue directly after it.
+% voltage (Fix 2): sourced directly from GUI COMMAND PARAMETERS' Gotos (see
+% GUICOMMANDGOTOTAGS). Port 1 is the rate-transitioned observation matrix
+% above; these continue directly after it.
 % Each Goto above is sourced from a GUI COMMAND PARAMETERS Constant running
 % at the model's 1 ms base rate, but EPHORUS STATUS CYCLE runs at the 5 ms
 % status-cycle rate (inherited from the Rate Transition above, ultimately
@@ -620,30 +504,6 @@ for index = 1:numel(externalTags)
     add_line(path, [rtName '/1'], ...
         sprintf('Ephorus Status Cycle/%d', port), 'autorouting', 'on');
 end
-end
-
-function buildMeasurements(path)
-clearSubsystem(path);
-for index = 1:5
-    addTerminatedInput(path, sprintf('Observation%d', index), index, 25 + 50 * index);
-end
-end
-
-function addTerminatedInput(path, name, port, y)
-add_block('simulink/Sources/In1', [path '/' name], ...
-    'Port', num2str(port), 'Position', [25 y 55 y + 20]);
-add_block('simulink/Sinks/Terminator', [path '/' name ' Terminator'], ...
-    'Position', [90 y 110 y + 20]);
-add_line(path, [name '/1'], [name ' Terminator/1']);
-end
-
-function addConstantOut(path, name, value, port, y)
-add_block('simulink/Sources/Constant', [path '/Safe ' name], ...
-    'Value', value, 'SampleTime', '0.001', ...
-    'Position', [35 y 125 y + 25]);
-add_block('simulink/Sinks/Out1', [path '/' name], ...
-    'Port', num2str(port), 'Position', [165 y 195 y + 20]);
-add_line(path, ['Safe ' name '/1'], [name '/1']);
 end
 
 function clearSubsystem(path)
@@ -1109,9 +969,8 @@ end
 % redundant IO183 analog-output voltages via the calibrated released/pressed
 % endpoints (see INVERTER_HIL_PLAN.MD S3.1: AO01/AO02 = throttle channels
 % 1/2, AO03/AO04 = brake channels 1/2). Referenced directly by dictionary
-% name (same pattern as ADDGUICOMMANDPARAMETERS) rather than through the
-% still-scaffold Pedal Sensor Emulation subsystem, to keep this boundary
-% free of new Inports.
+% name (same pattern as ADDGUICOMMANDPARAMETERS) to keep this boundary free
+% of new Inports.
 throttleRef = addNamedParameterSource(path, 'hil_cmd_pedals_throttle', 470);
 brakeRef = addNamedParameterSource(path, 'hil_cmd_pedals_brake', 500);
 % Preserve the existing XCP/GUI arbitration as the fallback source, then
@@ -1291,7 +1150,7 @@ end
 
 function script = rxRetentionScript()
 %RXRETENTIONSCRIPT Drain the CAN Read FIFO and retain frames at this
-%block's own rate (the CAN Read block's ts, 1 ms -- see BUILDCANINTERFACE).
+%block's own rate (the CAN Read block's ts, 1 ms -- see ADDHARDWAREBOUNDARY).
 %The virtual VCU transmits five CAN IDs (the pedal broadcast plus four
 %control frames) every 5 ms, 1000 msg/s; a single FIFO pop every 5 ms only
 %drains 200 msg/s, so the receive FIFO permanently fell behind and the
@@ -1400,7 +1259,7 @@ script = sprintf([ ...
     '%%itself: doing that once made the whole chain -- state machine,\n' ...
     '%%plant, and the CAN Pack/Write pair this block feeds -- run at 1 ms\n' ...
     '%%too, which collided with the CAN Write blocks'' own explicit 5 ms\n' ...
-    '%%rate (see BUILDCANINTERFACE''s CAN Read comment and\n' ...
+    '%%rate (see ADDHARDWAREBOUNDARY''s CAN Read comment and\n' ...
     '%%TESTMODELARTIFACTS'' io614CanAndOrderedWritesAreExact guard).\n' ...
     '%%Splitting retention out is what lets the FIFO drain fast without\n' ...
     '%%moving the status/torque cadence off its real 5 ms hardware\n' ...
@@ -1703,7 +1562,7 @@ function value = statusPeriodS()
 %   Single source of truth for every CAN Write 'ts' and the
 %   HIL_STATUS_SAMPLE_S dictionary entry. The CAN Read block and
 %   EPHORUS RX RETENTION run at the model's 1 ms base rate instead (see
-%   BUILDCANINTERFACE's CAN Read comment) -- only the state-machine/
+%   ADDHARDWAREBOUNDARY's CAN Read comment) -- only the state-machine/
 %   plant/CAN-write side of the status cycle, in EPHORUS STATUS CYCLE,
 %   still runs at this rate.
 value = 0.005;

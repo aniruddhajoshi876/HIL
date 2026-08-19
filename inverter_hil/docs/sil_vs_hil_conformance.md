@@ -336,14 +336,15 @@ negative results are not re-derived later.
 1. **`inverter_hil.slx` was not simulated**, at the time of this investigation.
    Opening it outside R2024b is prohibited, so simulation was out of scope for
    a read-and-verify pass regardless. **This item's premise is now stale**: at
-   the time it was written the Ephorus Channel 1-4 subsystem scaffolding was a
+   the time it was written the Ephorus Channel 1-4 subsystem was a
    constant-zero placeholder, but CAN status packing, transmission, reception,
-   and decode are real (see the 2026-08-02 amendment above and SUSP-1 below);
-   only the dead "Ephorus Channel 1-4" subsystem itself (`buildChannel`, `Load
-   Demux`/`DC Link Demux`/`Fault Demux` in `build_inverter_hil_model.m`)
-   remains unused scaffolding, deliberately bypassed rather than resurrected.
-   No signal that originates in the Simulink layer rather than
-   `+inverterhil/` was compared by this investigation.
+   and decode are real (see the 2026-08-02 amendment above and SUSP-1 below).
+   The dead "Ephorus Channel 1-4" subsystem itself (`buildChannel`, `Load
+   Demux`/`DC Link Demux`/`Fault Demux`) has since been deleted outright from
+   `build_inverter_hil_model.m` (2026-08-19), along with the rest of the
+   always-inert decorative architecture tree around it. No signal that
+   originates in the Simulink layer rather than `+inverterhil/` was compared
+   by this investigation.
 2. **No joint A/B execution.** There is no shared harness between the C++ SIL
    and the MATLAB host core. CONF-3's end-to-end consequence (four inverters in
    Error vs Idle throughout the pre-RTD states) is established from source plus

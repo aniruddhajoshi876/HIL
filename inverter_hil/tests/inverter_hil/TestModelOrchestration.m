@@ -34,7 +34,7 @@ classdef TestModelOrchestration < matlab.unittest.TestCase
             % The 3X3 frames pack maxAllowedCurrentA/temperature fields that
             % are nonzero even at Idle (25 C ambient, full current headroom),
             % so a genuinely-packed frame must NOT be all-zero bytes -- that
-            % would mean the scaffold's zero-constant placeholder survived.
+            % would mean a zero-constant placeholder survived instead.
             testCase.verifyNotEqual(cycle.payloads(1, :), ...
                 zeros(1, 8, 'uint8'), ...
                 '3X3 status must be packed, not a zero placeholder.');
