@@ -11,6 +11,11 @@ DStore.Quantities.fast:
 DStore.Quantities.normal:
 	MFE_CAN.TorqueRequestTotalNm
 	MFE_CAN.DriveActive
+	MFE_DIAG.DemandU
+	MFE_DIAG.WheelTorque1
+	MFE_DIAG.WheelTorque2
+	MFE_DIAG.WheelTorque3
+	MFE_DIAG.WheelTorque4
 	AccelCtrl.ACC.DesiredAx
 	AccelCtrl.ACC.DesiredDist
 	AccelCtrl.ACC.DesiredSpd
