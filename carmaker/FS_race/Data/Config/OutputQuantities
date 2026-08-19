@@ -9,6 +9,8 @@ DStore.dt.slow = 0.1
 
 DStore.Quantities.fast:
 DStore.Quantities.normal:
+	MFE_CAN.TorqueRequestTotalNm
+	MFE_CAN.DriveActive
 	AccelCtrl.ACC.DesiredAx
 	AccelCtrl.ACC.DesiredDist
 	AccelCtrl.ACC.DesiredSpd
