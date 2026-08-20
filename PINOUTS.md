@@ -27,7 +27,7 @@ module.
 | Module | Role | Used by `inverter_hil`? |
 |---|---|---|
 | **IO183** | 16-bit analog in/out + digital I/O — VCU pedal stimulus, rail monitoring, discrete stimulus/monitor | **Yes** — the focus of this document |
-| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1/Port B inverter HIL and channel 2/Port A virtual VCU |
+| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1/Port B, shared by inverter HIL and virtual VCU |
 | **IO391** | Configurable FPGA I/O | **No** — manual ships in the bundle, module is not referenced anywhere in the project |
 
 ---

@@ -447,7 +447,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             theme = app.Theme;
             panel = app.makePanel(parent, 'DRIVER INPUTS');
             grid = app.makeGrid(panel, ...
-                {26, 26, 26, 26, 26, 90, 26, 26, 26, 26, '1x'}, ...
+                {26, 26, 26, 26, 26, 90, 26, 26, 26, '1x'}, ...
                 {150, '1x', 110, 150});
 
             app.makeLabel(grid, 'THROTTLE %', theme.font.body, ...
@@ -499,9 +499,25 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.SteeringAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
 
-            app.makeLabel(grid, 'APPLIED PEDAL V', theme.font.body, ...
-                theme.color.primaryText);
+            % From here on, every control gets an explicit Layout.Row /
+            % Layout.Column instead of relying on uigridlayout auto-flow.
+            % Auto-flow assigns (row, column) purely by each child's add
+            % order divided by the column count -- it does NOT look at
+            % which cells are actually occupied. voltageGrid,
+            % PlausibilityCheckBox and ExpertModeCheckBox below span
+            % multiple columns (Layout.Column = [1 4] / [2 4]) but still
+            % only ever counted as "one slot" toward that row/column
+            % arithmetic, so every auto-placed control after them drifted
+            % onto rows that were already occupied and rendered on top of
+            % each other (this is what produced the overlapping/ghosted
+            % steering-dial and AO02 THR2 text). Pinning every row here
+            % removes that drift.
+            pedalVLabel = app.makeLabel(grid, 'APPLIED PEDAL V', ...
+                theme.font.body, theme.color.primaryText);
+            pedalVLabel.Layout.Row = 4;
+            pedalVLabel.Layout.Column = 1;
             voltageGrid = app.makeGrid(grid, {'1x'}, {'1x', '1x', '1x', '1x'});
+            voltageGrid.Layout.Row = 4;
             voltageGrid.Layout.Column = [2 4];
             app.PedalVoltageLabels = gobjects(1, 4);
             for index = 1:4
@@ -514,45 +530,69 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.PlausibilityCheckBox = app.makeCheckBox(grid, ...
                 'INTERLOCK: allow pedal-plausibility violation', ...
                 @onPlausibilityChanged);
+            app.PlausibilityCheckBox.Layout.Row = 5;
             app.PlausibilityCheckBox.Layout.Column = [1 4];
             app.ExpertModeCheckBox = app.makeCheckBox(grid, ...
                 'INTERLOCK: expert mode (calibration, plant, faults)', ...
                 @onExpertModeChanged);
+            app.ExpertModeCheckBox.Layout.Row = 6;
             app.ExpertModeCheckBox.Layout.Column = [1 4];
 
-            app.makeLabel(grid, 'DIGITAL STIMULI', theme.font.body, ...
-                theme.color.primaryText);
+            digitalStimuliLabel = app.makeLabel(grid, 'DIGITAL STIMULI', ...
+                theme.font.body, theme.color.primaryText);
+            digitalStimuliLabel.Layout.Row = 7;
+            digitalStimuliLabel.Layout.Column = 1;
             % MAIN_BTN_IN has no checkbox here: a held-level control was
             % inert on hardware (the chart only reacts to the momentary
             % MAIN BUTTON pulse below), so it was removed rather than kept
             % as a control that visibly does nothing when clicked.
             app.CoolingSwitch = app.makeCheckBox(grid, 'COOLING_SW_IN', ...
                 @onCoolingSwitchChanged);
+            app.CoolingSwitch.Layout.Row = 7;
+            app.CoolingSwitch.Layout.Column = 2;
             app.ShutdownFeedbackSwitch = app.makeCheckBox(grid, ...
                 'SD_FB_IN', @onShutdownFeedbackChanged);
+            app.ShutdownFeedbackSwitch.Layout.Row = 7;
+            app.ShutdownFeedbackSwitch.Layout.Column = 3;
 
-            app.makeLabel(grid, 'APPLIED', theme.font.body, ...
-                theme.color.primaryText);
+            digitalAppliedLabel = app.makeLabel(grid, 'APPLIED', ...
+                theme.font.body, theme.color.primaryText);
+            digitalAppliedLabel.Layout.Row = 8;
+            digitalAppliedLabel.Layout.Column = 1;
             app.DigitalAppliedLabels = gobjects(1, 2);
             for index = 1:2
                 app.DigitalAppliedLabels(index) = app.makeLabel(grid, ...
                     theme.text.noData, theme.font.small, ...
                     theme.color.secondaryText);
+                app.DigitalAppliedLabels(index).Layout.Row = 8;
+                app.DigitalAppliedLabels(index).Layout.Column = index + 1;
             end
 
-            app.makeLabel(grid, 'MOMENTARY (uint32 seq)', theme.font.body, ...
-                theme.color.primaryText);
+            momentaryLabel = app.makeLabel(grid, 'MOMENTARY (uint32 seq)', ...
+                theme.font.body, theme.color.primaryText);
+            momentaryLabel.Layout.Row = 9;
+            momentaryLabel.Layout.Column = 1;
             app.PrechargeButton = app.makeButton(grid, 'PRECHARGE', ...
                 @onPrechargePushed);
+            app.PrechargeButton.Layout.Row = 9;
+            app.PrechargeButton.Layout.Column = 2;
             app.MainMomentaryButton = app.makeButton(grid, 'MAIN BUTTON', ...
                 @onMainMomentaryPushed);
+            app.MainMomentaryButton.Layout.Row = 9;
+            app.MainMomentaryButton.Layout.Column = 3;
             app.MomentaryLabels = gobjects(1, 2);
             app.MomentaryLabels(1) = app.makeLabel(grid, ...
                 'seq --', theme.font.small, theme.color.secondaryText);
-            app.makeLabel(grid, '', theme.font.small, ...
+            app.MomentaryLabels(1).Layout.Row = 9;
+            app.MomentaryLabels(1).Layout.Column = 4;
+            blankMomentaryLabel = app.makeLabel(grid, '', theme.font.small, ...
                 theme.color.secondaryText);
+            blankMomentaryLabel.Layout.Row = 10;
+            blankMomentaryLabel.Layout.Column = 1;
             app.MomentaryLabels(2) = app.makeLabel(grid, ...
                 'seq --', theme.font.small, theme.color.secondaryText);
+            app.MomentaryLabels(2).Layout.Row = 10;
+            app.MomentaryLabels(2).Layout.Column = 2;
         end
 
         function createElectricalMimic(app, parent)
