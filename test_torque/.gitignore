@@ -1,0 +1,10 @@
+# test_torque generated products (source .slx/.sldd/.m files stay tracked)
+.simulink/
+slprj/
+*.slxc
+*_sg_rtw/
+*_grt_rtw/
+*_ert_rtw/
+codegen/
+*.mexw64
+*.mldatx
