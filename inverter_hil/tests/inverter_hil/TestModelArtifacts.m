@@ -211,20 +211,22 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             setup = [testCase.Hardware '/IO614 CAN Setup'];
             read = [testCase.Hardware '/IO614 CAN FIFO Read Raw'];
             status = [testCase.Hardware '/IO614 CAN Diagnostics'];
-            % Channel 2/Port A is deliberately Disabled: the Virtual VCU was
-            % unified onto channel 1/Port B (the inverter boundary's own
-            % transmit boundary) rather than kept on a second channel, so
-            % there is only one physical CAN bus and one arbitration rate to
-            % configure. See build_inverter_hil_model.m's "CHANNEL
-            % SELECTION" comment.
+            % Channel 2/Port A is enabled for the Virtual VCU's own FIFO
+            % reader/writer, separate from the inverter boundary's own
+            % channel-1/Port B reader/writer. Connector A and connector B
+            % are bridged together on the bench onto one physical CAN bus,
+            % so both channels share one arbitration rate. See
+            % build_inverter_hil_model.m's "IO614 CAN Setup" comment and
+            % virtual-vcu/models/add_virtual_vcu_to_model.m.
             TestModelArtifacts.verifyParameters(testCase, setup, { ...
                 'moduleType', 'IO614'; ...
                 'id', '1'; ...
                 'canChn1', 'CAN (HS)'; ...
-                'canChn2', 'Disabled'; ...
+                'canChn2', 'CAN (HS)'; ...
                 'canChn3', 'Disabled'; ...
                 'canChn4', 'Disabled'; ...
-                'arbBdrChn1', '1.0 MBaud'});
+                'arbBdrChn1', '1.0 MBaud'; ...
+                'arbBdrChn2', '1.0 MBaud'});
             % useBusOut ON is required by the RX path, not incidental: the Rx
             % Bus Selector can only split port 2 when it is a CAN_MESSAGE
             % bus. ts is 0.001 (the model's base rate): the virtual VCU

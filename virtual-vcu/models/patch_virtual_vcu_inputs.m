@@ -49,7 +49,7 @@ deleteExistingLine(path, 'Module 2 DI01-DI08/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Mux/2');
 for k = 1:5
-    deleteExistingLine(path, sprintf('Port B RX Selector/%d', k), ...
+    deleteExistingLine(path, sprintf('Port A RX Selector/%d', k), ...
         sprintf('VCU Input Mux/%d', k+2));
 end
 add_line(path, 'Module 1 Analog Inputs From/1', 'VCU Input Mux/1', 'autorouting', 'on');
@@ -125,7 +125,7 @@ deleteExistingLine(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1');
 add_line(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1', 'autorouting', 'on');
 add_line(path, 'VCU Input Double 2/1', 'VCU Input Mux/2', 'autorouting', 'on');
 for k = 1:5
-    add_line(path, sprintf('Port B RX Selector/%d', k), ...
+    add_line(path, sprintf('Port A RX Selector/%d', k), ...
         sprintf('VCU Input Double %d/1', k+2), 'autorouting', 'on');
     add_line(path, sprintf('VCU Input Double %d/1', k+2), ...
         sprintf('VCU Input Mux/%d', k+2), 'autorouting', 'on');

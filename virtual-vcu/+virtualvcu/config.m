@@ -1,10 +1,14 @@
 function c = config()
 %CONFIG R2024b virtual-VCU bench contract.
 %   The virtual VCU is deliberately separated from the inverter boundary:
-%   IO183 module 2 and IO614 connector B (CAN channel 1).
+%   IO183 module 2 and IO614 connector A (CAN channel 2). Connector A and
+%   connector B are bridged on the bench onto one physical CAN bus, so this
+%   channel still sees the inverter's status frames and the LWS/IMU sensor
+%   sim writes on channel 1/connector B; only the Speedgoat-side FIFO
+%   reader/writer is now separate from the inverter boundary's own.
 c.moduleId = 2;
-c.canChannel = 1;
-c.canPort = 'B';
+c.canChannel = 2;
+c.canPort = 'A';
 c.canBitrate = 1e6;
 c.canDlc = uint8(8);
 c.controlIds = uint32(hex2dec({'186','196','1A6','1B6'}));

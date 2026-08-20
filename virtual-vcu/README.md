@@ -2,9 +2,11 @@
 
 This folder contains the bench-only VCU behavior. It reads only the physical
 IO183 AI/DI inputs assigned to I/O Module 2, decodes inverter status frames on
-IO614 Port B (CAN channel 1), and sends pedal plus four inverter control
-frames on that shared port. It never uses Module 1 signals or any other CAN port
-in software.
+IO614 Port A (CAN channel 2), and sends pedal plus four inverter control
+frames on that same channel. It never uses Module 1 signals or any other CAN
+port in software. Port A and Port B are bridged together on the bench onto
+one physical CAN bus, so this channel still sees the inverter HIL's status
+frames (and the LWS/IMU sensor sim frames) transmitted on Port B/channel 1.
 
 The pedal constants and Ephorus frame layout are extracted from MFE26-VC
 `todo` commit `39ea8efd3fc4e88f76e876f94fb99d4adabb7749`; firmware source is
@@ -18,8 +20,9 @@ zero outside RTD.
 Hardware contract: Module 1 AO01-AO04 -> Module 2 AI01-AI04 through the
 documented 17-pin M12 wiring; Module 1 DIO outputs -> Module 2 DI inputs after
 level/polarity review. The combined model uses IO614 Port B (channel 1) for
-both the Virtual VCU and inverter HIL; the unused second CAN channel is disabled.
-connected CANH/CANL/ground at 1 Mbit/s with two 120 ohm end terminators.
+the inverter HIL and Port A (channel 2) for the Virtual VCU; the two channels
+are bridged together on the bench onto one physical CAN bus, connected
+CANH/CANL/ground at 1 Mbit/s with two 120 ohm end terminators.
 
 ## Loopback map
 
@@ -77,5 +80,5 @@ unknown until a target observation exists. The generated model is integrated,
 and R2024b TLC plus object compilation completed locally. The final QNX link
 was blocked by the existing OneDrive path-with-spaces toolchain invocation, so
 no fresh `inverter_hil.mldatx` claim is made from this pass. Target
-deployment/start, physical Port B ACKs, and analog loopback evidence
+deployment/start, physical Port A/Port B ACKs, and analog loopback evidence
 remain hardware-dependent and unverified here.

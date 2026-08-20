@@ -446,13 +446,24 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %CREATEDRIVERINPUTS Pedal, digital, and momentary operator area.
             theme = app.Theme;
             panel = app.makePanel(parent, 'DRIVER INPUTS');
+            % Row 3 (STEERING ANGLE) is the tall row: a uiknob needs real
+            % height to render as a legible circle with its major-tick
+            % labels, unlike the plain sliders/checkboxes in every other
+            % row. Row heights are (parent, rowHeight, columnWidth) per
+            % MAKEGRID's signature -- the 90px entry must line up with the
+            % steering row, not row 6 (ExpertModeCheckBox), which is a
+            % plain checkbox with no need for extra height.
             grid = app.makeGrid(panel, ...
-                {26, 26, 26, 26, 26, 90, 26, 26, 26, '1x'}, ...
+                {26, 26, 90, 26, 26, 26, 26, 26, 26, '1x'}, ...
                 {150, '1x', 110, 150});
 
-            app.makeLabel(grid, 'THROTTLE %', theme.font.body, ...
-                theme.color.primaryText);
+            throttleLabel = app.makeLabel(grid, 'THROTTLE %', ...
+                theme.font.body, theme.color.primaryText);
+            throttleLabel.Layout.Row = 1;
+            throttleLabel.Layout.Column = 1;
             app.ThrottleSlider = uislider(grid);
+            app.ThrottleSlider.Layout.Row = 1;
+            app.ThrottleSlider.Layout.Column = 2;
             app.ThrottleSlider.Limits = [0 100];
             app.ThrottleSlider.MajorTicks = 0:25:100;
             app.ThrottleSlider.FontName = theme.font.name;
@@ -463,12 +474,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onThrottleChanged, true);
             app.ThrottleField = app.makeNumericField(grid, ...
                 [0 100], @onThrottleFieldChanged);
+            app.ThrottleField.Layout.Row = 1;
+            app.ThrottleField.Layout.Column = 3;
             app.ThrottleAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.ThrottleAppliedLabel.Layout.Row = 1;
+            app.ThrottleAppliedLabel.Layout.Column = 4;
 
-            app.makeLabel(grid, 'BRAKE %', theme.font.body, ...
+            brakeLabel = app.makeLabel(grid, 'BRAKE %', theme.font.body, ...
                 theme.color.primaryText);
+            brakeLabel.Layout.Row = 2;
+            brakeLabel.Layout.Column = 1;
             app.BrakeSlider = uislider(grid);
+            app.BrakeSlider.Layout.Row = 2;
+            app.BrakeSlider.Layout.Column = 2;
             app.BrakeSlider.Limits = [0 100];
             app.BrakeSlider.MajorTicks = 0:25:100;
             app.BrakeSlider.FontName = theme.font.name;
@@ -479,12 +498,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onBrakeChanged, true);
             app.BrakeField = app.makeNumericField(grid, ...
                 [0 100], @onBrakeFieldChanged);
+            app.BrakeField.Layout.Row = 2;
+            app.BrakeField.Layout.Column = 3;
             app.BrakeAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.BrakeAppliedLabel.Layout.Row = 2;
+            app.BrakeAppliedLabel.Layout.Column = 4;
 
-            app.makeLabel(grid, 'STEERING ANGLE deg', theme.font.body, ...
-                theme.color.primaryText);
+            steeringLabel = app.makeLabel(grid, 'STEERING ANGLE deg', ...
+                theme.font.body, theme.color.primaryText);
+            steeringLabel.Layout.Row = 3;
+            steeringLabel.Layout.Column = 1;
             app.SteeringDial = uiknob(grid, 'continuous');
+            app.SteeringDial.Layout.Row = 3;
+            app.SteeringDial.Layout.Column = 2;
             app.SteeringDial.Limits = [-780 780];
             app.SteeringDial.MajorTicks = -780:195:780;
             app.SteeringDial.Value = 0;
@@ -496,22 +523,32 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onSteeringChanged, true);
             app.SteeringField = app.makeNumericField(grid, ...
                 [-780 780], @onSteeringFieldChanged);
+            app.SteeringField.Layout.Row = 3;
+            app.SteeringField.Layout.Column = 3;
             app.SteeringAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.SteeringAppliedLabel.Layout.Row = 3;
+            app.SteeringAppliedLabel.Layout.Column = 4;
 
-            % From here on, every control gets an explicit Layout.Row /
-            % Layout.Column instead of relying on uigridlayout auto-flow.
-            % Auto-flow assigns (row, column) purely by each child's add
-            % order divided by the column count -- it does NOT look at
-            % which cells are actually occupied. voltageGrid,
-            % PlausibilityCheckBox and ExpertModeCheckBox below span
-            % multiple columns (Layout.Column = [1 4] / [2 4]) but still
-            % only ever counted as "one slot" toward that row/column
-            % arithmetic, so every auto-placed control after them drifted
-            % onto rows that were already occupied and rendered on top of
-            % each other (this is what produced the overlapping/ghosted
-            % steering-dial and AO02 THR2 text). Pinning every row here
-            % removes that drift.
+            % Every control in this grid, starting with THROTTLE % above,
+            % gets an explicit Layout.Row / Layout.Column instead of
+            % relying on uigridlayout auto-flow. Auto-flow assigns (row,
+            % column) purely by each child's add order divided by the
+            % 10-column width -- it does NOT look at which cells are
+            % actually occupied, so with only 4 controls per logical row
+            % (label, control, field, applied-label) it packs 2.5 logical
+            % rows' worth of controls into physical row 1 before wrapping.
+            % That is what pushed the steering knob into a slim, wrong
+            % column (garbling its major-tick labels into overlapping
+            % text) and wrapped its field/applied-label onto stray rows.
+            % voltageGrid, PlausibilityCheckBox and ExpertModeCheckBox
+            % below compound the same bug: they span multiple columns
+            % (Layout.Column = [1 4] / [2 4]) but still only ever counted
+            % as "one slot" toward the auto-flow arithmetic, so every
+            % auto-placed control after them drifted onto rows that were
+            % already occupied and rendered on top of each other (this is
+            % what also produced the overlapping/ghosted AO02 THR2 text).
+            % Pinning every row removes that drift.
             pedalVLabel = app.makeLabel(grid, 'APPLIED PEDAL V', ...
                 theme.font.body, theme.color.primaryText);
             pedalVLabel.Layout.Row = 4;
@@ -1518,7 +1555,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 observations(1).value = strtrim(sprintf('%02X ', payload));
                 observations(1).signal = app.pedalFrameSignalText(payload);
                 observations(1).timestampsS = now;
-                % Genuine, target-measured transmit count (Port B Pedal TX
+                % Genuine, target-measured transmit count (Port A Pedal TX
                 % Counter, read via PEDALTXCOUNT) when available; NaN/dashes
                 % on an older build that predates that counter, never a
                 % fabricated estimate.
