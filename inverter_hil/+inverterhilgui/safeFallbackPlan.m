@@ -5,16 +5,25 @@ function plan = safeFallbackPlan(health)
 %   heartbeat, a target stop, or application unload returns the four analog
 %   pedal outputs to 0 V and every digital stimulus to its verified inactive
 %   level. Valid released-pedal voltages are only ever applied by a healthy,
-%   armed, running application.
+%   running application.
 %
 %   HEALTH is a scalar structure with fields:
 %     applicationRunning - true only while the real-time application runs
 %     targetConnected    - true only while the host owns a connected target
 %     applicationLoaded  - false once the application has been unloaded
 %     ioHealthy          - target IO status
-%     armed              - operator arming of the pedal interface
+%     armed              - accepted but no longer gates the plan; see below
 %     heartbeatAgeS      - age of the most recent heartbeat write
 %     heartbeatTimeoutS  - configured heartbeat timeout
+%
+%   ARMED GATE REMOVED, matching INVERTERHILGUI.CONTROLPOLICY's 2026-08-02
+%   "INTERLOCKS REMOVED" operator decision (full manual control, no software
+%   protection beyond target/application/IO health). HEALTH.armed was always
+%   read from APP.TELEMETRY.PEDALS.ARMED, which nothing in this codebase ever
+%   set true -- CONTROLPOLICY's own interlock removal never reached this
+%   file, so the fallback stayed permanently applied regardless of real
+%   state. ARMED is still accepted (not required) for backward compatibility
+%   with callers that pass it, but is no longer read.
 %
 %   This evaluator FAILS CLOSED: any missing field, malformed value, or
 %   unhealthy input returns APPLYFALLBACK true with the safe outputs, exactly
@@ -30,7 +39,7 @@ if ~isstruct(health) || ~isscalar(health)
     return;
 end
 required = {'applicationRunning', 'targetConnected', 'applicationLoaded', ...
-    'ioHealthy', 'armed', 'heartbeatAgeS', 'heartbeatTimeoutS'};
+    'ioHealthy', 'heartbeatAgeS', 'heartbeatTimeoutS'};
 for index = 1:numel(required)
     if ~isfield(health, required{index})
         plan.reason = ['missing_' required{index}];
@@ -39,9 +48,9 @@ for index = 1:numel(required)
 end
 
 flags = {'targetConnected', 'applicationLoaded', 'applicationRunning', ...
-    'ioHealthy', 'armed'};
+    'ioHealthy'};
 reasons = {'target_disconnected', 'application_unloaded', ...
-    'application_stopped', 'io_unhealthy', 'not_armed'};
+    'application_stopped', 'io_unhealthy'};
 for index = 1:numel(flags)
     value = health.(flags{index});
     if ~(islogical(value) || isnumeric(value)) || ~isscalar(value) || ...
@@ -70,5 +79,5 @@ if ~isnumeric(ageS) || ~isscalar(ageS) || ~isreal(ageS) || ...
 end
 
 plan.applyFallback = false;
-plan.reason = 'healthy_armed';
+plan.reason = 'healthy';
 end

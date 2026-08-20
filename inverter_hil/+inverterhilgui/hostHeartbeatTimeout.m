@@ -13,7 +13,7 @@ function timeoutS = hostHeartbeatTimeout()
 %   conservative host default is used, which can only make the host stricter
 %   than the target, never looser.
 
-hostDefaultS = 0.250;
+hostDefaultS = 3.0;
 
 timeoutS = hostDefaultS;
 try
