@@ -33,4 +33,26 @@ bank.commandOutOfDomain = false(1, 4);
 % a genuinely all-zero payload", so a reader must consult it and never treat
 % all-zero bytes as absence.
 bank.lastPayload = zeros(4, 8, 'uint8');
+% TEMPORARY DIAGNOSTIC (2026-08-19): isolating why the four control IDs are
+% never accepted while other traffic is. RAWCONTROLMATCHCOUNT and
+% MASKFORCEDDROPCOUNT are MONOTONIC, bank-wide, and counted from the RAW
+% frame BEFORE INVERTERHIL.APPLYCONTROLDROPMASK runs -- unlike
+% LASTREJECTCODE above, which is overwritten every no-data tick and is
+% therefore invisible to a host poll far slower than this block's 1 ms rate
+% (see that field's comment), a monotonic count cannot be missed regardless
+% of poll cadence. RAWCONTROLMATCHCOUNT increments whenever a non-dropped
+% raw frame's ID equals one of the four control IDs, proving whether the
+% wire ever delivers a matching ID at all. MASKFORCEDDROPCOUNT increments
+% whenever APPLYCONTROLDROPMASK's own DROPPED output fires on such a frame,
+% isolating the drop-mask tunable as the cause independent of everything
+% downstream. The four RAWCONTROLLAST* fields latch the raw, pre-mask field
+% values at the most recent match so a poll that catches a nonzero count
+% also shows what was actually on the wire. Remove this block and its call
+% sites once the root cause is found.
+bank.rawControlMatchCount = uint32(0);
+bank.maskForcedDropCount = uint32(0);
+bank.rawControlLastId = uint32(0);
+bank.rawControlLastDlc = uint8(0);
+bank.rawControlLastExtended = uint8(0);
+bank.rawControlLastRemote = uint8(0);
 end

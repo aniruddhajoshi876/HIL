@@ -1,0 +1,1754 @@
+{
+  "contract": "Xsens MTi 600-series MT CAN output messages",
+  "sourceDocument": "Xsens MT CAN Protocol Documentation, document MT1604P, Revision A, 16 Sept 2019 (page footers read \"Document MT0101P.2019.A\")",
+  "derivation": "Hand-derived from the MT1604P tables only. NOT produced by running, importing or transcribing the MFE26-VC MTi680G_driver decoder or the inverter_hil imuProtocol/packMti680 encoder. Both of those are units under test.",
+  "byteOrder": "big-endian (MSB first) within each multi-byte field. NOTE: MT1604P does not state this for CAN output payloads; it is carried over from MT Low Level Communication Protocol Documentation section 5.1.1, \"All binary data communication is done in big-endian format\". See mti680_can_contract.md ASSUMPTION A1.",
+  "fieldOrder": "fields are laid out at the byte offsets given in the MT1604P tables, first field at offset 0",
+  "roundingRule": "round half away from zero, then twos complement",
+  "idFormat": "11-bit standard identifiers as listed in MT1604P section 6. Both the identifier value and the 11-vs-29-bit format are user-configurable via SetCanOutputConfig (MID 0xE8).",
+  "vectors": {
+    "acceleration": [
+      {
+        "name": "acc_zero",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 00 00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "acc_one_lsb_x",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          0.00390625,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          1,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.00390625,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 01 00 00 00 00",
+        "payloadBytes": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "one LSB = 0.00390625 m/s^2"
+      },
+      {
+        "name": "acc_static_gravity_z",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          0.0,
+          0.0,
+          9.81
+        ],
+        "rawCounts": [
+          0,
+          0,
+          2511
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          9.80859375
+        ],
+        "payloadHex": "00 00 00 00 09 CF",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          9,
+          207
+        ],
+        "note": "9.81 is not representable; nearest count 2511 decodes to 9.80859375"
+      },
+      {
+        "name": "acc_neg_unit_x",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          -256,
+          0,
+          0
+        ],
+        "decodedBack": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "FF 00 00 00 00 00",
+        "payloadBytes": [
+          255,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "twos-complement negative"
+      },
+      {
+        "name": "acc_mixed",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          1.5,
+          -2.25,
+          9.80859375
+        ],
+        "rawCounts": [
+          384,
+          -576,
+          2511
+        ],
+        "decodedBack": [
+          1.5,
+          -2.25,
+          9.80859375
+        ],
+        "payloadHex": "01 80 FD C0 09 CF",
+        "payloadBytes": [
+          1,
+          128,
+          253,
+          192,
+          9,
+          207
+        ],
+        "note": "all three axes, exactly representable counts"
+      },
+      {
+        "name": "acc_doc_range_max",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          100.0,
+          100.0,
+          100.0
+        ],
+        "rawCounts": [
+          25600,
+          25600,
+          25600
+        ],
+        "decodedBack": [
+          100.0,
+          100.0,
+          100.0
+        ],
+        "payloadHex": "64 00 64 00 64 00",
+        "payloadBytes": [
+          100,
+          0,
+          100,
+          0,
+          100,
+          0
+        ],
+        "note": "doc Range column +/-100 m/s^2 (MT1604P section 6.4.4)"
+      },
+      {
+        "name": "acc_doc_range_min",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        "rawCounts": [
+          -25600,
+          -25600,
+          -25600
+        ],
+        "decodedBack": [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        "payloadHex": "9C 00 9C 00 9C 00",
+        "payloadBytes": [
+          156,
+          0,
+          156,
+          0,
+          156,
+          0
+        ],
+        "note": "doc Range column +/-100 m/s^2"
+      },
+      {
+        "name": "acc_int16_max",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          127.99609375,
+          127.99609375,
+          127.99609375
+        ],
+        "rawCounts": [
+          32767,
+          32767,
+          32767
+        ],
+        "decodedBack": [
+          127.99609375,
+          127.99609375,
+          127.99609375
+        ],
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "payloadBytes": [
+          127,
+          255,
+          127,
+          255,
+          127,
+          255
+        ],
+        "note": "int16 saturation 0x7FFF = 127.99609375 m/s^2, ABOVE the documented +/-100 range"
+      },
+      {
+        "name": "acc_int16_min",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          -128.0,
+          -128.0,
+          -128.0
+        ],
+        "rawCounts": [
+          -32768,
+          -32768,
+          -32768
+        ],
+        "decodedBack": [
+          -128.0,
+          -128.0,
+          -128.0
+        ],
+        "payloadHex": "80 00 80 00 80 00",
+        "payloadBytes": [
+          128,
+          0,
+          128,
+          0,
+          128,
+          0
+        ],
+        "note": "int16 saturation 0x8000 = -128.0 m/s^2, BELOW the documented -100 range"
+      },
+      {
+        "name": "acc_rounding",
+        "message": "XCDI_Acceleration",
+        "canId": "0x034",
+        "dlc": 6,
+        "fields": [
+          "accX",
+          "accY",
+          "accZ"
+        ],
+        "unit": "m/s^2",
+        "scale": 0.00390625,
+        "physicalIn": [
+          0.006,
+          -0.006,
+          0.0
+        ],
+        "rawCounts": [
+          2,
+          -2,
+          0
+        ],
+        "decodedBack": [
+          0.0078125,
+          -0.0078125,
+          0.0
+        ],
+        "payloadHex": "00 02 FF FE 00 00",
+        "payloadBytes": [
+          0,
+          2,
+          255,
+          254,
+          0,
+          0
+        ],
+        "note": "0.006/2^-8 = 1.536, rounds to 2 counts; sign symmetric"
+      }
+    ],
+    "rateOfTurn": [
+      {
+        "name": "rot_zero",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 00 00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "rot_one_lsb_z",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          0.001953125
+        ],
+        "rawCounts": [
+          0,
+          0,
+          1
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          0.001953125
+        ],
+        "payloadHex": "00 00 00 00 00 01",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "note": "one LSB = 0.001953125 rad/s"
+      },
+      {
+        "name": "rot_yaw_1radps",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          512
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "payloadHex": "00 00 00 00 02 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          2,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "rot_yaw_neg1radps",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          -512
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "payloadHex": "00 00 00 00 FE 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          254,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "rot_mixed",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          0.1,
+          -0.25,
+          2.5
+        ],
+        "rawCounts": [
+          51,
+          -128,
+          1280
+        ],
+        "decodedBack": [
+          0.099609375,
+          -0.25,
+          2.5
+        ],
+        "payloadHex": "00 33 FF 80 05 00",
+        "payloadBytes": [
+          0,
+          51,
+          255,
+          128,
+          5,
+          0
+        ],
+        "note": "0.1 rad/s is not representable; 51.2 rounds to 51 counts"
+      },
+      {
+        "name": "rot_doc_range_max",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          35.0,
+          35.0,
+          35.0
+        ],
+        "rawCounts": [
+          17920,
+          17920,
+          17920
+        ],
+        "decodedBack": [
+          35.0,
+          35.0,
+          35.0
+        ],
+        "payloadHex": "46 00 46 00 46 00",
+        "payloadBytes": [
+          70,
+          0,
+          70,
+          0,
+          70,
+          0
+        ],
+        "note": "doc Range column +/-35 rad/s (MT1604P section 6.4.2)"
+      },
+      {
+        "name": "rot_doc_range_min",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          -35.0,
+          -35.0,
+          -35.0
+        ],
+        "rawCounts": [
+          -17920,
+          -17920,
+          -17920
+        ],
+        "decodedBack": [
+          -35.0,
+          -35.0,
+          -35.0
+        ],
+        "payloadHex": "BA 00 BA 00 BA 00",
+        "payloadBytes": [
+          186,
+          0,
+          186,
+          0,
+          186,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "rot_int16_max",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          63.998046875,
+          63.998046875,
+          63.998046875
+        ],
+        "rawCounts": [
+          32767,
+          32767,
+          32767
+        ],
+        "decodedBack": [
+          63.998046875,
+          63.998046875,
+          63.998046875
+        ],
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "payloadBytes": [
+          127,
+          255,
+          127,
+          255,
+          127,
+          255
+        ],
+        "note": "0x7FFF = 63.998046875 rad/s, ABOVE documented +/-35"
+      },
+      {
+        "name": "rot_int16_min",
+        "message": "XCDI_RateOfTurn",
+        "canId": "0x032",
+        "dlc": 6,
+        "fields": [
+          "gyrX",
+          "gyrY",
+          "gyrZ"
+        ],
+        "unit": "rad/s",
+        "scale": 0.001953125,
+        "physicalIn": [
+          -64.0,
+          -64.0,
+          -64.0
+        ],
+        "rawCounts": [
+          -32768,
+          -32768,
+          -32768
+        ],
+        "decodedBack": [
+          -64.0,
+          -64.0,
+          -64.0
+        ],
+        "payloadHex": "80 00 80 00 80 00",
+        "payloadBytes": [
+          128,
+          0,
+          128,
+          0,
+          128,
+          0
+        ],
+        "note": "0x8000 = -64.0 rad/s"
+      }
+    ],
+    "eulerAngles": [
+      {
+        "name": "euler_zero",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 00 00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "euler_one_lsb_roll",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          0.0078125,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          1,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.0078125,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 01 00 00 00 00",
+        "payloadBytes": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "one LSB = 0.0078125 deg"
+      },
+      {
+        "name": "euler_roll90",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          90.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          11520,
+          0,
+          0
+        ],
+        "decodedBack": [
+          90.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "2D 00 00 00 00 00",
+        "payloadBytes": [
+          45,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "euler_pitch_neg45",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          0.0,
+          -45.0,
+          0.0
+        ],
+        "rawCounts": [
+          0,
+          -5760,
+          0
+        ],
+        "decodedBack": [
+          0.0,
+          -45.0,
+          0.0
+        ],
+        "payloadHex": "00 00 E9 80 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          233,
+          128,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "euler_yaw180",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          180.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          23040
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          180.0
+        ],
+        "payloadHex": "00 00 00 00 5A 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          90,
+          0
+        ],
+        "note": "doc Range +/-180 deg for roll and yaw, +/-90 for pitch"
+      },
+      {
+        "name": "euler_yaw_neg180",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          0.0,
+          0.0,
+          -180.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          -23040
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          -180.0
+        ],
+        "payloadHex": "00 00 00 00 A6 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          166,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "euler_mixed",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          12.5,
+          -3.25,
+          -90.0
+        ],
+        "rawCounts": [
+          1600,
+          -416,
+          -11520
+        ],
+        "decodedBack": [
+          12.5,
+          -3.25,
+          -90.0
+        ],
+        "payloadHex": "06 40 FE 60 D3 00",
+        "payloadBytes": [
+          6,
+          64,
+          254,
+          96,
+          211,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "euler_int16_max",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          255.9921875,
+          255.9921875,
+          255.9921875
+        ],
+        "rawCounts": [
+          32767,
+          32767,
+          32767
+        ],
+        "decodedBack": [
+          255.9921875,
+          255.9921875,
+          255.9921875
+        ],
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "payloadBytes": [
+          127,
+          255,
+          127,
+          255,
+          127,
+          255
+        ],
+        "note": "0x7FFF = 255.9921875 deg, outside every documented Euler range"
+      },
+      {
+        "name": "euler_int16_min",
+        "message": "XCDI_EulerAngles",
+        "canId": "0x022",
+        "dlc": 6,
+        "fields": [
+          "roll",
+          "pitch",
+          "yaw"
+        ],
+        "unit": "deg",
+        "scale": 0.0078125,
+        "physicalIn": [
+          -256.0,
+          -256.0,
+          -256.0
+        ],
+        "rawCounts": [
+          -32768,
+          -32768,
+          -32768
+        ],
+        "decodedBack": [
+          -256.0,
+          -256.0,
+          -256.0
+        ],
+        "payloadHex": "80 00 80 00 80 00",
+        "payloadBytes": [
+          128,
+          0,
+          128,
+          0,
+          128,
+          0
+        ],
+        "note": "0x8000 = -256.0 deg"
+      }
+    ],
+    "velocityXYZ": [
+      {
+        "name": "vel_zero",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 00 00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "vel_one_lsb_x",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          0.015625,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          1,
+          0,
+          0
+        ],
+        "decodedBack": [
+          0.015625,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "00 01 00 00 00 00",
+        "payloadBytes": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "one LSB = 0.015625"
+      },
+      {
+        "name": "vel_20_x",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          20.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          1280,
+          0,
+          0
+        ],
+        "decodedBack": [
+          20.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "05 00 00 00 00 00",
+        "payloadBytes": [
+          5,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "vel_neg20_x",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          -20.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          -1280,
+          0,
+          0
+        ],
+        "decodedBack": [
+          -20.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "FB 00 00 00 00 00",
+        "payloadBytes": [
+          251,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "vel_mixed",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          27.5,
+          -1.25,
+          0.0625
+        ],
+        "rawCounts": [
+          1760,
+          -80,
+          4
+        ],
+        "decodedBack": [
+          27.5,
+          -1.25,
+          0.0625
+        ],
+        "payloadHex": "06 E0 FF B0 00 04",
+        "payloadBytes": [
+          6,
+          224,
+          255,
+          176,
+          0,
+          4
+        ],
+        "note": ""
+      },
+      {
+        "name": "vel_doc_range_max",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          500.0,
+          500.0,
+          500.0
+        ],
+        "rawCounts": [
+          32000,
+          32000,
+          32000
+        ],
+        "decodedBack": [
+          500.0,
+          500.0,
+          500.0
+        ],
+        "payloadHex": "7D 00 7D 00 7D 00",
+        "payloadBytes": [
+          125,
+          0,
+          125,
+          0,
+          125,
+          0
+        ],
+        "note": "doc Range +/-500 (MT1604P section 6.8.3); 32000 counts, still inside int16"
+      },
+      {
+        "name": "vel_doc_range_min",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          -500.0,
+          -500.0,
+          -500.0
+        ],
+        "rawCounts": [
+          -32000,
+          -32000,
+          -32000
+        ],
+        "decodedBack": [
+          -500.0,
+          -500.0,
+          -500.0
+        ],
+        "payloadHex": "83 00 83 00 83 00",
+        "payloadBytes": [
+          131,
+          0,
+          131,
+          0,
+          131,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "vel_int16_max",
+        "message": "XCDI_VelocityXYZ",
+        "canId": "0x076",
+        "dlc": 6,
+        "fields": [
+          "velX",
+          "velY",
+          "velZ"
+        ],
+        "unit": "m/s (unit ASSUMED, see ASSUMPTION A4; MT1604P Unit column is a dash)",
+        "scale": 0.015625,
+        "physicalIn": [
+          511.984375,
+          511.984375,
+          511.984375
+        ],
+        "rawCounts": [
+          32767,
+          32767,
+          32767
+        ],
+        "decodedBack": [
+          511.984375,
+          511.984375,
+          511.984375
+        ],
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "payloadBytes": [
+          127,
+          255,
+          127,
+          255,
+          127,
+          255
+        ],
+        "note": "0x7FFF = 511.984375, ABOVE documented +/-500"
+      }
+    ],
+    "scalarMessages": [
+      {
+        "name": "groupcounter_zero",
+        "message": "XCID_GroupCounter",
+        "canId": "0x006",
+        "dlc": 2,
+        "format": "uint16",
+        "valueIn": 0,
+        "payloadHex": "00 00",
+        "payloadBytes": [
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "groupcounter_one",
+        "message": "XCID_GroupCounter",
+        "canId": "0x006",
+        "dlc": 2,
+        "format": "uint16",
+        "valueIn": 1,
+        "payloadHex": "00 01",
+        "payloadBytes": [
+          0,
+          1
+        ],
+        "note": ""
+      },
+      {
+        "name": "groupcounter_0x1234",
+        "message": "XCID_GroupCounter",
+        "canId": "0x006",
+        "dlc": 2,
+        "format": "uint16",
+        "valueIn": 4660,
+        "payloadHex": "12 34",
+        "payloadBytes": [
+          18,
+          52
+        ],
+        "note": ""
+      },
+      {
+        "name": "groupcounter_wrap",
+        "message": "XCID_GroupCounter",
+        "canId": "0x006",
+        "dlc": 2,
+        "format": "uint16",
+        "valueIn": 65535,
+        "payloadHex": "FF FF",
+        "payloadBytes": [
+          255,
+          255
+        ],
+        "note": "next frame wraps to 0"
+      },
+      {
+        "name": "sampletime_zero",
+        "message": "XCID_SampleTime",
+        "canId": "0x005",
+        "dlc": 4,
+        "format": "uint32 microseconds",
+        "valueIn": 0,
+        "payloadHex": "00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "sampletime_1s",
+        "message": "XCID_SampleTime",
+        "canId": "0x005",
+        "dlc": 4,
+        "format": "uint32 microseconds",
+        "valueIn": 1000000,
+        "payloadHex": "00 0F 42 40",
+        "payloadBytes": [
+          0,
+          15,
+          66,
+          64
+        ],
+        "note": "1 s = 1e6 us"
+      },
+      {
+        "name": "sampletime_max",
+        "message": "XCID_SampleTime",
+        "canId": "0x005",
+        "dlc": 4,
+        "format": "uint32 microseconds",
+        "valueIn": 4294967295,
+        "payloadHex": "FF FF FF FF",
+        "payloadBytes": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "note": "wraps after ~4295 s"
+      },
+      {
+        "name": "statusword_zero",
+        "message": "XCDI_StatusWord",
+        "canId": "0x011",
+        "dlc": 4,
+        "format": "uint32",
+        "valueIn": 0,
+        "payloadHex": "00 00 00 00",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": ""
+      },
+      {
+        "name": "statusword_bit0",
+        "message": "XCDI_StatusWord",
+        "canId": "0x011",
+        "dlc": 4,
+        "format": "uint32",
+        "valueIn": 1,
+        "payloadHex": "00 00 00 01",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "note": "bit meanings are defined in the MT Low Level doc, not in MT1604P"
+      },
+      {
+        "name": "error_buffer_overflow",
+        "message": "XCID_Error",
+        "canId": "0x001",
+        "dlc": 1,
+        "format": "uint8",
+        "valueIn": 1,
+        "payloadHex": "01",
+        "payloadBytes": [
+          1
+        ],
+        "note": "CEI_OutputBufferOverflow, MT1604P section 6.1.1"
+      }
+    ],
+    "quaternion": [
+      {
+        "name": "quat_identity",
+        "message": "XCDI_Quaternion",
+        "canId": "0x021",
+        "dlc": 8,
+        "fields": [
+          "q0",
+          "q1",
+          "q2",
+          "q3"
+        ],
+        "scale": "1/(2^15-1) = 1/32767",
+        "physicalIn": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          32767,
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "7F FF 00 00 00 00 00 00",
+        "payloadBytes": [
+          127,
+          255,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "doc note \"Be careful when converting the value 1\"; 1.0*32767 = 0x7FFF exactly"
+      },
+      {
+        "name": "quat_45deg_yaw",
+        "message": "XCDI_Quaternion",
+        "canId": "0x021",
+        "dlc": 8,
+        "fields": [
+          "q0",
+          "q1",
+          "q2",
+          "q3"
+        ],
+        "scale": "1/(2^15-1) = 1/32767",
+        "physicalIn": [
+          0.9238795325112867,
+          0.0,
+          0.0,
+          0.3826834323650898
+        ],
+        "rawCounts": [
+          30273,
+          0,
+          0,
+          12539
+        ],
+        "decodedBack": [
+          0.9238868373668631,
+          0.0,
+          0.0,
+          0.3826715903195288
+        ],
+        "payloadHex": "76 41 00 00 00 00 30 FB",
+        "payloadBytes": [
+          118,
+          65,
+          0,
+          0,
+          0,
+          0,
+          48,
+          251
+        ],
+        "note": ""
+      },
+      {
+        "name": "quat_neg_identity",
+        "message": "XCDI_Quaternion",
+        "canId": "0x021",
+        "dlc": 8,
+        "fields": [
+          "q0",
+          "q1",
+          "q2",
+          "q3"
+        ],
+        "scale": "1/(2^15-1) = 1/32767",
+        "physicalIn": [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rawCounts": [
+          -32767,
+          0,
+          0,
+          0
+        ],
+        "decodedBack": [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "payloadHex": "80 01 00 00 00 00 00 00",
+        "payloadBytes": [
+          128,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "note": "-1.0*32767 = -32767 = 0x8001, NOT 0x8000"
+      }
+    ],
+    "invalidAndEdge": [
+      {
+        "name": "invalid_short_dlc_accel",
+        "canId": "0x034",
+        "dlc": 4,
+        "payloadHex": "00 00 09 CF",
+        "expectation": "REJECT. XCDI_Acceleration Total size is 6 (MT1604P section 6.4.4). A 4-byte frame cannot carry three int16 fields.",
+        "note": "The simulator must never emit this; a receiver must not update state from it."
+      },
+      {
+        "name": "invalid_short_dlc_rot",
+        "canId": "0x032",
+        "dlc": 2,
+        "payloadHex": "02 00",
+        "expectation": "REJECT. XCDI_RateOfTurn Total size is 6 (MT1604P section 6.4.2)."
+      },
+      {
+        "name": "invalid_zero_dlc_accel",
+        "canId": "0x034",
+        "dlc": 0,
+        "payloadHex": "",
+        "expectation": "REJECT. Zero-length data frame on an XCDI id carries no fields."
+      },
+      {
+        "name": "edge_overlong_dlc_accel",
+        "canId": "0x034",
+        "dlc": 8,
+        "payloadHex": "00 00 00 00 09 CF DE AD",
+        "expectation": "ACCEPT the first 6 bytes, IGNORE bytes 6 and 7. MT1604P fixes Total size 6; trailing bytes are outside the contract.",
+        "note": "Not something a real MTi emits. Included to pin receiver behaviour when a HIL simulator pads to DLC 8."
+      },
+      {
+        "name": "invalid_unknown_id",
+        "canId": "0x100",
+        "dlc": 6,
+        "payloadHex": "00 00 00 00 00 00",
+        "expectation": "IGNORE. 0x100 is not an XCDI message id in MT1604P section 6."
+      },
+      {
+        "name": "invalid_unknown_id_near_miss",
+        "canId": "0x033",
+        "dlc": 6,
+        "payloadHex": "00 00 00 00 00 00",
+        "expectation": "IGNORE as an acceleration frame. 0x033 is XCDI_DeltaQ (Total size 8), not Acceleration.",
+        "note": "0x033 sits between RateOfTurn 0x032 and Acceleration 0x034; a range-based CAN filter must not conflate them."
+      },
+      {
+        "name": "edge_accel_beyond_doc_range",
+        "canId": "0x034",
+        "dlc": 6,
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "expectation": "DECODES to 127.99609375 m/s^2 per axis. The encoding is a legal int16; the value lies outside the documented +/-100 m/s^2 Range. A receiver that range-guards will discard the whole frame.",
+        "note": "This case separates \"decodable\" from \"acceptable\"."
+      },
+      {
+        "name": "edge_rot_beyond_doc_range",
+        "canId": "0x032",
+        "dlc": 6,
+        "payloadHex": "7F FF 7F FF 7F FF",
+        "expectation": "DECODES to 63.998046875 rad/s per axis, outside the documented +/-35 rad/s Range."
+      },
+      {
+        "name": "edge_all_ones",
+        "canId": "0x034",
+        "dlc": 6,
+        "payloadHex": "FF FF FF FF FF FF",
+        "expectation": "DECODES to -0.00390625 m/s^2 on all axes (int16 -1). MT1604P defines NO all-ones invalid sentinel for CAN output messages.",
+        "note": "Explicitly NOT an invalid marker. Unlike the Bosch LWS, the MTi CAN protocol has no per-message data-invalid sentinel; invalidity is signalled out of band by XCDI_StatusWord (0x011) and XCID_Error (0x001)."
+      },
+      {
+        "name": "edge_bosch_style_sentinel_is_not_special",
+        "canId": "0x034",
+        "dlc": 6,
+        "payloadHex": "7F FF 00 00 00 00",
+        "expectation": "DECODES accX = 127.99609375 m/s^2. 0x7FFF is the Bosch LWS invalid-angle sentinel; it carries no such meaning on the MTi bus."
+      },
+      {
+        "name": "edge_little_endian_confusion_probe",
+        "canId": "0x034",
+        "dlc": 6,
+        "payloadHex": "CF 09 00 00 00 00",
+        "expectation": "A big-endian receiver decodes accX = -12543 counts = -48.99609375 m/s^2. A little-endian receiver decodes +2511 counts = +9.80859375 m/s^2.",
+        "note": "Diagnostic frame: byte-swapped twin of acc_static_gravity_z on the X axis. Use it to prove endianness end to end on real hardware rather than assuming it."
+      }
+    ]
+  }
+}

@@ -27,7 +27,7 @@ module.
 | Module | Role | Used by `inverter_hil`? |
 |---|---|---|
 | **IO183** | 16-bit analog in/out + digital I/O — VCU pedal stimulus, rail monitoring, discrete stimulus/monitor | **Yes** — the focus of this document |
-| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1 only |
+| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1/Port B (inverter HIL) and channel 2/Port A (virtual VCU), bridged onto one physical CAN bus |
 | **IO391** | Configurable FPGA I/O | **No** — manual ships in the bundle, module is not referenced anywhere in the project |
 
 ---
@@ -215,23 +215,23 @@ Alternative differential allocation held open by the plan:
 | `5V_BP_1` | A9 / AI03 | AI03 | A12 (+), A11 (−) |
 | `5V_BP_2` | A10 / AI04 | AI04 | A14 (+), A13 (−) |
 
-**Confirmed - pedal voltage generation.** `pedalVoltageCalibration` maps selected
-throttle → AO01/AO02 and selected brake → AO03/AO04 via measured released/pressed
-endpoints, clamped to 0–5 V. **Proposed design not built -** `CarMakerPedalDemand`
-is standard DLC-8 CAN ID `0x500`, cyclic 10 ms, Intel/little-endian: bytes 1–2 are
-throttle and bytes 3–4 brake, each `uint16` raw 0–10000 at 0.01 %/bit; byte 5 holds
-active in bit 0, a modulo-16 alive counter in bits 1–4, and zeros in bits 5–7; byte 6
-is CRC-8/SAE-J1850 over bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with
-active, an advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
-The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`;
-the CarMaker DBC on branch `IPG-CAN` matches it byte for byte.
-`verify_pinouts` checks the common selector control source plus all calibration/AO
-routing. Local source: `inverter_hil/build_inverter_hil_model.m`.
+**Pedal voltage generation.** `pedalVoltageCalibration` maps selected throttle
+to AO01/AO02 and selected brake to AO03/AO04 via measured released/pressed
+endpoints, clamped to 0–5 V. `CarMakerPedalDemand` is standard DLC-8 CAN ID
+`0x500`, cyclic 10 ms, Intel/little-endian: bytes 1–2 are throttle and bytes
+3–4 brake, each `uint16` raw 0–10000 at 0.01 %/bit; byte 5 holds active in bit
+0 and a modulo-16 alive counter in bits 1–4; byte 6 is CRC-8/SAE-J1850 over
+bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with active, an
+advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
+The existing XCP source-select remains available ahead of the GUI values when
+CAN does not own the pedals. CAN has priority, and a model-side zero-hold keeps
+the fallback at zero after CAN loss until both fallback demands return to zero.
+The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
-| Function input | Dictionary source | Drives |
+| Function input | Source (via switch) | Drives |
 |---|---|---|
-| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_throttle` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
-| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_brake` | AO03 (`…_v3`), AO04 (`…_v4`) |
+| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else `XCP Throttle Source Switch` (`hil_cmd_xcp_pedals_throttle` when active, GUI `hil_cmd_pedals_throttle` otherwise) | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
+| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else `XCP Brake Source Switch` (`hil_cmd_xcp_pedals_brake` when active, GUI `hil_cmd_pedals_brake` otherwise) | AO03 (`…_v3`), AO04 (`…_v4`) |
 
 #### Calibration state — all 4 channels set
 
@@ -308,12 +308,15 @@ direction is expressed by the endpoints themselves and never declared separately
 > not set the other.
 
 Digital command sources (all default to `false`/`0` at load):
-`hil_cmd_digital_main_button`, `hil_cmd_digital_cooling_switch`,
-`hil_cmd_digital_shutdown_feedback`, `hil_cmd_digital_precharge_sequence`.
+`hil_cmd_digital_cooling_switch`, `hil_cmd_digital_shutdown_feedback`,
+`hil_cmd_digital_precharge_sequence`, `hil_cmd_digital_main_button_sequence`,
+`hil_cmd_xcp_pedals_active`. `hil_cmd_digital_main_button` (the checkbox) is
+still a valid `setparam` target with a live Terminator in GUI Command
+Parameters, but is intentionally **not** wired to a DIO pin — MAIN_BTN_IN is
+driven by `hil_cmd_digital_main_button_sequence` instead (see B2 below).
 Pedal command sources are separate: GUI writes `hil_cmd_pedals_throttle` and
-`hil_cmd_pedals_brake`; **Proposed design not built -** CAN ID `0x500` may
-atomically select its validated demand pair ahead of those GUI values. Local
-source: `inverter_hil/build_inverter_hil_model.m`.
+`hil_cmd_pedals_brake`; XCP uses its three `hil_cmd_xcp_pedals_*` entries; CAN
+ID `0x500` atomically selects its validated demand pair ahead of both.
 
 ### 4.3 Connector B — project signal assignment
 
@@ -322,7 +325,7 @@ Channels 1–8 are HIL→VCU outputs, 9–13 are VCU→HIL inputs, 14–16 reser
 | Pin | Channel | Direction | Schematic net | VCU pin / function | Test point | Baseline use |
 |---|---|---|---|---|---|---|
 | B1 | DIO01 | out, HIL → VCU | `PRECH_BTN_IN` | 99, `PRECH_BTN_IN` | J2 pin 1 | Precharge-button stimulus (pulse-generated) |
-| B2 | DIO02 | out, HIL → VCU | `MAIN_BTN_IN` | 101, `MAN_BTN_IN` | J2 pin 3 | Main-button stimulus |
+| B2 | DIO02 | out, HIL → VCU | `MAIN_BTN_IN` | 101, `MAN_BTN_IN` | J2 pin 3 | Main-button stimulus (pulse-generated) |
 | B3 | DIO03 | out, HIL → VCU | `COOLING_SW_IN` | 103, `COAST_IN` | J2 pin 5 | Cooling/coast switch — **polarity TBD** |
 | B4 | DIO04 | out, HIL → VCU | `SD_FB_IN` | 113, `SD_FB_IN` | J2 pin 15 | Shutdown-loop feedback stimulus |
 | B5 | DIO05 | out, HIL → VCU | `SW_IN_1` | 111, `SW_IN_1` | J2 pin 13 | Optional switch — tied to constant 0 |
@@ -344,7 +347,7 @@ Channels 1–8 are HIL→VCU outputs, 9–13 are VCU→HIL inputs, 14–16 reser
 | Port | DIO | Driven by |
 |---:|---|---|
 | 1 | DIO01 | `Precharge Pulse Generator` (edge-triggered from `hil_cmd_digital_precharge_sequence`) |
-| 2 | DIO02 | `hil_cmd_digital_main_button`, cast boolean → double |
+| 2 | DIO02 | `Main Button Pulse Generator` (edge-triggered from `hil_cmd_digital_main_button_sequence`, same pattern as DIO01 — a real start button is pressed and released, not held; `hil_cmd_digital_main_button` has no hardware effect) |
 | 3 | DIO03 | `hil_cmd_digital_cooling_switch`, cast boolean → double |
 | 4 | DIO04 | `hil_cmd_digital_shutdown_feedback`, cast boolean → double |
 | 5–8 | DIO05–08 | `Unused SW_IN_1..4` — Constant `0` |
@@ -397,8 +400,10 @@ order**:
 | **C** | CAN 4 |
 | **D** | CAN 3 |
 
-`inverter_hil` and `io614_can_visibility_test_R2024b` both use **channel 1 → wire
-to connector B**, `CAN (HS)` @ **1.0 MBaud**, channels 2–4 disabled.
+`inverter_hil` uses **channel 1 → connector B** for the inverter HIL and
+**channel 2 → connector A** for the virtual VCU, both `CAN (HS)` @ **1.0
+MBaud**. Channels 3–4 remain disabled. The standalone visibility test still
+uses channel 1 only.
 
 ### 5.2 DB9 pinout (identical on all four connectors)
 

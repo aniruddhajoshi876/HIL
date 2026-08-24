@@ -45,7 +45,15 @@ cal.pedals.releasedV = [NaN NaN NaN NaN];
 cal.pedals.pressedV = [NaN NaN NaN NaN];
 cal.pedals.minimumV = zeros(1, 4);
 cal.pedals.maximumV = repmat(5, 1, 4);
-cal.guiHeartbeatTimeoutS = 0.250;
+% RAISED from 0.250 (2026-08-19): the GUI's 0.25 s status timer period
+% assumed a sub-250 ms host-target round trip. Observed slrealtime
+% getParam/setParam round trips on this bench run closer to 1.5 s (the
+% timer's own BusyMode='drop' silently absorbed the overrun, so most
+% scheduled heartbeat writes never happened rather than erroring visibly).
+% 3.0 s stays a genuine staleness check -- it still trips on a truly dead
+% GUI or disconnected host -- without tripping on ordinary round-trip
+% latency this bench actually has.
+cal.guiHeartbeatTimeoutS = 3.0;
 
 inverterhil.validateCalibration(cal);
 end

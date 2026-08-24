@@ -42,6 +42,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         FaultsTab                 matlab.ui.container.Tab
         LoggingTab                matlab.ui.container.Tab
         StateStripLabels
+        StateStripSeparators
         StateErrorLabel           matlab.ui.control.Label
         TimeInStateLabel          matlab.ui.control.Label
         GuardTable                matlab.ui.control.Table
@@ -57,7 +58,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
         PedalVoltageLabels
         PlausibilityCheckBox      matlab.ui.control.CheckBox
         ExpertModeCheckBox        matlab.ui.control.CheckBox
-        MainButtonSwitch          matlab.ui.control.CheckBox
         CoolingSwitch             matlab.ui.control.CheckBox
         ShutdownFeedbackSwitch    matlab.ui.control.CheckBox
         DigitalAppliedLabels
@@ -73,10 +73,26 @@ classdef inverter_hil_app < matlab.apps.AppBase
         InverterFieldLabels
         InverterTitleLabels
         InverterCornerLabels
+        InverterSourceLabel       matlab.ui.control.Label
         CanRxTable                matlab.ui.control.Table
         CanTxTable                matlab.ui.control.Table
         CanDiagnosticsLabel       matlab.ui.control.Label
         InstrumentStatusLabel     matlab.ui.control.Label
+        SensorSteeringLabel       matlab.ui.control.Label
+        SensorImuAccelLabel       matlab.ui.control.Label
+        SensorImuRateLabel        matlab.ui.control.Label
+        SensorImuVelocityLabel    matlab.ui.control.Label
+        SensorCalibrationLabel    matlab.ui.control.Label
+        SteeringDropoutCheckBox   matlab.ui.control.CheckBox
+        SteeringStaleCheckBox     matlab.ui.control.CheckBox
+        SteeringMalformedCheckBox matlab.ui.control.CheckBox
+        SteeringInvalidStatusCheckBox matlab.ui.control.CheckBox
+        SteeringAngleSentinelCheckBox matlab.ui.control.CheckBox
+        SteeringSpeedSentinelCheckBox matlab.ui.control.CheckBox
+        ImuDropoutCheckBox        matlab.ui.control.CheckBox
+        ImuStaleCheckBox          matlab.ui.control.CheckBox
+        ImuMalformedCheckBox      matlab.ui.control.CheckBox
+        LwsCalibrationButton      matlab.ui.control.Button
         FaultMaskFields
         LoadTorqueFields
         ConnectedCheckBoxes
@@ -105,9 +121,43 @@ classdef inverter_hil_app < matlab.apps.AppBase
         % both pedals. This is the model selector's own liveness decision.
         CanPedalsDriving = false
         SteeringCoalescer
+        % Last steering angle the operator REQUESTED via the dial or the
+        % numeric field. Held here rather than read back off the widget so
+        % REFRESHDRIVERINPUTS can show requested and applied side by side;
+        % NaN until the operator actually moves the dial, so a never-touched
+        % control shows dashes instead of a fabricated 0 deg.
+        RequestedSteeringDeg = NaN
+        % True while an XCP master (e.g. CarMaker over Ethernet) is
+        % actively driving pedal demand, in which case it owns
+        % hil_cmd_pedals_throttle/brake and the GUI becomes
+        % diagnostic/read-only for that group (see
+        % inverterhilgui.controlPolicy and POLLCOALESCERS). Set each poll
+        % cycle by REFRESHLIVEIO from the live hil_cmd_xcp_pedals_active
+        % target parameter (see TargetSession.readLiveIo) -- the same
+        % model-side source-select flag the AO01-04 Switch blocks in
+        % build_inverter_hil_model.m already read directly, so the GUI and
+        % the model can no longer disagree about which source is live. Not
+        % yet exercised against a real target (this codebase cannot reach
+        % one -- see virtual-vcu/docs/carmaker_speedgoat_interface.md,
+        % section 7's "Items not confirmed locally"), but the read path is
+        % real and fails closed to false (GUI keeps/regains pedal write
+        % ownership) on any read failure or disconnect. Reverts to GUI
+        % write control the instant this goes false, with no separate
+        % re-arm step.
+        XcpDriving = false
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
+        LwsCalibrationSequence = uint32(0)
+        % Host timestamp of the last MAIN BUTTON momentary press, used to
+        % show the NEXT TRANSITION guard's "Main button" row as PRESSED for
+        % a short window after each push. MAIN_BTN_IN is now driven purely
+        % by a ~200 ms edge pulse (see build_inverter_hil_model.m's Main
+        % Button Pulse Generator), not a held level, so there is no
+        % steady-state pin value worth polling -- a 200 ms pulse is also
+        % shorter than this app's 250 ms poll period and could otherwise be
+        % missed entirely between polls.
+        MainButtonLastPressedS = -Inf
         % Previous poll's target transmit count, and whether it advanced
         % between the last two polls. INVERTERHILGUI.CANACKSTATUS requires
         % that genuine observation before it will report frames as
@@ -128,8 +178,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         VcuStateNames = {'LV_ON', 'PRECHARGING', 'ENABLE', 'BUZZING', 'RTD'}
         PedalChannelNames = {'AO01 THR1', 'AO02 THR2', 'AO03 BRK1', ...
             'AO04 BRK2'}
-        DigitalNames = {'main_button', 'cooling_switch', ...
-            'shutdown_feedback'}
+        DigitalNames = {'cooling_switch', 'shutdown_feedback'}
         InverterFieldNames = {'STATE', 'READY', 'CMD AGE', 'TORQUE CMD', ...
             'TORQUE ACT', 'SPEED', 'Id set/act', 'Iq set/act', ...
             'MOTOR TEMP', 'SWITCH TEMP', 'DERATING', 'ACTIVE FAULT'}
@@ -360,21 +409,33 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 {theme.spacing.stripHeight, '1x'}, {'1x'});
 
             strip = app.makeGrid(outer, {'1x'}, ...
-                {90, 130, 100, 100, 80, 90, 160, '1x'});
+                {90, 18, 130, 18, 100, 18, 100, 18, 80, 18, 90, 160, '1x'});
             strip.BackgroundColor = theme.color.panel;
             app.StateStripLabels = gobjects(1, numel(app.VcuStateNames));
+            app.StateStripSeparators = gobjects(1, numel(app.VcuStateNames)-1);
             for index = 1:numel(app.VcuStateNames)
                 app.StateStripLabels(index) = app.makeLabel(strip, ...
                     app.VcuStateNames{index}, theme.font.heading, ...
                     theme.color.disabledText);
+                app.StateStripLabels(index).Layout.Column = 2 * index - 1;
                 app.StateStripLabels(index).HorizontalAlignment = 'center';
+                app.StateStripLabels(index).BackgroundColor = theme.color.background;
+                if index < numel(app.VcuStateNames)
+                    app.StateStripSeparators(index) = app.makeLabel(strip, '>', ...
+                        theme.font.heading, theme.color.secondaryText);
+                    app.StateStripSeparators(index).Layout.Column = 2 * index;
+                    app.StateStripSeparators(index).HorizontalAlignment = 'center';
+                end
             end
             app.StateErrorLabel = app.makeLabel(strip, 'ERROR', ...
                 theme.font.heading, theme.color.disabledText);
+            app.StateErrorLabel.Layout.Column = 11;
             app.StateErrorLabel.HorizontalAlignment = 'center';
+            app.StateErrorLabel.BackgroundColor = theme.color.background;
             app.TimeInStateLabel = app.makeLabel(strip, ...
                 'TIME IN STATE --', theme.font.body, ...
                 theme.color.secondaryText);
+            app.TimeInStateLabel.Layout.Column = 12;
 
             columns = app.makeGrid(outer, {'1x'}, {'1x', '1x'});
             app.createDriverInputs(columns);
@@ -385,13 +446,24 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %CREATEDRIVERINPUTS Pedal, digital, and momentary operator area.
             theme = app.Theme;
             panel = app.makePanel(parent, 'DRIVER INPUTS');
+            % Row 3 (STEERING ANGLE) is the tall row: a uiknob needs real
+            % height to render as a legible circle with its major-tick
+            % labels, unlike the plain sliders/checkboxes in every other
+            % row. Row heights are (parent, rowHeight, columnWidth) per
+            % MAKEGRID's signature -- the 90px entry must line up with the
+            % steering row, not row 6 (ExpertModeCheckBox), which is a
+            % plain checkbox with no need for extra height.
             grid = app.makeGrid(panel, ...
-                {26, 26, 26, 26, 26, 90, 26, 26, 26, 26, '1x'}, ...
+                {26, 26, 90, 26, 26, 26, 26, 26, 26, '1x'}, ...
                 {150, '1x', 110, 150});
 
-            app.makeLabel(grid, 'THROTTLE %', theme.font.body, ...
-                theme.color.primaryText);
+            throttleLabel = app.makeLabel(grid, 'THROTTLE %', ...
+                theme.font.body, theme.color.primaryText);
+            throttleLabel.Layout.Row = 1;
+            throttleLabel.Layout.Column = 1;
             app.ThrottleSlider = uislider(grid);
+            app.ThrottleSlider.Layout.Row = 1;
+            app.ThrottleSlider.Layout.Column = 2;
             app.ThrottleSlider.Limits = [0 100];
             app.ThrottleSlider.MajorTicks = 0:25:100;
             app.ThrottleSlider.FontName = theme.font.name;
@@ -402,12 +474,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onThrottleChanged, true);
             app.ThrottleField = app.makeNumericField(grid, ...
                 [0 100], @onThrottleFieldChanged);
+            app.ThrottleField.Layout.Row = 1;
+            app.ThrottleField.Layout.Column = 3;
             app.ThrottleAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.ThrottleAppliedLabel.Layout.Row = 1;
+            app.ThrottleAppliedLabel.Layout.Column = 4;
 
-            app.makeLabel(grid, 'BRAKE %', theme.font.body, ...
+            brakeLabel = app.makeLabel(grid, 'BRAKE %', theme.font.body, ...
                 theme.color.primaryText);
+            brakeLabel.Layout.Row = 2;
+            brakeLabel.Layout.Column = 1;
             app.BrakeSlider = uislider(grid);
+            app.BrakeSlider.Layout.Row = 2;
+            app.BrakeSlider.Layout.Column = 2;
             app.BrakeSlider.Limits = [0 100];
             app.BrakeSlider.MajorTicks = 0:25:100;
             app.BrakeSlider.FontName = theme.font.name;
@@ -418,12 +498,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onBrakeChanged, true);
             app.BrakeField = app.makeNumericField(grid, ...
                 [0 100], @onBrakeFieldChanged);
+            app.BrakeField.Layout.Row = 2;
+            app.BrakeField.Layout.Column = 3;
             app.BrakeAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.BrakeAppliedLabel.Layout.Row = 2;
+            app.BrakeAppliedLabel.Layout.Column = 4;
 
-            app.makeLabel(grid, 'STEERING ANGLE deg', theme.font.body, ...
-                theme.color.primaryText);
+            steeringLabel = app.makeLabel(grid, 'STEERING ANGLE deg', ...
+                theme.font.body, theme.color.primaryText);
+            steeringLabel.Layout.Row = 3;
+            steeringLabel.Layout.Column = 1;
             app.SteeringDial = uiknob(grid, 'continuous');
+            app.SteeringDial.Layout.Row = 3;
+            app.SteeringDial.Layout.Column = 2;
             app.SteeringDial.Limits = [-780 780];
             app.SteeringDial.MajorTicks = -780:195:780;
             app.SteeringDial.Value = 0;
@@ -435,12 +523,38 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 createCallbackFcn(app, @onSteeringChanged, true);
             app.SteeringField = app.makeNumericField(grid, ...
                 [-780 780], @onSteeringFieldChanged);
+            app.SteeringField.Layout.Row = 3;
+            app.SteeringField.Layout.Column = 3;
             app.SteeringAppliedLabel = app.makeLabel(grid, ...
                 'APPLIED --', theme.font.body, theme.color.secondaryText);
+            app.SteeringAppliedLabel.Layout.Row = 3;
+            app.SteeringAppliedLabel.Layout.Column = 4;
 
-            app.makeLabel(grid, 'APPLIED PEDAL V', theme.font.body, ...
-                theme.color.primaryText);
+            % Every control in this grid, starting with THROTTLE % above,
+            % gets an explicit Layout.Row / Layout.Column instead of
+            % relying on uigridlayout auto-flow. Auto-flow assigns (row,
+            % column) purely by each child's add order divided by the
+            % 10-column width -- it does NOT look at which cells are
+            % actually occupied, so with only 4 controls per logical row
+            % (label, control, field, applied-label) it packs 2.5 logical
+            % rows' worth of controls into physical row 1 before wrapping.
+            % That is what pushed the steering knob into a slim, wrong
+            % column (garbling its major-tick labels into overlapping
+            % text) and wrapped its field/applied-label onto stray rows.
+            % voltageGrid, PlausibilityCheckBox and ExpertModeCheckBox
+            % below compound the same bug: they span multiple columns
+            % (Layout.Column = [1 4] / [2 4]) but still only ever counted
+            % as "one slot" toward the auto-flow arithmetic, so every
+            % auto-placed control after them drifted onto rows that were
+            % already occupied and rendered on top of each other (this is
+            % what also produced the overlapping/ghosted AO02 THR2 text).
+            % Pinning every row removes that drift.
+            pedalVLabel = app.makeLabel(grid, 'APPLIED PEDAL V', ...
+                theme.font.body, theme.color.primaryText);
+            pedalVLabel.Layout.Row = 4;
+            pedalVLabel.Layout.Column = 1;
             voltageGrid = app.makeGrid(grid, {'1x'}, {'1x', '1x', '1x', '1x'});
+            voltageGrid.Layout.Row = 4;
             voltageGrid.Layout.Column = [2 4];
             app.PedalVoltageLabels = gobjects(1, 4);
             for index = 1:4
@@ -453,43 +567,69 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.PlausibilityCheckBox = app.makeCheckBox(grid, ...
                 'INTERLOCK: allow pedal-plausibility violation', ...
                 @onPlausibilityChanged);
+            app.PlausibilityCheckBox.Layout.Row = 5;
             app.PlausibilityCheckBox.Layout.Column = [1 4];
             app.ExpertModeCheckBox = app.makeCheckBox(grid, ...
                 'INTERLOCK: expert mode (calibration, plant, faults)', ...
                 @onExpertModeChanged);
+            app.ExpertModeCheckBox.Layout.Row = 6;
             app.ExpertModeCheckBox.Layout.Column = [1 4];
 
-            app.makeLabel(grid, 'DIGITAL STIMULI', theme.font.body, ...
-                theme.color.primaryText);
-            app.MainButtonSwitch = app.makeCheckBox(grid, 'MAIN_BTN_IN', ...
-                @onMainButtonChanged);
+            digitalStimuliLabel = app.makeLabel(grid, 'DIGITAL STIMULI', ...
+                theme.font.body, theme.color.primaryText);
+            digitalStimuliLabel.Layout.Row = 7;
+            digitalStimuliLabel.Layout.Column = 1;
+            % MAIN_BTN_IN has no checkbox here: a held-level control was
+            % inert on hardware (the chart only reacts to the momentary
+            % MAIN BUTTON pulse below), so it was removed rather than kept
+            % as a control that visibly does nothing when clicked.
             app.CoolingSwitch = app.makeCheckBox(grid, 'COOLING_SW_IN', ...
                 @onCoolingSwitchChanged);
+            app.CoolingSwitch.Layout.Row = 7;
+            app.CoolingSwitch.Layout.Column = 2;
             app.ShutdownFeedbackSwitch = app.makeCheckBox(grid, ...
                 'SD_FB_IN', @onShutdownFeedbackChanged);
+            app.ShutdownFeedbackSwitch.Layout.Row = 7;
+            app.ShutdownFeedbackSwitch.Layout.Column = 3;
 
-            app.makeLabel(grid, 'APPLIED', theme.font.body, ...
-                theme.color.primaryText);
-            app.DigitalAppliedLabels = gobjects(1, 3);
-            for index = 1:3
+            digitalAppliedLabel = app.makeLabel(grid, 'APPLIED', ...
+                theme.font.body, theme.color.primaryText);
+            digitalAppliedLabel.Layout.Row = 8;
+            digitalAppliedLabel.Layout.Column = 1;
+            app.DigitalAppliedLabels = gobjects(1, 2);
+            for index = 1:2
                 app.DigitalAppliedLabels(index) = app.makeLabel(grid, ...
                     theme.text.noData, theme.font.small, ...
                     theme.color.secondaryText);
+                app.DigitalAppliedLabels(index).Layout.Row = 8;
+                app.DigitalAppliedLabels(index).Layout.Column = index + 1;
             end
 
-            app.makeLabel(grid, 'MOMENTARY (uint32 seq)', theme.font.body, ...
-                theme.color.primaryText);
+            momentaryLabel = app.makeLabel(grid, 'MOMENTARY (uint32 seq)', ...
+                theme.font.body, theme.color.primaryText);
+            momentaryLabel.Layout.Row = 9;
+            momentaryLabel.Layout.Column = 1;
             app.PrechargeButton = app.makeButton(grid, 'PRECHARGE', ...
                 @onPrechargePushed);
+            app.PrechargeButton.Layout.Row = 9;
+            app.PrechargeButton.Layout.Column = 2;
             app.MainMomentaryButton = app.makeButton(grid, 'MAIN BUTTON', ...
                 @onMainMomentaryPushed);
+            app.MainMomentaryButton.Layout.Row = 9;
+            app.MainMomentaryButton.Layout.Column = 3;
             app.MomentaryLabels = gobjects(1, 2);
             app.MomentaryLabels(1) = app.makeLabel(grid, ...
                 'seq --', theme.font.small, theme.color.secondaryText);
-            app.makeLabel(grid, '', theme.font.small, ...
+            app.MomentaryLabels(1).Layout.Row = 9;
+            app.MomentaryLabels(1).Layout.Column = 4;
+            blankMomentaryLabel = app.makeLabel(grid, '', theme.font.small, ...
                 theme.color.secondaryText);
+            blankMomentaryLabel.Layout.Row = 10;
+            blankMomentaryLabel.Layout.Column = 1;
             app.MomentaryLabels(2) = app.makeLabel(grid, ...
                 'seq --', theme.font.small, theme.color.secondaryText);
+            app.MomentaryLabels(2).Layout.Row = 10;
+            app.MomentaryLabels(2).Layout.Column = 2;
         end
 
         function createElectricalMimic(app, parent)
@@ -571,8 +711,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function createInvertersTab(app)
             %CREATEINVERTERSTAB Four compact INV1-INV4 status panels.
             theme = app.Theme;
-            outer = app.makeGrid(app.InvertersTab, {'1x', '1x'}, ...
-                {'1x', '1x'});
+            outer = app.makeGrid(app.InvertersTab, {18, '1x'}, {'1x'});
+            % Permanent disclosure, the same pattern as the CAN TX table's
+            % "HIL-generated; bus ACK unverified" text: these fields are
+            % this rig's own simulated inverter output (STEPMODEL/
+            % STEPPLANT), not a measurement confirmed by another node. See
+            % TARGETSESSION.READLIVEIO for why -- there is no cross-channel
+            % CAN receipt signal wired up to verify it.
+            app.InverterSourceLabel = app.makeLabel(outer, ...
+                ['SIMULATED INVERTER OUTPUT (this rig''s own STEPMODEL/' ...
+                'STEPPLANT state) - not independently confirmed by a ' ...
+                'cross-channel CAN receipt; no such signal is wired up yet.'], ...
+                theme.font.small, theme.color.secondaryText);
+            app.InverterSourceLabel.Layout.Row = 1;
+            app.InverterSourceLabel.Layout.Column = 1;
+            panels = app.makeGrid(outer, {'1x', '1x'}, {'1x', '1x'});
+            panels.Layout.Row = 2;
+            panels.Layout.Column = 1;
             fieldCount = numel(app.InverterFieldNames);
             app.InverterTitleLabels = gobjects(1, 4);
             app.InverterCornerLabels = gobjects(1, 4);
@@ -580,7 +735,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.InverterStatusGrids = [];
             app.InverterDisclosureButtons = [];
             for channel = 1:4
-                panel = app.makePanel(outer, sprintf('INVERTER %d', channel));
+                panel = app.makePanel(panels, sprintf('INVERTER %d', channel));
                 [~, collapsedRows] = ...
                     inverterhilgui.inverterPanelVisibility(false);
                 grid = app.makeGrid(panel, [{20} collapsedRows], ...
@@ -667,7 +822,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function createIoCanTab(app)
             %CREATEIOCANTAB Split CAN tables and the diagnostics strip.
             theme = app.Theme;
-            outer = app.makeGrid(app.IoCanTab, {18, '1x', 30}, {'1x', '1x'});
+            outer = app.makeGrid(app.IoCanTab, {18, '1x', 150, 30}, ...
+                {'1x', '1x'});
 
             % Same honesty standard as the torque banner: state plainly that
             % no high-rate feed is registered, so the empty tables below are
@@ -681,7 +837,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.InstrumentStatusLabel.Layout.Column = [1 2];
 
             rxPanel = app.makePanel(outer, ...
-                'VCU TX / HIL RX  0x186 0x196 0x1A6 0x1B6');
+                'VCU TX / HIL RX  0x1F5 0x186 0x196 0x1A6 0x1B6');
             rxPanel.Layout.Row = 2;
             rxPanel.Layout.Column = 1;
             rxGrid = app.makeGrid(rxPanel, {'1x'}, {'1x'});
@@ -689,18 +845,103 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
             txPanel = app.makePanel(outer, ...
                 ['HIL TX / VCU RX  0x383 0x385 0x393 0x395 0x3A3 0x3A5 ' ...
-                '0x3B3 0x3B5 0x400']);
+                '0x3B3 0x3B5 0x400  |  SENSORS 0x034 0x032 0x076 0x2B0 0x7C0']);
             txPanel.Layout.Row = 2;
             txPanel.Layout.Column = 2;
             txGrid = app.makeGrid(txPanel, {'1x'}, {'1x'});
             app.CanTxTable = app.makeCanTable(txGrid);
 
+            app.createSensorHealthPanel(outer);
+
             app.CanDiagnosticsLabel = app.makeLabel(outer, ...
                 app.canDiagnosticsText(inverterhilgui.blankTelemetry()), ...
                 theme.font.small, theme.color.secondaryText);
-            app.CanDiagnosticsLabel.Layout.Row = 3;
+            app.CanDiagnosticsLabel.Layout.Row = 4;
             app.CanDiagnosticsLabel.Layout.Column = [1 2];
             app.CanDiagnosticsLabel.BackgroundColor = theme.color.panel;
+        end
+
+        function createSensorHealthPanel(app, outer)
+            %CREATESENSORHEALTHPANEL Synchronized MTi/LWS readout and dropout.
+            %
+            %   The four readouts are deliberately separate quantities, not
+            %   one summary line: REQUESTED is the dial, APPLIED is what the
+            %   virtual car actually steered to, SPEED is derived, and LWS is
+            %   what the encoded 0x2B0 frame carries. Every one renders as
+            %   dashes until genuinely read -- see INVERTERHILGUI.
+            %   BLANKTELEMETRY's no-invented-values rule.
+            theme = app.Theme;
+            panel = app.makePanel(outer, ...
+                'SENSOR SIMULATION - MTi-680G / BOSCH LWS');
+            panel.Layout.Row = 3;
+            panel.Layout.Column = [1 2];
+            grid = app.makeGrid(panel, {20, 20, 20, 20, 24}, ...
+                {'1x', 220, 260});
+
+            app.SensorSteeringLabel = app.makeLabel(grid, ...
+                'STEERING --', theme.font.small, theme.color.primaryText);
+            app.SensorSteeringLabel.Layout.Row = 1;
+            app.SensorSteeringLabel.Layout.Column = 1;
+            app.SteeringDropoutCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS 0x2B0 dropout', @onSteeringDropoutChanged);
+            app.SteeringDropoutCheckBox.Layout.Row = 1;
+            app.SteeringDropoutCheckBox.Layout.Column = 2;
+            app.SteeringStaleCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS stale payload', @onSteeringStaleChanged);
+            app.SteeringStaleCheckBox.Layout.Row = 1;
+            app.SteeringStaleCheckBox.Layout.Column = 3;
+
+            app.SensorImuAccelLabel = app.makeLabel(grid, ...
+                'MTi ACCEL --', theme.font.small, theme.color.electrical);
+            app.SensorImuAccelLabel.Layout.Row = 2;
+            app.SensorImuAccelLabel.Layout.Column = 1;
+            app.SteeringMalformedCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS wrong DLC', @onSteeringMalformedChanged);
+            app.SteeringMalformedCheckBox.Layout.Row = 2;
+            app.SteeringMalformedCheckBox.Layout.Column = 2;
+            app.SteeringInvalidStatusCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: illegal TRIM/CAL/OK', @onSteeringInvalidStatusChanged);
+            app.SteeringInvalidStatusCheckBox.Layout.Row = 2;
+            app.SteeringInvalidStatusCheckBox.Layout.Column = 3;
+
+            app.SensorImuRateLabel = app.makeLabel(grid, ...
+                'MTi RATE --', theme.font.small, theme.color.electrical);
+            app.SensorImuRateLabel.Layout.Row = 3;
+            app.SensorImuRateLabel.Layout.Column = 1;
+            app.SteeringAngleSentinelCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS angle 0x7FFF', @onSteeringAngleSentinelChanged);
+            app.SteeringAngleSentinelCheckBox.Layout.Row = 3;
+            app.SteeringAngleSentinelCheckBox.Layout.Column = 2;
+            app.SteeringSpeedSentinelCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: LWS speed 0xFF', @onSteeringSpeedSentinelChanged);
+            app.SteeringSpeedSentinelCheckBox.Layout.Row = 3;
+            app.SteeringSpeedSentinelCheckBox.Layout.Column = 3;
+
+            app.SensorImuVelocityLabel = app.makeLabel(grid, ...
+                'MTi VELOCITY --', theme.font.small, theme.color.electrical);
+            app.SensorImuVelocityLabel.Layout.Row = 4;
+            app.SensorImuVelocityLabel.Layout.Column = 1;
+            app.ImuDropoutCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi all-frame dropout', @onImuDropoutChanged);
+            app.ImuDropoutCheckBox.Layout.Row = 4;
+            app.ImuDropoutCheckBox.Layout.Column = 2;
+            app.ImuStaleCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi stale payloads', @onImuStaleChanged);
+            app.ImuStaleCheckBox.Layout.Row = 4;
+            app.ImuStaleCheckBox.Layout.Column = 3;
+
+            app.SensorCalibrationLabel = app.makeLabel(grid, ...
+                'LWS CALIBRATION --', theme.font.small, theme.color.secondaryText);
+            app.SensorCalibrationLabel.Layout.Row = 5;
+            app.SensorCalibrationLabel.Layout.Column = 1;
+            app.ImuMalformedCheckBox = app.makeCheckBox(grid, ...
+                'INJECT: MTi wrong DLC', @onImuMalformedChanged);
+            app.ImuMalformedCheckBox.Layout.Row = 5;
+            app.ImuMalformedCheckBox.Layout.Column = 2;
+            app.LwsCalibrationButton = app.makeButton(grid, ...
+                'RESET 0x05 -> CHECK -> ZERO 0x03', @onLwsCalibrationPushed);
+            app.LwsCalibrationButton.Layout.Row = 5;
+            app.LwsCalibrationButton.Layout.Column = 3;
         end
 
         function createFaultsTab(app)
@@ -816,9 +1057,10 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   Simulink Real-Time's async streaming queue from two call
             %   stacks at once. That is not a MATLAB error to catch -- it is
             %   an access violation in slrealtime::xcp::AsyncQueue::write
-            %   that takes MATLAB down with it. Skipping, not deferring, is
-            %   what keeps this timer from ever reaching the target while a
-            %   lifecycle call is on it.
+            %   that takes MATLAB down with it (confirmed from crash dumps
+            %   captured on this machine on the STOP path). Skipping, not
+            %   deferring, is what keeps this timer from ever reaching the
+            %   target while a lifecycle call is on it.
             if app.TargetBusy
                 return;
             end
@@ -883,12 +1125,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function pollCoalescers(app)
             %POLLCOALESCERS Emit any pedal value held by the 30 ms window.
+            %
+            %   Both POLL calls always run, draining each coalescer's queued
+            %   window regardless of XCPDRIVING, so a value queued while the
+            %   GUI still owned pedals never leaks a stale COMMITWRITE the
+            %   moment XCPDRIVING clears. Only the COMMITWRITE itself is
+            %   gated: while an XCP master owns hil_cmd_pedals_throttle/
+            %   brake, GUI slider movement must not reach SESSION.WRITE at
+            %   all, matching inverterhilgui.controlPolicy's POLICY.PEDALS
+            %   (which independently disables the slider widgets) -- this is
+            %   the actual enforcement point, not merely the widget Enable
+            %   state.
             emission = app.ThrottleCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.CanPedalsDriving
+            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
                 app.commitWrite('pedals.throttle', emission.value / 100, true);
             end
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.CanPedalsDriving
+            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
             end
             emission = app.SteeringCoalescer.poll(app.hostTimeS());
@@ -952,6 +1205,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.refreshDriverInputs();
             app.refreshElectrical();
             app.refreshInverters();
+            app.refreshSensors();
             app.refreshCan();
             app.refreshLog();
         end
@@ -992,7 +1246,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
                     app.VcuStateLast = '';
                     app.Telemetry.vcu.timeInStateS = NaN;
                 end
-                app.Telemetry.pedals.appliedV = live.pedalsAppliedV;
+                if live.appsBrakeFaultKnown
+                    app.Telemetry.appsBrakeFault = live.appsBrakeFault;
+                else
+                    app.Telemetry.appsBrakeFault = [];
+                end
+                % XcpDriving now reflects the live hil_cmd_xcp_pedals_active
+                % target parameter (see TargetSession.readLiveIo) instead of
+                % being a permanent placeholder. Unknown (read failed, or an
+                % application built before this parameter existed) fails
+                % closed to false -- GUI keeps/regains pedal write
+                % ownership, matching the resolved policy's default-to-GUI
+                % behavior in controlPolicy.m.
+                if live.xcpPedalsActiveKnown
+                    app.XcpDriving = live.xcpPedalsActive;
+                else
+                    app.XcpDriving = false;
+                end
                 wasCanDriving = app.CanPedalsDriving;
                 if live.canPedalsKnown
                     app.CanPedalsDriving = live.canPedalsDriving;
@@ -1005,9 +1275,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                         app.BrakeField.Value = live.canPedals(2);
                     elseif wasCanDriving
                         % A dead CAN link must never pick up an old GUI slider
-                        % position. Reset the GUI-owned dictionary pair at the
-                        % handover; normal slider movement then resumes writes
-                        % without a separate operator re-arm.
+                        % position. Reset the GUI-owned fallback at handover.
                         app.commitWrite('pedals.throttle', 0, true);
                         app.commitWrite('pedals.brake', 0, true);
                     end
@@ -1021,7 +1289,31 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 % the commanded throttle/brake percent (ThrottleField /
                 % BrakeField, already live) in REFRESHELECTRICAL's rail
                 % panel, honestly NaN when unread rather than fabricated.
+                %
+                % PEDALS.APPLIEDV is sourced from this same ANALOGINV, not
+                % LIVE.PEDALSAPPLIEDV: that field is a permanent NaN
+                % placeholder for a genuinely different, unwired signal (the
+                % AO command's own echo -- see TARGETSESSION.READLIVEIO's
+                % comment on PEDALSAPPLIEDV), so every consumer of
+                % PEDALS.APPLIEDV (PedalVoltageLabels, per-sensor
+                % percentages, the plausibility guard) was reading a value
+                % that could never be anything but NaN on this bench, even
+                % though the genuinely self-looped pedal voltage was already
+                % being measured and shown two lines below in the rail
+                % panel.
+                app.Telemetry.pedals.appliedV = live.analogInV;
                 app.Telemetry.analogInV = live.analogInV;
+                % Synchronized sensor state. REQUESTEDANGLEDEG is owned by
+                % the app (the dial), so it is deliberately not overwritten
+                % from the target -- everything else here is measured.
+                if isfield(live, 'imu')
+                    app.Telemetry.imu = live.imu;
+                end
+                if isfield(live, 'steering')
+                    requested = app.Telemetry.steering.requestedAngleDeg;
+                    app.Telemetry.steering = live.steering;
+                    app.Telemetry.steering.requestedAngleDeg = requested;
+                end
                 if live.can.known
                     d = live.can.diagnostics;
                     app.Telemetry.can.diagnostics.busLoadPercent = ...
@@ -1048,8 +1340,8 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if live.inverterKnown
                     app.applyLiveInverters(live.inverter);
                 end
-                if live.rx.known
-                    app.applyLiveRxFrames(live.rx);
+                if live.rx.known || live.pedalPayloadKnown
+                    app.applyLiveRxFrames(live.rx, live);
                 end
             else
                 app.VcuStateEnteredS = NaN;
@@ -1062,14 +1354,58 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 app.Telemetry.pedals.appliedV = nan(1, 4);
                 app.Telemetry.analogInV = nan(1, 4);
+                app.Telemetry.appsBrakeFault = [];
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
+                % Read failed or not connected: fail closed to GUI-owned
+                % pedals only when neither external source reports ownership.
+                app.XcpDriving = false;
                 app.CanPedalsDriving = false;
             end
             app.Telemetry.pedals.throttleAppliedPercent = ...
                 app.appliedPedalPercent(1, 'v1');
             app.Telemetry.pedals.brakeAppliedPercent = ...
                 app.appliedPedalPercent(3, 'v3');
+            app.Telemetry.dcLink = inverterhilgui.blankTelemetry().dcLink;
+            status = struct('dcLink12V', NaN, 'dcLink34V', NaN, ...
+                'dcLink12AboveMinimum', [], 'dcLink34AboveMinimum', []);
+            if live.known && isstruct(live.systemStatus)
+                status = live.systemStatus;
+            end
+            voltageFields = {'dcLink12V', 'dcLink34V'};
+            flagFields = {'dcLink12AboveMinimum', ...
+                'dcLink34AboveMinimum'};
+            for index = 1:2
+                voltage = status.(voltageFields{index});
+                aboveMinimum = status.(flagFields{index});
+                if isnumeric(voltage) && isscalar(voltage) && ...
+                        isfinite(voltage)
+                    app.Telemetry.dcLink(index).voltageV = double(voltage);
+                    app.Telemetry.dcLink(index).rawCount = round( ...
+                        double(voltage) * 64);
+                    app.Telemetry.dcLink(index).capturePending = false;
+                end
+                if (islogical(aboveMinimum) || isnumeric(aboveMinimum)) && ...
+                        isscalar(aboveMinimum) && isfinite(double(aboveMinimum))
+                    app.Telemetry.dcLink(index).aboveMinimum = ...
+                        logical(aboveMinimum);
+                end
+            end
+            [~, plausibilityOk] = app.pedalSensorPercentages();
+            % MAIN_BTN_IN is edge-pulsed (see MainButtonLastPressedS above),
+            % so "pressed" here means "pressed recently enough to still be
+            % the operator's most recent action" rather than a live pin
+            % level. 1 s comfortably covers several 250 ms poll cycles so a
+            % press is never silently missed between polls.
+            mainButtonPressWindowS = 1.0;
+            app.Telemetry.guards.mainButton = ...
+                (app.hostTimeS() - app.MainButtonLastPressedS) <= ...
+                mainButtonPressWindowS;
+            app.Telemetry.guards.brakePercent = ...
+                app.Telemetry.pedals.brakeAppliedPercent;
+            app.Telemetry.guards.dcLink12V = status.dcLink12V;
+            app.Telemetry.guards.dcLink34V = status.dcLink34V;
+            app.Telemetry.guards.plausibilityOk = plausibilityOk;
         end
 
         function applyLiveTxFrames(app, live)
@@ -1120,11 +1456,34 @@ classdef inverter_hil_app < matlab.apps.AppBase
             ack = inverterhilgui.canAckStatus( ...
                 app.Telemetry.can.diagnostics, app.TxTransmitting);
 
+            % Rows past the Ephorus block are the sensor frames, whose
+            % payloads arrive separately and are SHORTER than eight bytes.
+            % They are appended here rather than padded into LIVE.TXPAYLOADS
+            % so the table never shows padding as though it were on the wire.
+            lengths = repmat(8, 1, size(payloads, 1));
+            if isfield(live, 'sensorPayloadsKnown') && live.sensorPayloadsKnown
+                payloads = [payloads; live.sensorPayloads];
+                lengths = [lengths, live.sensorPayloadLengths(:)'];
+            end
+
             for index = 1:numel(observations)
                 if index > size(payloads, 1)
                     break;
                 end
-                bytes = payloads(index, :);
+                if index > 9 && isfield(live, 'sensorTxCounts')
+                    sensorIndex = index - 9;
+                    if numel(live.sensorTxCounts) >= sensorIndex && ...
+                            live.sensorTxCounts(sensorIndex) == 0
+                        % A cached payload exists from model initialization,
+                        % but count zero proves it has never been offered to
+                        % this CAN Write. Show the genuine zero count while
+                        % leaving bytes/live state as NO DATA.
+                        observations(index).count = 0;
+                        observations(index).timestampsS = [];
+                        continue;
+                    end
+                end
+                bytes = payloads(index, 1:lengths(index));
                 value = sprintf('%02X ', bytes);
                 previous = observations(index).value;
                 observations(index).value = strtrim(value);
@@ -1133,13 +1492,38 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if ~strcmp(previous, observations(index).value)
                     observations(index).lastChangeS = now;
                 end
-                observations(index).timestampsS = now;
-                observations(index).count = live.txMessageCount;
+                if index <= 9
+                    observations(index).timestampsS = now;
+                    observations(index).count = live.txMessageCount;
+                else
+                    sensorIndex = index - 9;
+                    % SENSORCOUNTS and SENSORAGESS are maintained by the
+                    % target's 5 ms sensor producer. Host poll timestamps
+                    % are never counted, differenced, or treated as sensor
+                    % time. NOW merely anchors the target-measured age for
+                    % CANROWMODEL's LIVE/STALE presentation; the single
+                    % timestamp cannot produce a fabricated rate.
+                    observations(index).count = NaN;
+                    observations(index).timestampsS = [];
+                    if isfield(live, 'sensorTxCounts') && ...
+                            numel(live.sensorTxCounts) >= sensorIndex
+                        observations(index).count = ...
+                            live.sensorTxCounts(sensorIndex);
+                    end
+                    if isfield(live, 'sensorAgesS') && ...
+                            numel(live.sensorAgesS) >= sensorIndex
+                        targetAgeS = live.sensorAgesS(sensorIndex);
+                        if isnumeric(targetAgeS) && isscalar(targetAgeS) && ...
+                                isfinite(targetAgeS) && targetAgeS >= 0
+                            observations(index).timestampsS = now - targetAgeS;
+                        end
+                    end
+                end
             end
             app.Telemetry.can.tx = observations;
         end
 
-        function applyLiveRxFrames(app, rx)
+        function applyLiveRxFrames(app, rx, live)
             %APPLYLIVERXFRAMES Fill the VCU TX / HIL RX table from the frames
             %   the target genuinely retained.
             %
@@ -1165,11 +1549,31 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   the RATE column still correctly stays dashes.
             observations = app.Telemetry.can.rx;
             now = app.hostTimeS();
-            for index = 1:numel(observations)
-                if index > numel(rx.channels)
+            if live.pedalPayloadKnown && numel(observations) >= 1
+                payload = live.pedalPayload;
+                previous = observations(1).value;
+                observations(1).value = strtrim(sprintf('%02X ', payload));
+                observations(1).signal = app.pedalFrameSignalText(payload);
+                observations(1).timestampsS = now;
+                % Genuine, target-measured transmit count (Port A Pedal TX
+                % Counter, read via PEDALTXCOUNT) when available; NaN/dashes
+                % on an older build that predates that counter, never a
+                % fabricated estimate.
+                if live.pedalTxCountKnown
+                    observations(1).count = live.pedalTxCount;
+                else
+                    observations(1).count = NaN;
+                end
+                if ~strcmp(previous, observations(1).value)
+                    observations(1).lastChangeS = now;
+                end
+            end
+            for index = 2:numel(observations)
+                channelIndex = index - 1;
+                if channelIndex < 1 || channelIndex > numel(rx.channels)
                     break;
                 end
-                channel = rx.channels(index);
+                channel = rx.channels(channelIndex);
                 if isempty(channel.hasCommand) || ~channel.hasCommand
                     observations(index).signal = 'no frame received';
                     observations(index).value = '';
@@ -1192,6 +1596,18 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 observations(index).count = double(channel.acceptedCount);
             end
             app.Telemetry.can.rx = observations;
+        end
+
+        function text = pedalFrameSignalText(~, payload)
+            %PEDALFRAMESIGNALTEXT Decode only the explicit VCU 0x1F5 contract.
+            if numel(payload) ~= 8
+                text = 'invalid pedal payload';
+                return;
+            end
+            front = double(payload(2)) + 256 * double(payload(3));
+            rear = double(payload(4)) + 256 * double(payload(5));
+            text = sprintf('throttle %d %% | front %d PSI | rear %d PSI | steering 0', ...
+                payload(1), front, rear);
         end
 
         function text = rxFrameSignalText(app, id, channel)
@@ -1301,6 +1717,34 @@ classdef inverter_hil_app < matlab.apps.AppBase
             percent = min(max(fraction, 0), 1) * 100;
         end
 
+        function [percentages, plausibilityOk] = pedalSensorPercentages(app)
+            %PEDALSENSORPERCENTAGES Mirror the VCU pedal plausibility math
+            %   for display only, using the already-read pedal voltages.
+            percentages = nan(1, 4);
+            plausibilityOk = [];
+            voltages = app.Telemetry.pedals.appliedV;
+            if ~isnumeric(voltages) || numel(voltages) < 4
+                return;
+            end
+            raw = double(voltages(1:4)) / 3.3 * 65535;
+            valid = isfinite(raw);
+            if valid(1)
+                percentages(1) = 100 * min(max((30100 - raw(1)) / 9200, 0), 1);
+            end
+            if valid(2)
+                percentages(2) = 100 * min(max((63600 - raw(2)) / 17100, 0), 1);
+            end
+            if valid(3)
+                percentages(3) = 100 * min(max((raw(3) - 9025) / 22775, 0), 1);
+            end
+            if valid(4)
+                percentages(4) = 100 * min(max((raw(4) - 8280) / 23520, 0), 1);
+            end
+            if valid(1) && valid(2)
+                plausibilityOk = logical(abs(percentages(1) - percentages(2)) <= 20);
+            end
+        end
+
         function refreshPolicy(app)
             %REFRESHPOLICY Apply the single control-enable authority.
             lifecycle = app.Session.describeState();
@@ -1311,12 +1755,23 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
             app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
-                app.Telemetry.vcu.state, interlocks, app.CanPedalsDriving);
+                app.Telemetry.vcu.state, interlocks, app.XcpDriving, ...
+                app.CanPedalsDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...
                 app.Policy.sensorStimulus);
-            app.applyEnable([app.MainButtonSwitch app.CoolingSwitch ...
+            % Sensor-local dropout, stale payload, wrong DLC, illegal status,
+            % and sentinel injection all follow the sensorStimulus policy.
+            app.applyEnable([app.SteeringDropoutCheckBox ...
+                app.SteeringStaleCheckBox app.SteeringMalformedCheckBox ...
+                app.SteeringInvalidStatusCheckBox ...
+                app.SteeringAngleSentinelCheckBox ...
+                app.SteeringSpeedSentinelCheckBox app.ImuDropoutCheckBox ...
+                app.ImuStaleCheckBox app.ImuMalformedCheckBox], ...
+                app.Policy.sensorStimulus);
+            app.applyEnable(app.LwsCalibrationButton, app.Policy.calibration);
+            app.applyEnable([app.CoolingSwitch ...
                 app.ShutdownFeedbackSwitch], app.Policy.digitalStimuli);
             app.applyEnable([app.PrechargeButton app.MainMomentaryButton], ...
                 app.Policy.momentary);
@@ -1397,6 +1852,12 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.StateStripLabels(index).FontWeight = weight;
             end
             if app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive
+                % FontColor and BackgroundColor must differ, or "ERROR"
+                % renders invisible against its own highlight -- exactly
+                % what a same-color pair does. Dark text on the fault-red
+                % background reads clearly, matching how every other card
+                % state (active/passed/upcoming) already uses two
+                % distinct colors.
                 app.StateErrorLabel.FontColor = theme.color.background;
                 app.StateErrorLabel.FontWeight = 'bold';
                 app.StateErrorLabel.BackgroundColor = theme.color.fault;
@@ -1437,22 +1898,67 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %REFRESHDRIVERINPUTS Repaint requested and applied pedal values.
             theme = app.Theme;
             pedals = app.Telemetry.pedals;
-            app.ThrottleAppliedLabel.Text = sprintf('APPLIED %s', ...
-                app.formatPercent(pedals.throttleAppliedPercent));
-            app.BrakeAppliedLabel.Text = sprintf('APPLIED %s', ...
-                app.formatPercent(pedals.brakeAppliedPercent));
-            if isfield(app.Telemetry, 'steering') && ...
-                    isfinite(app.Telemetry.steering.appliedAngleDeg)
-                app.SteeringAppliedLabel.Text = sprintf('APPLIED %.1f deg', ...
-                    app.Telemetry.steering.appliedAngleDeg);
+            % Throttle+brake plausibility interlock (VIRTUALVCUDEPLOYSTEP.M's
+            % APPSBRAKEFAULT): shown directly on the two labels the operator
+            % is already looking at while pressing pedals, rather than a new
+            % banner elsewhere that could go unnoticed. Only ever appended
+            % when the chart itself reports the fault (islogical/true), never
+            % inferred here from a torque number happening to read zero.
+            faultActive = islogical(app.Telemetry.appsBrakeFault) && ...
+                app.Telemetry.appsBrakeFault;
+            if faultActive
+                app.ThrottleAppliedLabel.Text = sprintf( ...
+                    'APPLIED %s | APPS+BRAKE FAULT: TORQUE SUPPRESSED', ...
+                    app.formatPercent(pedals.throttleAppliedPercent));
+                app.BrakeAppliedLabel.Text = sprintf( ...
+                    'APPLIED %s | APPS+BRAKE FAULT: TORQUE SUPPRESSED', ...
+                    app.formatPercent(pedals.brakeAppliedPercent));
+                app.ThrottleAppliedLabel.FontColor = theme.color.fault;
+                app.BrakeAppliedLabel.FontColor = theme.color.fault;
             else
-                app.SteeringAppliedLabel.Text = 'APPLIED --';
+                app.ThrottleAppliedLabel.Text = sprintf('APPLIED %s', ...
+                    app.formatPercent(pedals.throttleAppliedPercent));
+                app.BrakeAppliedLabel.Text = sprintf('APPLIED %s', ...
+                    app.formatPercent(pedals.brakeAppliedPercent));
+                app.ThrottleAppliedLabel.FontColor = theme.color.secondaryText;
+                app.BrakeAppliedLabel.FontColor = theme.color.secondaryText;
             end
+            [sensorPercentages, ~] = app.pedalSensorPercentages();
+            throttleMismatch = isfinite(sensorPercentages(1)) && ...
+                isfinite(sensorPercentages(2)) && ...
+                abs(sensorPercentages(1) - sensorPercentages(2)) > 20;
+            % REQUESTED (dial), APPLIED (virtual car), SPEED (derived), and
+            % LWS (independently decoded frame value) are four DIFFERENT
+            % quantities, so they get four separate fields rather than one
+            % label that flips between them. The dial is not a display-only
+            % LWS override: it feeds the shared vehicle state through a
+            % bounded steering rate, so REQUESTED and APPLIED genuinely
+            % differ while the car is still slewing, and LWS is what the
+            % encoded CAN frame actually carries. Unknown values render as
+            % dashes -- never a fabricated zero.
+            if isfield(app.Telemetry, 'steering')
+                steering = app.Telemetry.steering;
+            else
+                steering = inverterhilgui.blankTelemetry().steering;
+            end
+            app.SteeringAppliedLabel.Text = sprintf( ...
+                'REQUESTED %s | APPLIED %s | SPEED %s | LWS %s', ...
+                app.formatSteeringValue(app.RequestedSteeringDeg, 'deg'), ...
+                app.formatSteeringValue(steering.appliedAngleDeg, 'deg'), ...
+                app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
+                app.formatSteeringValue(steering.observedAngleDeg, 'deg'));
             for index = 1:4
                 measurement = inverterhilgui.formatMeasurement( ...
                     pedals.appliedV(index), NaN, 'V', false);
-                app.PedalVoltageLabels(index).Text = sprintf('%s %s', ...
-                    app.PedalChannelNames{index}, measurement.value);
+                app.PedalVoltageLabels(index).Text = sprintf('%s %s | %s', ...
+                    app.PedalChannelNames{index}, measurement.value, ...
+                    app.formatPercent(sensorPercentages(index)));
+                if throttleMismatch && index <= 2
+                    app.PedalVoltageLabels(index).FontColor = theme.color.fault;
+                else
+                    app.PedalVoltageLabels(index).FontColor = ...
+                        theme.color.electrical;
+                end
             end
             for index = 1:numel(app.DigitalNames)
                 [value, known] = app.Session.readCached( ...
@@ -1534,6 +2040,96 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
         end
 
+        function refreshSensors(app)
+            %REFRESHSENSORS Repaint the synchronized MTi/LWS health readout.
+            theme = app.Theme;
+            blank = inverterhilgui.blankTelemetry();
+            if isfield(app.Telemetry, 'steering')
+                steering = app.Telemetry.steering;
+            else
+                steering = blank.steering;
+            end
+            if isfield(app.Telemetry, 'imu')
+                imu = app.Telemetry.imu;
+            else
+                imu = blank.imu;
+            end
+
+            app.SensorSteeringLabel.Text = sprintf( ...
+                ['STEERING  REQUESTED %s | APPLIED %s | SPEED %s | ' ...
+                'LWS %s | VALID %s | AGE %s'], ...
+                app.formatSteeringValue(app.RequestedSteeringDeg, 'deg'), ...
+                app.formatSteeringValue(steering.appliedAngleDeg, 'deg'), ...
+                app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
+                app.formatSteeringValue(steering.observedAngleDeg, 'deg'), ...
+                app.sensorValidityText(steering.valid), ...
+                app.formatSeconds(steering.ageS));
+
+            app.SensorImuAccelLabel.Text = sprintf( ...
+                'MTi ACCEL 0x034  %s | VALID %s | AGE %s', ...
+                app.formatVector(imu.accelerationMps2, 'm/s^2'), ...
+                app.sensorValidityText(imu.valid), ...
+                app.formatSeconds(imu.ageS));
+            app.SensorImuRateLabel.Text = sprintf('MTi RATE 0x032   %s', ...
+                app.formatVector(imu.rateOfTurnRadPerS, 'rad/s'));
+            app.SensorImuVelocityLabel.Text = sprintf( ...
+                'MTi VELOCITY 0x076  %s', ...
+                app.formatVector(imu.velocityMps, 'm/s'));
+            app.SensorCalibrationLabel.Text = sprintf( ...
+                'LWS CALIBRATION  %s', ...
+                app.lwsCalibrationStateText(steering.calibrationState));
+
+            % A dropout the operator injected is a commanded state, not a
+            % fault, so it is called out plainly rather than coloured as an
+            % error the rig discovered by itself.
+            if isfield(steering, 'dropout') && islogical(steering.dropout) ...
+                    && steering.dropout
+                app.SensorSteeringLabel.FontColor = theme.color.fault;
+            else
+                app.SensorSteeringLabel.FontColor = theme.color.primaryText;
+            end
+        end
+
+        function text = formatVector(app, values, unit)
+            %FORMATVECTOR One XYZ sensor readout, dashes when unknown.
+            if ~isnumeric(values) || numel(values) ~= 3 || ...
+                    ~all(isfinite(values))
+                text = app.Theme.text.noData;
+                return;
+            end
+            text = sprintf('X %.2f  Y %.2f  Z %.2f %s', ...
+                values(1), values(2), values(3), unit);
+        end
+
+        function text = lwsCalibrationStateText(app, value)
+            %LWSCALIBRATIONSTATETEXT Decode target sequencer state only.
+            labels = {'IDLE', 'RESET 0x05 PENDING', ...
+                'WAITING 100 ms + RESET CHECK', 'ZERO 0x03 PENDING', ...
+                'WAITING ZERO RESULT CHECK', 'PASSED (TARGET-SIDE)', ...
+                'FAILED RESULT CHECK'};
+            if isnumeric(value) && isscalar(value) && isfinite(value) && ...
+                    value >= 0 && value <= 6 && value == floor(value)
+                text = labels{value + 1};
+            else
+                text = app.Theme.text.noData;
+            end
+        end
+
+        function text = sensorValidityText(app, value)
+            %SENSORVALIDITYTEXT Preserve unknown instead of assuming false.
+            if (islogical(value) || isnumeric(value)) && isscalar(value) && ...
+                    isfinite(double(value)) && ...
+                    (double(value) == 0 || double(value) == 1)
+                if logical(value)
+                    text = 'YES';
+                else
+                    text = 'NO';
+                end
+            else
+                text = app.Theme.text.noData;
+            end
+        end
+
         function refreshCan(app)
             %REFRESHCAN Repaint both CAN tables and the diagnostics strip.
             now = app.hostTimeS();
@@ -1576,7 +2172,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %CANDIAGNOSTICSTEXT One-line CAN diagnostics strip.
             diagnostics = snapshot.can.diagnostics;
             if diagnostics.writeKnown
-                writeText = sprintf('%d/9 OK', sum(diagnostics.writeSucceeded));
+                % Denominator comes from the flag vector itself, not a
+                % literal 9: the model now has fourteen CAN Write blocks
+                % (nine Ephorus, four sensor, one LWS config) and a
+                % hard-coded 9 under-reported every one of them.
+                writeText = sprintf('%d/%d OK', ...
+                    sum(diagnostics.writeSucceeded), ...
+                    numel(diagnostics.writeSucceeded));
             else
                 writeText = '--';
             end
@@ -1744,7 +2346,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function onConnectPushed(app, ~)
             %ONCONNECTPUSHED Connect or disconnect the target.
-            lock = app.enterTargetSection(); %#ok<NASGU>
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             if app.Session.describeState().isConnected
                 app.recordLifecycle('disconnect', app.Session.disconnect());
             else
@@ -1755,28 +2357,28 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function onLoadPushed(app, ~)
             %ONLOADPUSHED Load the real-time application.
-            lock = app.enterTargetSection(); %#ok<NASGU>
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('load', app.Session.load('inverter_hil'));
             app.refreshAll();
         end
 
         function onStartPushed(app, ~)
             %ONSTARTPUSHED Start the real-time application.
-            lock = app.enterTargetSection(); %#ok<NASGU>
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('start', app.Session.start());
             app.refreshAll();
         end
 
         function onStopPushed(app, ~)
             %ONSTOPPUSHED Stop the application and fall back to safe outputs.
-            lock = app.enterTargetSection(); %#ok<NASGU>
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('stop', app.Session.stop());
             app.refreshAll();
         end
 
         function onResetPushed(app, ~)
             %ONRESETPUSHED Reset the target application.
-            lock = app.enterTargetSection(); %#ok<NASGU>
+            cleanupObj = app.enterTargetSection(); %#ok<NASGU>
             app.recordLifecycle('reset', app.Session.reset());
             app.refreshAll();
         end
@@ -1860,8 +2462,24 @@ classdef inverter_hil_app < matlab.apps.AppBase
             if emission.hasValue
                 app.commitWrite('steering.angle_deg', emission.value, true);
             end
-            app.SteeringAppliedLabel.Text = sprintf('REQUESTED %.1f deg', ...
-                angleDeg);
+            % Record what was REQUESTED and let REFRESHDRIVERINPUTS repaint
+            % the combined readback. The label is not written here: doing so
+            % would overwrite the applied/speed/observed fields with a
+            % requested-only string until the next refresh, which is exactly
+            % the requested-vs-applied conflation the separate fields exist
+            % to prevent.
+            app.RequestedSteeringDeg = angleDeg;
+        end
+
+        function text = formatSteeringValue(app, value, unit)
+            %FORMATSTEERINGVALUE One steering readback field.
+            %   Dashes for anything not a finite scalar, so a disconnected or
+            %   stale sensor is never rendered as a real measurement.
+            if isnumeric(value) && isscalar(value) && isfinite(value)
+                text = sprintf('%.1f %s', value, unit);
+            else
+                text = app.Theme.text.noData;
+            end
         end
 
         function submitPedal(app, coalescer, name, percent)
@@ -1871,6 +2489,89 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.commitWrite(name, emission.value / 100, true);
             end
             app.refreshDriverInputs();
+        end
+
+        function onSteeringDropoutChanged(app, ~)
+            %ONSTEERINGDROPOUTCHANGED Stop or resume the LWS 0x2B0 frame.
+            %   Writes the dictionary parameter the model's Tx Control gate
+            %   already reads: with the flag set, that CAN Write genuinely
+            %   does not transmit, so this is a real bus dropout rather than
+            %   a display effect.
+            app.commitWrite('steering.dropout', ...
+                app.SteeringDropoutCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringStaleChanged(app, ~)
+            %ONSTEERINGSTALECHANGED Keep transmitting the last LWS payload.
+            app.commitWrite('steering.stale', ...
+                app.SteeringStaleCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringMalformedChanged(app, ~)
+            %ONSTEERINGMALFORMEDCHANGED Transmit 0x2B0 with DLC 4, not 5.
+            app.commitWrite('steering.malformed', ...
+                app.SteeringMalformedCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringInvalidStatusChanged(app, ~)
+            %ONSTEERINGINVALIDSTATUSCHANGED Emit illegal status byte 0x02.
+            app.commitWrite('steering.invalid_status', ...
+                app.SteeringInvalidStatusCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringAngleSentinelChanged(app, ~)
+            %ONSTEERINGANGLESENTINELCHANGED Force documented 0x7FFF.
+            app.commitWrite('steering.angle_sentinel', ...
+                app.SteeringAngleSentinelCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onSteeringSpeedSentinelChanged(app, ~)
+            %ONSTEERINGSPEEDSENTINELCHANGED Force documented 0xFF.
+            app.commitWrite('steering.speed_sentinel', ...
+                app.SteeringSpeedSentinelCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuDropoutChanged(app, ~)
+            %ONIMUDROPOUTCHANGED Stop or resume all three MTi frames.
+            %   One flag gates 0x034, 0x032 and 0x076 together, matching
+            %   SYNCHRONIZEDSENSORPAYLOADS. The LWS is unaffected: one
+            %   sensor's dropout must never stop the other's frames.
+            app.commitWrite('imu.dropout', ...
+                app.ImuDropoutCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuStaleChanged(app, ~)
+            %ONIMUSTALECHANGED Keep transmitting all three cached MTi frames.
+            app.commitWrite('imu.stale', app.ImuStaleCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onImuMalformedChanged(app, ~)
+            %ONIMUMALFORMEDCHANGED Transmit each MTi frame with DLC 5, not 6.
+            app.commitWrite('imu.malformed', ...
+                app.ImuMalformedCheckBox.Value, true);
+            app.refreshAll();
+        end
+
+        function onLwsCalibrationPushed(app, ~)
+            %ONLWSCALIBRATIONPUSHED Request the enforced target sequence.
+            %   One token starts reset 0x05, a target-clock 100 ms hold and
+            %   uncalibrated-frame result check, then a separate zero 0x03
+            %   transmit and zero-frame result check. This callback never
+            %   sends command bytes and cannot collapse the pair into one
+            %   backend call.
+            app.LwsCalibrationSequence = inverterhilgui.sequenceCommand( ...
+                app.LwsCalibrationSequence);
+            app.commitWrite('steering.calibration_sequence', ...
+                app.LwsCalibrationSequence, true);
+            app.refreshAll();
         end
 
         function onPlausibilityChanged(app, ~)
@@ -1883,13 +2584,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function onExpertModeChanged(app, ~)
             %ONEXPERTMODECHANGED Update the expert-mode interlock.
             app.refreshAll();
-        end
-
-        function onMainButtonChanged(app, ~)
-            %ONMAINBUTTONCHANGED Drive MAIN_BTN_IN.
-            app.commitWrite('digital.main_button', ...
-                app.MainButtonSwitch.Value, true);
-            app.refreshDriverInputs();
         end
 
         function onCoolingSwitchChanged(app, ~)
@@ -1919,6 +2613,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %ONMAINMOMENTARYPUSHED Increment the main-button sequence counter.
             app.MainButtonSequence = ...
                 inverterhilgui.sequenceCommand(app.MainButtonSequence);
+            app.MainButtonLastPressedS = app.hostTimeS();
             app.commitWrite('digital.main_button_sequence', ...
                 app.MainButtonSequence, true);
             app.refreshDriverInputs();

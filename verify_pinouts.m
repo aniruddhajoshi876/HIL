@@ -102,11 +102,13 @@ results = check(results, 'DI parSampTime (1 kHz)', ...
     get_param(di, 'parSampTime'), '0.001');
 
 % ------------------------------- Digital output port sources (section 4.3)
-% PINOUTS.MD claims: port1 precharge pulse, port2 main button, port3 cooling
-% switch, port4 shutdown feedback, ports 5-8 unused SW_IN constants.
+% PINOUTS.MD claims: port1 precharge pulse, port2 main button pulse (mirrors
+% port1's pulse-on-counter-change pattern; hil_cmd_digital_main_button itself
+% has no hardware effect), port3 cooling switch, port4 shutdown feedback,
+% ports 5-8 unused SW_IN constants.
 expectedSources = { ...
     1, 'Precharge Pulse Generator'; ...
-    2, 'hil_cmd_digital_main_button'; ...
+    2, 'Main Button Pulse Generator'; ...
     3, 'hil_cmd_digital_cooling_switch'; ...
     4, 'hil_cmd_digital_shutdown_feedback'; ...
     5, 'Unused SW_IN_1'; ...
@@ -138,7 +140,12 @@ for port = 1:4
         'got "%s" port %d'], port, srcName, srcPort)); %#ok<AGROW>
 end
 
-% The two selector control ports must share CarMakerPedalDemand's atomic
+% pedalVoltageCalibration(throttle, brake, released1, pressed1, ... pressed4)
+% assigns ao1/ao2 from throttle and ao3/ao4 from brake, so the input order below
+% is what makes "throttle -> AO01/AO02, brake -> AO03/AO04" true. Inputs 1/2
+% arrive through the final CAN-priority Throttle/Brake Source Switch blocks,
+% not directly from either XCP or GUI values.
+% The two final selector control ports must share CarMakerPedalDemand's atomic
 % ownership flag; independent sources could split throttle/brake authority.
 for item = {'Throttle', 'Brake'}
     selector = [hw '/' item{1} ' Source Switch'];

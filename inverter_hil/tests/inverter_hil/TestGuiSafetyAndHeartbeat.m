@@ -65,14 +65,31 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
             end
         end
 
-        function healthyArmedApplicationDoesNotFallBack(testCase)
+        function healthyApplicationDoesNotFallBack(testCase)
             health = TestGuiSafetyAndHeartbeat.healthyHealth();
             plan = inverterhilgui.safeFallbackPlan(health);
 
             testCase.verifyFalse(plan.applyFallback);
-            testCase.verifyEqual(plan.reason, 'healthy_armed');
+            testCase.verifyEqual(plan.reason, 'healthy');
             testCase.verifyEqual(plan.analogV, zeros(1, 4));
             testCase.verifyEqual(plan.digital, false(1, 8));
+        end
+
+        function armedFlagNoLongerGatesTheFallback(testCase)
+            % ARMED GATE REMOVED, matching CONTROLPOLICY's 2026-08-02
+            % "INTERLOCKS REMOVED" decision: app.Telemetry.pedals.armed was
+            % never set true anywhere in the codebase, so this flag used to
+            % force a permanent fallback regardless of real target health.
+            base = TestGuiSafetyAndHeartbeat.healthyHealth();
+
+            unarmed = base;
+            unarmed.armed = false;
+            plan = inverterhilgui.safeFallbackPlan(unarmed);
+            testCase.verifyFalse(plan.applyFallback);
+
+            noArmedField = rmfield(base, 'armed');
+            plan = inverterhilgui.safeFallbackPlan(noArmedField);
+            testCase.verifyFalse(plan.applyFallback);
         end
 
         function heartbeatLossTargetStopAndUnloadAllFallBack(testCase)
@@ -106,11 +123,6 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
             unhealthy.ioHealthy = false;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
                 inverterhilgui.safeFallbackPlan(unhealthy), 'io_unhealthy');
-
-            unarmed = base;
-            unarmed.armed = false;
-            TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(unarmed), 'not_armed');
         end
 
         function fallbackFailsClosedOnMalformedInput(testCase)
@@ -121,9 +133,6 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
                 inverterhilgui.safeFallbackPlan(struct()), ...
                 'missing_applicationRunning');
-            TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(rmfield(base, 'armed')), ...
-                'missing_armed');
 
             malformedFlags = {NaN, 2, [true true], complex(1, 1), 'on'};
             for index = 1:numel(malformedFlags)
@@ -217,8 +226,8 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 'not_connected');
 
             session.connect();
-            % CONNECT starts the integrated inverter HIL application when no
-            % target application is running.
+            % CONNECT starts the integrated inverter HIL plus virtual VCU
+            % application when no target application is running.
             testCase.verifyEqual(session.State, 'running');
             testCase.verifyTrue(session.describeState().isRunning);
             testCase.verifyEqual(session.load('inverter_hil').reason, ...

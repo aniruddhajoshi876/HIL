@@ -57,11 +57,12 @@ classdef targetSession < handle
         end
 
         function result = connect(obj)
-            %CONNECT Connect, ensure the application is running, discover the
-            %contract, and read target values.
-            %   CONNECT loads and starts INVERTER_HIL automatically so one
-            %   Connect click always yields a usable session running the build
-            %   currently on disk (see ENSUREAPPLICATIONRUNNING).
+            %CONNECT Connect, replace the target application, and synchronize.
+            %   CONNECT stops whatever is running, loads the current
+            %   INVERTER_HIL build (which contains inverter HIL and virtual
+            %   VCU together), then reads the target contract and values. The
+            %   separate Start button controls when the loaded application
+            %   begins driving I/O.
             %
             %   The hardware boundary is now live, so starting the application
             %   does drive the IO183 outputs and transmits the Ephorus status
@@ -268,12 +269,31 @@ classdef targetSession < handle
                 'inverterKnown', false, ...
                 'systemStatus', blankLiveSystemStatus(), ...
                 'rx', blankLiveRx(), ...
-                'vcuStateKnown', false, 'vcuStateId', 0, ... % stays false until a real VCU's CAN status decode is wired up here
+                'vcuStateId', NaN, 'vcuStateKnown', false, ...
+                'pedalPayload', zeros(1, 0, 'uint8'), ...
+                'pedalPayloadKnown', false, ...
+                'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
+                'appsBrakeFault', [], 'appsBrakeFaultKnown', false, ...
+                'xcpPedalsActive', [], 'xcpPedalsActiveKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN, ...
+                'sensorTxCounts', nan(1, 5), ...
+                'sensorAgesS', nan(1, 5), ...
+                'lwsCalibrationState', NaN, ...
                 'canPedals', [NaN NaN], 'canPedalsKnown', false, ...
                 'canPedalsDriving', false);
+            % Sensor blocks start from the same honest no-data snapshot the
+            % dashboard uses, so an unread sensor is dashes here too rather
+            % than a zero that looks like a real measurement.
+            blank = inverterhilgui.blankTelemetry();
+            [~, sensorDlcInit] = inverterhil.sensorTxIds();
+            snapshot.steering = blank.steering;
+            snapshot.imu = blank.imu;
+            snapshot.sensorPayloads = ...
+                zeros(numel(sensorDlcInit), 8, 'uint8');
+            snapshot.sensorPayloadLengths = double(sensorDlcInit);
+            snapshot.sensorPayloadsKnown = false;
             if isempty(obj.Backend) || ~obj.Backend.isConnected()
                 return;
             end
@@ -318,11 +338,24 @@ classdef targetSession < handle
                 % reads as "no overrun" rather than being reported backwards.
                 writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
                     '3B3', '3B5', '400'};
-                writeNoOverrun = false(1, numel(writeIds));
+                % The four sensor frames and LWS config frame are transmitted
+                % by CAN Write blocks too --
+                % so an overrunning sensor write reported as healthy. Their
+                % blocks are named "CAN Write Sensor 0x..." (see
+                % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
+                % than one combined ID list.
+                sensorIds = inverterhil.sensorTxIds();
+                writeNoOverrun = false(1, numel(writeIds) + numel(sensorIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
                         writeIds{k});
                     writeNoOverrun(k) = ...
+                        ~logical(obj.Backend.getsignal(writeBlock, 1));
+                end
+                for k = 1:numel(sensorIds)
+                    writeBlock = sprintf('%s/CAN Write Sensor 0x%03X', hw, ...
+                        double(sensorIds(k)));
+                    writeNoOverrun(numel(writeIds) + k) = ...
                         ~logical(obj.Backend.getsignal(writeBlock, 1));
                 end
 
@@ -342,6 +375,92 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 return;
+            end
+
+            % Virtual VCU observer signals are model-generated outputs. They
+            % are useful for state/pedal diagnostics but are not physical CAN
+            % loopback or an ACK from another node.
+            %
+            % GETSIGNAL(block, port) reads port N of a SUBSYSTEM's own
+            % boundary (the Outport blocks placed inside it), not a bare
+            % top-level Out1 block -- see the "Ephorus System Status"
+            % pattern this now matches. Ports: 1=pedal payload,
+            % 2=state ID, 3=main enable, 4=precharge enable,
+            % 5=inverter control enable, 6=pedal TX count
+            % (patch_virtual_vcu_state_outputs.m).
+            try
+                obsPath = 'inverter_hil/Virtual VCU Observability';
+                pedal = obj.Backend.getsignal(obsPath, 1);
+                if numel(pedal) == 8
+                    snapshot.pedalPayload = uint8(reshape(pedal, 1, 8));
+                    snapshot.pedalPayloadKnown = true;
+                end
+                stateId = obj.Backend.getsignal(obsPath, 2);
+                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
+                    snapshot.vcuStateId = double(stateId);
+                    snapshot.vcuStateKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % Observer outputs are optional on older applications.
+            end
+
+            % Port 6: a genuine, target-measured count of pedal (0x1F5)
+            % frames emitted by the Virtual VCU's own CAN Write path (see
+            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port A Pedal TX Counter). Its own
+            % try, matching the pattern used for newer optional ports
+            % elsewhere in this method: this port only exists in
+            % applications built after this fix, so an older running
+            % application must leave the reads above intact and simply
+            % report the count unknown, not blank a good snapshot.
+            try
+                txCount = obj.Backend.getsignal(obsPath, 6);
+                if isnumeric(txCount) && isscalar(txCount) && isfinite(txCount)
+                    snapshot.pedalTxCount = double(txCount);
+                    snapshot.pedalTxCountKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % PEDALTXCOUNT/PEDALTXCOUNTKNOWN stay at their defaults.
+            end
+
+            % Port 8: VIRTUALVCUDEPLOYSTEP.M's own APPSBRAKEFAULT output --
+            % whether the throttle+brake plausibility interlock is actively
+            % suppressing torque right now, a genuine chart-computed value,
+            % not inferred GUI-side from a torque number happening to be
+            % zero. Same optional-port pattern as port 6: an older running
+            % application without this port must leave the reads above
+            % intact and simply report the fault state unknown.
+            try
+                fault = obj.Backend.getsignal(obsPath, 8);
+                if (islogical(fault) || isnumeric(fault)) && isscalar(fault) && ...
+                        isfinite(double(fault))
+                    snapshot.appsBrakeFault = logical(fault);
+                    snapshot.appsBrakeFaultKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
+            end
+
+            % hil_cmd_xcp_pedals_active is a dictionary PARAMETER (an XCP
+            % master's own source-select flag, see
+            % virtual-vcu/docs/carmaker_speedgoat_interface.md section 7
+            % item 2), not an observability signal, so it is read with
+            % GETPARAM rather than GETSIGNAL(OBSPATH, N) like the ports
+            % above. Same optional-read pattern: an application built
+            % before this entry existed must leave the reads above intact
+            % and simply report this value unknown.
+            try
+                active = obj.Backend.getparam('hil_cmd_xcp_pedals_active');
+                if (islogical(active) || isnumeric(active)) && isscalar(active) && ...
+                        isfinite(double(active))
+                    snapshot.xcpPedalsActive = logical(active);
+                    snapshot.xcpPedalsActiveKnown = true;
+                end
+            catch err
+                obj.LastError = err.message;
+                % XCPPEDALSACTIVE/XCPPEDALSACTIVEKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the
@@ -422,31 +541,204 @@ classdef targetSession < handle
                 % successful transmission; acknowledgement is reported
                 % separately and for real by INVERTERHILGUI.CANACKSTATUS,
                 % from the CAN controller's own bus-off/error-warning
-                % counters read above.
+                % counters read below.
                 snapshot.txPayloads = payloads;
                 snapshot.txPayloadsKnown = true;
-                % The decoded values above are model output, not measured
-                % inverter feedback. Keep INVERTERKNOWN false so the GUI shows
-                % unavailable rather than presenting simulated state as live.
-                snapshot.inverterKnown = false;
-                snapshot.systemStatus = blankLiveSystemStatus();
+                % Port 5 of the same subsystem is the shared vehicle state
+                % INVERTERHIL.STEPVEHICLESTATE advances -- the exact vector
+                % the MTi encoders sample, laid out
+                % [ax ay az | wx wy wz | vx vy vz]. Reading it here is what
+                % makes the IMU panel show measured values instead of
+                % permanent dashes. Guarded separately so a failure leaves
+                % the inverter and CAN data above intact.
+                try
+                    vehicleState = obj.Backend.getsignal( ...
+                        'inverter_hil/Ephorus System Status', 5);
+                    vehicleState = double(vehicleState(:))';
+                    if numel(vehicleState) == 9 && all(isfinite(vehicleState))
+                        snapshot.imu.accelerationMps2 = vehicleState(1:3);
+                        snapshot.imu.rateOfTurnRadPerS = vehicleState(4:6);
+                        snapshot.imu.velocityMps = vehicleState(7:9);
+                        % VALID states that this snapshot carries a genuine
+                        % reading, not that the frame was acknowledged on the
+                        % bus -- acknowledgement is CANACKSTATUS's job.
+                        snapshot.imu.valid = true;
+                    end
+                catch
+                    % Leave the blank IMU block: dashes, never zeros.
+                end
+                % Four encoded sensor payloads and the most recent LWS
+                % config payload leave SYNCHRONIZED SENSOR PAYLOADS on
+                % ports 1-5, in INVERTERHIL.SENSORTXIDS order. These are the
+                % exact bytes handed to the CAN Pack /
+                % CAN Write pairs, so the TX table shows what is genuinely
+                % on the wire rather than a host-side re-encode.
+                try
+                    [~, sensorDlc] = inverterhil.sensorTxIds();
+                    sensorDlc = double(sensorDlc);
+                    % Ports 14-18 are the target-selected wire DLCs. These
+                    % differ from the nominal contract only during malformed
+                    % injection; reading them is what makes the GUI report
+                    % the actual short frame rather than the nominal length.
+                    for k = 1:numel(sensorDlc)
+                        runtimeDlc = obj.Backend.getsignal( ...
+                            [hw '/Synchronized Sensor Payloads'], 13 + k);
+                        if isnumeric(runtimeDlc) && isscalar(runtimeDlc) && ...
+                                isfinite(double(runtimeDlc)) && ...
+                                runtimeDlc >= 0 && runtimeDlc <= 8
+                            sensorDlc(k) = double(runtimeDlc);
+                        end
+                    end
+                    rows = zeros(numel(sensorDlc), 8, 'uint8');
+                    for k = 1:numel(sensorDlc)
+                        raw = obj.Backend.getsignal( ...
+                            [hw '/Synchronized Sensor Payloads'], k);
+                        raw = uint8(raw(:))';
+                        take = min(numel(raw), sensorDlc(k));
+                        rows(k, 1:take) = raw(1:take);
+                    end
+                    snapshot.sensorPayloads = rows;
+                    snapshot.sensorPayloadLengths = sensorDlc;
+                    snapshot.sensorPayloadsKnown = true;
+                    % Ports 11 and 12 are target-maintained counters and
+                    % target-clock ages. They are never reconstructed from
+                    % this host's poll cadence. Port 13 is the enforced LWS
+                    % reset/wait/zero/result-check sequencer state.
+                    counts = double(obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 11));
+                    ages = double(obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 12));
+                    if numel(counts) == numel(sensorDlc)
+                        snapshot.sensorTxCounts = reshape(counts, 1, []);
+                    end
+                    if numel(ages) == numel(sensorDlc)
+                        snapshot.sensorAgesS = reshape(ages, 1, []);
+                        if all(isfinite(snapshot.sensorAgesS(1:3)))
+                            snapshot.imu.ageS = max(snapshot.sensorAgesS(1:3));
+                        end
+                        if isfinite(snapshot.sensorAgesS(4))
+                            snapshot.steering.ageS = snapshot.sensorAgesS(4);
+                        end
+                    end
+                    calibrationState = obj.Backend.getsignal( ...
+                        [hw '/Synchronized Sensor Payloads'], 13);
+                    if isnumeric(calibrationState) && ...
+                            isscalar(calibrationState) && ...
+                            isfinite(double(calibrationState))
+                        snapshot.lwsCalibrationState = ...
+                            double(calibrationState);
+                        snapshot.steering.calibrationState = ...
+                            double(calibrationState);
+                    end
+                    % Decode the LWS frame we actually transmitted, using
+                    % the simulator's own decoder. The layout is
+                    % deliberately NOT restated here: a second copy in the
+                    % GUI is exactly how the byte-3/byte-4 status bug went
+                    % unnoticed once already.
+                    measurement = decodeTransmittedLws( ...
+                        rows(4, 1:sensorDlc(4)));
+                    if ~isempty(measurement)
+                        snapshot.steering.observedAngleDeg = ...
+                            measurement.angleDeg;
+                        snapshot.steering.speedDegPerS = ...
+                            measurement.speedDegPerS;
+                        snapshot.steering.valid = measurement.valid;
+                        snapshot.steering.known = true;
+                    end
+                catch
+                    % Leave the blank steering/sensor block.
+                end
+                % APPLIED is the steering angle the TARGET actually holds,
+                % read back with GETPARAM. It is a different quantity from
+                % REQUESTED (the app's local dial value, which has not
+                % necessarily been emitted by the 30 ms coalescer yet, and
+                % may have been clamped or rejected on write) and from
+                % OBSERVED (the LWS frame value above, quantised to the
+                % encoder's 0.1 deg and absent entirely during a dropout).
+                % SYNCHRONIZEDSENSORPAYLOADS applies no rate limit, so
+                % APPLIED is what drove the shared vehicle state this tick.
+                try
+                    applied = obj.Backend.getparam( ...
+                        'hil_cmd_steering_angle_deg');
+                    if isnumeric(applied) && isscalar(applied) && ...
+                            isfinite(double(applied))
+                        snapshot.steering.appliedAngleDeg = double(applied);
+                    end
+                catch
+                    % Unknown stays NaN; the panel shows a dash.
+                end
+                faultFields = { ...
+                    'steering', 'dropout'; ...
+                    'steering', 'stale'; ...
+                    'steering', 'malformed'; ...
+                    'steering', 'invalid_status'; ...
+                    'steering', 'angle_sentinel'; ...
+                    'steering', 'speed_sentinel'; ...
+                    'imu', 'dropout'; ...
+                    'imu', 'stale'; ...
+                    'imu', 'malformed'};
+                for faultIndex = 1:size(faultFields, 1)
+                    sensorName = faultFields{faultIndex, 1};
+                    parameterName = faultFields{faultIndex, 2};
+                    try
+                        flag = obj.Backend.getparam( ...
+                            sprintf('hil_cmd_%s_%s', sensorName, parameterName));
+                        if (islogical(flag) || isnumeric(flag)) && ...
+                                isscalar(flag) && isfinite(double(flag))
+                            telemetryName = strrep(parameterName, ...
+                                '_status', 'Status');
+                            telemetryName = strrep(telemetryName, ...
+                                '_sentinel', 'Sentinel');
+                            snapshot.(sensorName).(telemetryName) = logical(flag);
+                        end
+                    catch
+                        % Leave false: an unread flag must not read as an
+                        % injected dropout the operator never commanded.
+                    end
+                end
+                % The decoded values above are this rig's own generated
+                % inverter-side output (STEPMODEL/STEPPLANT), not an
+                % independently confirmed measurement -- there is no
+                % cross-channel CAN receipt signal wired up to verify it
+                % (see INVERTER_HIL_APP's CREATEINVERTERSTAB, which carries a
+                % permanent disclosure label for exactly this reason).
+                % INVERTERKNOWN is true because there genuinely is decoded
+                % data to show; the "genuinely received" branch below still
+                % overwrites individual channels with independently verified
+                % values if a real CAN round-trip observation is ever wired
+                % up, so this is a floor, not a ceiling, on data quality.
+                snapshot.inverterKnown = true;
+                % SNAPSHOT.SYSTEMSTATUS is NOT blanked here (an earlier
+                % version of this fix did, matching the "not independently
+                % confirmed" caveat above). dcLink12V/34V/switchingFrequency
+                % are not an inverter feedback claim at all -- they are this
+                % rig's own GUI-commanded values (HIL_CMD_DC_LINK12_V/34_V),
+                % packed into the same frame purely to be broadcast, with no
+                % ambiguity about their truthfulness the way channel state/
+                % torque/ready genuinely have. Blanking them meant the NEXT
+                % TRANSITION and TWIN DC-LINK panels could never show
+                % anything but dashes on a bench with no second node to
+                % produce a "genuinely received" 0x400 frame (the FRESH(9)
+                % branch below). The "genuinely received" branch still
+                % overwrites this with independently verified data first if
+                % that path is ever wired up, so this remains a floor, not a
+                % ceiling.
             catch err
                 obj.LastError = err.message;
                 % INVERTERKNOWN stays false: a partial or failed read must present as
                 % "no live data", never as a partially-populated snapshot.
             end
 
-            % Port 5: a genuine, target-measured count of status-cycle
+            % Port 4: a genuine, target-measured count of status-cycle
             % payloads emitted (see BUILD_INVERTER_HIL_MODEL's
-            % STATUSCYCLESCRIPT; port 4 of the same subsystem is
-            % VEHICLESTATE, not this counter). Its own try, matching the
-            % port 3 read above: this port only exists in applications
-            % built after this fix, so an older running application must
-            % leave everything read above intact and simply report the
-            % count unknown (NaN), not blank a good snapshot.
+            % STATUSCYCLESCRIPT). Its own try, matching port 3 above: this
+            % port only exists in applications built after this fix, so an
+            % older running application must leave everything read above
+            % intact and simply report the count unknown (NaN), not blank a
+            % good snapshot.
             try
                 txCount = obj.Backend.getsignal( ...
-                    'inverter_hil/Ephorus System Status', 5);
+                    'inverter_hil/Ephorus System Status', 4);
                 snapshot.txMessageCount = double(txCount);
             catch err
                 obj.LastError = err.message;
@@ -611,7 +903,7 @@ classdef targetSession < handle
             %ENSUREAPPLICATIONRUNNING Stop only another app, then run ours.
             %   A running INVERTER_HIL is preserved. If another model owns
             %   the target, it is stopped before the integrated inverter HIL
-            %   application is loaded and started.
+            %   plus virtual VCU application is loaded and started.
             state = obj.Backend.applicationState();
             if strcmp(state, 'running')
                 current = obj.Backend.currentApplicationName();
@@ -698,6 +990,39 @@ status = struct( ...
     'controlDisable', []);
 end
 
+function measurement = decodeTransmittedLws(payload)
+%DECODETRANSMITTEDLWS Decode a transmitted LWS payload, or return empty.
+%   Calls the simulator's own DECODELWSFRAME rather than restating the
+%   Bosch layout here. That folder is a sibling of INVERTER_HIL and is put
+%   on the path by INVERTER_HIL_SETUP -- but the app does not call that
+%   function, so the decoder may genuinely be unavailable at runtime. It is
+%   located relative to this file and added once rather than assumed,
+%   because falling back to a local copy of the byte layout is precisely
+%   how the status byte ended up written to the wrong byte once already.
+%
+%   Returns [] when the decoder cannot be reached or the frame is
+%   unreadable, so every caller renders dashes instead of a guess.
+
+measurement = [];
+if isempty(which('decodeLwsFrame'))
+    here = fileparts(fileparts(mfilename('fullpath')));
+    candidate = fullfile(here, 'steering-sensor');
+    if isfolder(candidate)
+        addpath(candidate);
+    end
+end
+if isempty(which('decodeLwsFrame')) || isempty(which('lwsProtocol'))
+    return;
+end
+try
+    contract = lwsProtocol();
+    measurement = decodeLwsFrame(struct( ...
+        'id', contract.standardId, 'payload', uint8(payload)), contract);
+catch
+    measurement = [];
+end
+end
+
 function can = blankLiveCan()
 %BLANKLIVECAN The unknown live-CAN block, matching BLANKTELEMETRY's contract
 %   that an unread field is NaN/empty with a KNOWN flag, never a zero.
@@ -708,7 +1033,7 @@ can = struct('known', false, 'diagnostics', struct( ...
     'transmitOverrun', [], ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
-    'writeSucceeded', false(1, 9), ...
+    'writeSucceeded', false(1, 9 + numel(inverterhil.sensorTxIds())), ...
     'writeKnown', false));
 end
 
