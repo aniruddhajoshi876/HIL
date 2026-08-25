@@ -2,12 +2,14 @@
 FileIdent = CarMaker-TestRun 12
 FileCreator = CarMaker 12.0.1
 Description:
-	Proposed design not built: CAN/RBS HIL bring-up for the real VC.
+	Implemented direct-PCAN 0x500 bring-up for the real-VCU HIL.
 	CarMaker is the SOURCE of pedals: this maneuver ramps then holds Gas, so
 	the last transmitted CarMakerPedalDemand value is non-zero. A zero-hold
 	proves no command path. Vehicle is a 4-motor BEV so TorqueVect.mdl's
 	PT.Motor{,1,2,3}.{Trq,rotv} and PT.PwrSupply.HV1.Pwr quantities exist.
-	Do not use until GUI-generated RBS configuration and physical CAN proof pass.
+	Commit 61a9dd6 records direct PCAN 0x500 reaching Speedgoat with ownership
+	in 80/80 samples during a live 14.49 to 20 percent ramp. That test did not
+	include the real VCU or prove connector voltages, harness, or torque output.
 Vehicle = Examples_FS/MFE24_V3
 Road.FName = straigth7500.rd5
 Vehicle.Routing.Type = Route
