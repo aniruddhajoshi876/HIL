@@ -1,0 +1,596 @@
+MFE26 HIL virtual-vcu CAN SIGNAL MAP
+====================================
+
+Purpose
+-------
+This document explains the CAN signal flow between CarMaker, the Speedgoat
+target, the virtual VCU, and the real VCU/Ephorus inverter interface used by
+the virtual-vcu branch.
+
+The document is based on the current remote virtual-vcu branch. It describes
+the software/model contract. It does not by itself prove that a physical
+CarMaker RBS transmitter, Speedgoat target, real VCU, or CAN harness is
+currently connected and transmitting correctly.
+
+Terminology
+-----------
+
+CarMaker
+  Vehicle-dynamics and test environment. It can be the source of a pedal
+  demand and can receive Speedgoat telemetry.
+
+Speedgoat
+  The real-time target running the inverter_hil model. Its IO614 block reads
+  and writes CAN. Its IO183 block generates/measures analog and digital VCU
+  signals.
+
+Virtual VCU
+  The VCU behavior implemented inside the Speedgoat model. It reads pedal
+  voltages on IO183 Module 2, applies VCU-like plausibility/state logic, and
+  sends inverter control frames on CAN.
+
+Real VCU
+  The physical vehicle-control unit that the virtual VCU is intended to
+  represent. In a real-VCU bench configuration, the real VCU replaces the
+  virtual VCU's VCU behavior and is connected to the Speedgoat I/O/CAN
+  harness according to the approved electrical interface.
+
+Ephorus inverter
+  The physical or modeled inverter receiving the four inverter control frames
+  and returning the inverter status frames.
+
+CAN conventions
+---------------
+
+All frames in this contract are standard 11-bit CAN data frames with DLC 8
+unless explicitly stated otherwise.
+
+The DBC uses Intel/little-endian notation (@1):
+
+  - Byte 1 is the first CAN data byte.
+  - Bit 0 is the least-significant bit of Byte 1.
+  - A 16-bit value starting at bit 0 is sent low byte first.
+  - For example, raw value 2000 decimal is 0x07D0 and is transmitted D0 07.
+
+Bits not assigned to a signal below are reserved or unused. They must not be
+treated as hidden commands.
+
+High-level signal flow
+----------------------
+
+CARMAKER PEDAL COMMAND PATH
+
+  CarMaker DM.Gas / DM.Brake
+             |
+             | CAN 0x500 CarMakerPedalDemand
+             v
+  Speedgoat IO614 CAN receive
+             |
+             | ID/DLC/range/CRC/counter/age validation
+             v
+  Speedgoat atomic CAN pedal-demand decision
+             |
+             | throttle and brake percent converted to 0..1
+             v
+  Speedgoat IO183 Module 1 analog outputs
+             |
+             | physical analog loopback / harness
+             v
+  Virtual VCU or real VCU pedal inputs
+
+VIRTUAL VCU INVERTER COMMAND PATH
+
+  Virtual VCU pedal/state logic
+             |
+             | CAN 0x186, 0x196, 0x1A6, 0x1B6
+             v
+  Speedgoat IO614 CAN transmit / physical CAN bus
+             |
+             v
+  Real or modeled Ephorus inverters
+
+INVERTER STATUS PATH
+
+  Real or modeled Ephorus inverters
+             |
+             | 0x383..0x3B5 and 0x400
+             v
+  Speedgoat IO614 CAN receive
+             |
+             +--> virtual VCU status/control logic
+             +--> CarMaker telemetry path through 0x501 and 0x502
+
+
+1. 0x500 - CarMakerPedalDemand
+================================
+
+Direction
+---------
+
+  CarMaker -> CAN -> Speedgoat
+
+Purpose
+-------
+
+This is the new CarMaker-to-Speedgoat pedal command. It carries throttle and
+brake demand together so the receiver can grant or withdraw pedal ownership
+atomically.
+
+Nominal cycle time: 10 ms.
+
+Complete bit map
+---------------
+
+Bits 0..15: ThrottleDemand
+  Unsigned 16-bit value.
+  Physical value = raw value * 0.01 percent.
+  Valid range: 0.00% through 100.00%.
+
+  Examples:
+    0       = 0.00%
+    2000    = 20.00%
+    10000   = 100.00%
+
+  Byte 1 = bits 0..7, least-significant throttle byte.
+  Byte 2 = bits 8..15, most-significant throttle byte.
+
+Bits 16..31: BrakeDemand
+  Unsigned 16-bit value.
+  Physical value = raw value * 0.01 percent.
+  Valid range: 0.00% through 100.00%.
+
+  Byte 3 = bits 16..23, least-significant brake byte.
+  Byte 4 = bits 24..31, most-significant brake byte.
+
+Bit 32: Active
+  0 = frame is not requesting CAN pedal ownership.
+  1 = frame requests CAN pedal ownership, subject to all validation rules.
+
+Bits 33..36: AliveCounter
+  Four-bit rolling counter.
+  Sender increments it on each cyclic transmission and wraps 15 -> 0.
+  The receiver rejects a repeated counter after the first accepted frame.
+  A skipped counter is allowed because CAN frames may be lost.
+
+Bits 37..39: Reserved0
+  Must be zero.
+  A nonzero value invalidates the complete pedal tuple.
+
+Bits 40..47: Integrity
+  CRC-8/SAE-J1850.
+  CRC input is Bytes 1..5, including Active, AliveCounter, and Reserved0.
+  Parameters:
+    polynomial = 0x1D
+    initial value = 0xFF
+    reflected input = false
+    reflected output = false
+    final XOR = 0xFF
+  The CRC is placed in Byte 6.
+
+Bits 48..63: Reserved1
+  Two reserved bytes, Bytes 7 and 8.
+  Must be zero.
+
+Speedgoat acceptance rules
+--------------------------
+
+Speedgoat accepts the frame only when all of the following are true:
+
+  - Standard, non-extended CAN frame.
+  - Not a remote frame.
+  - ID is 0x500.
+  - DLC is exactly 8.
+  - Throttle and brake raw values are <= 10000.
+  - Reserved0 and Reserved1 are zero.
+  - CRC is correct.
+  - AliveCounter advances relative to the last accepted frame.
+  - The last accepted frame is no older than 100 ms.
+  - Active is 1.
+
+When CAN owns the pedals, Speedgoat converts the accepted percent values to
+fractions and drives the pedal-voltage generation path. Throttle and brake
+ownership changes together; the receiver must not use CAN throttle while using
+a non-CAN brake value.
+
+On invalid, inactive, repeated-counter, or stale input, CAN ownership is
+withdrawn. The branch includes a zero-hold safety behavior so a stale GUI
+pedal value is not immediately applied when CAN ownership disappears.
+
+Important status
+----------------
+
+The Speedgoat receiver, validator, retention logic, and source selector are
+implemented in the branch. The CarMaker RBS transmission setup is documented
+as a proposed/not-built design and still requires live RBS configuration and
+physical CAN proof.
+
+
+2. 0x186 / 0x196 / 0x1A6 / 0x1B6 - Inverter Control
+====================================================
+
+Direction
+---------
+
+  Virtual VCU or real VCU -> CAN -> Ephorus inverter
+
+ID-to-inverter mapping
+----------------------
+
+  0x186 = Inverter 1
+  0x196 = Inverter 2
+  0x1A6 = Inverter 3
+  0x1B6 = Inverter 4
+
+Each ID has the same 8-byte layout. The ID selects which inverter receives
+the command.
+
+Complete bit map
+---------------
+
+Bit 0: EnableInverter
+  0 = inverter enable command is inactive.
+  1 = request inverter enable.
+
+Bit 1: ResetError
+  0 = no reset request.
+  1 = request inverter error reset.
+
+Bit 2: ASCallowed
+  0 = ASC operation is not allowed by this command.
+  1 = ASC operation is allowed by this command.
+
+Bit 3: CurrentControl
+  0 = current-control mode not selected.
+  1 = current-control mode selected.
+
+Bits 4..15: Reserved/unused command bits
+  No defined command in this branch. Do not assign new behavior without
+  updating the VCU/inverter contract.
+
+Bits 16..31: SpeedSetpoint
+  Signed 16-bit integer.
+  Units: RPM.
+  Byte 3 is the low byte; Byte 4 is the high byte.
+
+Bits 32..47: TorqueLimitPositive
+  Signed 16-bit integer.
+  Physical value = raw count / 256 Nm.
+  Byte 5 is the low byte; Byte 6 is the high byte.
+  Example: 3200 counts = +12.5 Nm.
+
+Bits 48..63: TorqueLimitNegative
+  Signed 16-bit integer.
+  Physical value = raw count / 256 Nm.
+  Byte 7 is the low byte; Byte 8 is the high byte.
+
+There is no application-level alive counter or CRC defined for these existing
+Ephorus control frames. CAN's normal link-layer error checking still applies.
+
+At 20% throttle, the virtual VCU computes its allowed positive torque from its
+throttle logic and places the resulting torque limit into these frames. The
+actual value depends on the VCU state, plausibility, brake interlock, RTD gate,
+and configured torque limit.
+
+
+3. 0x383 / 0x393 / 0x3A3 / 0x3B3 - Inverter Status A
+=====================================================
+
+Direction
+---------
+
+  Ephorus inverter -> CAN -> Speedgoat, virtual VCU, and optionally CarMaker
+
+ID-to-inverter mapping
+----------------------
+
+  0x383 = Inverter 1 Status A
+  0x393 = Inverter 2 Status A
+  0x3A3 = Inverter 3 Status A
+  0x3B3 = Inverter 4 Status A
+
+Complete bit map
+---------------
+
+Bits 0..1: InverterState
+  Two-bit inverter state code.
+  The numeric codes are carried by the frame; the branch treats the field as
+  a 0..3 state value. A higher-level state-name mapping must come from the
+  Ephorus/VCU contract before assigning names beyond the defined code table.
+
+Bit 2: InverterReady
+  0 = inverter not ready.
+  1 = inverter ready.
+
+Bits 3..15: Reserved/unused
+  No defined status signal in this branch.
+
+Bits 16..27: TorqueActual
+  Signed 12-bit value.
+  Physical value = raw count / 32 Nm.
+
+Bits 28..39: TorqueSetpoint
+  Signed 12-bit value.
+  Physical value = raw count / 32 Nm.
+
+Bits 40..63: Reserved/unused
+  No defined status signal in this branch.
+
+
+4. 0x385 / 0x395 / 0x3A5 / 0x3B5 - Inverter Status B
+=====================================================
+
+Direction
+---------
+
+  Ephorus inverter -> CAN -> Speedgoat, virtual VCU, and optionally CarMaker
+
+ID-to-inverter mapping
+----------------------
+
+  0x385 = Inverter 1 Status B
+  0x395 = Inverter 2 Status B
+  0x3A5 = Inverter 3 Status B
+  0x3B5 = Inverter 4 Status B
+
+Complete bit map
+---------------
+
+Bits 0..11: Reserved/unused
+  No defined status signal.
+
+Bits 12..23: IdActual
+  Signed 12-bit phase-current component.
+  Physical value = raw count / 16 Arms.
+
+Bits 24..35: Reserved/unused
+  No defined status signal.
+
+Bits 36..47: IqActual
+  Signed 12-bit phase-current component.
+  Physical value = raw count / 16 Arms.
+
+Bits 48..63: SpeedActual
+  Signed 16-bit motor speed.
+  Units: RPM.
+
+
+5. 0x400 - DCLinkStatus
+========================
+
+Direction
+---------
+
+  Speedgoat/Ephorus inverter side -> CAN -> Speedgoat and CarMaker
+
+Complete bit map
+---------------
+
+Bits 0..15: DCLinkVoltage12Actual
+  Unsigned 16-bit voltage.
+  Physical value = raw count / 64 V.
+  Applies to the inverter 1/2 DC-link measurement.
+
+Bits 16..31: DCLinkVoltage34Actual
+  Unsigned 16-bit voltage.
+  Physical value = raw count / 64 V.
+  Applies to the inverter 3/4 DC-link measurement.
+
+Bits 32..63: Reserved/unused
+  No defined signal.
+
+
+6. 0x501 - CarMakerInverterTorqueSetpoint
+==========================================
+
+Direction
+---------
+
+  Speedgoat -> CAN -> CarMaker
+
+Purpose
+-------
+
+This is telemetry for CarMaker. It is not an inverter control command and it
+does not command throttle.
+
+Complete bit map
+---------------
+
+Bits 0..15: Inverter1TorqueSetpointNm
+  Signed 16-bit value.
+  Physical value = raw count / 32 Nm.
+
+Bits 16..31: Inverter2TorqueSetpointNm
+  Signed 16-bit value.
+  Physical value = raw count / 32 Nm.
+
+Bits 32..47: Inverter3TorqueSetpointNm
+  Signed 16-bit value.
+  Physical value = raw count / 32 Nm.
+
+Bits 48..63: Inverter4TorqueSetpointNm
+  Signed 16-bit value.
+  Physical value = raw count / 32 Nm.
+
+This frame has no application CRC or alive counter in the branch contract.
+Nominal cycle time is 5 ms.
+
+
+7. 0x502 - CarMakerInverterReady
+================================
+
+Direction
+---------
+
+  Speedgoat -> CAN -> CarMaker
+
+Purpose
+-------
+
+This frame carries the four inverter-ready flags corresponding to the four
+inverter status-A frames.
+
+Complete bit map
+---------------
+
+Bit 0: Inverter1Ready
+  1 = inverter 1 ready.
+
+Bit 1: Inverter2Ready
+  1 = inverter 2 ready.
+
+Bit 2: Inverter3Ready
+  1 = inverter 3 ready.
+
+Bit 3: Inverter4Ready
+  1 = inverter 4 ready.
+
+Bits 4..63: Reserved
+  Must be zero. A receiver should reject a frame with any reserved bit set.
+
+This frame has no application CRC or alive counter in the branch contract.
+Nominal cycle time is 5 ms. It is a companion to 0x501, but the two CAN frames
+are not application-level atomic.
+
+
+8. 0x032 / 0x034 / 0x2B0 - Raw sensor frames
+=============================================
+
+Direction
+---------
+
+  Physical sensor or sensor model -> CAN -> Speedgoat and/or CarMaker
+
+IDs
+---
+
+  0x032 = Sensor032
+  0x034 = Sensor034
+  0x2B0 = Sensor2B0
+
+Bit map
+-------
+
+Bits 0..63: RawPayload
+  The current CarMaker DBC intentionally defines the complete payload as raw
+  data only. The branch does not establish a trusted field-by-field bit map
+  for these messages in this CAN contract.
+
+Do not infer sensor units or bit meanings from these IDs alone. The relevant
+sensor protocol must be used separately.
+
+
+9. 0x1F5 - Legacy virtual-VCU pedal broadcast
+==============================================
+
+Direction
+---------
+
+  Virtual VCU -> CAN -> monitoring/firmware-side consumers
+
+Purpose
+-------
+
+This is the older virtual-VCU/firmware-style pedal broadcast. It is separate
+from the newer CarMaker 0x500 command frame.
+
+Complete byte/bit map
+---------------------
+
+Bits 0..7, Byte 1: ThrottlePercent
+  Unsigned whole-percent throttle value.
+  0..100 represents 0..100%.
+
+Bits 8..23, Bytes 2..3: BrakePressure
+  Unsigned 16-bit brake-pressure value in PSI.
+  The virtual VCU calculates approximately 650 PSI at 100% brake.
+
+Bits 24..39, Bytes 4..5: BrakePressureDuplicate
+  Duplicate of the Bytes 2..3 brake-pressure value.
+
+Bits 40..63, Bytes 6..8: Reserved/zero
+  The virtual VCU writes zero.
+
+This legacy frame does not contain the newer 0.01%-scaled throttle/brake
+fields, Active flag, alive counter, or CRC used by 0x500.
+
+
+10. Direction summary
+=====================
+
+CarMaker -> Speedgoat
+  0x500 CarMakerPedalDemand
+    New pedal-command contract. Contains throttle, brake, Active, counter,
+    reserved bits, and CRC.
+
+Speedgoat / virtual VCU -> Ephorus or real VCU-side inverter interface
+  0x186, 0x196, 0x1A6, 0x1B6
+    Four per-inverter control commands.
+
+Ephorus -> Speedgoat / virtual VCU / CarMaker
+  0x383, 0x393, 0x3A3, 0x3B3
+    Per-inverter state, ready, actual torque, and torque setpoint.
+  0x385, 0x395, 0x3A5, 0x3B5
+    Per-inverter Id, Iq, and speed.
+  0x400
+    DC-link voltages.
+
+Speedgoat -> CarMaker
+  0x501
+    Four inverter torque setpoints for telemetry.
+  0x502
+    Four inverter-ready flags for telemetry.
+
+Sensor or sensor model -> Speedgoat / CarMaker
+  0x032, 0x034, 0x2B0
+    Raw sensor payloads; field definitions are outside this contract.
+
+Virtual VCU -> monitoring/firmware-side consumers
+  0x1F5
+    Legacy pedal broadcast, separate from CarMaker's 0x500 command.
+
+
+11. What happens at 20% throttle
+=================================
+
+For the new CarMaker CAN path:
+
+  1. CarMaker requests 20.00% throttle.
+  2. CarMaker encodes ThrottleDemand = 2000 in 0x500.
+  3. Speedgoat validates the frame and confirms CAN pedal ownership.
+  4. Speedgoat converts 20.00% to a 0.20 internal fraction.
+  5. Speedgoat generates the calibrated analog throttle voltages for the two
+     redundant throttle channels.
+  6. The virtual VCU or real VCU reads those analog channels.
+  7. The VCU's own plausibility, brake-interlock, HV-state, RTD, and safety
+     logic determines whether torque is allowed.
+  8. If torque is authorized, the VCU sends four inverter control frames,
+     one per inverter, using the appropriate torque-limit fields.
+  9. The inverters return status frames, which Speedgoat retains and can
+     republish to CarMaker through 0x501 and 0x502.
+
+Twenty percent throttle therefore does not bypass the VCU safety logic and
+does not directly equal a fixed wheel torque. It is a pedal demand that is
+converted into a torque request only after the VCU gates allow driving.
+
+
+12. Evidence and limitations
+=============================
+
+Implemented in the branch:
+  - Speedgoat CAN reception of 0x500.
+  - 0x500 validation, retention, freshness, and CAN ownership decision.
+  - CAN-to-pedal source selection and analog pedal-output path.
+  - Virtual VCU control-frame generation.
+  - Inverter control/status packing and decoding.
+  - 0x501/0x502 telemetry packing.
+
+Still requiring live/physical confirmation:
+  - CarMaker RBS actually transmitting 0x500 on the intended physical CAN
+    interface.
+  - Correct CAN channel and connector wiring.
+  - CAN ACKs, termination, bus load, and physical frame contents.
+  - Analog voltage levels and polarity at the real VCU connector.
+  - Real VCU acceptance of the control/status frames.
+  - Real inverter torque response and vehicle behavior.
+
