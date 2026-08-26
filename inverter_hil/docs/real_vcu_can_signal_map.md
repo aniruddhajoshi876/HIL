@@ -243,6 +243,58 @@ There is no `TorqueVect_HIL_CAN.mdl` in this branch. The CAN-backed changes
 are modifications inside `TorqueVect.mdl`, so build, launch, and review
 instructions must continue to use that filename.
 
+### What CM4SL does
+
+CarMaker for Simulink (CM4SL) is the execution and integration layer between
+the CarMaker runtime and `TorqueVect.mdl`. It is not another controller in the
+CAN chain. During each simulation step, CM4SL makes CarMaker driver, vehicle,
+wheel, and motion quantities available to the Simulink model and executes the
+model in the CarMaker calculation sequence.
+
+TorqueVect selects a driver-demand source, runs its power, traction, and torque-
+vectoring control, and produces the four motor-demand signals
+`MMotorDemandFL`, `MMotorDemandFR`, `MMotorDemandRL`, and `MMotorDemandRR`.
+Those demands are applied inside the model's CarMaker/IPG Vehicle powertrain
+path. CM4SL keeps the resulting vehicle state synchronized with the CarMaker
+runtime, which advances and displays the simulated vehicle motion.
+
+```text
+CarMaker driver, wheel, and vehicle-state inputs
+                    |
+                    v
+             CM4SL model step
+                    |
+                    v
+              TorqueVect.mdl
+                    |
+         four motor-demand signals
+                    |
+                    v
+       CarMaker/IPG Vehicle powertrain
+                    |
+                    v
+       CarMaker simulated vehicle state
+```
+
+The direct CAN path is separate from those model outputs. In particular,
+`0x500` does not pass through TorqueVect:
+
+```text
+Forward command: CarMaker DrivMan -> IO.c -> PCAN 0x500 -> Speedgoat
+Return telemetry: Speedgoat -> PCAN 0x501/0x502 -> IO.c -> MFE_CAN -> TorqueVect
+Vehicle response: TorqueVect motor demands -> IPG Vehicle -> CarMaker dynamics
+```
+
+### CM4SL C-source responsibilities
+
+| File | Responsibility in this checkout |
+|---|---|
+| `CM_Main.c` | CarMaker application entry point and scheduler. It initializes IO, CANIf, RBS, and user hooks; orders receive, model calculation, and transmit work each cycle; and performs shutdown cleanup. |
+| `IO.c` | Bench hardware-I/O implementation. It initializes the direct PCAN link, receives and decodes `0x501`/`0x502`, maintains the `MFE_CAN` backing variables, constructs `0x500`, and transmits it every 10 ms. |
+| `User.c` | CarMaker user-hook implementation. For this interface it declares the individual and aggregate `MFE_CAN` Data Dictionary quantities so `TorqueVect.mdl` and logging can read the values maintained by `IO.c`. Most other functions are standard CarMaker lifecycle extension points. |
+| `CM_Vehicle.c` | CarMaker vehicle-subsystem adapter. It handles vehicle model checking, initialization, calculation phases, quantity declaration, and cleanup for the selected built-in, Model Manager, or CM4SL vehicle source. It contains no bench CAN packing or decoding. |
+| `app_tmp.c` | Generated application/build metadata and configuration-export source. It records the CarMaker version, linked libraries, compiler/build information, and available IO configuration; it is not pedal, torque-vectoring, or CAN application logic. |
+
 The `CM_Main.c` cycle order is:
 
 ```text
@@ -350,6 +402,8 @@ proven from that capture.
 | `carmaker/FS_race/src_cm4sl/CM_Main.c` | cycle ordering |
 | `carmaker/FS_race/src_cm4sl/IO.c` | direct PCAN transmit/receive |
 | `carmaker/FS_race/src_cm4sl/User.c` | `MFE_CAN` declarations |
+| `carmaker/FS_race/src_cm4sl/CM_Vehicle.c` | CarMaker vehicle-subsystem lifecycle adapter |
+| `carmaker/FS_race/src_cm4sl/app_tmp.c` | generated application/build metadata |
 | `carmaker/FS_race/src_cm4sl/TorqueVect.mdl` | source switch and vehicle model |
 | `carmaker/FS_race/Data/TestRun/HIL/CAN_Bringup` | 20% TestRun |
 | `carmaker/config/MFE26_Inverter_CarMaker.dbc` | CarMaker-facing DBC |
