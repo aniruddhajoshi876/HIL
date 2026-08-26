@@ -149,9 +149,8 @@ end
 % zero.
 % Torque Request Nm (9th): virtualVcuDeployStep.m's 4th output, published
 % directly as a global Goto by ADD_VIRTUAL_VCU_TO_MODEL.M like APPS Brake
-% Fault -- reused via the same Signal Copy pattern so it can be marked for
-% XCP measurement without decoding a raw CAN payload byte pair. See
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-6.
+% Fault -- reused via the same Signal Copy pattern so it can be read as a
+% measurement without decoding a raw CAN payload byte pair.
 obsNames = [{'Pedal Payload'}, names, ...
     {'Pedal TX Count', 'Control Frame 1', 'APPS Brake Fault', ...
     'Torque Request Nm'}];
@@ -203,9 +202,9 @@ for k = 1:numel(obsNames)
         [obsNames{k} '/1'], 'autorouting', 'on');
     copyPorts = get_param(copyName, 'PortHandles');
     set_param(copyPorts.Outport, 'TestPoint', 'on');
-    % TestPoint alone does not cause SLRT's calibration-file generator to
-    % emit an A2L measurement. Resolve this Signal Copy output to the
-    % ExportedGlobal Simulink.Signal object created by the model builder.
+    % TestPoint alone does not make the output resolvable by name. Resolve
+    % this Signal Copy output to the ExportedGlobal Simulink.Signal object
+    % created by the model builder.
     set_param(copyPorts.Outport, 'Name', measurementNames{k}, ...
         'MustResolveToSignalObject', 'on');
 end

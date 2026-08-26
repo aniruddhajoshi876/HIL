@@ -56,7 +56,7 @@
 
 **Confirmed - named inputs.** Master creates `hil_cmd_pedals_throttle` and `hil_cmd_pedals_brake` as scalar 0-1 parameters. Local source: `inverter_hil/build_inverter_hil_model.m:76-95`.
 
-**Confirmed - direct routing.** Those entries feed `Pedal Voltage Calibration` directly; its outputs feed IO183 AO01-AO04. Master has no `hil_cmd_xcp_pedals_active`-style selector. Local source: `inverter_hil/build_inverter_hil_model.m:881-912`; `PINOUTS.md:218-225`.
+**Confirmed - direct routing.** Those entries feed `Pedal Voltage Calibration` directly; its outputs feed IO183 AO01-AO04. Master has no source-select ahead of them. Local source: `inverter_hil/build_inverter_hil_model.m:881-912`; `PINOUTS.md:218-225`.
 
 ## 3. Boundary port/gap table
 
@@ -113,7 +113,7 @@
 
 **Proposed design not built - range.** Put 0-100% engineering units in DBC/RBS, validate at one boundary, then normalize once to existing 0-1 inputs.
 
-**Open question - fallback.** Decide zero hold, immediate GUI fallback, or operator-armed GUI fallback. Immediate pickup of stale slider positions can step demand; the historical XCP automatic-reversion decision should not be copied without reviewing physical-CAN failure behavior.
+**Open question - fallback.** Decide zero hold, immediate GUI fallback, or operator-armed GUI fallback. Immediate pickup of stale slider positions can step demand; the earlier automatic-reversion decision should not be copied without reviewing physical-CAN failure behavior.
 
 ## 6. Is RBS now viable?
 

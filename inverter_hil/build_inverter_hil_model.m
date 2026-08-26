@@ -117,16 +117,6 @@ addEntry(section, 'hil_cmd_steering_calibration_sequence', ...
 addEntry(section, 'hil_cmd_imu_dropout', parameter(false, false, true));
 addEntry(section, 'hil_cmd_imu_stale', parameter(false, false, true));
 addEntry(section, 'hil_cmd_imu_malformed', parameter(false, false, true));
-% XCP-tunable pedal demand (0-100%, CarMaker's own units) and the
-% source-select flag choosing whether Pedal Voltage Calibration reads these
-% (normalized to 0-1) or the GUI-owned hil_cmd_pedals_throttle/brake above.
-% Distinct entries, not an alias for the GUI ones -- see
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 item 2. Default
-% inactive (false), so a build with nothing driving these behaves exactly as
-% before this entry existed.
-addEntry(section, 'hil_cmd_xcp_pedals_throttle', parameter(0, 0, 100));
-addEntry(section, 'hil_cmd_xcp_pedals_brake', parameter(0, 0, 100));
-addEntry(section, 'hil_cmd_xcp_pedals_active', parameter(false, false, true));
 addEntry(section, 'hil_cmd_pedals_plausibility_override', ...
     parameter(false, false, true));
 addEntry(section, 'hil_cmd_digital_main_button', parameter(false, false, true));
@@ -941,34 +931,6 @@ end
 % of new Inports.
 throttleRef = addNamedParameterSource(path, 'hil_cmd_pedals_throttle', 470);
 brakeRef = addNamedParameterSource(path, 'hil_cmd_pedals_brake', 500);
-% Preserve the existing XCP/GUI arbitration as the fallback source, then
-% put the validated atomic CAN demand in front of it. CAN has priority over
-% XCP; both pedal selectors share the same ownership flag, so two command
-% sources can never split throttle and brake authority.
-xcpThrottleRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_throttle', 350);
-xcpBrakeRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_brake', 375);
-xcpActiveRef = addNamedParameterSource(path, 'hil_cmd_xcp_pedals_active', 400, 'boolean');
-xcpThrottleGain = [path '/XCP Throttle Percent To Fraction'];
-add_block('simulink/Math Operations/Gain', xcpThrottleGain, 'Gain', '1/100', ...
-    'Position', [185 350 235 370]);
-add_line(path, [xcpThrottleRef '/1'], 'XCP Throttle Percent To Fraction/1');
-xcpBrakeGain = [path '/XCP Brake Percent To Fraction'];
-add_block('simulink/Math Operations/Gain', xcpBrakeGain, 'Gain', '1/100', ...
-    'Position', [185 375 235 395]);
-add_line(path, [xcpBrakeRef '/1'], 'XCP Brake Percent To Fraction/1');
-xcpThrottleSwitch = [path '/XCP Throttle Source Switch'];
-add_block('simulink/Signal Routing/Switch', xcpThrottleSwitch, ...
-    'Criteria', 'u2 ~= 0', 'Position', [280 345 330 385]);
-add_line(path, 'XCP Throttle Percent To Fraction/1', 'XCP Throttle Source Switch/1');
-add_line(path, [xcpActiveRef '/1'], 'XCP Throttle Source Switch/2');
-add_line(path, [throttleRef '/1'], 'XCP Throttle Source Switch/3');
-xcpBrakeSwitch = [path '/XCP Brake Source Switch'];
-add_block('simulink/Signal Routing/Switch', xcpBrakeSwitch, ...
-    'Criteria', 'u2 ~= 0', 'Position', [280 400 330 440]);
-add_line(path, 'XCP Brake Percent To Fraction/1', 'XCP Brake Source Switch/1');
-add_line(path, [xcpActiveRef '/1'], 'XCP Brake Source Switch/2');
-add_line(path, [brakeRef '/1'], 'XCP Brake Source Switch/3');
-
 canDemandFrom = add_block('simulink/Signal Routing/From', ...
     [path '/CarMaker Pedal Demand From'], 'GotoTag', 'CarMakerPedalDemand', ...
     'Position', [25 470 150 490]);
@@ -995,8 +957,8 @@ fallbackHoldPath = [path '/Pedal Fallback Zero Hold'];
 add_block('simulink/User-Defined Functions/MATLAB Function', fallbackHoldPath, ...
     'Position', [205 545 355 625]);
 setMatlabFunctionScript(fallbackHoldPath, pedalFallbackZeroHoldScript());
-add_line(path, 'XCP Throttle Source Switch/1', 'Pedal Fallback Zero Hold/1');
-add_line(path, 'XCP Brake Source Switch/1', 'Pedal Fallback Zero Hold/2');
+add_line(path, [throttleRef '/1'], 'Pedal Fallback Zero Hold/1');
+add_line(path, [brakeRef '/1'], 'Pedal Fallback Zero Hold/2');
 add_line(path, 'CarMaker Pedal Demand Demux/3', 'Pedal Fallback Zero Hold/3');
 throttleSwitch = [path '/Throttle Source Switch'];
 add_block('simulink/Signal Routing/Switch', throttleSwitch, 'Criteria', 'u2 ~= 0', ...
@@ -1777,7 +1739,6 @@ clearSubsystem(path);
 
 scalarDouble = { ...
     'hil_cmd_pedals_throttle'; 'hil_cmd_pedals_brake'; ...
-    'hil_cmd_xcp_pedals_throttle'; 'hil_cmd_xcp_pedals_brake'; ...
     'hil_cmd_steering_angle_deg'; ...
     'hil_cmd_dc_link12_v'; 'hil_cmd_dc_link34_v'};
 scalarBoolean = { ...
@@ -1789,7 +1750,7 @@ scalarBoolean = { ...
     'hil_cmd_imu_malformed'; ...
     'hil_cmd_pedals_plausibility_override'; ...
     'hil_cmd_digital_main_button'; 'hil_cmd_digital_cooling_switch'; ...
-    'hil_cmd_digital_shutdown_feedback'; 'hil_cmd_xcp_pedals_active'};
+    'hil_cmd_digital_shutdown_feedback'};
 scalarUint32 = { ...
     'hil_cmd_digital_precharge_sequence'; ...
     'hil_cmd_digital_main_button_sequence'; ...

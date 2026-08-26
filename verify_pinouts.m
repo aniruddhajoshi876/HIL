@@ -144,7 +144,7 @@ end
 % assigns ao1/ao2 from throttle and ao3/ao4 from brake, so the input order below
 % is what makes "throttle -> AO01/AO02, brake -> AO03/AO04" true. Inputs 1/2
 % arrive through the final CAN-priority Throttle/Brake Source Switch blocks,
-% not directly from either XCP or GUI values.
+% not directly from the GUI values.
 % The two final selector control ports must share CarMakerPedalDemand's atomic
 % ownership flag; independent sources could split throttle/brake authority.
 for item = {'Throttle', 'Brake'}

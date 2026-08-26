@@ -127,24 +127,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
         % NaN until the operator actually moves the dial, so a never-touched
         % control shows dashes instead of a fabricated 0 deg.
         RequestedSteeringDeg = NaN
-        % True while an XCP master (e.g. CarMaker over Ethernet) is
-        % actively driving pedal demand, in which case it owns
-        % hil_cmd_pedals_throttle/brake and the GUI becomes
-        % diagnostic/read-only for that group (see
-        % inverterhilgui.controlPolicy and POLLCOALESCERS). Set each poll
-        % cycle by REFRESHLIVEIO from the live hil_cmd_xcp_pedals_active
-        % target parameter (see TargetSession.readLiveIo) -- the same
-        % model-side source-select flag the AO01-04 Switch blocks in
-        % build_inverter_hil_model.m already read directly, so the GUI and
-        % the model can no longer disagree about which source is live. Not
-        % yet exercised against a real target (this codebase cannot reach
-        % one -- see virtual-vcu/docs/carmaker_speedgoat_interface.md,
-        % section 7's "Items not confirmed locally"), but the read path is
-        % real and fails closed to false (GUI keeps/regains pedal write
-        % ownership) on any read failure or disconnect. Reverts to GUI
-        % write control the instant this goes false, with no separate
-        % re-arm step.
-        XcpDriving = false
         Heartbeat
         PrechargeSequence = uint32(0)
         MainButtonSequence = uint32(0)
@@ -1127,21 +1109,21 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %POLLCOALESCERS Emit any pedal value held by the 30 ms window.
             %
             %   Both POLL calls always run, draining each coalescer's queued
-            %   window regardless of XCPDRIVING, so a value queued while the
-            %   GUI still owned pedals never leaks a stale COMMITWRITE the
-            %   moment XCPDRIVING clears. Only the COMMITWRITE itself is
-            %   gated: while an XCP master owns hil_cmd_pedals_throttle/
-            %   brake, GUI slider movement must not reach SESSION.WRITE at
+            %   window regardless of CANPEDALSDRIVING, so a value queued while
+            %   the GUI still owned pedals never leaks a stale COMMITWRITE the
+            %   moment CANPEDALSDRIVING clears. Only the COMMITWRITE itself is
+            %   gated: while CarMaker owns hil_cmd_pedals_throttle/brake over
+            %   CAN, GUI slider movement must not reach SESSION.WRITE at
             %   all, matching inverterhilgui.controlPolicy's POLICY.PEDALS
             %   (which independently disables the slider widgets) -- this is
             %   the actual enforcement point, not merely the widget Enable
             %   state.
             emission = app.ThrottleCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
+            if emission.hasValue && ~app.CanPedalsDriving
                 app.commitWrite('pedals.throttle', emission.value / 100, true);
             end
             emission = app.BrakeCoalescer.poll(app.hostTimeS());
-            if emission.hasValue && ~app.XcpDriving && ~app.CanPedalsDriving
+            if emission.hasValue && ~app.CanPedalsDriving
                 app.commitWrite('pedals.brake', emission.value / 100, true);
             end
             emission = app.SteeringCoalescer.poll(app.hostTimeS());
@@ -1251,18 +1233,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 else
                     app.Telemetry.appsBrakeFault = [];
                 end
-                % XcpDriving now reflects the live hil_cmd_xcp_pedals_active
-                % target parameter (see TargetSession.readLiveIo) instead of
-                % being a permanent placeholder. Unknown (read failed, or an
-                % application built before this parameter existed) fails
-                % closed to false -- GUI keeps/regains pedal write
-                % ownership, matching the resolved policy's default-to-GUI
-                % behavior in controlPolicy.m.
-                if live.xcpPedalsActiveKnown
-                    app.XcpDriving = live.xcpPedalsActive;
-                else
-                    app.XcpDriving = false;
-                end
                 wasCanDriving = app.CanPedalsDriving;
                 if live.canPedalsKnown
                     app.CanPedalsDriving = live.canPedalsDriving;
@@ -1358,8 +1328,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
                 % Read failed or not connected: fail closed to GUI-owned
-                % pedals only when neither external source reports ownership.
-                app.XcpDriving = false;
+                % pedals, since no external source can report ownership.
                 app.CanPedalsDriving = false;
             end
             app.Telemetry.pedals.throttleAppliedPercent = ...
@@ -1755,8 +1724,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
             app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
-                app.Telemetry.vcu.state, interlocks, app.XcpDriving, ...
-                app.CanPedalsDriving);
+                app.Telemetry.vcu.state, interlocks, app.CanPedalsDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
             app.applyEnable([app.SteeringDial app.SteeringField], ...

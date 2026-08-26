@@ -274,7 +274,6 @@ classdef targetSession < handle
                 'pedalPayloadKnown', false, ...
                 'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
                 'appsBrakeFault', [], 'appsBrakeFaultKnown', false, ...
-                'xcpPedalsActive', [], 'xcpPedalsActiveKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN, ...
@@ -441,26 +440,6 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
-            end
-
-            % hil_cmd_xcp_pedals_active is a dictionary PARAMETER (an XCP
-            % master's own source-select flag, see
-            % virtual-vcu/docs/carmaker_speedgoat_interface.md section 7
-            % item 2), not an observability signal, so it is read with
-            % GETPARAM rather than GETSIGNAL(OBSPATH, N) like the ports
-            % above. Same optional-read pattern: an application built
-            % before this entry existed must leave the reads above intact
-            % and simply report this value unknown.
-            try
-                active = obj.Backend.getparam('hil_cmd_xcp_pedals_active');
-                if (islogical(active) || isnumeric(active)) && isscalar(active) && ...
-                        isfinite(double(active))
-                    snapshot.xcpPedalsActive = logical(active);
-                    snapshot.xcpPedalsActiveKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % XCPPEDALSACTIVE/XCPPEDALSACTIVEKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the

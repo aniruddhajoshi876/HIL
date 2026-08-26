@@ -223,15 +223,15 @@ endpoints, clamped to 0–5 V. `CarMakerPedalDemand` is standard DLC-8 CAN ID
 0 and a modulo-16 alive counter in bits 1–4; byte 6 is CRC-8/SAE-J1850 over
 bytes 1–5; bytes 7–8 are zero. CAN owns both pedals only with active, an
 advancing counter, valid integrity/range/reserved fields, and age ≤100 ms.
-The existing XCP source-select remains available ahead of the GUI values when
-CAN does not own the pedals. CAN has priority, and a model-side zero-hold keeps
-the fallback at zero after CAN loss until both fallback demands return to zero.
+The GUI values are the fallback source when CAN does not own the pedals. CAN
+has priority, and a model-side zero-hold keeps the fallback at zero after CAN
+loss until both fallback demands return to zero.
 The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`.
 
 | Function input | Source (via switch) | Drives |
 |---|---|---|
-| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else `XCP Throttle Source Switch` (`hil_cmd_xcp_pedals_throttle` when active, GUI `hil_cmd_pedals_throttle` otherwise) | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
-| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else `XCP Brake Source Switch` (`hil_cmd_xcp_pedals_brake` when active, GUI `hil_cmd_pedals_brake` otherwise) | AO03 (`…_v3`), AO04 (`…_v4`) |
+| `throttle` | `Throttle Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_throttle` via `Pedal Fallback Zero Hold` | AO01 (with `…_v1` pair), AO02 (`…_v2`) |
+| `brake` | `Brake Source Switch`: fresh atomic CAN demand, else GUI `hil_cmd_pedals_brake` via `Pedal Fallback Zero Hold` | AO03 (`…_v3`), AO04 (`…_v4`) |
 
 #### Calibration state — all 4 channels set
 
@@ -309,14 +309,14 @@ direction is expressed by the endpoints themselves and never declared separately
 
 Digital command sources (all default to `false`/`0` at load):
 `hil_cmd_digital_cooling_switch`, `hil_cmd_digital_shutdown_feedback`,
-`hil_cmd_digital_precharge_sequence`, `hil_cmd_digital_main_button_sequence`,
-`hil_cmd_xcp_pedals_active`. `hil_cmd_digital_main_button` (the checkbox) is
+`hil_cmd_digital_precharge_sequence`, `hil_cmd_digital_main_button_sequence`.
+`hil_cmd_digital_main_button` (the checkbox) is
 still a valid `setparam` target with a live Terminator in GUI Command
 Parameters, but is intentionally **not** wired to a DIO pin — MAIN_BTN_IN is
 driven by `hil_cmd_digital_main_button_sequence` instead (see B2 below).
 Pedal command sources are separate: GUI writes `hil_cmd_pedals_throttle` and
-`hil_cmd_pedals_brake`; XCP uses its three `hil_cmd_xcp_pedals_*` entries; CAN
-ID `0x500` atomically selects its validated demand pair ahead of both.
+`hil_cmd_pedals_brake`; CAN ID `0x500` atomically selects its validated demand
+pair ahead of them.
 
 ### 4.3 Connector B — project signal assignment
 

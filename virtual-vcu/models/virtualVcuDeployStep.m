@@ -4,9 +4,8 @@ function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeploy
 % virtual VCU state and its three control outputs to the model observer.
 % TORQUEREQUESTNM is a 4th, later addition: the same physical Nm value
 % packed into byte pairs 13-14/21-22/29-30/37-38 below, now also exposed
-% as its own typed double so it can be marked for XCP measurement without
-% requiring a downstream consumer to decode raw CAN bytes. See
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
+% as its own typed double so it can be read as a measurement without
+% requiring a downstream consumer to decode raw CAN bytes.
 %
 % Pedal thresholds, plausibility rules, the APPS+brake interlock, and the
 % ERROR_SHUTDOWN fault causes below are read directly from the real VCU

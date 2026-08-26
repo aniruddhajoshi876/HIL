@@ -111,8 +111,7 @@ add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU APPS Brake Fault']
 add_line(path, 'Virtual VCU LV_ON/3', 'Virtual VCU APPS Brake Fault/1', 'autorouting', 'on');
 % TORQUEREQUESTNM (port 4): same physical Nm value already packed into the
 % control-frame payload bytes, published here as its own typed double so
-% it can be marked for XCP measurement directly -- see
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
+% it can be read as a measurement directly.
 % Republished through VIRTUAL VCU OBSERVABILITY like APPSBRAKEFAULT (see
 % PATCH_VIRTUAL_VCU_STATE_OUTPUTS.M).
 add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU Torque Request Nm'], ...
