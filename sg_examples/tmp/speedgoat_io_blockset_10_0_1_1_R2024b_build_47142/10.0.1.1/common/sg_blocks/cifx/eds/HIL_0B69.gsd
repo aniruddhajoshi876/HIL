@@ -1,0 +1,407 @@
+;*************************************************************************
+;***                                                                   ***
+;***      Hilscher Gesellschaft fuer Systemautomation mbH              ***
+;***      PROFIBUS DP - Developement                                   ***
+;***      F. Faehrmann                                                 ***
+;***      D-65795 Hattersheim                                          ***
+;***      Rheinstrasse 15                                              ***
+;***      GERMANY                                                      ***
+;***      Hotline: +49(6190)9907-99                                    ***
+;***          Fax: +49(6190)9907-50                                    ***
+;***                                                                   ***
+;*************************************************************************
+;***                                                                   ***
+;***      Filename: HIL_0b69.GSD                  (c) 2007             ***
+;***      GSD file version 1.000 from  10.12.2007                      ***
+;***                                                                   ***
+;*************************************************************************
+;
+;      ATTENTION:
+;      ==========
+;      Changes in this file can cause configuration or communicationproblems.
+;      This file is compatible to the firmware of the device.
+;
+;      Changes
+;      =======
+;      10.12.07   V1.000  R. Hornung
+;      -  created
+
+#Profibus_DP
+
+GSD_Revision        = 5
+Vendor_Name         = "Hilscher GmbH"
+Model_Name          = "CIFX DP/DPS"
+Revision            = "Version 1.000"
+Ident_Number        = 0x0B69
+Protocol_Ident      = 0
+Station_Type        = 0
+Hardware_Release    = "Version 1.000"
+Software_Release    = "Version 2.000"
+Implementation_Type = "netX"
+9.6_supp            = 1
+19.2_supp           = 1
+45.45_supp          = 1
+93.75_supp          = 1
+187.5_supp          = 1
+500_supp            = 1
+1.5M_supp           = 1
+3M_supp             = 1
+6M_supp             = 1
+12M_supp            = 1
+MaxTsdr_9.6         = 60
+MaxTsdr_19.2        = 60
+MaxTsdr_45.45       = 60
+MaxTsdr_93.75       = 60
+MaxTsdr_187.5       = 60
+MaxTsdr_500         = 100
+MaxTsdr_1.5M        = 150
+MaxTsdr_3M          = 250
+MaxTsdr_6M          = 450
+MaxTsdr_12M         = 800
+Redundancy          = 0
+Repeater_Ctrl_Sig   = 2
+24V_Pins            = 0
+Freeze_Mode_supp    = 1
+Sync_Mode_supp      = 1
+Auto_Baud_supp      = 1
+Set_Slave_Add_supp  = 0
+Min_Slave_Intervall = 6
+Modular_Station     = 1
+Max_Module          = 24
+Max_Input_Len       = 244
+Max_Output_Len      = 244
+Max_Data_Len        = 488
+Max_Diag_Data_Len   = 244
+Max_User_Prm_Data_Len = 5
+Slave_Family        = 0
+
+DPV1_Slave          = 1
+DPV1_Data_Types     = 0
+
+C1_Read_Write_supp                   = 1
+C1_Max_Data_Len                      = 240
+C1_Response_Timeout                  = 100
+
+C2_Read_Write_supp                   = 1
+C2_Max_Count_Channels                = 1
+C2_Max_Data_Len                      = 240
+C2_Response_Timeout                  = 100
+Max_Initiate_PDU_Length              = 244
+   
+Extra_Alarm_SAP_supp                 = 1
+Alarm_Sequence_Mode_Count            = 32
+Alarm_Type_Mode_supp                 = 1
+
+Diagnostic_Alarm_supp                = 1
+Process_Alarm_supp                   = 1
+Pull_Plug_Alarm_supp                 = 1
+Status_Alarm_supp                    = 1
+Update_Alarm_supp                    = 1
+Manufacturer_Specific_Alarm_supp     = 1
+
+Ident_Maintenance_supp               = 1
+
+Bitmap_Device = "CIFXPBR"
+Bitmap_Diag   = "CIFXPBD"
+Bitmap_SF     = "CIFXPBS"
+
+PrmText = 1
+Text(0) = "Disable"
+Text(1) = "Enable"
+EndPrmText
+
+PrmText = 2
+Text(0) = "OFF"
+Text(1) = "ON"
+EndPrmText
+
+PrmText = 3
+Text(0) = "1 alarm of each type"
+Text(1) = "2 alarms in total"
+Text(2) = "4 alarms in total"
+Text(3) = "8 alarms in total"
+Text(4) = "12 alarms in total"
+Text(5) = "16 alarms in total"
+Text(6) = "24 alarms in total"
+Text(7) = "32 alarms in total"
+EndPrmText
+
+PrmText = 4
+Text(0) = "reserved"
+EndPrmText
+
+ExtUserPrmData = 1 "DPV1"
+Bit(7) 0 0-1
+Prm_Text_Ref = 1
+EndExtUserPrmData
+
+ExtUserPrmData = 2 "Fail Safe"
+Bit(6) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 3 "Pull Plug Alarm"
+Bit(7) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 4 "Process Alarm"
+Bit(6) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 5 "Diagnostic Alarm"
+Bit(5) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 6 "Manufacturer Specific Alarm"
+Bit(4) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 7 "Status Alarm"
+Bit(3) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 8 "Update Alarm"
+Bit(2) 0 0-1
+Prm_Text_Ref = 2
+EndExtUserPrmData
+
+ExtUserPrmData = 9 "Alarm Mode"
+BitArea(0-2) 0 0-7
+Prm_Text_Ref = 3
+EndExtUserPrmData
+
+ExtUserPrmData = 10 "reserved"
+BitArea(0-2) 0 0-7
+Prm_Text_Ref = 4
+EndExtUserPrmData
+
+ExtUserPrmData = 11 "reserved"
+BitArea(0-2) 0 0-7
+Prm_Text_Ref = 4
+EndExtUserPrmData
+
+Ext_User_Prm_Data_Ref(0) = 1
+Ext_User_Prm_Data_Ref(0) = 2
+Ext_User_Prm_Data_Ref(1) = 3
+Ext_User_Prm_Data_Ref(1) = 4
+Ext_User_Prm_Data_Ref(1) = 5
+Ext_User_Prm_Data_Ref(1) = 6
+Ext_User_Prm_Data_Ref(1) = 7
+Ext_User_Prm_Data_Ref(1) = 8
+Ext_User_Prm_Data_Ref(2) = 9
+Ext_User_Prm_Data_Ref(3) = 10
+Ext_User_Prm_Data_Ref(4) = 11
+
+
+
+;*************************************************************************
+;***                        blank space                                ***
+;*************************************************************************
+Module = "blank space" 0x00
+0
+EndModule
+
+;*************************************************************************
+;***           1 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "1  Byte In"   0x90
+1
+EndModule
+Module = "1  Byte Out"  0xA0
+2
+EndModule
+
+;*************************************************************************
+;***           1 Word Input/Output                                     ***
+;*************************************************************************
+Module = "1  Word In"   0xD0
+3
+EndModule
+Module = "1  Word Out"  0xE0
+4
+EndModule
+
+;*************************************************************************
+;***           2 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "2  Bytes In"  0x91
+5
+EndModule
+Module = "2  Bytes Out" 0xA1
+6 
+EndModule
+
+;*************************************************************************
+;***           2 Word Input/Output                                     ***
+;*************************************************************************
+Module = "2  Words In"  0xD1
+7 
+EndModule
+Module = "2  Words Out" 0xE1
+8 
+EndModule
+
+;*************************************************************************
+;***           3 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "3  Bytes In"  0x92
+9 
+EndModule
+Module = "3  Bytes Out" 0xA2
+10
+EndModule
+
+;*************************************************************************
+;***           3 Word Input/Output                                     ***
+;*************************************************************************
+Module = "3  Words In"  0xD2
+11
+EndModule
+Module = "3  Words Out" 0xE2
+12
+EndModule
+
+;*************************************************************************
+;***           4 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "4  Bytes In"  0x93
+13
+EndModule
+Module = "4  Bytes Out" 0xA3
+14
+EndModule
+
+;*************************************************************************
+;***           4 Word Input/Output                                     ***
+;*************************************************************************
+Module = "4  Words In"  0xD3
+15
+EndModule
+Module = "4  Words Out" 0xE3
+16
+EndModule
+
+;*************************************************************************
+;***           8 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "8  Bytes In"  0x97
+17
+EndModule
+Module = "8  Bytes Out" 0xA7
+18
+EndModule
+
+;*************************************************************************
+;***           8 Word Input/Output                                     ***
+;*************************************************************************
+Module = "8  Words In"  0xD7
+19
+EndModule
+Module = "8  Words Out" 0xE7
+20
+EndModule
+
+;*************************************************************************
+;***          12 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "12 Bytes In"  0x9B
+21
+EndModule
+Module = "12 Bytes Out" 0xAB
+22
+EndModule
+
+;*************************************************************************
+;***          12 Word Input/Output                                     ***
+;*************************************************************************
+Module = "12 Words In"  0xDB
+23
+EndModule
+Module = "12 Words Out" 0xEB
+24
+EndModule
+
+;*************************************************************************
+;***          16 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "16 Bytes In"  0x9F
+25
+EndModule
+Module = "16 Bytes Out" 0xAF
+26
+EndModule
+
+;*************************************************************************
+;***          16 Word Input/Output                                     ***
+;*************************************************************************
+Module = "16 Words In"  0xDF
+27
+EndModule
+Module = "16 Words Out" 0xEF
+28
+EndModule
+
+;*************************************************************************
+;***          20 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "20 Bytes In"  0x40,0x93
+29
+EndModule
+Module = "20 Bytes Out" 0x80,0x93
+30
+EndModule
+
+;*************************************************************************
+;***          20 Word Input/Output                                     ***
+;*************************************************************************
+Module = "20 Words In"  0x40,0xD3
+31
+EndModule
+Module = "20 Words Out" 0x80,0xD3
+32
+EndModule
+
+;*************************************************************************
+;***          32 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "32 Bytes In"  0x40,0x9F
+33
+EndModule
+Module = "32 Bytes Out" 0x80,0x9F
+34
+EndModule
+
+;*************************************************************************
+;***          32 Word Input/Output                                     ***
+;*************************************************************************
+Module = "32 Words In"  0x40,0xDF
+35
+EndModule
+Module = "32 Words Out" 0x80,0xDF
+36
+EndModule
+
+;*************************************************************************
+;***          64 Byte Input/Output                                     ***
+;*************************************************************************
+Module = "64 Bytes In"  0x40,0xBF
+37
+EndModule
+Module = "64 Bytes Out" 0x80,0xBF
+38
+EndModule
+
+;*************************************************************************
+;***          64 Word Input/Output                                     ***
+;*************************************************************************
+Module = "64 Words In"  0x40,0xFF
+39
+EndModule
+Module = "64 Words Out" 0x80,0xFF
+40
+EndModule

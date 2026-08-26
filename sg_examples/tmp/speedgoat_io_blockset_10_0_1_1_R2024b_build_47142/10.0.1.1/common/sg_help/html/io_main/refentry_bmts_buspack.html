@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BMTS Bus Pack</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_bce_read.html" title="BMTS Read"><link rel="next" href="refentry_bce_ac_parameter_update.html" title="BCE AC Signal Modulation Parameter Update"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bmts_buspack"></a><div class="titlepage"></div><div class="refnamediv"><h2>BMTS Bus Pack</h2><p>BMTS Bus Pack &#8212; <span class="phrase">Configure the BMTS Bus Pack
+                    block</span></p></div><div class="refsect1"><a name="d5e871"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_bmts_buspack.png"></span></span></p></div><div class="refsect1"><a name="d5e879"></a><h2>Description</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BMTS Bus Pack block consists of a masked subsystem with a MATLAB App-based
+                block mask. The subsystem is dynamically populated with a Bus Assignment block and
+                input ports for the signals selected by the user. The signals are inserted into the
+                bus signal structure for the selected BMTS device, which can then be used as input
+                to the BMTS Write block for this device.</p></div><div class="refsect1"><a name="d5e885"></a><h2>Ports</h2><p>This driver block has a variable number of input ports and one output port.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Signal Name</span>
+                    </span></dt><dd><p>For each element of the bus signal that is selected on the <span class="bold"><strong>Signal Selection</strong></span> tab, an input port is
+                            created. The data type depends on the selected signal.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bus</span>
+                    </span></dt><dd><p>The bus port outputs a Simulink bus signal, the structure of which
+                            depends on the selected device. The Simulink bus object is automatically
+                            created in the MATLAB workspace when selecting a device type. This
+                            signal can be used as input to the BMTS Write block for a BMTS device of
+                            the same type.</p></dd></dl></div></div><div class="refsect1"><a name="d5e903"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Device Type</span>
+                    </span></dt><dd><p>Select the desired BMTS device type from the drop-down list of all
+                            possible BMTS devices. The name of the resulting bus signal is displayed
+                            below the drop-down menu.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Ports Order</span>
+                    </span></dt><dd><p>Select the desired order of the input ports of the BMTS Bus Pack
+                            block. The two available options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>By Channels: put all selected signals for Channel 1 at the
+                                        top, followed by Channel 2, etc.</p></li><li class="listitem"><p>By Signal Types: group signals of the same type from all
+                                        Channels together</p></li></ul></div><p>
+                        </p></dd></dl></div></div></div></body></html>

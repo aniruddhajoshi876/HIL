@@ -1,0 +1,102 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EtherCAT SubDevice Emulator - Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ecatsim_setup.html" title="EtherCAT SubDevice Emulator - Setup"><link rel="next" href="refentry_ecatsim_receive.html" title="EtherCAT SubDevice Emulator - Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ecatsim_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>EtherCAT SubDevice Emulator - Send</h2><p>EtherCAT SubDevice Emulator - Send &#8212; <span class="phrase">Transmits data to the EtherCAT
+                    main device via process data object communication (PDO)</span></p></div><div class="refsect1"><a name="d5e6622"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ecatsim_send.png"></span></span></p></div><div class="refsect1"><a name="d5e6630"></a><h2>Description</h2><p>The Send block transmits data to the EtherCAT main device via process data object
+                communication (PDO). The block does not trigger any communication messages, but
+                rather copies data to an internal memory holding the data that will be sent to the
+                main device in the next communication cycle. You can place as many Send blocks in
+                the model as you wish: one block could transmit a single signal, one block could
+                transmit all the signals associated with a specific device, and one block could even
+                transmit the data of all the devices.</p><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>Using the <a href="refentry_sgapi_model_create_from_eni.html" class="olink">createFromEni</a>
+                    function, you can import ENI (EtherCAT Network Information) files and
+                    autogenerate a ready-to-use communication interface. Based on the information
+                    included in the ENI file, the function places the Setup, Send and Receive driver
+                    blocks into the model and automatically sets the block parameters.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_ports_snippet_send"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The number of input ports depends on the number of elements defined in
+                            the <span class="bold"><strong>Signal Type</strong></span> parameter. Each signal
+                            is represented by one input port. The port retrieves its label from the
+                            corresponding element in the <span class="bold"><strong>Signal
+                                Name</strong></span> parameter, retrieves its data type from the
+                            corresponding element in the <span class="bold"><strong>Signal
+                                Type</strong></span> parameter, and retrieves its width (vector length)
+                            from the corresponding element in the <span class="bold"><strong>Signal
+                                Width</strong></span> parameter.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/ecatsim_14.png"></span>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e6661"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Interface ID</span>
+                    </span></dt><dd><p>Enter the <span class="bold"><strong> Interface ID </strong></span> of the
+                            corresponding Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Signal Name</span>
+                    </span></dt><dd><p>Enter the signal names as a cell array of character arrays or strings.
+                            The name is simply used as a label for the port on the block icon and
+                            serves no other purpose. You can find the signal names in the ENI file
+                            and the EtherCAT configuration tool. You can define custom names as
+                            well.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/ecatsim_11.png"></span><span class="inlinemediaobject"><img src="././graphics/ecatsim_16.png"></span>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Signal Type</span>
+                    </span></dt><dd><p>Enter the signal data types as a cell array of character arrays or
+                            strings. You can find the data types in the ENI file and the EtherCAT
+                            configuration tool. Simulink data types and the corresponding IEC61131
+                            types are indicated in the table below. Note that data types entered
+                            here do not affect frame sizes and the EtherCAT communication at all.
+                            The type simply defines the size of the data to be copied from the input
+                            port to the process data area. </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/ecatsim_12.png"></span><span class="inlinemediaobject"><img src="././graphics/ecatsim_17.png"></span>
+                            </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="Simulink data type"><col width="50%" class="IEC61131 data type"></colgroup><tbody><tr><td><span class="bold"><strong>Simulink data
+                                                  types</strong></span></td><td><span class="bold"><strong>IEC61131 data
+                                                  types</strong></span></td></tr><tr><td>double</td><td>LREAL</td></tr><tr><td>single</td><td>REAL</td></tr><tr><td>uint32</td><td>UDINT</td></tr><tr><td>int32</td><td>DINT</td></tr><tr><td>uint16</td><td>UINT</td></tr><tr><td>int16</td><td>INT</td></tr><tr><td>uint8</td><td>USINT</td></tr><tr><td>int8</td><td>SINT</td></tr><tr><td>boolean</td><td>BOOL, BIT</td></tr></tbody></table></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Signal Offset</span>
+                    </span></dt><dd><p>Enter the signal offsets as a numeric vector. An offset is a bit
+                            address in the process data area of the emulator. Offsets are not
+                            relative to the respective subordinate device but absolute over all
+                            subordinate devices. You can find the offset in the ENI file and the
+                            EtherCAT configuration tool. The number in the ENI file is the actual
+                            bit address. The number in the configuration tool might be a pair of
+                            byte and bit addresses. Evaluate the byte address * 8 + bit address to
+                            get the overall bit address (70 * 8 + 0 = 560). Note that offsets
+                            entered here do not affect frame sizes and the EtherCAT communication at
+                            all. The offset simply defines the address in the process data area to
+                            where to copy data.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/ecatsim_13.png"></span><span class="inlinemediaobject"><img src="././graphics/ecatsim_18.png"></span>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Signal Width</span>
+                    </span></dt><dd><p>The width parameter determines the number of elements of the input
+                            port. With the default value of 1, the input port expects a scalar
+                            value. With a width greater than 1, the input port becomes a vector. The
+                            width has no corresponding entry in the ENI file. Instead, it serves the
+                            following use cases: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Input signals whose data types do not match fundamental types.
+                                    Examples: A custom type of UINT24 is three bytes long and can be
+                                    passed as a vector of bytes. Enter 'uint8' in the <span class="bold"><strong>Signal Type</strong></span> parameter and 3 in the
+                                        <span class="bold"><strong>Signal Width</strong></span> parameter. A
+                                    custom type that is 9 bits long can be passed as a vector of
+                                    Boolean values. Enter 'boolean' in the <span class="bold"><strong>Signal Type</strong></span> parameter and 9 in the <span class="bold"><strong>Signal Width</strong></span> parameter.</p></li><li class="listitem"><p>Signals that have the same type and are located in the process
+                                    data area one after the other without gaps can be passed as a
+                                    single vector. </p><p>
+                                    <span class="inlinemediaobject"><img src="././graphics/ecatsim_15.png"></span>
+                                </p></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Select Signals</span>
+                    </span></dt><dd><p>This feature provides an interactive way to configure signal
+                            properties using information from the ENI file. The button opens a
+                            signal selection interface where input signals can be browsed and
+                            selected. After confirmation, signal-specific configuration parameters
+                            are automatically populated in the block. </p><p>When the button is clicked, the ENI file path is determined by
+                            checking for a Setup block in the model that uses the same <span class="bold"><strong>Interface ID</strong></span>. If such a Setup block is found,
+                            the ENI file path is retrieved from the block. If no matching Setup
+                            block is available, or if the ENI path cannot be resolved, a file
+                            selection dialog opens, allowing the user to manually choose the ENI
+                            file. </p><p>Once the ENI file has been loaded, a graphical tree browser is
+                            displayed. This browser presents a hierarchical view of EtherCAT
+                            subordinate devices and their input signals as defined in the ENI file.
+                            Devices can be expanded to reveal their input signals. One or more
+                            signals can be selected by marking them directly in the tree. Hold the
+                            CONTROL key to select multiple individual signals. Hold the SHIFT key to
+                            select a range of signals. Selecting a device entry implicitly selects
+                            all its signals.</p><p>After confirming the selection by clicking <span class="bold"><strong>Apply</strong></span>, the relevant properties for each marked
+                            signal&#8212;such as signal name, data type, width and offset&#8212;are extracted
+                            from the ENI file and written to the corresponding block mask
+                            parameters. </p></dd></dl></div></div></div></body></html>

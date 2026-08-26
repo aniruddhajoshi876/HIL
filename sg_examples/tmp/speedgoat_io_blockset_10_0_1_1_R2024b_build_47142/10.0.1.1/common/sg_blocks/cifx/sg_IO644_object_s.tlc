@@ -1,0 +1,139 @@
+%implements sg_IO644_object_s "C"
+
+%include "sg_IO644.tlc"
+
+%<cosAddCommonIncludes()>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void    
+    %<cosAddBlock(block)>
+    %<cosAddModule(block)>
+    %<cosAddObject(block)>    
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %openfile tmpBuf
+
+    %assign ObjName = "CosObj_%<CosModuleIdx>_%<CosObjIdx>"
+
+    %if ObjectType == 7 %% VAR
+        %assign DataPointer = "%<LibBlockDWorkAddr(Data_D,"","",0)>"    
+    %else
+        %assign DataPointer = "NULL"
+    %endif
+
+    /* Object %<CAST("Number", Index)>:%<CAST("Number", SubIndex)> of module %<CAST("Number", ModuleId)> */
+    COS_OBJECT_T %<ObjName> = {%<Index>, %<SubIndex>, %<AccessRights>, %<ObjectType>, %<DataType>, %<DataLen>, %<NumElements>, 0, %<ReadOp>, %<WriteOp>, %<Extended>, 0, %<DataPointer>};
+
+    %closefile tmpBuf
+    %<LibSetSourceFileSection(cFile, "Definitions", tmpBuf)>
+
+    {
+    %if ObjectType == 7 %% VAR
+        /* Copy the init value to the data buffer */
+        memcpy(%<LibBlockDWorkAddr(Data_D, "", "", 0)>, %<LibBlockParameterAddr(Init_P, "", "", 0)>, %<LibBlockDWorkWidth(Data_D) * LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Data_D))>);
+    %endif
+        %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+    }
+
+    %endwith
+
+    %<doLastBlockStuff(block)>
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0] 
+
+    {
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+
+    /* Find corresponding node structure in global driver array */
+    if (Channel == NULL)
+    {
+        CIFX_NODE_T* Node = NULL;
+
+        if (0 != Cifx_FindNode(%<ModuleId>, 0, &Node))
+        {
+            %<outputError(block, ModuleId, 0, "\"Cannot attach to I/O Module due to missing Setup block\"")>
+            return;
+        }
+
+        Channel = Node->Channels[0];
+        %<LibBlockPWork(Channel, "", "", 0)> = Channel;
+
+    }
+
+    %if isFirstObject(block)
+    COS_AcyclicHandler(Channel);
+    COS_UpdateRxPdos(Channel);
+    %endif
+
+    %if ObjectType == 7     %% VAR
+        %if WriteOp    
+    
+            %if LibBlockInputSignalConnected(0)
+    
+                %if Extended
+    
+                    %if LibBlockInputSignalConnected(1)
+    
+                        if (%<LibBlockInputSignal(1, "", "", 0)> != 0)
+    
+                    %endif
+    
+                %endif    
+    
+                {
+                    memcpy(%<LibBlockDWorkAddr(Data_D, "", "", 0)>, %<LibBlockInputSignalAddr(0, "", "", 0)>, %<LibBlockDWorkWidth(Data_D) * LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Data_D))>);
+                }
+    
+            %endif
+    
+        %endif
+
+        %if ReadOp
+    
+            %if LibBlockOutputSignalConnected(0)
+    
+                {
+                    memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, %<LibBlockDWorkAddr(Data_D, "", "", 0)>, %<LibBlockDWorkWidth(Data_D) * LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Data_D))>);
+                }
+    
+            %endif
+    
+            %if Extended
+                %if LibBlockOutputSignalConnected(1)
+                    {
+                        COS_OBJECT_T *CosObj = CosObjs_%<CosModuleIdx>[%<CosObjIdx>]; 
+                        %<LibBlockOutputSignal(1, "", "", 0)> = CosObj->Status;
+                    }
+                %endif
+            %endif
+    
+        %endif
+    %endif
+
+    %if isLastObject(block)
+        COS_UpdateTxPdos(Channel);
+    %endif
+
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

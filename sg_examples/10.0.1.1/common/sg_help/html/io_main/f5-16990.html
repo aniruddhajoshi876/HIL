@@ -1,0 +1,100 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with Philips SJA1000 FIFO Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f4-6069.html" title="Chapter&nbsp;4.&nbsp;CAN I/O FIFO Blocks No Longer Recommended for Use"><link rel="prev" href="f5-15649.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Setup"><link rel="next" href="f5-17055.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f5-16990"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Write<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Write"></a></h2><p>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Write<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Write"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with Philips SJA1000 FIFO Write Driver block (not
+                recommended)<b>CANFIFOBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e1355"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="f5-18012"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f5-17026"></a><h2>Description</h2><p>The <code class="literal">FIFO Write</code> driver block writes CAN messages into the
+                transmit FIFO. The firmware running in FIFO mode processes the information in the
+                transmit FIFO and finally puts the constructed CAN messages onto the bus. This block
+                dynamically detects the data type and signal size of the signal you connect to the
+                input port. If you use this block inside an enabled subsystem, the block sends the
+                message only when you enable the subsystem.</p><p>If you use the CAN_MESSAGE data type:</p><p>If the block input is a CAN_MESSAGE data type, use <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> blocks to pack individual
+                signals into a CAN message. If you use <code class="literal">CAN Pack</code> blocks to prepare
+                each message, the <code class="literal">FIFO Write</code> block reads the CAN_MESSAGE data. To
+                combine several messages into a vector of CAN_MESSAGE data that the <code class="literal">FIFO
+                    Write</code> block sends, use a <a class="link" href="matlab: doc Mux;" target="_top">Mux</a> block. Use the <span class="bold"><strong>Port (if input is
+                    CAN_MESSAGE)</strong></span> parameter to select the port to which to send the
+                CAN_MESSAGE data.</p><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>To prepare a remote frame, use the <code class="literal">CAN Pack</code> block with the
+                        <span class="guibutton">Remote frame</span> check box selected. To request the
+                    current value, send the remote frame to the responding subsystem.</p></td></tr></table></div><p>If you use the double data type (legacy):</p><p>If the block input consists of double values in a matrix, the block has one input
+                port of type double. At this port, the required information must be provided to
+                construct valid CAN messages to be written into the transmit FIFO. For each CAN
+                message, five elements are passed in this order:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">Port</code></span></dt><dd><p>The value can be either 1 (port 1) or 2 (port 2) and defines the port
+                            the CAN message is sent from.</p></dd><dt><span class="term"><code class="literal">Identifier</code></span></dt><dd><p>Identifier of the CAN message to be sent. If it is a standard CAN
+                            message the valid range is 0 to 2047. If the CAN message is extended,
+                            the range is 0 to 2<sup>29</sup>-1.</p></dd><dt><span class="term"><code class="literal">Identifier type</code></span></dt><dd><p>The value can be either 0 (standard identifier range) or 1 (extended
+                            identifier range) and defines the identifier type of the outgoing CAN
+                            message.</p></dd><dt><span class="term"><code class="literal">Data frame size</code></span></dt><dd><p>The value can be in the range of 0 to 8 and defines the data frame
+                            size in bytes of the outgoing CAN message.</p></dd><dt><span class="term"><code class="literal">Data</code></span></dt><dd><p>Data for the data frame itself. Use the <a class="link" href="matlab: doc CAN Bit-Packing;" target="_top">CAN Bit-Packing</a>
+                            block to construct the data as double values in a matrix.</p></dd></dl></div><p>This information can be dynamically changed in FIFO mode during real-time
+                application execution. Therefore, you send the information through the block input
+                instead of setting block parameters. To transmit more than one CAN message per block
+                instance, use a matrix signal as a container.</p><p>The dimension of the matrix signal entering the block is <code class="literal">n*5</code>,
+                where <code class="literal">n</code> is the number of CAN messages that you expect this block
+                instance to send. Each row of the matrix signal defines one CAN message and each row
+                combines the five information elements:</p><pre class="programlisting">[Port, Identifier, Identifier type, Data frame size, Data]</pre><p>For some models, you can make the writing of a CAN message into the transmit FIFO
+                dependent on the model dynamics. For this case, the matrix signal can also be of
+                dimension <code class="literal">n*6</code> instead of <code class="literal">n*5</code>. The sixth column
+                defines whether the corresponding CAN message is written into the transmit FIFO
+                    (<code class="literal">1</code>) or not (<code class="literal">0</code>).</p></div><div class="refsect1"><a name="f5-15706"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Define the board used to send the CAN messages defined by this block
+                            instance. For more information about the meaning of the board number,
+                            see the <code class="literal">Setup</code> driver block. If just one board is
+                            present in the target system, you should select 1.</p></dd><dt><span class="term"><span class="bold"><strong>Show input count port</strong></span></span></dt><dd><p>Select this check box to track the number of inputs to the block and
+                            add a second input port, N, to the block. If this port value exceeds the
+                            size of the input vector of CAN_MESSAGE messages, the block limits the
+                            transfer to the size of the input vector. If this port value is smaller
+                            than the CAN_MESSAGE input vector size, the block transfers data up to
+                            the size of this port value. For example, assume an input of 10*5
+                            matrix. If you then input a <code class="literal">5</code> to input port
+                                <code class="varname">N</code>, the block sends only the first five messages.
+                            In an n*6 matrix, the last entry in the row is still the individual
+                            message enabled, but the block checks only messages up to n. If the
+                            input is a matrix of doubles, the block ignores the value of the
+                                <span class="bold"><strong>Port</strong></span> parameter. The block considers
+                            the port as part of the data.</p><p>If this check box is cleared, the block sends
+                            all elements of the input
+                            vector.</p></dd><dt><span class="term"><span class="bold"><strong>Port (if input is CAN_MESSAGE)</strong></span></span></dt><dd><p>If the message is a CAN_MESSAGE data type, from the list, select
+                                <code class="literal">1</code> or <code class="literal">2</code> for the port to send
+                            the message through. The block sends a message to a single CAN port. If
+                            you want to send messages to different ports in a model, use multiple
+                                <code class="literal">FIFO Write</code> blocks. This input port is the first
+                            one on the block. Its input is a vector or single CAN_MESSAGE
+                            message.</p><p>If the message consists of double values in a matrix, changing this
+                            parameter does not change the block behavior. You specify the port
+                            number in the CAN message. A single <code class="literal">FIFO Write</code> block
+                            can send messages through both ports.</p></dd><dt><span class="term"><span class="bold"><strong>Show status output port</strong></span></span></dt><dd><p>Select this to enable the status output port. If the box is cleared,
+                            the block does not have an output port. If enabled, a port is shown. The
+                            signal leaving the block is a vector of type CAN_MESSAGE or double
+                            depending on which data type you are using for your messages, in which
+                            the number of elements depends on the signal dimension of the block
+                            input port. There is one element for each CAN message written into the
+                            transmit FIFO and the value is identical to the return argument of
+                            function <code class="literal">CANPC_send_data</code>, described in the
+                                <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                            user manual. Refer to that manual for more information. The function
+                            return codes are:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="11%" class="col1"><col width="89%" class="col2"></colgroup><thead><tr><th valign="top">Code</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>Function executed without detecting an
+                                                error.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-1</code></p>
+                                        </td><td>
+                                            <p>Function encountered an error.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-4</code></p>
+                                        </td><td>
+                                            <p>Timeout firmware communication.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-99</code></p>
+                                        </td><td>
+                                            <p>Board not initialized.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Defines the sample time at which the <code class="literal">FIFO Write</code>
+                            block is executed during a real-time application run.</p></dd></dl></div><p>You can use as many instances of the <code class="literal">FIFO Write</code> block in the
+                model as required. For example, by using two instances of the block, you can send
+                CAN messages at different sample times. Or you can use multiple instances to
+                structure your model more efficiently.</p></div><div class="refsect1"><a name="d5e1501"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></li><li class="listitem"><p><a class="link" href="https://company.softing.com" target="_top">https://www.company.softing.com</a></p></li></ul></div></div></div></body></html>

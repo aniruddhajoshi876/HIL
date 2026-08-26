@@ -1,0 +1,65 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Database Parser Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_parsing_write.html" title="CAN Database Parser Write"><link rel="next" href="refentry_can_ofa_parsing_usage_notes.html" title="CAN Database Parser Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_parsing_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Database Parser Read</h2><p>CAN Database Parser Read &#8212; <span class="phrase">Reads CAN (HS) and CAN FD
+                    messages from one channel</span></p></div><div class="refsect1"><a name="d5e1817"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io602_io691_db_parser_can_read.png"></span></span></p></div><div class="refsect1"><a name="d5e1825"></a><h2>Description</h2><p>The CAN DB Parser Read block consists of a masked subsystem, which adds an
+                additional functionality layer to the existing CAN Read block. The subsystem is
+                dynamically populated with a set of preconfigured CAN Unpack or CAN FD Unpack
+                blocks, the corresponding CAN Read blocks, preconfigured output ports, and the
+                interconnecting lines. The CAN DB Parser Read block mask allows users to select
+                which messages of a *.dbc file should be received.</p><p>As an alternative to configuring the CAN DB Parser Read block using the application,
+                the <a href="refentry_sgapi_can_db_parser_block_config.html" class="olink">DB Parser Block Config</a> class can be
+                used to perform the process programmatically.</p><p>The CAN DB Parser Read block executes according to the settings in the
+                corresponding CAN Setup block. The execution primarily depends on whether the
+                operation mode is set to CAN (HS) or CAN FD. It is the user's responsibility to
+                ensure that the operation mode selected in the CAN Setup block matches the operation
+                mode defined in the *.dbc file in use.</p><p>The CAN DB Parser Read block cannot be edited when linked to a custom library, as
+                it contains instance-specific data that cannot be shared across links. The block
+                remains editable within the library itself: changes made there will be reflected in
+                all linked instances. Additionally, the block cannot be used within subsystem
+                models, as these are not supported.</p></div><div class="refsect1"><a name="d5e1832"></a><h2>Ports</h2><p>The number and type of input ports depends on the setting of the <span class="bold"><strong>Input Type</strong></span> parameter.</p></div><div class="refsect1"><a name="d5e1836"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Configure CAN I/O Module</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CAN I/O Module</span>
+                    </span></dt><dd><p>Selects the CAN I/O module with which this driver block communicates.
+                            The list is populated according to the CAN Setup blocks in the model.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number</span>
+                    </span></dt><dd><p>Selects the CAN channel with which this driver block communicates.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Configure CAN Bus</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bus Type</span>
+                    </span></dt><dd><p>Shows whether the operation mode used for this block is set to CAN
+                            (HS) or CAN FD. This parameter is configured automatically according to
+                            the corresponding setting in the Setup block and cannot be changed by
+                            the user.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Type</span>
+                    </span></dt><dd><p>Configure the output type of the block; two options are
+                            available:</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Signals</strong></span></p><p>An output port is created for each signal to
+                                        transmit.</p></li><li class="listitem"><p><span class="bold"><strong>Single Bus</strong></span></p><p>When selecting this option, the output port is a single
+                                        bus, containing a set of message buses with the same
+                                        structure as described for the <span class="bold"><strong>Bus per
+                                            Messages</strong></span> setting.</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Configure Sample Time</div><dl class="variablelist"><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1881"></a><h2>Configure CAN Parsing </h2><div class="variablelist"><div class="variablelist-title">Database</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CANdb file</span>
+                    </span></dt><dd><p>Select the database file from which to choose the desired signals to
+                            receive. The <span class="bold"><strong>Messages</strong></span> table is
+                            dynamically populated based on the selected entry of this list. This
+                            list is populated through the <span class="bold"><strong>CAN Database
+                                Manager</strong></span>. For further information about the <span class="bold"><strong>CAN Database Manager</strong></span>, please refer to the
+                                <a href="refentry_can_ofa_parsing_usage_notes.html" class="olink"> usage
+                                notes</a></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Messages</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable all</span>
+                    </span></dt><dd><p>Allows users to enable or disable all available messages in one
+                            click.</p></dd><dt><span class="term">
+                        <span class="guilabel">Add/Remove Selected</span>
+                    </span></dt><dd><p>After selecting multiple messages in the table (Ctrl
+                            + left-click), all these messages can be simultaneously enabled or
+                            disabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">IDs in hex</span>
+                    </span></dt><dd><p>In the <span class="bold"><strong>Messages</strong></span>
+                            table, IDs are displayed in decimal form by default. By enabling this
+                            command, the IDs can be displayed in hexadecimal format.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Signals</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Signals</strong></span> table shows the signals
+                            related to the last enabled/disabled message. No actions are available
+                            for this table.</p></dd></dl></div></div></div></body></html>

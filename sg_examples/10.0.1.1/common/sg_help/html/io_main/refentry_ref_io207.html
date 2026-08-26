@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO207</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io206_read.html" title="IO206 - Read"><link rel="next" href="refentry_ref_io207_examples.html" title="IO207 - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ref_io207"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO207</h2><p>IO207 &#8212; <span class="phrase">The IO207 I/O module provides a total of
+                    128 digital TTL lines.</span></p></div><div class="refsect1"><a name="d5e1956"></a><h2>Introduction</h2><p>The IO207 I/O module provides a total of 128 digital TTL lines, programmable as
+                inputs or outputs in groups of eight channels. Each channel group can be configured
+                to use pull-up resistors (5&nbsp;V or 3.3&nbsp;V, &plusmn;24&nbsp;mA), pull-down resistors
+                or floating lines.</p><p>The digital channels are accessible in two main groups (front and rear) of 64
+                channels on two separate connectors. The driver implements the following additional
+                features for each main group:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Option to enable only the first half of the channels of a main group
+                            (the rest of the channels are then disabled). This reduces the overall
+                            latency of the I/O module, because less data is written to the bus
+                        </p></li><li class="listitem"><p>Option to enable synchronous read and write operations on all the
+                            channels of a main group. This allows all 64 channels to be
+                            simultaneously updated, but also increases the overall latency of the
+                            I/O module.</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e1966"></a><h2>Driver Blocks</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="refentry_io207_setup.html" class="olink">Setup</a></p></li><li class="listitem"><p><a href="refentry_io207_read.html" class="olink">Read</a></p></li><li class="listitem"><p><a href="refentry_io207_write.html" class="olink">Write</a></p></li></ul></div></div><div class="refsect1"><a name="d5e1978"></a><h2>Pin Mapping</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="refentry_io207_pin_mapping.html" class="olink">Pin
+                            mapping for IO207</a></p></li></ul></div></div><div class="refsect1"><a name="d5e1984"></a><h2>Examples</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="https://www.speedgoat.com/help/slrt/page/examples/IO207_DigitalLoopback" target="_top"> IO207 - Digital Loopback</a>
+                    </p></li></ul></div></div></div></body></html>

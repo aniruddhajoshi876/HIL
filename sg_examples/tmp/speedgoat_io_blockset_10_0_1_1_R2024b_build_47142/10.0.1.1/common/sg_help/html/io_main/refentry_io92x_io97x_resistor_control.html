@@ -1,0 +1,82 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO92X, IO970-IO973 - Resistor Control</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_sensors.html" title="Sensors I/O"><link rel="up" href="book_sensors.html" title="Sensors I/O"><link rel="prev" href="refentry_io92x_io97x_pin_mapping.html" title="IO92X, IO970-IO973 Pin Mapping"><link rel="next" href="refentry_ref_io94x.html" title="IO94X"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io92x_io97x_resistor_control"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO92X, IO970-IO973 - Resistor Control</h2><p>IO92X, IO970-IO973 - Resistor Control &#8212; <span class="phrase">Controls the IO92X
+                    and IO970-IO973 reistors</span></p></div><div class="refsect1"><a name="d5e1310"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pil_resistors.png"></span></span></p></div><div class="refsect1"><a name="d5e1318"></a><h2>Description</h2><p>The driver block used for configuring the driver is described in the following
+                sections.</p></div><div class="refsect1"><a name="d5e1321"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">R n (n is the resistor channel number) </span>
+                    </span></dt><dd><p>The requested resistance value. The number of these ports is dependent
+                            on the channel count, which is specified by the 'Channels vector'
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">RAn </span>
+                    </span></dt><dd><p>The requested resistance between the 'CHn Terminal A' and the 'CHn
+                            Wiper' IO pins. Only available for IO923 and IO924 potentiometer
+                            modules.</p></dd><dt><span class="term">
+                        <span class="guilabel">RBn </span>
+                    </span></dt><dd><p>The requested resistance between the 'CHn Terminal B' and the 'CHn
+                            Wiper' IO pins. Only available for IO923 and IO924 potentiometer
+                            modules.</p></dd></dl></div><p>The output ports are only shown when the option "Show output ports" is enabled.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">R n (n is the resistor channel number) </span>
+                    </span></dt><dd><p>The value that the driver is trying to assign to the resistor. This
+                            value may differ slightly from the input value and the actual value of
+                            the resistor. The number of these ports is dependent on the channel
+                            count, which is specified by the 'Channels vector' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">RAn </span>
+                    </span></dt><dd><p>The value that the driver is assigning to the resistor between the
+                            'CHn Terminal A' and the 'CHn Wiper' IO pins. This value may differ
+                            slightly from the input value and the actual value of the resistor. Only
+                            available for IO923 and IO924 potentiometer modules.</p></dd><dt><span class="term">
+                        <span class="guilabel">RBn </span>
+                    </span></dt><dd><p>The requested resistance between the 'CHn Terminal B' and the 'CHn
+                            Wiper' IO pins. Only available for IO923 and IO924 potentiometer
+                            modules.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1358"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">IO92x, IO97x module ID</span>
+                    </span></dt><dd><p>If your target machine only contains one I/O module, leave the default
+                            value (1). If more than one I/O module of this type is present, select a
+                            unique number (1-255) for each of your modules.</p></dd><dt><span class="term">
+                        <span class="guilabel">IO92x, IO97x module type</span>
+                    </span></dt><dd><p>Select the specific type of I/O module this driver block is being used
+                            with.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel vector </span>
+                    </span></dt><dd><p>This parameter allows the enabling of individual resistors channels in
+                            any order. The parameter takes values (starting from 1) in a row vector.
+                            The number of elements defines the number of resistors used. e.g. to use
+                            two resistor channels enter [1, 2].</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial value vector </span>
+                    </span></dt><dd><p>The initial resistor impedance in Ohms. A scalar value or a vector of
+                            the same length as the 'Channel vector' can be entered. If a scalar
+                            value is specified, this value is applied to all resistors. For
+                            potentiometers there are two resistors per channel, so the vector size
+                            must be twice the size of the channel vector. The sequence is RA1, RB1,
+                            RA2, RB2, etc. The resistors are set to their initial values between the
+                            time the model is downloaded and the time it is started. Before the
+                            model is downloaded, all resistors are in an "open circuit" state. To
+                            maintain this state, use a value of 100e6 or more. Potentiometers and
+                            High Density Resistors do not support "open circuit". They are
+                            initialized to the highest possible resistance which they support.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Reset vector </span>
+                    </span></dt><dd><p>The reset vector controls the behavior of the resistors at model
+                            termination. A scalar value or a vector of the same length as the
+                            'Channel vector' should be entered. If a scalar value is specified, this
+                            value is applied to all resistors. If a value of 1 is entered, the
+                            corresponding channel will be reset to the state specified in the
+                            'Initial value vector'. If a value of 0 is entered, the channel remains
+                            at the last state attained while the model was running.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show output port(s) </span>
+                    </span></dt><dd><p>Enables or disables the output port(s).</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd></dl></div></div></div></body></html>

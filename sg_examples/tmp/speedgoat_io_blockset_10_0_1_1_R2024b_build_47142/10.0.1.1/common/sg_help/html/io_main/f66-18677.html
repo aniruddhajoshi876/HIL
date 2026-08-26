@@ -1,0 +1,49 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">UEI PD2-AO Analog Output (D/A)</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="busnag_.html" title="Chapter&nbsp;8.&nbsp;United Electronic Industries (UEI) Blocks No Longer Recommended for Use"><link rel="prev" href="f66-26802.html" title="UEI PD2-AO Series"><link rel="next" href="f66-26998.html" title="UEI PD2-AO Digital Input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f66-18677"></a><div class="titlepage"></div><div class="refnamediv"><h2>UEI PD2-AO Analog Output (D/A)<a name="UEI_PD2-AO-series_DA"></a></h2><p>UEI PD2-AO Analog Output (D/A)<a name="UEI_PD2-AO-series_DA"></a> &#8212; PD2-AO Analog Output block (not recommended)<b>UEI</b><b>DACBlocks</b></p></div><div class="refsect1"><a name="d5e8595"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="f66-26802.html" class="olink">UEI PD2-AO
+                            Series</a></p></li></ul></div></div><div class="refsect1"><a name="f66-31917"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcueilib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f66-18691"></a><h2>Scaling Input to Output</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col class="col1" width="33%"><col class="col2" width="33%"><col class="col3" width="34%"></colgroup><thead><tr><th>
+                                <p>I/O Module Output</p>
+                            </th><th>
+                                <p>Block Input Data Type</p>
+                            </th><th>
+                                <p>Scaling</p>
+                            </th></tr></thead><tbody><tr><td>
+                                <p>Volts</p>
+                            </td><td>
+                                <p>Double</p>
+                            </td><td>
+                                <p>1</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="f66-18692"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board type</strong></span></span></dt><dd><p>Select the specific board type from the list provided.</p></dd><dt><span class="term"><span class="bold"><strong>Channel vector</strong></span></span></dt><dd><p>Enter a vector of numbers to specify the output channels between 1 and
+                            8, 1 and 16, 1 and 32, or 1 and 96. For example, to use the first and
+                            second analog output (D/A) channels, enter</p><pre class="programlisting">[1 2]</pre><p>The channel numbers can occur in arbitrary order. Number the channels
+                            beginning with 1 even if this board manufacturer numbers them beginning
+                            with 0. The maximum allowable channel number for PD2-AO series boards is
+                            8, 16, 32, or 96 depending on the specific board type.</p><p>Note, the UEI PD2-AO 96 channel board only works if you specify a
+                            contiguous group of channels. These channels also must be listed in
+                            order. If you enter a non-contiguous channel list in the <span class="bold"><strong>Channel</strong></span> vector parameter, the board does not
+                            produce output.</p><p>As a workaround, enter a contiguous specification like:</p><pre class="programlisting">[1 2 3 4 5]</pre><p>to use channels 1, 3, and 5. Connect a <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; ground to
+                            channels 2 and 4.</p></dd><dt><span class="term"><span class="bold"><strong>Reset vector</strong></span></span></dt><dd><p>The reset vector must be the same length as the channel vector. It
+                            contains values of 0 or 1. This parameter controls the behavior at model
+                            termination. A value of 1 causes the corresponding channel to be reset
+                            to the value specified in the initial value vector. A value of 0 causes
+                            the channel to remain at the last value attained while the model was
+                            running.</p><p>If your board is the 96 channel version, the board reads only the
+                            first value in the vector and resets the channels according to that
+                            first value. For example, if the first value of the vector is
+                                <code class="literal">1</code>, the board resets
+                            all 96 channels to the
+                            values specified in the <span class="bold"><strong>Initial value
+                                vector</strong></span> parameter.</p></dd><dt><span class="term"><span class="bold"><strong>Initial value vector</strong></span></span></dt><dd><p>The initial value vector must be the same length as the channel vector and should
+            contain the initial voltage values for the output channels. The channels are set to
+            these values between the time the model is downloaded and the time it is started.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e8682"></a><h2>Related Links</h2><p><a class="link" href="http://www.ueidaq.com" target="_top">www.ueidaq.com</a></p></div></div></body></html>

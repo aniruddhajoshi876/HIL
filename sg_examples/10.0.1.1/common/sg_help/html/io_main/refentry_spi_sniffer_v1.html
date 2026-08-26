@@ -1,0 +1,55 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SPI - Sniffer v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_spi_masterslave_v2.html" title="SPI - Master / Slave v2"><link rel="next" href="refentry_ref_i2c.html" title="I2C"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_spi_sniffer_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>SPI - Sniffer v1</h2><p>SPI - Sniffer v1 &#8212; <span class="phrase">The SPI Sniffer driver block is
+                    used to monitor an existing SPI communication setup.</span></p></div><div class="refsect1"><a name="d5e11251"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_spi_sniffer_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e11259"></a><h2>Description</h2><p>The SPI Sniffer driver block is used to monitor an existing SPI communication
+                setup.</p></div><div class="refsect1"><a name="d5e11262"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">MOSI n (n is the channel number) </span>
+                    </span></dt><dd><p>The data of the SPI MOSI data line. The width of the output port
+                            vector is defined by the <span class="bold"><strong>Number of Words per
+                                Frame</strong></span> parameter in the <span class="bold"><strong>SPI
+                                Configuration</strong></span> tab.</p></dd><dt><span class="term">
+                        <span class="guilabel">MISO n (n is the channel number) </span>
+                    </span></dt><dd><p>The data of the SPI MISO data line. The width of the output port
+                            vector is defined by the <span class="bold"><strong>Number of Words per
+                                Frame</strong></span> parameter in the <span class="bold"><strong>SPI
+                                Configuration</strong></span> tab.</p></dd><dt><span class="term">
+                        <span class="guilabel">Active CS n (n is the channel number) </span>
+                    </span></dt><dd><p>Indicates which chip select line was active for the last data
+                            transmission. If a value of 0 is read, this means that more than one CS
+                            was active at the same time and that the data may be corrupted. This
+                            port is optional and can be enabled by ticking the <span class="bold"><strong>Show Active CS Outputs</strong></span> checkbox in the <span class="bold"><strong>Output Port Configuration</strong></span> tab.</p></dd></dl></div></div><div class="refsect1"><a name="d5e11287"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel"></a><span class="term">
+            <span class="guilabel">Channel</span>
+        </span></dt><dd><p>The number of the channel which this driver block entity will access. Only one
+                channel per driver block can be addressed. You can specify channels in the range 1-N
+                (N = the number of channels implemented in your specific configuration file defined
+                in the Setup block).</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SPI Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CPOL Vector </span>
+                    </span></dt><dd><p>The clock polarity parameter: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: SCLK idle state is low</p></li><li class="listitem"><p>1: SCLK idle state is high</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">CPHA Vector </span>
+                    </span></dt><dd><p>The clock phase parameter </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: sample on the leading (first) clock edge</p></li><li class="listitem"><p>1: sample on the trailing (second) clock edge regardless
+                                        of whether the clock is rising or falling.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bits per Word (Vector) </span>
+                    </span></dt><dd><p>Defines the size of the words. Valid range is 1 to 32 (see note).
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Words per Frame (Vector) </span>
+                    </span></dt><dd><p>Defines the number of words which are sent in a frame. Valid range is
+                            1 to 32 (see note).</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The maximum number of bits per SPI transmition is limited to 256 bits.
+                    Therefore, the product of wordSize x frameSize may not be greater than 256.
+                </p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The SPI Sniffer doesn't support variable frame sizes. If a received frame is
+                    smaller than the configured <span class="bold"><strong>Number of Words per
+                        Frame</strong></span>, the remaining elements will contain old values from
+                    previous transmitions.</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Active CS Output </span>
+                    </span></dt><dd><p>When this box is checked, the chip select line of the last SPI
+                            transaction will be available in Simulink via a dedicated output port.
+                            If a value of 0 is read at the output port, this means that more than
+                            one CS was active at the same time and that the data may be corrupted.
+                        </p></dd></dl></div></div></div></body></html>

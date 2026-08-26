@@ -1,0 +1,114 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature - Decoder v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_quadrature_encoder_v1.html" title="Quadrature - Encoder v1"><link rel="next" href="refentry_quadrature_encoder_v2.html" title="Quadrature - Encoder v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_decoder_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature - Decoder v3</h2><p>Quadrature - Decoder v3 &#8212; <span class="phrase">The QAD driver block allows quadrature
+                    encoders to be read.</span></p></div><div class="refsect1"><a name="d5e5249"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_qad_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e5257"></a><h2>Description</h2><p>The QAD driver block allows quadrature encoders to be read.</p></div><div class="refsect1"><a name="d5e5260"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs are equal to the channel count as
+                defined in the channel vector parameter.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Clear position </span>
+                    </span></dt><dd><p>Options for the input are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: current counter value is not modified</p></li><li class="listitem"><p>1: current counter value is set to zero.</p></li></ul></div><p> Note that using this port introduces additional latency.
+                            This port is enabled/disabled using the 'Show clear position input'
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear flag index found </span>
+                    </span></dt><dd><div class="itemizedlist"><p>Options for the input are:</p><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: current flag value is not modified</p></li><li class="listitem"><p>1: current flag value is set to zero.</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Using this port introduces additional latency. This port is
+                                enabled/disabled using the 'Show clear flag index found input'
+                                parameter.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position </span>
+                    </span></dt><dd><p>The position at the moment when the latch occurred. This port is
+                            enabled/disabled using the 'Show latched position output port'
+                            parameter. When parameter 'Interpolate inner position' is enabled, this
+                            output port data type is a double, where the integer part corresponds to
+                            the discrete position (number of transitions detected) and the
+                            fractional part (between x.0 and x.999) is the interpolated distance
+                            done until the latch.</p></dd><dt><span class="term">
+                        <span class="guilabel">Turns </span>
+                    </span></dt><dd><p>Number of revolutions recorded by the QAD code module (3). The output
+                            is signed, with the sign indicating the direction of movement.</p></dd><dt><span class="term">
+                        <span class="guilabel">rpm </span>
+                    </span></dt><dd><p>The instantaneous speed determined by the QAD code module (3). Only
+                            able to determine speed of a non static system.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction </span>
+                    </span></dt><dd><p>The direction of rotation for the most recently measured position.
+                            Possible values for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Counter-clockwise</p></li><li class="listitem"><p>1: Clockwise</p></li></ul></div><p> This port is enabled/disabled using the 'Show direction
+                            output' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index found </span>
+                    </span></dt><dd><p>Indicates if the C/index position has been reached. Possible values
+                            for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Encoder hasn't reached C/Index position</p></li><li class="listitem"><p>1: Encoder has reached C/Index position. The value remains
+                                        at 1 until counting is reset for example via writing 1 on
+                                        input port 'Clear index found flag'.</p></li></ul></div><p> This port is enabled/disabled using the 'Show index
+                            found output port' parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e5324"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Reset positions and flags on startup </span>
+                    </span></dt><dd><p>When checked, the driver will reset the positions and the flags as
+                            computed during the previous runtime.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Quadrature decoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Operating mode </span>
+                    </span></dt><dd><p>This QAD code module supports the following operating modes: Mode
+                            Resolution Quadrature decoding 1x, 2x, and 4x Direction count 1x, and 2x
+                            Up/down count 2x, and 4x</p></dd><dt><span class="term">
+                        <span class="guilabel">Index control mode </span>
+                    </span></dt><dd><p>Defines how the QAD code module reacts at each low to high transition
+                            detected on the C/Input I/O line. Supported modes are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Ignore index input: no action</p></li><li class="listitem"><p>Reset on index: Counter is reset at every occurrence of a
+                                        low to high transition present on C/Index</p></li><li class="listitem"><p>Index reference mode: Counter is reset to zero at the
+                                        first C/Index event detection and Index control mode then
+                                        changes to "Ignore index input"</p></li><li class="listitem"><p>Gate on index: Counter is enabled only when C/Index is
+                                        high.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Sampling </span>
+                    </span></dt><dd><p>Sampling resolution. Supported sampling resolutions are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1x (Quadrature decoding, and direction count only)</p></li><li class="listitem"><p>2x (All modes)</p></li><li class="listitem"><p>4x (Quadrature decoding, and up/down count only)</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Steps per revolution vector </span>
+                    </span></dt><dd><p>Defines the counting range of the counter. Position output will be in
+                            the range [0, Steps per revolution - 1]. This generates a step if you
+                            turn backwards; for example 3, 2, 1, 0, 16, 15, and so on.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latch mode </span>
+                    </span></dt><dd><p>Counter latch mode. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled: No latching</p></li><li class="listitem"><p>Latch on C/Index: Current counter value is stored into the
+                                        position register (latched). The counter value will only be
+                                        updated again at the next low to high transition event on
+                                        the C/Index line.</p></li><li class="listitem"><p>Hardware latch: latches counter value read by dedicated
+                                        hardware input (D-line).</p></li><li class="listitem"><p>Software latch: the model latches counter values for all
+                                        channels configured with the specific QAD driver
+                                        block.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Interpolate inner position </span>
+                    </span></dt><dd><p>When checked, QAD code module (3) will record the duration between A
+                            and B transitions (and between B and A) to interpolate the position
+                            within one segment and which corresponds to the predicted position when
+                            a latch occurs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Swap AB inputs </span>
+                    </span></dt><dd><p>Allows user to interchange A and B I/O lines.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show clear position input </span>
+                    </span></dt><dd><p>Enables/disables the clear position input port, which is used to
+                            dynamically change position values to zero during real-time execution.
+                            Note that enabling this port introduces additional latency. See Input
+                            and output ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show clear flag index found input </span>
+                    </span></dt><dd><p>Enables/disables the possibility to clear index found flag during
+                            runtime. See Input and output ports section for more information.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Show position output </span>
+                    </span></dt><dd><p>Enables/disables the position output port. See Input and output ports
+                            section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show turns output </span>
+                    </span></dt><dd><p>Enables/disables the number of turns output port. See Input and output
+                            ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show speed output </span>
+                    </span></dt><dd><p>Enables/disables the speed output port to provide rpm information. See
+                            Input and output ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show direction flag output </span>
+                    </span></dt><dd><p>Enables/disables the direction flag output port. See Input and output
+                            ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show index found flag output </span>
+                    </span></dt><dd><p>Enables/disables the Index found flag output port. See Input and
+                            output ports section for more information.</p></dd></dl></div></div></div></body></html>

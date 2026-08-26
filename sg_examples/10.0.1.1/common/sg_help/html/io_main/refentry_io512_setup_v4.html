@@ -1,0 +1,158 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO512 - HDLC/SDLC Setup v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_io512_pin_mapping.html" title="IO512 Pin Mapping"><link rel="next" href="refentry_io512_read_v4.html" title="IO512 - HDLC/SDLC Read v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io512_setup_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO512 - HDLC/SDLC Setup v4</h2><p>IO512 - HDLC/SDLC Setup v4 &#8212; <span class="phrase">Setup of parameters for serial
+                    ports</span></p></div><div class="refsect1"><a name="d5e3070"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io512_setup_v4.png"></span></span></p></div><div class="refsect1"><a name="d5e3078"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e3084"></a><h2>Block Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Transceiver Setup</span>
+                    </span></dt><dd><p>The electrical interface for each channel can be configured
+                            individually. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled</p></li><li class="listitem"><p>RS-422 / RS-485</p></li><li class="listitem"><p>RS-423</p></li><li class="listitem"><p>RS-232</p></li><li class="listitem"><p>RS530 Mode (RS-422 / RS-423)</p></li><li class="listitem"><p>RS530A Mode (RS-422 / RS-423)</p></li><li class="listitem"><p>V.35 Mode (V.35 / RS-232)</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channel Setup Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Each channel can be configured individually to act as Data
+                            Communication Equipment (DCE) or as Data Terminating Equipment (DTE).
+                            This setting only affects the position and direction of the I/O pins.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Internal Clock Frequency</span>
+                    </span></dt><dd><p>Each channel's clock can be individually configured. The Internal
+                            Clock Frequency always applies to both the receive and the transmit data
+                            lines RxD and TxD. A value of -1 indicates that an external clock is
+                            connected to the RxC input pins. A positive value defines the clock
+                            frequency to be generated by the module. The maximum value is 10e6 (10
+                            MHz). The clock is available on the TxC pins.</p></dd><dt><span class="term">
+                        <span class="guilabel">Encoding</span>
+                    </span></dt><dd><p>Selects binary encoding of Tx/Rx messages. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Not Encoded (NRZ)</p></li><li class="listitem"><p>Invert Polarity (NRZB)</p></li><li class="listitem"><p>NRZI-Mark</p></li><li class="listitem"><p>NRZI-Space</p></li><li class="listitem"><p>Biphase-Mark (FM1)</p></li><li class="listitem"><p>Biphase-Space (FM0)</p></li><li class="listitem"><p>Biphase-Level (Manchester)</p></li><li class="listitem"><p>Differential Biphase-Level</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Max. Data Size</span>
+                    </span></dt><dd><p>Defines the size of the data input from the Write block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Underrun Response</span>
+                    </span></dt><dd><p>Transmit underrun condition occurs if the transmitter needs another
+                            character to send but the TxFIFO is empty. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Abort (01111111)</p></li><li class="listitem"><p>Abort ('0' followed by 15 consecutive '1's)</p></li><li class="listitem"><p>Flag</p></li><li class="listitem"><p>Accumulated CRC followed by a Flag</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Tx Idle</span>
+                    </span></dt><dd><p>Define the Idle Line Condition: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Flags</p></li><li class="listitem"><p>Alternating Zeros and Ones</p></li><li class="listitem"><p>Continuous Zeros</p></li><li class="listitem"><p>Continuous Ones</p></li><li class="listitem"><p>Alternating Mark and Space</p></li><li class="listitem"><p>Continuous Space (TxD low)</p></li><li class="listitem"><p>Continuous Mark (TxD high)</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Tx Parity</span>
+                    </span></dt><dd><p>Select parity bit generation option: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No parity</p></li><li class="listitem"><p>Even</p></li><li class="listitem"><p>Odd</p></li><li class="listitem"><p>Zero (Space)</p></li><li class="listitem"><p>One (Mark)</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Consecutive Flags Share Zero</span>
+                    </span></dt><dd><p>Selects whether consecutive idle HDLC/SDLC Flags share a single
+                            intervening 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Tx Preamble Type</span>
+                    </span></dt><dd><p>The transmitter sends the preamble sequence before sending the opening
+                            flag of each frame. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>None</p></li><li class="listitem"><p>All Zeros</p></li><li class="listitem"><p>All Ones</p></li><li class="listitem"><p>All Flags</p></li><li class="listitem"><p>'101010...'</p></li><li class="listitem"><p>'010101...'</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Preamble Length</span>
+                    </span></dt><dd><p>Selects the length of the preamble.</p></dd><dt><span class="term">
+                        <span class="guilabel">Tx Character Length</span>
+                    </span></dt><dd><p>The transmitter can format outgoing messages in packets of different
+                            length. You can select the packet length from a drop-down menu.</p></dd><dt><span class="term">
+                        <span class="guilabel">Tx CRC </span>
+                    </span></dt><dd><p>Selects Tx CRC generation. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No CRC</p></li><li class="listitem"><p>16-Bit CRC-CCITT</p></li><li class="listitem"><p>CRC-16</p></li><li class="listitem"><p>32-Bit Ethernet CRC</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Tx Clock Source</span>
+                    </span></dt><dd><p>The transmitter can be clocked using either the internal programmable
+                            clock or using an external clock wired to the RxC pins of the
+                            corresponding channel. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RxC Input Pin</p></li><li class="listitem"><p>Internal Clock</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Rx FIFO Interrupt Level</span>
+                    </span></dt><dd><p>Defines the amount of data in the receive FIFO before an interrupts
+                            occurs. This then triggers the transfer of data from the hardware
+                            receive FIFO of the I/O module to the software FIFO.</p></dd><dt><span class="term"><span class="guilabel">Rx Software FIFO Size</span></span></dt><dd><p>The size of the receive software FIFO to buffer characters between
+                            interrupt service and periodic execution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Rx Parity </span>
+                    </span></dt><dd><p>Select parity bit checking option: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No parity</p></li><li class="listitem"><p>Even</p></li><li class="listitem"><p>Odd</p></li><li class="listitem"><p>Zero (Space)</p></li><li class="listitem"><p>One (Mark)</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Rx Character Length</span>
+                    </span></dt><dd><p>Selects how many bits the receiver assembles in each character.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Rx Address and Control Handling </span>
+                    </span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No Address or Control field handling: The Receiver does
+                                        not handle the Address or Control field. It simply divides
+                                        all the data in all the frames received into characters per
+                                        Rx character length and places the data in the
+                                        RxFIFO.</p></li></ul></div><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1-byte Address only: The Receiver checks the first 8 bits
+                                        of each frame as an address. If they are all ones or if they
+                                        match the contents of the Rx Sync value, the Receiver
+                                        receives the frame into the RxFIFO, otherwise it ignores the
+                                        frame through the next Flag. After placing the first 16 bits
+                                        of the frame in the FIFO as two 8-bit bytes, the Receiver
+                                        divides the rest of the frame into characters per Rx
+                                        character length.</p></li><li class="listitem"><p>1-byte Address, 1-byte Control: The Receiver checks an
+                                        8-bit address as described above. If these bits are all ones
+                                        or if they match Rx Sync value, the Receiver places the
+                                        first 24 bits of the frame in the RxFIFO as 3 8-bit bytes,
+                                        before switching to dividing characters according to Rx
+                                        character length.</p></li><li class="listitem"><p>1-byte Address, 2-byte Control: The Receiver checks an
+                                        8-bit address as described above. If these bits are all ones
+                                        or if they match Rx Sync value, the Receiver places the
+                                        first 32 bits of the frame in the RxFIFO as 4 8-bit bytes,
+                                        before switching to dividing characters according to Rx
+                                        character length.</p></li><li class="listitem"><p>Extended Address, 1-byte Control: The Receiver processes
+                                        an Extended Address at the start of each frame. First it
+                                        checks the first 8 bits of the frame as described above. If
+                                        these bits are all ones or if they match Rx Sync value, as
+                                        the Receiver places each 8 bits of the address into the
+                                        RxFIFO, it checks the LSBit of the 8. If the LSBit is 0, it
+                                        goes on to place the next 8 bits into the RxFIFO as part of
+                                        the address as well, through an address byte that has LSBit
+                                        1. Then, the Receiver places the next 16 bits of the frame
+                                        into the RxFIFO as two 8-bit bytes, before switching to
+                                        dividing characters according to Rx character length.</p></li><li class="listitem"><p>Extended Address, 2-byte Control: The Receiver processes
+                                        an Extended Address as described above for Extended Address,
+                                        1-byte Control. If the first 8 bits of the address are all
+                                        ones or if they match Rx Sync value, the Receiver places the
+                                        24 bits after the extended address into the RxFIFO as 3
+                                        8-bit bytes, before switching to dividing characters
+                                        according to Rx character length.</p></li><li class="listitem"><p>Extended Address, Control &gt;= 2 bytes: The Receiver
+                                        processes an Extended Address as described above for
+                                        Extended Address, 1-byte Control, and then an "Extended
+                                        Control field". If the first 8 bits of the address are all
+                                        ones or if they match Rx Sync value, the Receiver places the
+                                        next 8 bits after the extended address in the RxFIFO without
+                                        checking. Then, as the Receiver stores each subsequent 8
+                                        bits in the RxFIFO, it checks the MSBit of the 8 bits. If
+                                        the MSBit is 1, it continues to receive more 8-bit bytes,
+                                        through 1 byte that has its MSBit 0. Subsequently, the
+                                        Receiver places one more 8-bit byte into the RxFIFO, before
+                                        switching to dividing characters according to Rx character
+                                        length.</p></li><li class="listitem"><p>Extended Address, Control &gt;= 3 bytes: This mode differs
+                                        from the one described above for Extended Address, Control
+                                        &gt;= 2 bytes, only in that the Receiver places the 16 bits
+                                        after the extended address in the RxFIFO without checking,
+                                        before starting to check MSBits for n nth end of the
+                                        "extended Control field".</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Rx Sync Value</span>
+                    </span></dt><dd><p>8-bits unsigned comparison value for Address and Control handling (see
+                            above).</p></dd><dt><span class="term">
+                        <span class="guilabel">Rx CRC </span>
+                    </span></dt><dd><p>Selects Rx CRC checking. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No CRC</p></li><li class="listitem"><p>16-Bit CRC-CCITT</p></li><li class="listitem"><p>CRC-16</p></li><li class="listitem"><p>32-Bit Ethernet CRC</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Rx Clock Source</span>
+                    </span></dt><dd><p>The receiver can be clocked using either the internal programmable
+                            clock or using an external clock wired to the RxC pins of the
+                            corresponding channel. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RxC Input Pin</p></li><li class="listitem"><p>Internal Clock</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using the internal clock for the receiver, a DPLL is used
+                                    to recover the receive clock. To keep the DPLL in sync, ensure
+                                    the data signal contains enough transitions.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Disable Termination Resistor </span>
+                    </span></dt><dd><p>For RS422/RS485, RS530, V.35, and RS422/RS423 Mixed Mode, the RxC,
+                            RxAuxC, and RxD have built-in termination at the transceivers. These
+                            internal terminations may be disabled to allow external terminations to
+                            be used. Selecting this checkbox will disable the internal transceiver
+                            termination resistors.</p></dd></dl></div></div></div></body></html>

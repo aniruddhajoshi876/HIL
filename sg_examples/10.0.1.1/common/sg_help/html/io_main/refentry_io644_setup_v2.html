@@ -1,0 +1,155 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO644 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io644_setup.html" title="IO644 - Setup"><link rel="next" href="refentry_io644_send.html" title="IO644 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io644_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO644 - Setup v2</h2><p>IO644 - Setup v2 &#8212; <span class="phrase">Configure the IO644 I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e49573"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io644_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e49581"></a><h2>Description</h2><p>The Setup block configures the protocol stack of the IO644 module and enables the
+                PDO and Object blocks to exchange data on the network. The old IO644 Send and
+                Receive blocks do not work with this Setup block version. With the Setup block, you
+                make the basic communication settings, define the device identity and configure the
+                network monitoring. During model start, the block adds the corresponding objects to
+                the device's object dictionary, which the remote master node can read and write
+                afterward.</p><p>You can use the IO644 module for both prototyping and simulation. For prototyping,
+                you design your own CANopen slave node in Simulink with a custom object dictionary
+                and export an EDS file (Electronic Data Sheet) with which you can register the
+                device in the master configuration tools. For simulation, you set the parameters
+                according to the EDS file of the device you want to simulate. This results in an
+                object dictionary that matches an object dictionary of the external device.</p><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>With the help of the <span class="olink">createFromEds</span> function, you
+                    can import EDS files and autogenerate a communication interface in Simulink
+                    ready for use with the IO644. According to the objects defined in the EDS file,
+                    the function places the IO644 Setup, PDO, and Object driver blocks into the
+                    model and automatically sets the block parameters according to the objects' data
+                    types and values.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e49591"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">CAN Node ID</span>
+                    </span></dt><dd><p>The address of the module in the CANopen network. Each node has a
+                            unique address between 1 and 127. The value must match the address of
+                            the related node in the network configuration of the master.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Baud Rate</span>
+                    </span></dt><dd><p>Select the transmission speed. The speed must match the speed selected
+                            in the master configuration. The values in the dropdown list are
+                            defined by the CANopen standard. The options a CANopen device supports
+                            are listed in the DeviceInfo section of the corresponding EDS file. The
+                            IO644 supports all options specified by the standard. Therefore, all
+                            baudrates are marked as supported in the EDS file. Select <span class="bold"><strong>Auto</strong></span> if you are not sure which baud rate to
+                            select. Refer to the manual of your CANopen master to learn about how to
+                            set the CANopen timing on the master side.</p></dd><dt><span class="term"><span class="guilabel">Export EDS File</span></span></dt><dd><p>Creates an EDS file according to the IO644 blocks used in the model
+                            and their parameter settings. You can change the entries in the FileInfo
+                            section afterward (FileName, FileVersion, etc.). Only blocks with the
+                            same <span class="bold"><strong>Module ID</strong></span> are taken into
+                            account.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Device Info</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Device Type</span></span></dt><dd><p>The Device Type is a combination of the CANopen profile the device
+                            complies with and the device type ID. The value must range
+                            between 0 and 0xFFFFFFFF. You can enter the type of the device you want
+                            to simulate according to its EDS file or leave the default value 0. A
+                            value of 0x00020192, for example, represents the servo drive device type
+                            (0x02 = 2) of the CiA device profile for drives and motion control
+                            (0x0192 = 402). Checking the device type is part of the identity check
+                            (optional) that the master performs when connecting to slave nodes. The
+                            device type is represented by object 0x1000.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Vendor Name</span></span></dt><dd><p>The name of the vendor of the CANopen device. You can enter the vendor
+                            of the device you want to simulate according to its EDS file or leave
+                            the default value Speedgoat. The vendor name is represented by the
+                            VendorName entry in the DeviceInfo section of the EDS file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">character array</code></p></dd><dt><span class="term"><span class="guilabel">Vendor ID</span></span></dt><dd><p>The ID of the vendor of the CANopen device in the range 0 to
+                            0xFFFFFFFF. You can enter the ID of the device you want to simulate
+                            according to its EDS file or leave the default value 0x00000267
+                            (Speedgoat GmbH). Checking the vendor ID is part of the identity check
+                            (optional) that the master performs when connecting to slave nodes. The
+                            vendor ID is represented by object 0x1800, sub-object 0x01, and by the
+                            VendorName entry in the DeviceInfo section of the EDS file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Product Name</span></span></dt><dd><p>The name of the CANopen device. You can enter the name of the device
+                            you want to simulate according to its EDS file or leave the default
+                            value IO644. The product name is represented by the ProductName entry in
+                            the DeviceInfo section of the EDS file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">character array</code></p></dd><dt><span class="term"><span class="guilabel">Product Code</span></span></dt><dd><p>The product code of the CANopen device in the range 0 to 0xFFFFFFFF.
+                            You can enter the number of the device you want to simulate according to
+                            its EDS file or leave the default value 1 (IO644). Checking the product
+                            code is part of the identity check (optional) the master performs when
+                            connecting to slave nodes. The product code is represented by object
+                            0x1800, sub-object 0x02, and by the ProductNumber entry in the
+                            DeviceInfo section of the EDS file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Revision Number</span></span></dt><dd><p>The revision of the CANopen device in the range 0 to 0xFFFFFFFF. You
+                            can enter the revision of the device you want to simulate according to
+                            its EDS file or leave the default value 1. Checking the revision number
+                            is part of the identity check (optional) the master performs when
+                            connecting to slave nodes. The revision is represented by object 0x1800,
+                            sub-object 0x03, and by the RevisionNumber entry in the DeviceInfo
+                            section of the EDS file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Monitoring</div><p>Using the Heartbeat and Node Guarding error control protocols, a CANopen node
+                    can check whether other nodes in the network are still alive. Examples:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The master monitors one or multiple slave nodes</p></li><li class="listitem"><p>A slave node monitors the master</p></li><li class="listitem"><p>A slave node monitors other slave nodes</p></li></ul></div><p>The two protocols are not used simultaneously.</p><dl class="variablelist"><dt><span class="term">Heartbeat</span></dt><dd><p>Each node can act as a heartbeat producer, cyclically sending
+                            heartbeat messages. All other nodes can act as consumers, monitoring the
+                            producer's heartbeat message. In a typical application, each slave
+                            monitors the master and the master monitors all slaves.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Producer Time</span></span></dt><dd><p>The interval in milliseconds at which the module should
+                                        send out heartbeat messages. The maximum value is 65535 ms.
+                                        A value of 0 turns off heartbeat messages.</p><p>The value is represented by object 0x1017. The master can
+                                        change the value via the SDO protocol and can therefore
+                                        prompt the slave to produce or stop producing
+                                        heartbeats.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Consumer Time</span></span></dt><dd><p>The timeout for monitoring the heartbeat messages of
+                                        remote nodes. The timeout defines the time the module should
+                                        wait before indicating a specific node's loss. The Network
+                                        Status block outputs this information. The parameter is an
+                                        n-by-2 matrix with up to 64 rows representing 64 devices.
+                                        The first column defines the node ID to be monitored. The
+                                        second column defines the respective timeout. The maximum
+                                        timeout is 65535 ms. If the node ID is not 0, the timeout
+                                        must not be 0.</p><p>Each monitored node is represented by a sub-object of
+                                        object 0x1016. The sub-object's value includes the node ID
+                                        and the corresponding timeout. The master can change the
+                                        values via the SDO protocol and can therefore prompt the
+                                        module to monitor or stop monitoring other nodes.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">numeric matrix</code></p></dd></dl></div></dd><dt><span class="term"><span class="guilabel">Node Guarding</span></span></dt><dd><p>The master cyclically sends polling messages to the slave nodes to
+                            check whether the nodes still exist. The slave nodes return their current
+                            state in response to the master (Node Guarding). The nodes use the poll
+                            messages of the master to supervise the master (Life Guarding).</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Guard Time</span></span></dt><dd><p>Defines the interval in milliseconds at which the master
+                                        should send polling messages. A value of 0 turns off node
+                                        and life guarding in the local slave node and the remote
+                                        master.</p><p>The value is represented by object 0x100C. The master can
+                                        change the value via the SDO protocol and can therefore
+                                        enable or disable the guarding protocol.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Life Time Factor</span></span></dt><dd><p>The life time is defined as <span class="bold"><strong>Guard
+                                            Time</strong></span> multiplied by <span class="bold"><strong>Life
+                                            Time Factor</strong></span>. If the module does not receive
+                                        polling messages within the life time, it generates a
+                                        life guarding event in the Network Status block. The maximum
+                                        life time factor is 255. A value of 0 disables node and life
+                                        guarding in the module and the remote master.</p><p>The Life Time Factor is represented by object 0x100D. The
+                                        master can change the value via the SDO protocol and can
+                                        therefore enable or disable the guarding protocol. To
+                                        achieve stable communication, the Life Time Factor must be
+                                        set to at least 2. Life guarding can only be used if the
+                                        master carries out node guarding.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">numeric scalar</code></p></dd></dl></div></dd></dl></div></div></div></body></html>

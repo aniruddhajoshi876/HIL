@@ -1,0 +1,61 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DNP3 - Client Class</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_dnp3_client_setup.html" title="DNP3 - Client Setup"><link rel="next" href="refentry_dnp3_client_command.html" title="DNP3 - Client Command"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dnp3_client_class"></a><div class="titlepage"></div><div class="refnamediv"><h2>DNP3 - Client Class</h2><p>DNP3 - Client Class &#8212; <span class="phrase">Configures integrity polling,
+                    unsolicited messaging and class assignment</span></p></div><div class="refsect1"><a name="d5e5766"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dnp3_client_class.png"></span></span></p></div><div class="refsect1"><a name="d5e5774"></a><h2>Description</h2><p>This block is used to configure event classes in the remote server.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Assign events to event classes</p></li><li class="listitem"><p>Prompt the server to send event indications without an explicit request
+                        (unsolicited messaging)</p></li><li class="listitem"><p>Read classes at once (integrity poll)</p></li></ul></div></div><div class="refsect1"><a name="d5e5784"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Poll</span>
+                    </span></dt><dd><p>If set to <span class="bold"><strong>1</strong></span>, the block sends a
+                                <span class="emphasis"><em>read class</em></span> request according to the classes
+                            selected in the <span class="bold"><strong>Integrity Poll</strong></span>
+                            parameter. This happens at each sample hit according to the block's
+                            sample time. It is strongly recommended to not permanently set the input
+                            port to <span class="bold"><strong>1</strong></span> as this significantly
+                            increases processing time and network traffic.</p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e5806"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client ID</span>
+                    </span></dt><dd><p>Apply the Client ID of the corresponding Client Setup block. Must
+                            range between 0 and 65519.</p><p>The Client Class block relates to a specific client-server relation
+                            given by <span class="bold"><strong>Client ID</strong></span> and <span class="bold"><strong>Server ID</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Server ID</span>
+                    </span></dt><dd><p>Apply the ID of the remote server as specified in the <span class="bold"><strong>Server</strong></span> table in the corresponding Client
+                            Setup block mask. Must range between 0 and 65519.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Unsolicited Messages</span>
+                    </span></dt><dd><p>Select the classes for unsolicted messaging. The Client sends
+                                <span class="emphasis"><em>enable unsolicited message</em></span> requests for the
+                            selected classes and <span class="emphasis"><em>disable unsolicited message</em></span>
+                            requests for any other classes.</p><p>The request causes the remote server to send event information and
+                            actual values once a class event occurs. According to the response
+                            received, the outputs of related Client Command blocks will be updated
+                            as long as the group, variation and range parameters match the response
+                            header.</p></dd><dt><span class="term">
+                        <span class="guilabel">Integrity Poll</span>
+                    </span></dt><dd><p>Select the classes for an overall read request. The client sends the
+                                <span class="emphasis"><em>read class</em></span> request to the remote server right
+                            after connection and also when the <span class="bold"><strong>Poll</strong></span>
+                            input port is <span class="bold"><strong>1</strong></span>.</p><p>The request triggers the remote server to send a response including
+                            all the current values whose points are assigned to the requested
+                            classes. The response will update the outputs of all Client Command
+                            blocks whose group, variation and range parameters match the response
+                            header.</p></dd><dt><span class="term"><span class="guilabel">Class Assignment</span></span></dt><dd><p>This table assigns point range events to event classes. Use the
+                            buttons to add, move or delete point ranges. The block sends an
+                                <span class="emphasis"><em>assign class</em></span> request for each row. The maximum
+                            number of rows supported is 255. Class assignment has an impact on the
+                            amount of data in unsolicited messages and in responses on integrity
+                            polls. It has a further impact on the update rate of unsolicited
+                            messages.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/dnp3_class_01.png"></span></p><p>
+                            </p><div class="itemizedlist"><div class="itemizedlist-title">Event properties:</div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Group</strong></span>: The point group
+                                        whose events will be assigned to a class. Refer to the
+                                            <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a>
+                                            to learn more about point groups and event
+                                        groups</p></li><li class="listitem"><p><span class="bold"><strong>Start Index</strong></span>: The first
+                                        index of the point range. Must range between 0 and
+                                        999</p></li><li class="listitem"><p><span class="bold"><strong>Stop Index</strong></span>: The stop
+                                        index of the point range. Must range between 0 and 999 for
+                                        specific ranges. A value greater than 999 causes the remote
+                                        server to assign the whole group to the class</p></li><li class="listitem"><p><span class="bold"><strong>Class</strong></span>: The class to which
+                                        the point range will be assigned</p></li></ul></div><p>
+                        </p></dd></dl></div></div></div></body></html>

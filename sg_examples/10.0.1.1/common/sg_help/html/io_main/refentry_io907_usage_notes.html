@@ -1,0 +1,59 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO907/IO908 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_ref_io907_examples.html" title="IO907/IO908 - Examples"><link rel="next" href="refentry_io907_setup.html" title="IO907/IO908 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io907_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO907/IO908 Usage Notes</h2><p>IO907/IO908 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e1265"></a><h2>Setting the Node ID</h2><p><span class="inlinemediaobject"><img src="././graphics/io907_dip.png"></span>
+                <span class="inlinemediaobject"><img src="././graphics/io908_dip.png"></span></p><p>The switch bank S2 is used to assign a unique ID for the IO907/IO908 on the shared
+                memory network. By default Speedgoat assigns ID = 1. For deliveries with several
+                target machines, each system will have a different ID (1, 2, 3&#8230;), however it's
+                possible to change the ID at any time. Possible IDs are from 0 to 0xFF (255
+                decimal).</p></div><div class="refsect1"><a name="d5e1275"></a><h2>Network Wiring</h2><p>Each I/O module has two fiber optic connections, RX (receive) and TX (transmit).
+                When connecting two systems, a crossed connection is required. For networks with
+                several nodes, a ring connection is required.</p><p><span class="inlinemediaobject"><img src="././graphics/io907_network.png"></span></p><p>For other network topology (e.g. star), the following hubs can be used (only for
+                IO907):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>ACC-5595</p></li><li class="listitem"><p>HUB-5595</p></li></ul></div></div><div class="refsect1"><a name="d5e1288"></a><h2>Shared Memory Initialization</h2><p>The IO907/IO908 I/O modules need to be initialized. This can done with an M-file,
+                which is then loaded with your Simulink model.</p><p><span class="bold"><strong>Memory Partitions</strong></span></p><p>For each variable, a partition must be defined. The example below shows how to
+                define the variables:</p><pre class="programlisting">Partitions(1).Size = '1';
+Partitions(1).Type = 'uint8';
+
+Partitions(2).Size = '2';
+Partitions(2).Type = 'double';
+
+Partitions(3).Size = '1';
+Partitions(3).Type = 'double';
+
+Partitions(4).Size = '1';
+Partitions(4).Type = 'uint8';
+
+Partitions(5).Size = '2';
+Partitions(5).Type = 'double';
+
+Partitions(6).Size = '1';
+Partitions(6).Type = 'double';
+Partitions(6).Address = '0x5000';
+
+Partitions = completepartitionstruct(Partitions,'5565');</pre><p>For further information, function scgtpartitionstruct can be used.</p><pre class="programlisting">Partition = scgtpartitionstruct(Partition);</pre><p>You do not need to use all the fields of a partition initialization structure.
+                However, knowledge of the possible structure fields will be helpful when you are
+                setting up the partition structure to use shared memory.</p><p>A shared memory partition structure has the following fields:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td>Address</td><td>Specifies the base address (in hexadecimal, for
+                                example, '0x08') of the memory partition within the shared memory
+                                space of the node. The default value is '0x00', the first location
+                                in the shared memory.</td></tr><tr><td>Type</td><td>
+                                <p>Specifies the data type of the memory segment. Specify one of
+                                    the following types:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>'single'</p></li><li class="listitem"><p>'double'</p></li><li class="listitem"><p>'uint8'</p></li><li class="listitem"><p>'int8'</p></li><li class="listitem"><p>'uint16'</p></li><li class="listitem"><p>'int16'</p></li><li class="listitem"><p>'uint32'</p></li><li class="listitem"><p>'int32'</p></li><li class="listitem"><p>'boolean' (a single byte represents a boolean
+                                                value)</p></li></ul></div>
+                            </td></tr><tr><td>Size</td><td>
+                                <p>Specifies the dimension and size of the memory segment. You
+                                    can enter a scalar value or a value with the [m,n] format. The
+                                    default value is '1'.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>scalar &#8212; Treats the Size entry as the
+                                                specification of the length of a non-oriented array
+                                                or vector</p></li><li class="listitem"><p>[m,n] &#8212; Treats the Size entry as an array
+                                                dimension. The total number of elements in this
+                                                segment is m*n</p></li></ul></div>
+                            </td></tr><tr><td>Alignment</td><td>If another partition precedes this partition, this
+                                field defines the byte alignment of this segment. Specify one of the
+                                following alignment values: 1, 2, 3, 4, or 8. The default value is
+                                '4'.</td></tr></tbody></table></div><p>The variables defined in the memory partition are used for read and write from all
+                shared memory nodes.</p><p><span class="bold"><strong>Nodes</strong></span></p><p>Each shared memory I/O module installed needs to have a "node ID":</p><p>Master &#8211; Node ID = 1</p><pre class="programlisting">MasterNode.Interface.NodeID = '1';
+MasterNode.Partitions = Partitions;
+MasterNode = completenodestruct(MasterNode,'5565');</pre><p>Slave &#8211; Node ID = 2</p><pre class="programlisting">SlaveNode.Interface.NodeID = '2';
+SlaveNode.Interface.Interrupts.PendingInt1='on';
+SlaveNode.Partitions = Partitions;
+SlaveNode = completenodestruct(SlaveNode,'5565');</pre><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Available Interrupts </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>PendingInt1</p></li><li class="listitem"><p>PendingInt2</p></li><li class="listitem"><p>PendingInt3</p></li><li class="listitem"><p>PendingInit</p></li></ul></div></td></tr></table></div></div></div></body></html>

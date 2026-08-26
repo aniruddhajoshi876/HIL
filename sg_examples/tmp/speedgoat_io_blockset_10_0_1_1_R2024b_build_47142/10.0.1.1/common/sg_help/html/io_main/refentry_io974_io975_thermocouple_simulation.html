@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO974, IO975 - Thermocouple simulation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_temperature.html" title="Temperature I/O"><link rel="up" href="book_temperature.html" title="Temperature I/O"><link rel="prev" href="refentry_io974_io975_pin_mapping.html" title="IO974, IO975 Pin Mapping"><link rel="next" href="refentry_ref_io976.html" title="IO976"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io974_io975_thermocouple_simulation"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO974, IO975 - Thermocouple simulation</h2><p>IO974, IO975 - Thermocouple simulation &#8212; <span class="phrase">Writes the
+                    IO974 and IO975 voltage outputs</span></p></div><div class="refsect1"><a name="d5e290"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io974_thermocouple_simulation.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e301"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the thermocouple channel number) </span>
+                    </span></dt><dd><p>The value to be output from thermocouple channel X in millivolts. Type
+                            double.</p><p>The voltage provided at Vo is relative to Vcold. This allows the
+                            channel to compensate for the presence of small voltages at the Vcold
+                            input.</p></dd></dl></div></div><div class="refsect1"><a name="d5e311"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">Module ID</span></dt><dd><p>If your target machine only contains one I/O module, leave the default
+                            value (1). If more than one I/O module of this type is present, select a
+                            unique number (1-255) for each of your modules.</p></dd><dt><span class="term">
+                        <span class="guilabel">Module type</span>
+                    </span></dt><dd><p>Select the type of I/O module with which this driver block will be
+                            used.</p></dd><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_analog_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the Initial Values vector is applied to the channel as
+                defined in the Active Channels vector. A scalar value applies to all the channels;
+                for example, for individual values, type "[1 1.5 0 2.5]", and to set all channels to
+                zero, type "0".</p></dd><dt><a name="varlistentry_common_analog_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Range</span>
+                    </span></dt><dd><p>Select the voltage range for the output channels: auto (max. &plusmn;100mV),
+                            &plusmn;20mV, &plusmn;50mV or &plusmn;100mV. Auto range automatically switches between the
+                            three ranges according to the requested voltage in order to provide the
+                            finest voltage resolution and best accuracy available. At the changeover
+                            point between each range there may be small discontinuities in the
+                            output voltage steps. The range can be set individually for a group of
+                            channels depending on the total amount of available channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Remote Sense (IO974 only)</span>
+                    </span></dt><dd><p>Enable remote sense to compensate for a ground potential difference
+                            between the front panel ground (Pin78) and the remote ground.</p><p><span class="inlinemediaobject"><img src="././graphics/io974_remoteSense.png"></span></p><p>The module uses the Vcold input as a reference to the front panel
+                            ground during initialization to check for a connection. If Vcold is left
+                            unconnected but remote sense is still enabled, the I/O module uses the
+                            front panel ground (Pin78) as a reference instead of the Vcold input.
+                            The possible combinations are as follows:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="c1"><col width="50%" class="c2"></colgroup><thead><tr><th>Setup</th><th>Output</th></tr></thead><tbody><tr><td>Vcold connected, Remote-Sense enabled</td><td>Vo = V + Vcold +
+                                                V<sub>GND</sub></td></tr><tr><td>Vcold connected, Remote-Sense disabled</td><td>Vo = V + Vcold</td></tr><tr><td>Vcold disconnected, Remote-Sense enabled</td><td>Vo = V </td></tr><tr><td>Vcold disconnected, Remote-Sense disabled</td><td>Vo = V </td></tr></tbody></table></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd></dl></div></div></div></body></html>

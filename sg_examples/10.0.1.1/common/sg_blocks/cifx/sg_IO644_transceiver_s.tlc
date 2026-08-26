@@ -1,0 +1,148 @@
+%implements sg_IO644_transceiver_s "C"
+
+%include "sg_IO644.tlc"
+
+%<cosAddCommonIncludes()>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void    
+    %<cosAddBlock(block)>
+    %<cosAddModule(block)>
+    %<cosAddMessage(block)>    
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+    
+    %with block.SFcnParamSettings[0]
+
+    %openfile tmpBuf
+    %assign MessageTypeIdx = CAST("Number", Operation) - 1
+    %assign MessageName = "CosMessage_%<CosModuleIdx>_%<MessageTypeIdx>_%<CosMessageIdx>"
+    %if Operation == 1 %% Receive 
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+    %else
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockInputSignalDataTypeId(0)) * LibBlockInputSignalWidth(0)
+    %endif
+
+    /* Message %<CAST("Number", MessageId)> of module %<CAST("Number", ModuleId)> */
+    COS_MESSAGE_T %<MessageName> = {0, 0, 0, 0, %<MessageId>, %<MaxDataLen>, %<MaxDataLen>, {0}};
+
+    %closefile tmpBuf
+    %<LibSetSourceFileSection(cFile, "Definitions", tmpBuf)>
+
+    {
+    %if Operation == 1 %% Receive
+        /* Copy the init value to the data buffer and the output port */
+        COS_MESSAGE_T *CosMessage = CosMessages_%<CosModuleIdx>_%<MessageTypeIdx>[%<CosMessageIdx>];
+        memcpy(CosMessage->Data, %<LibBlockParameterAddr(InitValue, "", "", 0)>, %<MaxDataLen>);
+        memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, %<LibBlockParameterAddr(InitValue, "", "", 0)>, %<MaxDataLen>);
+        %<LibBlockOutputSignal(2, "", "", 0)> = %<MaxDataLen>;
+    %endif
+        %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+    }
+
+    %endwith
+
+    %<doLastBlockStuff(block)>
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+%with block.SFcnParamSettings[0] 
+
+    %assign MessageTypeIdx = CAST("Number", Operation) - 1
+    %if Operation == 1 %% Receive 
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+    %else
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockInputSignalDataTypeId(0)) * LibBlockInputSignalWidth(0)
+    %endif
+
+    {
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+    COS_MESSAGE_T *CosMessage = CosMessages_%<CosModuleIdx>_%<MessageTypeIdx>[%<CosMessageIdx>];
+
+    /* Find corresponding node structure in global driver array */
+    if (Channel == NULL)
+    {
+        CIFX_NODE_T* Node = NULL;
+
+        if (0 != Cifx_FindNode(%<ModuleId>, 0, &Node))
+        {
+            %<outputError(block, ModuleId, 0, "\"Cannot attach to I/O Module due to missing Setup block\"")>
+            return;
+        }
+
+        Channel = Node->Channels[0];
+        %<LibBlockPWork(Channel, "", "", 0)> = Channel;
+
+    }
+
+    %if Operation == 2      %% Send    
+        %if LibBlockInputSignalConnected(0)
+            %if Extended
+                %if LibBlockInputSignalConnected(1)
+
+                    if (%<LibBlockInputSignal(1, "", "", 0)> != 0)
+                    {
+                        %if LibBlockInputSignalConnected(2)
+                            if (%<LibBlockInputSignal(2, "", "", 0)> <= %<MaxDataLen>)
+                            {
+                                memcpy(CosMessage->Data, %<LibBlockInputSignalAddr(0, "", "", 0)>, %<LibBlockInputSignal(2, "", "", 0)>);
+                                CosMessage->Length = %<LibBlockInputSignal(2, "", "", 0)>;
+                                CosMessage->TxHostFlags++;
+                            }
+                        %else
+                            memcpy(CosMessage->Data, %<LibBlockInputSignalAddr(0, "", "", 0)>, %<MaxDataLen>);
+                            CosMessage->TxHostFlags++;
+                        %endif
+                        
+                    }
+
+                %endif
+
+            %else
+
+                memcpy(CosMessage->Data, %<LibBlockInputSignalAddr(0, "", "", 0)>, %<MaxDataLen>);
+                CosMessage->TxHostFlags++;
+
+            %endif  
+            
+        %endif
+
+    %endif
+
+    %if Operation == 1      %% Receive 
+        %if LibBlockOutputSignalConnected(0)
+
+            uint32_t RxDevFlags = CosMessage->RxDevFlags;
+            if (RxDevFlags != CosMessage->RxHostFlags)
+            {
+                memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, CosMessage->Data, CosMessage->Length);
+            %if Extended
+                %if LibBlockOutputSignalConnected(1)
+                    %<LibBlockOutputSignal(1, "", "", 0)>++;
+                %endif
+                %if LibBlockOutputSignalConnected(2)
+                    %<LibBlockOutputSignal(2, "", "", 0)> = CosMessage->Length;
+                %endif
+            %endif
+            CosMessage->RxHostFlags = RxDevFlags;
+            }
+
+        %endif 
+    %endif
+
+    }
+
+    %endwith
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

@@ -1,0 +1,24 @@
+%function createModuleIdStr(ModuleId, NodeId)	
+
+    %if NodeId == 0
+	    %assign ModuleIdStr = "%<CAST("Number", ModuleId)>"
+	%else
+        %assign ModuleIdStr = "[%<CAST("Number", ModuleId)> %<CAST("Number", ModuleId)>]"
+
+    %endif
+
+    %return ModuleIdStr
+    
+%endfunction
+
+
+%function outputError(block, ModuleId, NodeId, Error) Output
+
+    %assign ModuleIdStr = createModuleIdStr(ModuleId, NodeId)
+    {
+    static char_T ErrMsg[CIFX_MAX_ERR_LEN*2] = {0};
+    snprintf(ErrMsg, CIFX_MAX_ERR_LEN*2-1, "IO644 ID %<ModuleIdStr> %s", %<Error>);
+    rtmSetErrorStatus(%<LibGetModelName()>_M, ErrMsg);
+    }
+
+%endfunction

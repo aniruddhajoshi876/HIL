@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DNP3 - Client Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_dnp3_usage_notes.html" title="DNP3 Usage Notes"><link rel="next" href="refentry_dnp3_client_class.html" title="DNP3 - Client Class"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dnp3_client_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>DNP3 - Client Setup</h2><p>DNP3 - Client Setup &#8212; <span class="phrase">Configures the DNP3 client
+                    software stack</span></p></div><div class="refsect1"><a name="d5e5658"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dnp3_client_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e5666"></a><h2>Description</h2><p>The Setup block configures the DNP3 client protocol stack, opens connections to
+                DNP3 servers and enables the Class and Command blocks to exchange data on the
+                network.</p></div><div class="refsect1"><a name="refsect_ports_snippet_receive"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A vector of data type UINT8 which indicates the connection status for
+                            each client-server communication relation. The order of elements
+                            reflects the order of servers in the <span class="bold"><strong>Server
+                                Table</strong></span>.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is 1 if both the TCP connection status and DNP3
+                                        link layer status are okay</p></li><li class="listitem"><p>Otherwise the output is 0</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> uint8</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e5694"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client ID</span>
+                    </span></dt><dd><p>This is the DNP3 address of the client. DNP3 addresses must be unique
+                            in a network and range between 0 to 65519.</p></dd><dt><span class="term">
+                        <span class="guilabel">IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the DNP3 client. This step does not assign the
+                            IP address to an Ethernet interface. Instead, it binds the Setup block
+                            to an IP address which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for
+                            further information.</p><p>There is no need to specify a TCP port as TCP ports are automatically
+                            assigned to clients.</p><p>You can define multiple clients acting on the same IP address but
+                            different TCP ports. Insert the number of required Setup blocks in the
+                            model and apply the same IP address. Unique TCP ports are then
+                            automatically assigned. Specify a unique Client ID for each Setup
+                            block.</p><p>Furthermore, you can assign additional IP addresses to the same
+                            Ethernet interface by using IP aliasing. Those addresses must be in the
+                            same subnet. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for
+                            further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Keep-Alive Interval</span>
+                    </span></dt><dd><p>The client periodically sends keep-alive messages (status link
+                            messages) to the servers on the DNP3 link layer. This parameter
+                            specifies the send rate and also acts as the timeout. If the timeout is
+                            reached, the client indicates connection lost.</p><p>The units are in milliseconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Timeout</span>
+                    </span></dt><dd><p>The time the client waits for the response to a sent request before
+                            indicating an error.</p><p>The units are in milliseconds.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term"></span></dt><dd><p>As the DNP3 stack is performed in several background threads, the
+                                <span class="bold"><strong>Sample Time</strong></span> defines the update rate
+                            of the Setup block's outputs only.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Servers</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Server Table</span></span></dt><dd><p>This table defines the remote DNP3 servers to which the client should
+                            connect. Use the buttons to add, move or delete stations. The number of
+                            servers is limited to 255.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/dnp3_servertable.png"></span></p><p>
+                            </p><div class="itemizedlist"><div class="itemizedlist-title">Server properties:</div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Server ID</strong></span>: The DNP3
+                                        address of the server. DNP3 addresses must be unique in the
+                                        network and range between 0 to 65519</p></li><li class="listitem"><p><span class="bold"><strong>Server Address</strong></span>: The IP
+                                        address of the server in the DNP3 network</p></li><li class="listitem"><p><span class="bold"><strong>TCP Port</strong></span>: The TCP port on
+                                        which the server is listening for incoming connect requests
+                                        from the client. The default port for DNP3 communication is
+                                        20000</p></li></ul></div><p>
+                        </p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,66 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO106 - Read channels</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io106_start_conversion.html" title="IO106 - Start conversion"><link rel="next" href="refentry_io106_analog_input_dma_v2.html" title="IO106 - Analog input (DMA)"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io106_read_channels"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO106 - Read channels</h2><p>IO106 - Read channels &#8212; 
+                <span class="phrase">Reads the IO106 analog inputs</span>
+            </p></div><div class="refsect1"><a name="d5e5037"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io106_read_channels.png"></span></span></p></div><div class="refsect1"><a name="d5e5045"></a><h2>Description</h2><p>This driver block together with the Start Conversion driver block can be used as
+                an alternative to the Analog input driver block. It only reads and returns the
+                acquired analog input channels and does not initiate the conversion. The latter is
+                then accomplished using a separate Start Conversion driver block. The separation of
+                Start Conversion and Read Channels is mainly used for situations where more than one
+                IO106 I/O module is present in a target machine, and the acquisition of input
+                channels is synchronized across the various IO106 I/O modules.</p><p>As the execution of this block and the Start Conversion block(s) has to be done in
+                a well-defined (deterministic) manner, these blocks provide special synchronization
+                (SYNC) input and output ports which can be turned on and off depending on the
+                block's dialog box settings (see below).</p></div><div class="refsect1"><a name="d5e5049"></a><h2>Ports</h2><p>As this I/O module has a high channel count it was decided against returning each
+                analog input channel by a separate output port in order not to use too much real
+                estate in the model window. The single output port therefore returns a vector with
+                "Number of Channels" elements (except for the pseudo-differential input coupling
+                mode; see below). Each element is of type double and outputs the acquired channel
+                value in volts depending on the "Range" setting. The Demux or Selection block from
+                the Simulink library can be used to access individual elements (channels) in the
+                model.</p><p>For single-ended and differential mode the first element of the analog channels
+                output port is channel 1 and the last channel is defined by the "Number of Channels"
+                parameter in the corresponding Setup driver block.</p><p>For pseudo-differential mode the first element is channel 2 and the last channel
+                is defined by the "Number of Channels" parameter in the corresponding Setup driver
+                block.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">S (SYNC input port)</span>
+                    </span></dt><dd><p>Start Conversion is executed if the signal value is TRUE, and not
+                            executed otherwise. This port expects a logical (Boolean)-type signal.
+                            Connection to a preceding block ensures that this block is executed
+                            after the preceding block. This port is enabled if the "Show Input
+                            Synchronization Port" box in the block's dialog box is checked.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">S (SYNC output port)</span>
+                    </span></dt><dd><p>If the driver block's SYNC input port is not enabled, the value of
+                            this port is TRUE. Otherwise it takes the value (TRUE or FALSE) entered
+                            at the block's SYNC input port. This port outputs a logical
+                            (Boolean)-type signal. Connection to a subsequent block ensures that
+                            this block is executed before the subsequent block. This port is enabled
+                            if the "Show Output Synchronization Port" box in the block's dialog box
+                            is checked.</p></dd><dt><span class="term">
+                        <span class="guilabel">1..X (X is the last channel and is defined by the "Number of
+                            Channels" setting in the module's "Setup" block dialog box)</span>
+                    </span></dt><dd><p>A vector with n elements (where n is the number of analog input
+                            channels defined by the "Number of Channels" parameter in the module's
+                            "Setup" driver block). Each element corresponds to the value from an A/D
+                            channel in volts. This port is enabled if the "Input Coupling" parameter
+                            in the module's "Setup" block dialog box is set to Single-ended or
+                            Differential.</p></dd><dt><span class="term">
+                        <span class="guilabel">2..X (X is the last channel and is defined by the "Number of
+                            Channels" setting in the module's "Setup" block dialog box)</span>
+                    </span></dt><dd><p>A vector with n elements (where n is the number of selected analog
+                            input channels). Each element corresponds to the value from an A/D
+                            channel in volts. This port is enabled if the "Input Coupling" parameter
+                            in the module's "Setup" block dialog box is set to
+                            Pseudo-differential.</p></dd></dl></div></div><div class="refsect1"><a name="d5e5078"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the Setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Input Synchronization Port</span>
+                    </span></dt><dd><p>If checked, the block shows an input port to accept a SYNC
+                            signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Output Synchronization Port</span>
+                    </span></dt><dd><p>If checked, the block shows an output port which provides a SYNC
+                            signal.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

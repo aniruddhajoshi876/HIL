@@ -1,0 +1,102 @@
+% speedgoat.getIoInterfaces - Get a table with all available interfaces on a target machine
+%
+%   Description
+%   -----------
+%   This Speedgoat API function returns a table of all the I/O modules, I/O interface extensions, and
+%   Ethernet interfaces available on your Speedgoat real-time target machine. For the Performance,
+%   Mobile, Baseline and Unit target machines, the API function detects devices on the PCI/PCIe bus
+%   and returns a table indicating the I/O module slot numbers as you see them labelled on the
+%   chassis or front plate of your target machine, or the connector labels of onboard Ethernet
+%   interfaces. If the slot numbers are not labelled, the sequence should always be left to right.
+%   
+%   For I/O modules which are installed in an expansion chassis, the Slot number is prepended with
+%   the slot number of the expansion link card in the main chassis (separated by a '.').
+%
+%   I/O interface extensions are currently not detected for the Performance, Mobile and Baseline
+%   machines, but will be detected for some module types in a future Speedgoat I/O Blockset release.
+%
+%   For the Pulse target machine, the API function detects all devices and returns a table indicating
+%   the Position number of the module or I/O interface extension in relation to the main unit.
+%
+%   For Ethernet interfaces, the table (all target machines) also displays the controller type in
+%   brackets.
+%
+%   Use the 'Advanced' option to also see the PCI bus and slot numbers as well as the
+%   system's identifiers of Ethernet interfaces, such as 'wm0'.
+%
+%   Examples
+%   --------
+%   Display the table of I/O interfaces from the default target machine:
+%       speedgoat.getIoInterfaces
+%
+%         Slot              IO_Interface         ModuleID
+%         _________    ______________________    ________
+%         Host Link    Onboard Ethernet (I219)      -
+%         ETH1         Onboard Ethernet (I211)      -
+%         3.03         IO64X/IO75X                  1
+%         3.05         IO503                        1
+%         3.09         IO107 or IO108               1
+%         3.10         IO333-325k                   1
+%         3.14         IO713 Port 4 (I82574L)       1
+%         3.14         IO713 Port 3 (I82574L)       1
+%         3.14         IO713 Port 2 (I82574L)       1
+%         3.14         IO713 Port 1 (I82574L)       1
+%         6            IO109                        1
+%         7            IO611                        -
+%
+%   Display the table of I/O interfaces including advanced info:
+%       speedgoat.getIoInterfaces('Advanced', true)
+%
+%         Slot              IO_Interface         ModuleID    EthIndex    PCI_Bus    PCI_Slot
+%         _________    ______________________    ________    ________    _______    ________
+%         Host Link    Onboard Ethernet (I219)      -          wm0         0           31
+%         ETH1         Onboard Ethernet (I211)      -          wm1         6           0
+%         3.03         IO64X/IO75X                  1          -           34          0
+%         3.05         IO503                        1          -           31          0
+%         3.09         IO107 or IO108               1          -           11          0
+%         3.10         IO333-325k                   1          -           9           0
+%         3.14         IO713 Port 4 (I82574L)       1          wm2         25          0
+%         3.14         IO713 Port 3 (I82574L)       1          wm3         26          0
+%         3.14         IO713 Port 2 (I82574L)       1          wm4         27          0
+%         3.14         IO713 Port 1 (I82574L)       1          wm5         28          0
+%         6            IO109                        1          -           4           0
+%         7            IO611                        -          -           5           0
+%
+%   Get the table from a specific target machine using the target name (e.g. 'TargetPC1'):
+%       myIo = speedgoat.getIoInterfaces(___, 'TargetName', 'TargetPC1')
+%
+%   Get the table from a specific target machine using the target object (e.g. tg):
+%       myIo = speedgoat.getIoInterfaces(___, 'TargetObject', tg)
+%
+%   Input Arguments
+%   ---------------
+%   Name-Value Pair Arguments:
+%       'TargetName' - Target machine name
+%           [character vector].
+%           The name of the target machine you want to use.
+%
+%       'TargetObject' - Target object
+%           [target object].
+%           The target object of the target machine you want to use.
+%
+%       'Advanced' - Adds more detailed information
+%           [boolean].
+%           When set to 'true', this option adds more detailed information to the table, which is
+%           not required in most cases. See the example above.
+%
+%   Notes
+%   -----
+%   This function requires an Ethernet connection to your Speedgoat real-time target machine.
+%   If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+%   is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+%   are supplied, 'TargetName' will therefore be ignored.
+%
+%   The ModuleID column shows the number you can use in your Setup block for addressing the module
+%   with the auto-search functionality: set the "PCI Slot" parameter to '-1' in this case.
+%
+%   Note that CAN I/O Modules handle Module IDs differently and therefore this function cannot show 
+%   a number.
+%
+function [varargout] = getIoInterfaces(varargin)
+     [varargout{1:nargout}] = sg.public.getIoInterfaces(varargin{:});
+end

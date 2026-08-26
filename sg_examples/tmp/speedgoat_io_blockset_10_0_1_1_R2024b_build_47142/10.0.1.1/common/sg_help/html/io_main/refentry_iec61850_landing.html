@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ecatsim_object.html" title="EtherCAT SubDevice Emulator - Object"><link rel="next" href="refentry_ref_iec61850_client.html" title="IEC 61850 Client"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_iec61850_landing"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850</h2><p>IEC 61850 &#8212; Speedgoat driver blocks for IEC 61850</p></div><div class="refsect1"><a name="refsect1_iec61850_landing"></a><h2>Introduction</h2><p>IEC 61850 is an international standard defining Ethernet communication protocols
+                for electrical substations based on a client-server or multicast architecture. The
+                Speedgoat I/O Blockset supports three protocols: Manufacturing Message Specification
+                (MMS), Generic Object Oriented Substation Event (GOOSE) and Sampled Values (SV). The
+                MMS protocol uses TCP/IP for SCADA-to-IED (Intelligent Electronic Device)
+                communication, to exchange surveillance values and general information about a
+                substation, such as continuous data reports, or to send control commands to manually
+                operate protection relays, for example. GOOSE is a fast and reliable protocol used
+                mainly for IED-to-IED communication. The SV protocol is used to mostly transmit
+                analog values in digital format, for example, AC analog currents and voltages. GOOSE
+                and SV are published as a multicast Ethernet message. Speedgoat provides a native
+                interface and a range of plug-in Ethernet modules for IEC 61850 communication, all
+                of which come with Simulink driver blocks.</p></div><div class="refsect1"><a name="d5e7131"></a><h2>Interfaces</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="c1"><col width="84%" class="c2"></colgroup><tbody><tr><td><a href="refentry_ref_iec61850_client.html" class="olink">IEC 61850
+                                    Client</a></td><td>Native IEC 61850 Client interface that simulates multiple
+                                clients.</td></tr><tr><td><a href="refentry_ref_iec61850_server.html" class="olink">IEC 61850
+                                    Server</a></td><td>Native IEC 61850 Server interface that simulates multiple
+                                clients.</td></tr><tr><td><a href="refentry_ref_iec61850_goose.html" class="olink">IEC 61850
+                                GOOSE</a></td><td>Native IEC 61850 GOOSE interface that simulates multiple GOOSE
+                                publishers or subscribers.</td></tr><tr><td><a href="refentry_ref_iec61850_sv.html" class="olink">IEC 61850 Sampled
+                                    Values</a></td><td>Native IEC 61850 SV interface that simulates multiple SV
+                                publishers or subscribers.</td></tr></tbody></table></div></div></div></body></html>

@@ -1,0 +1,114 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO753 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io753_setup.html" title="IO753 - Setup"><link rel="next" href="refentry_io753_send.html" title="IO753 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io753_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO753 - Setup v2</h2><p>IO753 - Setup v2 &#8212; <span class="phrase">Configure the IO753 I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e63122"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io753_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e63130"></a><h2>Description</h2><p>The Setup block configures the protocol stack of the related I/O module and
+                enables the send and receive blocks to exchange data on the network.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is only supported by MATLAB from <span class="bold"><strong>R2019b</strong></span>.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e63139"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_comms_pciSlot_autoSearch_hilscher_master"></a><span class="term">
+                            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+                        </span></dt><dd><p>There are two approaches for mapping the block to a specific I/O
+                                module installed in your target machine. All modules of the same
+                                family (see Module ID above) must be configured using the same
+                                method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be
+                                        automatically located in the target machine. If you have
+                                        multiple modules of the same family, the Module ID defines
+                                        which module is associated with this block. To see how each
+                                        I/O module maps to a Module ID, use this Speedgoat API:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li><li class="listitem">Explicit Addressing: to explicitly define the logical
+                                        address of the I/O module in the target machine, you can
+                                        provide the PCI bus and slot numbers as a vector: [bus,
+                                        slot]. To determine these numbers, run the following command
+                                        in the MATLAB command window:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre>Note
+                                        that the PCI address can change whenever an I/O module is
+                                        added or removed. Usually, auto-search is the best
+                                        option.</li></ul></div></dd><dt><a name="varlistentry_comms_ip_startup"></a><span class="term"><span class="guilabel">Bus Start</span></span></dt><dd><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Automatic: The device starts the communication immediately after the
+                            initialization of the real-time application on the target. The
+                            communication is maintained even if the real-time application stops.
+                        </p></li><li class="listitem"><p>Application controlled: After initialization of the real-time
+                            application on the target, the communication of the slave with the
+                            network is off. The device starts the communication immediately after
+                            the real-time application has been started. The device stops the
+                            communication on the network when the real-time application stops.
+                        </p></li></ul></div><p>
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">IP Address </span>
+                    </span></dt><dd><p>Only available if "BootP" and "DHCP" are not set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Netmask </span>
+                    </span></dt><dd><p>Only available if "BootP" and "DHCP" are not set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gateway </span>
+                    </span></dt><dd><p>Only available if "BootP" and "DHCP" are not set.</p></dd><dt><span class="term">
+                        <span class="guilabel">BootP </span>
+                    </span></dt><dd><p>If set, the device obtains its IP Address, Netmask and Gateway Address
+                            from a BOOTP server.</p></dd><dt><span class="term">
+                        <span class="guilabel">DHCP </span>
+                    </span></dt><dd><p>If set, the device obtains its IP Address, Netmask and Gateway Address
+                            from a DHCP server.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Modbus Commands</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Swap Registers</span></span></dt><dd><p>The bytes of a value must be swapped if the sender and the receiver
+                            interpret the byte order in different ways (little-endian versus big-endian). 
+                            The Speedgoat real-time target machine uses little-endian. If
+                            the swap option is enabled, all register values from the application
+                            context will be swapped before they are sent to the network. All
+                            received register values from the network will be swapped before they
+                            are submitted to the application context. The swap option only affects
+                            input registers and holding registers (transmitted by function codes
+                            FC3, FC4, FC6, FC16). Discretes and coils are not affected. Use Byte
+                            Reversal blocks instead of enabling the global byte swapping if only
+                            single registers need to be swapped.</p></dd><dt><span class="term"><span class="guilabel">Delay</span></span></dt><dd><p>This delay time specifies a fixed time that is inserted between two
+                            commands of the command table. It can be used to delay the execution of
+                            commands, for example, for a slow server that needs to pause on each
+                            request.</p></dd><dt><span class="term"><span class="guilabel">Command Table</span></span></dt><dd><p>This table defines the read and write requests the Modbus client
+                            protocol stack performs during model execution. Use the buttons to add,
+                            move or delete commands. The number of commands is limited to 256. The
+                            I/O module has its own internal process data memory which allows the
+                            communication on the Modbus network to occur separately from of the
+                            real-time application. Use the Send and Receive blocks to access the
+                            process data of the I/O module.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/io753_command_table.png" width="648"></span></p><p>
+                            </p><div class="itemizedlist"><div class="itemizedlist-title">Command properties</div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Name</strong></span>: The command name is
+                                        optional and is just used for labeling the ports of the Send
+                                        and Receive blocks</p></li><li class="listitem"><p><span class="bold"><strong>Server Address</strong></span>: The IP
+                                        address of the Modbus server whose data will be read or
+                                        written by the command. The number of servers is limited to
+                                        16. Commands related to the same server must be consecutive
+                                        in the table</p></li><li class="listitem"><p>If the Modbus server is a ModbusRTU - ModbusTCP gateway,
+                                        you must assign one unit id for each Modbus RTU server
+                                        behind the gateway. Leave 0 if your application does not
+                                        handle Modbus RTU at all</p></li><li class="listitem"><p>Enter the <span class="bold"><strong>Function Code</strong></span>
+                                        of the command. There are codes for reading and writing
+                                        either bits (discrete inputs, coils) or words (input
+                                        registers, holding registers):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>FC1 (Read Multiple Coils)</p></li><li class="listitem"><p>FC2 (Read Multiple Discrete Inputs)</p></li><li class="listitem"><p>FC3 (Read Multiple Holding Registers)</p></li><li class="listitem"><p>FC4 (Read Multiple Input Registers)</p></li><li class="listitem"><p>FC5 (Write Single Coil)</p></li><li class="listitem"><p>FC6 (Write Single Holding Register)</p></li><li class="listitem"><p>FC15 (Write Multiple Coils)</p></li><li class="listitem"><p>FC16 (Write Multiple Holding Registers)</p></li></ul></div><p> Depending on the function code, each command
+                                        invokes one port either on the Send or on the Receive block.
+                                    </p></li><li class="listitem"><p>A Modbus server usually manages 4 data areas: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Coils: readable and writeable bit
+                                                  values</p></li><li class="listitem"><p>Discrete Inputs: readable bit values</p></li><li class="listitem"><p>Holding Registers: readable and writeable word
+                                                  values (2 bytes)</p></li><li class="listitem"><p>Input Registers: readable word values (2
+                                                  bytes)</p></li></ul></div><p> The function code specifies the target area
+                                        of the command. The <span class="bold"><strong>Address</strong></span>
+                                        of the command is the address of a particular value within
+                                        this area. Depending on the function code, the address is
+                                        either bit-based or word-based.</p></li><li class="listitem"><p>The <span class="bold"><strong>Quantity</strong></span> defines the
+                                        number of values to be read or written per request. It is
+                                        either a number of bits or a number of words</p></li><li class="listitem"><p>Each command can be configured with an individual
+                                            <span class="bold"><strong>Cycle Time</strong></span>. This time
+                                        specifies the execution cycle of the command. The maximum
+                                        value is 60000 ms. For write commands, a cycle time less
+                                        than 0 causes the I/O module to process the command (transmit the message) only if at least one related value changes (the signal connected to the corresponding input port of the IO753 Send block changes).</p></li></ul></div><p>
+                        </p></dd></dl></div></div></div></body></html>

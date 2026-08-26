@@ -1,0 +1,328 @@
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%function cosAddCommonIncludes() Output
+    %<LibAddToCommonIncludes("cifxapi.h")>
+    %<LibAddToCommonIncludes("COS_api.h")>
+    %<LibAddToCommonIncludes("cifx_common.h")>
+    %<LibAddToCommonIncludes("sg_printf.h")>
+    %<LibAddToCommonIncludes("%<LibGetModelName()>_cos.h")>
+%endfunction
+
+%function cosPdoType2Str(PdoType)
+
+    %if PdoType == 0
+        %return "Rx"
+    %else
+        %return "Tx"
+    %endif
+
+%endfunction
+
+%function cosAddBlock(block) void
+
+    %if !EXISTS(::CosRoot)
+
+        %createrecord ::CosRoot{NumModules 0; NumBlocks 0; BlockCounter 0}
+
+        %assign ::cFile = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_cos.cpp")
+        %assign ::hFile = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_cos.h")
+
+        %openfile tmpBuf
+    
+        #include <stdint.h>
+        #include "%<LibGetMdlPubHdrBaseName()>.h"
+        #include "sg_common.h"
+        #include "COS_api.h"
+    
+        %closefile tmpBuf
+      
+        %<LibSetSourceFileSection(cFile, "Includes", tmpBuf)>
+
+    %endif
+
+    %assign block.CosBlockIdx = CosRoot.NumBlocks
+    %assign CosRoot.NumBlocks = CosRoot.NumBlocks + 1
+
+%endfunction
+
+%function cosAddModule(block) void
+
+    %with block.SFcnParamSettings[0]
+
+    %if CosRoot.NumModules != 0
+
+        %foreach i = CosRoot.NumModules
+    
+            %if ModuleId == CosRoot.Modules[i].Id
+
+                %assign block.CosModuleIdx = i
+                %return
+
+            %endif
+    
+        %endforeach
+
+    %endif
+
+    %assign block.CosModuleIdx = CosRoot.NumModules
+    %addtorecord CosRoot Modules {Id ModuleId}
+    %addtorecord CosRoot.Modules[block.CosModuleIdx] PdoTypes {NumPdos 0; Str "Rx"}
+    %addtorecord CosRoot.Modules[block.CosModuleIdx] PdoTypes {NumPdos 0; Str "Tx"}
+    %addtorecord CosRoot.Modules[block.CosModuleIdx] MessageTypes {NumMessages 0; Str "Rx"}
+    %addtorecord CosRoot.Modules[block.CosModuleIdx] MessageTypes {NumMessages 0; Str "Tx"}
+    %addtorecord CosRoot.Modules[block.CosModuleIdx] NumObjects 0
+    %%addtorecord CosRoot.Modules[block.CosModuleIdx] ObjectCounter 0
+    %assign CosRoot.NumModules = CosRoot.NumModules + 1
+
+    %endwith
+
+%endfunction
+
+%function cosAddPdo(block) void
+
+    %with block.SFcnParamSettings[0]
+
+    %assign t = PdoType - 1
+
+    %foreach p = CosRoot.Modules[CosModuleIdx].PdoTypes[t].NumPdos
+
+        %if CosRoot.Modules[CosModuleIdx].PdoTypes[t].Pdos[p].Id == PdoId
+
+            %error PDO ID %<CAST("Number", PdoId)> already exists
+
+        %endif
+
+    %endforeach
+
+    %addtorecord CosRoot.Modules[CosModuleIdx].PdoTypes[t] Pdos {Id PdoId}
+    %assign block.CosPdoIdx = CosRoot.Modules[CosModuleIdx].PdoTypes[t].NumPdos
+    %assign CosRoot.Modules[CosModuleIdx].PdoTypes[t].NumPdos = CosRoot.Modules[CosModuleIdx].PdoTypes[t].NumPdos + 1
+    %return block.CosPdoIdx
+
+    %endwith
+
+%endfunction
+
+%function cosAddMessage(block) void
+
+    %with block.SFcnParamSettings[0]
+
+    %assign t = Operation - 1
+
+    %addtorecord CosRoot.Modules[CosModuleIdx].MessageTypes[t] Messages {Id MessageId}
+    %assign block.CosMessageIdx = CosRoot.Modules[CosModuleIdx].MessageTypes[t].NumMessages
+    %assign CosRoot.Modules[CosModuleIdx].MessageTypes[t].NumMessages = CosRoot.Modules[CosModuleIdx].MessageTypes[t].NumMessages + 1
+    %return block.CosMessageIdx
+
+    %endwith
+
+%endfunction
+
+%function cosAddObject(block) void
+
+    %with block.SFcnParamSettings[0]
+
+    %assign block.CosObjIdx = CosRoot.Modules[CosModuleIdx].NumObjects
+    %assign CosRoot.Modules[CosModuleIdx].NumObjects = CosRoot.Modules[CosModuleIdx].NumObjects + 1
+    %return block.CosObjIdx
+
+    %endwith
+
+%endfunction
+
+%function doLastBlockStuff(block) Output
+
+    %if isLastBlock(block)
+
+        %openfile hBuf
+        %openfile cBuf
+
+        %foreach m = CosRoot.NumModules
+
+            %% Write object related code to c and h files
+
+            %selectfile cBuf
+
+            %assign NumObjects = CosRoot.Modules[m].NumObjects
+
+            %assign ObjectArrayName = "CosObjs_%<m>"
+
+            /* Objects of module %<CAST("Number", CosRoot.Modules[m].Id)> */
+
+            %if NumObjects == 0
+                COS_OBJECT_T *%<ObjectArrayName>[] = {NULL};
+            %else
+
+                COS_OBJECT_T *%<ObjectArrayName>[] = {
+
+                %foreach o = NumObjects
+
+                    %assign ObjName = "CosObj_%<m>_%<o>"
+
+                    %if o == 0
+                        &%<ObjName>
+                    %else
+                        , &%<ObjName>
+                    %endif
+
+                %endforeach
+
+                };
+            %endif
+
+            %selectfile hBuf
+            %if NumObjects == 0
+               extern COS_OBJECT_T *%<ObjectArrayName>[]; 
+            %else
+                extern COS_OBJECT_T *%<ObjectArrayName>[];
+            %endif
+
+            %% Write PDO related code to c and h files
+
+            %foreach t = 2  %% Rx and Tx
+
+                %assign NumPdos = CosRoot.Modules[m].PdoTypes[t].NumPdos
+
+                %assign PdoArrayName = "CosPdos_%<m>_%<t>"
+
+                %selectfile cBuf
+
+                /* %<cosPdoType2Str(t)> PDOs of module %<CAST("Number", CosRoot.Modules[m].Id)> */
+
+                %if NumPdos == 0
+                    COS_PDO_T *%<PdoArrayName>[] = {NULL};
+                %else
+
+                    COS_PDO_T *%<PdoArrayName>[] = {
+
+                    %foreach p = NumPdos
+
+                        %assign PdoName = "CosPdo_%<m>_%<t>_%<p>"
+
+                        %if p == 0
+                            &%<PdoName>
+                        %else
+                            , &%<PdoName>
+                        %endif
+
+                    %endforeach
+
+                    };
+                %endif
+
+                %selectfile hBuf
+                %if NumPdos == 0
+                    extern COS_PDO_T *%<PdoArrayName>[];
+                %else
+                    extern COS_PDO_T *%<PdoArrayName>[];
+                %endif
+
+            %endforeach
+
+            %% Write message related code to c and h files
+
+            %foreach t = 2  %% Rx and Tx
+
+                %assign NumMessages = CosRoot.Modules[m].MessageTypes[t].NumMessages
+
+                %assign MessageArrayName = "CosMessages_%<m>_%<t>"
+
+                %selectfile cBuf
+
+                /* %<cosPdoType2Str(t)> messages of module %<CAST("Number", CosRoot.Modules[m].Id)> */
+
+                %if NumMessages == 0
+                    COS_MESSAGE_T *%<MessageArrayName>[] = {NULL};
+                %else
+
+                    COS_MESSAGE_T *%<MessageArrayName>[] = {
+
+                    %foreach p = NumMessages
+
+                        %assign MessageName = "CosMessage_%<m>_%<t>_%<p>"
+
+                        %if p == 0
+                            &%<MessageName>
+                        %else
+                            , &%<MessageName>
+                        %endif
+
+                    %endforeach
+
+                    };
+                %endif
+
+                %selectfile hBuf
+                %if NumMessages == 0
+                    extern COS_MESSAGE_T *%<MessageArrayName>[];
+                %else
+                    extern COS_MESSAGE_T *%<MessageArrayName>[];
+                %endif
+
+            %endforeach
+
+        %endforeach
+
+
+        %closefile hBuf
+        %<LibSetSourceFileSection(hFile, "Definitions", hBuf)>
+
+        %closefile cBuf
+        %<LibSetSourceFileSection(cFile, "Definitions", cBuf)>
+
+    %endif
+
+%endfunction
+
+%function hasBlockOrder(block)
+
+    %if !EXISTS(CosRoot.NumBlocks)
+        %assert "Unable to identify the block order"
+    %endif
+
+    %if !EXISTS(block.CosBlockIdx)
+        %assert "Unable to identify the block order"
+    %endif
+
+    %return 1
+
+%endfunction
+
+%function isLastBlock(block)
+
+    %<hasBlockOrder(block)>
+
+    %assign CosRoot.BlockCounter = CosRoot.BlockCounter + 1
+
+    %if CosRoot.BlockCounter == CosRoot.NumBlocks        
+        %return 1 
+    %endif
+
+    %return 0
+
+%endfunction
+
+%function isFirstObject(block)
+
+    %if block.CosObjIdx == 0
+        %return 1 
+    %endif
+
+    %return 0
+
+%endfunction
+
+%function isLastObject(block)
+
+    %with block.SFcnParamSettings[0]
+
+    %if block.CosObjIdx == CosRoot.Modules[CosModuleIdx].NumObjects - 1
+        %return 1 
+    %endif
+
+    %endwith
+
+    %return 0
+
+%endfunction
+

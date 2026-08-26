@@ -1,0 +1,38 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MSCP Firmware Update Instructions</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="up" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="prev" href="refentry_mscp_get_device_info.html" title="MSCP Get Device Info"><link rel="next" href="refentry_mscp_usage_notes.html" title="MSCP Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mscp_update_instructions"></a><div class="titlepage"></div><div class="refnamediv"><h2>MSCP Firmware Update Instructions</h2><p>MSCP Firmware Update Instructions &#8212; <span class="phrase">Instructions on how to
+                    update the firmware of MSCP devices</span></p></div><div class="refsect1"><a name="d5e341"></a><h2>Overview</h2><p>The MSCP runs a dedicated firmware which is programmed onto the device. The
+                firmware is continuously maintained and updated by Speedgoat. This document explains
+                the steps necessary to update the firmware of Speedgoat MSCP devices. Firmware
+                updates are included with new versions of the Speedgoat I/O Blockset.</p></div><div class="refsect1"><a name="d5e344"></a><h2>Preparation</h2><p>On one EtherCAT bus, multiple MSCP devices can be connected in a daisy chain using
+                Ethernet cables. The devices shall remain connected in the same way for the update
+                process. All devices of one EtherCAT bus will be updated consecutively.</p><p>Open an MSCP Setup Block and add/remove devices to match the number of connected
+                MSCPs (the slot specific module type configuration is not needed for the update
+                process). Switch to the <span class="bold"><strong>Utilities</strong></span> tab and click the
+                    <span class="bold"><strong>Start Firmware Update</strong></span> button.</p></div><div class="refsect1"><a name="d5e350"></a><h2>1. Put MSCP Devices into Flash Mode</h2><p>A model will be generated and automatically deployed to the target machine to
+                switch all configured devices into flash mode. MSCP devices must be in flash mode to
+                receive a firmware update.</p><p>Ensure all MSCPs and the real-time target machine are powered on and properly
+                connected with Ethernet cables.</p><p>Confirm that all of the MSCP devices have switchted into flash mode by checking
+                the SYS LED on each device, which should blink yellow.</p><p>Only proceed to the next step if all devices have switched to flash mode. If only
+                some devices have switched, power-cycle all MSCPs and repeat this step.</p></div><div class="refsect1"><a name="d5e356"></a><h2>2. Configure Network Adapter settings</h2><p>The firmware update will be transferred from the host computer via the real-time
+                target machine to the MSCP devices.</p><p>Identify the network adapter used to connect to the target machine and add a
+                secondary static IP address from the link-local address range (169.254.x.x). This is
+                necessary for the host computer to communicate with MSCP devices in flash
+                mode.</p><p class="remark"><em><span class="remark">For more info on how to configure IP addresses in Windows, refer to the Appendix
+                section at the bottom of the page.</span></em></p><p>Wait at least 10 seconds for the new IP settings to take effect.</p></div><div class="refsect1"><a name="d5e362"></a><h2><span class="phrase">3.</span> Transfer
+                Firmware Update</h2><p>Initiate the firmware transfer by continuing with the on-screen instructions. The
+                remaining update process is automated. Observe the MATLAB Command Window for status
+                updates. Verify that all of the devices are detected and updated one after the
+                other.</p><p>The flash process can take up to two minutes per device. Do not interrupt the
+                update process at this point. However, if any issues occur during the update, these
+                can usually be fixed by repeating the flash process.</p></div><div class="refsect1"><a name="d5e367"></a><h2>Verification</h2><p>Once the update process is finished, verify that all the connected devices have
+                updated successfully. It can occur that one or more devices were skipped during the
+                update due to network discovery issues. This is indicated by the SYS LED still
+                blinking yellow on affected devices.</p><p>If a MSCP device still has a yellow blinking SYS LED, connect that device directly
+                to your real-time target machine and disconnect any cable from the second Ethernet
+                port of the device, to achieve a single point-to-point connection. Then, click
+                "Retry" to update only this device. Repeat this step for all devices which were
+                skipped before.</p></div><div class="refsect1"><a name="d5e371"></a><h2>Appendix: Configure Windows Network Settings</h2><p>To communicate with MSCP decives during a firmware update, the Windows Network
+                Adapter in use must be assigned a link-local IP address (169.254.xxx.xxx).</p><p>In the Windows Network and Sharing Center, configure the Internet Protocol Version
+                4 (TCP/IPv4) Properties for your Ethernet controller as follows:</p><p>Open the <span class="bold"><strong>Advanced...</strong></span> settings and add a
+                link-local IP address:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/mscp_ipconfig.png"></span></span></p></div></div></body></html>

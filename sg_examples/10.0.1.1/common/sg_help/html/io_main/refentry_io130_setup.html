@@ -1,0 +1,175 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO130 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io130_pin_mapping.html" title="IO130 Pin Mapping"><link rel="next" href="refentry_io130_analog_input.html" title="IO130 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io130_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO130 - Setup</h2><p>IO130 - Setup &#8212; 
+                <span class="phrase">Configure the IO130 input/output blocks</span>
+            </p></div><div class="refsect1"><a name="d5e11493"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io130_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e11501"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input and Analog output).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e11508"></a><h2>Parameters</h2><p>The three tabs of the setup parameter dialog box contain the IO130 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Inter-Module Synchronization</span>
+                    </span></dt><dd><p>Use this parameter to synchronize multiple IO130 I/O modules with each
+                            other. This parameter ensures that samples are taken at the exact same
+                            time for analog inputs and that updates occur synchronously for analog
+                            outputs. For no synchronization, choose "Independent". If using
+                            synchronization, one module with the Inter-Module Synchronization
+                            parameter set to "Initiator" is required. For all the other modules, the
+                            Inter-Module Synchronization parameter must be set to "Target". If using
+                            DMA with inter-module synchronization, ensure that the module generating
+                            the interrupt is the one set as "Initiator". If you intend using
+                            inter-module synchronization, please discuss this with Speedgoat so that
+                            your hardware can be set up accordingly.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Inputs Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Range</span>
+                    </span></dt><dd><p>Select the voltage range for the input channels: &plusmn;5&nbsp;V or
+                            &plusmn;10&nbsp;V. The chosen voltage range will apply to all channels. The
+                            selected voltage range refers to the ground-related voltage range
+                            analogue to that of a single-ended input. Due to the module's full
+                            differential input, this results in an extended full scale range of each
+                            ADC.</p></dd><dt><a name="varlistentry_oversampling_factor"></a><span class="term">
+            <span class="guilabel">Oversampling Factor</span>
+        </span></dt><dd><p>Select the oversampling configuration: none, 2, 4, 8, 16, 32 or 64. If
+                oversampling is active, the I/O module takes the selected number of samples and
+                averages them to one sample. This improves the signal-to-noise ratio, but also
+                increases the total sampling time (for example, at oversampling configuration 64, 64
+                conversions are necessary for one sample).</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Continuous Sampling</span>
+                    </span></dt><dd><p>If checked, the IO130 I/O module is configured for continuous
+                            sampling. Consequently, on a block sample hit, the block will only read
+                            the latest values from the module. Otherwise, the module is configured
+                            for manual sampling. This means that on every block sample hit, the
+                            block triggers a conversion and waits for the module to finish the
+                            conversion before reading the value. By enabling continuous sampling,
+                            the total execution time of the Analog input block can be significantly
+                            reduced. On the other hand, this can cause signal distortion. For more
+                            information on this topic, refer to the "Sampling Mode" usage
+                            note.</p></dd><dt><a name="varlistentry_enable_dma"></a><span class="term">
+            <span class="guilabel">Enable DMA</span>
+        </span></dt><dd><p>This setting enables incoming data to be transferred over DMA. It also allows much
+                higher system sampling rates to be achieved as the CPU does not have to process the
+                data transfer. In addition, frame-based operation is possible, meaning that multiple
+                samples can be received from the I/O module in one sample hit. If DMA is enabled,
+                the model or subsystem containing the Analog input block must be triggered with the
+                I/O module DMA interrupt for consistent results. Refer to the usage notes for
+                information on configuring DMA.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of DMA Channels</span>
+                    </span></dt><dd><p>Select for which channels DMA is enabled. This could either be
+                            channels 1 to 4 or 1 to 8 (all). Channels for which DMA operation is not
+                            enabled still work in non-DMA mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Rate</span>
+                    </span></dt><dd><p>Select how many conversions per second are performed for every
+                            channel. Note that the conversion period must be a multiple of
+                            100&nbsp;ns. The sample rate entered will be rounded to the closest
+                            valid rate automatically. Enter "-1" to allow the system to determine
+                            the sample rate based on the input block sample time and frame
+                            size.</p></dd><dt><a name="varlistentry_frame_size"></a><span class="term">
+            <span class="guilabel">Frame Size (samples/channel)</span>
+        </span></dt><dd><p>Select how many samples are transferred from the module at each sample hit. The
+                block output of every channel with DMA operation enabled becomes a vector with the
+                same number of values, where the value at position 1 is taken first. Enter "-1" to
+                allow the system to determine the frame size automatically based on the conversion
+                clock and input block sample time.</p><p>Either the sample rate, the frame size or the input block sample time must be
+                configured automatically (-1).</p></dd><dt><a name="varlistentry_block_sample_time"></a><span class="term">
+            <span class="guilabel">Input Block Sample Time</span>
+        </span></dt><dd><p>Define the base sample time at which the Analog input block gets its sample hit.
+                Enter "-1" to allow the system to determine the input block sample time
+                automatically based on the sample rate and frame size. The Block Sample Time dialog
+                field of the Analog input block is overwritten by this value when DMA is
+                enabled.</p><p>Either the sample rate, the frame size or the input block sample time must be
+                configured automatically (-1).</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Outputs Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Range</span>
+                    </span></dt><dd><p>Select the voltage range for every output channel: 0&#8211;5&nbsp;V,
+                            0&#8211;10&nbsp;V, &plusmn;5&nbsp;V or &plusmn;10&nbsp;V.</p></dd><dt><a name="varlistentry_common_analog_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the Initial Values vector is applied to the channel as
+                defined in the Active Channels vector. A scalar value applies to all the channels;
+                for example, for individual values, type "[1 1.5 0 2.5]", and to set all channels to
+                zero, type "0".</p></dd><dt><a name="varlistentry_common_analog_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_enable_dma_output"></a><span class="term">
+            <span class="guilabel">Enable DMA</span>
+        </span></dt><dd><p>This setting enables outgoing data to be transferred over DMA. Frame-based
+                operation is possible, meaning that multiple samples can be transferred in one
+                sample hit. If DMA is enabled, the model or subsystem containing the Analog output
+                block must be triggered with the I/O module DMA interrupt for consistent results.
+                Refer to the usage notes for information on configuring DMA.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of DMA Channels</span>
+                    </span></dt><dd><p>Select for which channels DMA is enabled. This could either be
+                            channels 1 to 2 or 1 to 4 (all). Channels for which DMA operation is not
+                            enabled still work in normal operation mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latency</span>
+                    </span></dt><dd><p>Select the latency between the sample hit and the actual conversion at
+                            the output. The available options are "As small as possible" or "1
+                            frame". If "As small as possible" is selected, the values will appear at
+                            the module outputs shortly after the block sample hit. However, the
+                            latency will not be constant, which might lead to lags in the output. If
+                            "1 frame" is selected, then the module starts to output the data at the
+                            next block sample hit. This ensures a constant latency and enables a
+                            continuous data output and is especially useful when both the analog
+                            input and output use DMA. Refer to the usage notes for more information
+                            on this topic.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Rate</span>
+                    </span></dt><dd><p>Select how many conversions per second are performed for every
+                            channel. Note that the conversion period must be a multiple of
+                            100&nbsp;ns. The sample rate entered will be automatically rounded to
+                            the closest valid rate. Enter "-1" to allow the system to determine the
+                            sample rate based on the output block sample time and frame size.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchronous to Analog Inputs</span>
+                    </span></dt><dd><p>This feature is only available when analog input DMA is enabled as
+                            well. If checked, the sample rate specified for the analog outputs is
+                            ignored. Instead, the conversion is synchronized with the analog inputs.
+                            To avoid synchronization problems between the system and the analog
+                            outputs, the recommended approach is to always use synchronous
+                            configuration if DMA operation is enabled for both inputs and outputs.
+                        </p></dd><dt><a name="varlistentry_frame_size_output"></a><span class="term">
+            <span class="guilabel">Frame Size (samples/channel)</span>
+        </span></dt><dd><p>Select how many samples are transferred to the module at each sample hit. The
+                block input of every channel with DMA operation enabled becomes a vector with the
+                same number of values, where the value at position 1 will be converted first. Enter
+                "-1" to allow the system to determine the frame size automatically based on the
+                sample rate and the output block sample time.</p><p>Either the sample rate, the frame size or the output block sample time must be
+                configured automatically (-1).</p></dd><dt><a name="varlistentry_block_sample_time_output"></a><span class="term">
+            <span class="guilabel">Output Block Sample Time</span>
+        </span></dt><dd><p>Define the base sample time at which the Analog output block gets its sample hit.
+                Enter "-1" to allow the system to determine the output block sample time
+                automatically based on the sample rate and frame size. The Block Sample Time dialog
+                field of the Analog output block is overwritten by this value when DMA is
+                enabled.</p><p>Either the sample rate, the frame size or the output block sample time must be
+                configured automatically (-1).</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,48 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC61850 - Server Read/Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_server_setup.html" title="IEC 61850 - Server Setup"><link rel="next" href="refentry_iec61850_client_setup.html" title="IEC 61850 - Client Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_server_read_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC61850 - Server Read/Write</h2><p>IEC61850 - Server Read/Write &#8212; <span class="phrase">Reads and writes the
+                    local data of the MMS server.</span></p></div><div class="refsect1"><a name="d5e7593"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_server_read_write.png"></span></span></p></div><div class="refsect1"><a name="d5e7601"></a><h2>Description</h2><p>This block is used to read and modify the local MMS server data model. Your model
+                can contain multiple IEC 61850 server Read/Write blocks for each IEC 61850 server in
+                your target machine.</p></div><div class="refsect1"><a name="d5e7604"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Attribute Path</span>
+                    </span></dt><dd><p>For each data attribute selected, an input port is created and will
+                            write to the local MMS server data.</p><p>Use Byte Pack blocks to convert signed values or floating-point
+                            numbers. You can pack one double value to a vector of type uint16 and
+                            length 4.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Attribute Path</span>
+                    </span></dt><dd><p>Each output port represents a data attribute and will read from the
+                            local MMS server data. The data type of the output port is defined in
+                            the <span class="bold"><strong>Read/Write Port Data Type</strong></span> dropdown
+                            list in the block mask.</p><p>Use Byte Unpack blocks to convert to signed values or floating-point
+                            numbers. You can unpack a vector of type uint16 and length 4 to one
+                            double value.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7623"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Server Station ID</span>
+                    </span></dt><dd><p>Apply the Server Station ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read/Write Port Data Type</span>
+                    </span></dt><dd><p>This dropdown list defines the data type of the Read/Write block. The
+                            supported data types are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Double</p></li><li class="listitem"><p>Single</p><p>The port will be a float.</p></li><li class="listitem"><p>Int8 / Uint8</p><p>The port will be a signed or unsigned byte.</p></li><li class="listitem"><p>Int16 / Uint16</p><p>The port will be two signed or unsigned bytes.</p></li><li class="listitem"><p>Int32 / Uint32</p><p>The port will be four signed or unsigned bytes.</p></li><li class="listitem"><p>Boolean</p></li><li class="listitem"><p>ASCII or Unicode String</p><p>The port will be an array of uint8, max. 255 bytes.</p></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7662"></a><h2>Choose SCL-File</h2><p>There are two ways to load a data model into the block mask:</p><p>
+                <span class="bold"><strong><span class="guilabel">...from Host PC</span></strong></span>
+            </p><p><span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/iec61850_file_selector_host.png"></span>
+                </span></p><p>Search for the .cid file on your host PC that you would like to load into the Data
+                Model Navigator by pressing the button on the right hand side. After the path has
+                been inserted into the edit field, press the button below <span class="bold"><strong>Load
+                    from Host PC</strong></span>.</p><p>
+                <span class="bold"><strong><span class="guilabel">...from Target</span></strong></span>
+            </p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/iec61850_file_selector_target_server.png"></span>
+                </span>
+            </p><p>When a runtime application with IEC 61850 Server blocks starts, the Setup blocks
+                will locally store the data model of each IED/Server on the target machine. This
+                allows for reloading the data model without requiring a .cid file. Before clicking
+                    <span class="bold"><strong>Load from Target</strong></span>, ensure that the Station ID
+                is set correctly.</p><p><span class="bold"><strong>Send Config File to Target</strong></span> will send the IED data
+                model to a target machine. This is the same functionality as the button in the
+                Server setup block mask. Once again, ensure that the Station ID is set correctly.
+            </p></div></div></body></html>

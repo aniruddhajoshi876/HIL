@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MSCP Get Device Info</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="up" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="prev" href="refentry_mscp_write.html" title="MSCP Write"><link rel="next" href="refentry_mscp_update_instructions.html" title="MSCP Firmware Update Instructions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mscp_get_device_info"></a><div class="titlepage"></div><div class="refnamediv"><h2>MSCP Get Device Info</h2><p>MSCP Get Device Info &#8212; <span class="phrase">Configure the MSCP Get
+                    Device Info block</span></p></div><div class="refsect1"><a name="d5e267"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mscp_get_device_info.png"></span></span></p></div><div class="refsect1"><a name="d5e276"></a><h2>Description</h2><p>The MSCP Get Device Info block allows the user to read back utility data from an
+                MSCP. One MSCP Get Device Info block handles the data of one MSCP device and only
+                works in combination with an MSCP Setup block.</p></div><div class="refsect1"><a name="d5e279"></a><h2>Ports</h2><p>This driver block has one output port.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The data port outputs a Simulink bus signal. It is recommended to use
+                            a Bus Selector block to access the data contained in the bus signal. The
+                            bus signal structure is as follows:</p><p>Device</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Device Name. Data type: char array</p></li><li class="listitem"><p>Software Version. Data type: char array</p></li></ul></div><p>Slot_01, Slot_02, [&#8230;], Slot_11</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Header Control Byte. Data type: uint8</p></li><li class="listitem"><p>Header Layout Version. Data type: uint8</p></li><li class="listitem"><p>Product Name. Data type: string</p></li><li class="listitem"><p>Notes. Data type: string</p></li><li class="listitem"><p>Module Identification Number. Data type: uint32</p></li><li class="listitem"><p>Hardware Version. Data type: string</p></li><li class="listitem"><p>Flash Date (Unix Time Stamp). Data type: string</p></li><li class="listitem"><p>Serial Number. Data type: string</p></li><li class="listitem"><p>CRC Residue. Data type: uint32</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e315"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Must be equal or greater than the configured sample time in the
+                            corresponding MSCP Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">EtherCAT Network Index</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Network Index</strong></span> is a user-defined
+                            ID to associate the MSCP Get Device Info block with the corresponding
+                            MSCP Setup block. The value must be an integer between 0 and 11. When
+                            changing the network index, click the <span class="bold"><strong>Reload
+                                Device List</strong></span> button to load the list of devices from the
+                            MSCP Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Device</span>
+                    </span></dt><dd><p>Selects the <span class="bold"><strong>Device</strong></span> from which the MSCP Get Device Info block will
+                            receive data. </p></dd></dl></div></div></div></body></html>

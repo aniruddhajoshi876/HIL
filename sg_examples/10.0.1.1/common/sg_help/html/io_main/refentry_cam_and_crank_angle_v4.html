@@ -1,0 +1,50 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Crank Angle v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_vrs_v4.html" title="Cam and Crank - Variable Reluctance Sensor v4"><link rel="next" href="refentry_ref_serial.html" title="Serial"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_angle_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Crank Angle v4</h2><p>Cam and Crank - Crank Angle v4 &#8212; <span class="phrase">The Crank Angle v4 code
+                    module integrates the engine speed to obtain the crankshaft position of an
+                    internal combustion engine.</span></p></div><div class="refsect1"><a name="d5e13581"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_crank_angle_v4.png" width="220"></span></span></p></div><div class="refsect1"><a name="d5e13590"></a><h2>Description</h2><p>The Crank Angle v4 code module integrates the engine speed to obtain the
+                crankshaft position of an internal combustion engine. The shaft position between 0&deg;
+                and 720&deg; can be used by other code modules such as the <a href="refentry_cam_and_crank_vrs_v4.html" class="olink">Variable
+                    Reluctance Sensor v4</a> or <a href="refentry_cam_and_crank_events_capture_v4.html" class="olink">Events Capture
+                v4</a>.</p></div><div class="refsect1"><a name="d5e13595"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed </span>
+                    </span></dt><dd><p>The crankshaft speed in rpm (revolutions per minute). The input port
+                            dimensions match the dimensions of the <span class="bold"><strong>Channel
+                                vector</strong></span> parameter. The accepted range is &plusmn; 91,552 rpm.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position </span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Position</strong></span> output port provides the
+                            crankshaft position from 0&deg; to 720&deg;. The output port dimensions match
+                            the dimensions of the <span class="bold"><strong>Channel vector</strong></span>
+                            parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e13614"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector </span>
+                    </span></dt><dd><p>A vector of Crank Angle channels that are addressed by this block
+                            entity. Channels can be specified in the range 1 to N but must not exceed
+                            the number of implemented channels in the selected configuration file in
+                            the <a href="refentry_fpga_setup_io3xx.html" class="olink">Setup</a> block. The order
+                            of channels can be freely defined. The same channel must not be used
+                            more than once.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Angle </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Initial position vector</span>
+                    </span></dt><dd><p>This vector defines the position of the crankshaft at the start of the
+                            simulation. The position must be between 0&deg; and 720&deg;. A scalar value
+                            applies to all channels addressed by this block entity. Use a vector to
+                            set a different initial position per channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial speed vector </span>
+                    </span></dt><dd><p>This vector defines the crankshaft angular velocity at the start of
+                            the simulation in rpm (revolutions per minute). The accepted range is
+                            &plusmn; 91,552 rpm. A scalar value applies to all channels addressed by this
+                            block entity. Use a vector to set a different initial speed per
+                            channel.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show position output </span>
+                    </span></dt><dd><p>This checkbox enables the position output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show speed input </span>
+                    </span></dt><dd><p>This checkbox enables the speed input port. If the speed input port
+                            is disabled, the <span class="bold"><strong>Initial speed vector</strong></span>
+                            applies during the simulation.</p></dd></dl></div></div></div></body></html>

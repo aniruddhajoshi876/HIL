@@ -1,0 +1,129 @@
+%implements sg_ecatsim_object_s "C"
+
+%<LibAddToCommonIncludes("ecatsim_public.h")>
+
+%% =================================================================================================
+%function Start(block, system) Output
+    
+    %with block.SFcnParamSettings[0]
+
+    %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+
+    {
+    /* Initialize work vectors **/
+    %<LibBlockPWork(Object, "", "", 0)> = NULL;
+
+    int32_t ret = 0;
+    sg_ns_ecatsim::cNetwork *Network = NULL;
+    sg_ns_ecatsim::cObject *Object = NULL;
+
+    sg_ns_ecatsim::Root.init();
+
+    /* Add a network */
+    ret = sg_ns_ecatsim::Root.addNetwork(%<InterfaceId>, &Network);
+    if (ret != 0) {
+        %<LibSetRTModelErrorStatus("\"EC | Failed to add network %<InterfaceId>\"")>;
+        return;
+    }
+
+    /* Add an object */
+    ret = Network->addObject(&Object);
+    if (ret != 0) {
+        %<LibSetRTModelErrorStatus("\"EC | Failed to add object\"")>;
+        return;
+    }
+
+    /* Initialize the object */
+    ret = Object->init(%<SlaveAddress>, %<ObjIndex>, %<ObjSubIndex>, %<MaxDataLen>);
+    if (ret != 0) {
+        %<LibSetRTModelErrorStatus("\"EC | Failed to initialize object\"")>;
+        return;
+    }
+
+    /* Write the object pointer to PWork */
+    %<LibBlockPWork(Object, "", "", 0)> = Object;
+
+    /* Copy the init value to the internal object value */
+    memcpy((void*)Object->Data, (void*)%<LibBlockMatrixParameterBaseAddr(InitValue)>, %<MaxDataLen>);
+
+    %if ReadOp
+        %if LibBlockOutputSignalConnected(0)
+            /* Copy the init value to the data output port */  
+            memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, (void*)%<LibBlockMatrixParameterBaseAddr(InitValue)>, %<MaxDataLen>);
+        %endif
+        %if Extended
+            %if LibBlockOutputSignalConnected(2)
+            /* Initialize the data length output port */
+             %<LibBlockAssignOutputSignal(2, "", "", 0, MaxDataLen)>
+            %endif
+        %endif  
+    %endif
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+
+    {
+    sg_ns_ecatsim::cObject* Object = (sg_ns_ecatsim::cObject*)%<LibBlockPWork(Object, "", "", 0)>;
+
+    %assign DataInPort = "NULL"
+    %assign EnableInPort = "NULL"
+    %assign LenInPort = "NULL"
+    %assign DataOutPort = "NULL"
+    %assign StatusOutPort = "NULL"
+    %assign LenOutPort = "NULL"
+
+    %if ReadOp
+        %if LibBlockOutputSignalConnected(0)
+            %assign DataOutPort = "(void*)%<LibBlockOutputSignalAddr(0, "", "", 0)>"
+        %endif
+        %if Extended
+            %if LibBlockOutputSignalConnected(1)
+                %assign StatusOutPort = "(uint32_t*)%<LibBlockOutputSignalAddr(1, "", "", 0)>"
+            %endif
+            %if LibBlockOutputSignalConnected(2)
+                %assign LenOutPort = "(uint32_t*)%<LibBlockOutputSignalAddr(2, "", "", 0)>"
+            %endif
+        %endif
+    %endif
+
+    %if WriteOp
+        %if LibBlockInputSignalConnected(0)
+            %assign DataInPort = "(void*)%<LibBlockInputSignalAddr(0, "", "", 0)>"
+        %endif
+        %if Extended
+            %if LibBlockInputSignalConnected(1)
+                %assign EnableInPort = "(bool*)%<LibBlockInputSignalAddr(1, "", "", 0)>"
+            %endif
+        
+            %if LibBlockInputSignalConnected(2)
+                %assign LenInPort = "(uint32_t*)%<LibBlockInputSignalAddr(2, "", "", 0)>"
+            %endif
+        %endif
+    %endif
+
+    /* Process the input ports, update the internal record object and serve the output ports */
+    Object->update( \
+        %<DataInPort>, \
+        %<EnableInPort>, \
+        %<LenInPort>, \
+        %<DataOutPort>, \
+        %<StatusOutPort>, \
+        %<LenOutPort>);
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

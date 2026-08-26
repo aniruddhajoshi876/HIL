@@ -1,0 +1,63 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SSI - Sniffer</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ssi_slave_v2.html" title="SSI - Slave v2"><link rel="next" href="refentry_ref_biss.html" title="BiSS"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ssi_sniffer"></a><div class="titlepage"></div><div class="refnamediv"><h2>SSI - Sniffer</h2><p>SSI - Sniffer &#8212; <span class="phrase">The SSI Sniffer driver block
+                    monitors an existing SSI communication between master and slave and obtains the
+                    data value and the number of bits transmitted per
+                transaction.</span></p></div><div class="refsect1"><a name="d5e4009"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ssi_sniffer_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e4017"></a><h2>Description</h2><p>The SSI Sniffer driver block monitors an existing SSI communication between master
+                and slave.</p></div><div class="refsect1"><a name="d5e4020"></a><h2>Ports</h2><p>The SSI Sniffer driver block has two output ports and no input ports.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">data </span>
+                    </span></dt><dd><p>The data value monitored on the SSI transaction.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bits </span>
+                    </span></dt><dd><p>The detected number of bits of the SSI transaction.</p></dd><dt><span class="term"><span class="guilabel">Number of Bits Error</span></span></dt><dd><p>A logical one on this output signals that more than 32 bits or 64 bits
+                            (from version v1.5 and later) of data have been received (only visible
+                            if the <span class="bold"><strong>Show Number of Bits Error</strong></span>
+                            parameter is checked).</p></dd><dt><span class="term"><span class="guilabel">SCK Frequency</span></span></dt><dd><p>The output displays the clock frequency of the previous received
+                            message in Hz. (Only visible if the option "Show SCK Frequency" is
+                            checked)</p></dd><dt><span class="term"><span class="guilabel">SSI2</span></span></dt><dd><p>A logical one on this outputs signals that the previous received
+                            message was in the SSI2 format. If this is the case, the bit order of
+                            the data are automatically swapped. (Only visible if the option "Show
+                            SSI2" is checked)</p></dd></dl></div></div><div class="refsect1"><a name="d5e4051"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SSIS configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Decoding </span>
+                    </span></dt><dd><p>Determines whether the data is binary or gray decoded.</p></dd><dt><span class="term">
+                        <span class="guilabel">Line Delay Compensation</span>
+                    </span></dt><dd><p>Delays the clock line by a specific number of FPGA ticks. Use this to
+                            adjust the setup and hold time of the data line time to achieve higher
+                            frequencies. Range 0 to 255.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Data </span>
+                    </span></dt><dd><p>When this parameter is checked the output to read the received data is
+                            available.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Number of Bits</span>
+                    </span></dt><dd><p>When this parameter is checked the output to read the number of
+                            received bits is available.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Number of Bits Error</span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            signal that the master is sending more than the supported 32 or 64 (v1.5
+                            and later) clocks per message. The parameter is only visible if the
+                            configuration file supports SSI Sniffer v1.2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show SCK Frequency</span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the clock frequency. The parameter is only visible if the
+                            configuration file supports SSI Sniffer v1.2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show SSI2</span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            signal that the master is expecting data in the SSI2 format. The
+                            parameter is only visible if the configuration file supports SSI Sniffer
+                            v1.2.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p> From version v1.5 and later, the output data type is uint64. This is
+                    considered a fixpoint data type by Simulink and cannot be interpreted by the
+                    scope block. Either use the data conversion block or view the output data in the
+                    data inspector.</p></td></tr></table></div></div></div></body></html>

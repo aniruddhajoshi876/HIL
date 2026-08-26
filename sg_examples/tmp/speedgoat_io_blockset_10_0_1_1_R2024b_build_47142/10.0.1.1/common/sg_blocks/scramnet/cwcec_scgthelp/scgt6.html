@@ -1,0 +1,45 @@
+<html><head><title>SCGT Read :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: SCGT Read -->
+<!-- CHAPNAME:  Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt5.html"><img src="b_prev.gif" alt="Previous page" border=0></a>&nbsp;&nbsp;&nbsp;<a href="scgt7.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>SCGT Read</b></font><br class="hdr">
+Reads blocks of data from Shared Memory. The size and address of the blocks is determeined by the partition parameter.   Use with the shared memory unpack function to access data members defined in the partition structure.
+
+<p><font color="#990000"><b>Driver Block Parameters</b></font><br class="hdr">
+
+<p>Before you begin to configure this block, be sure that you have a predefined shared memory partition structure. The SCGT Read block requires this structure to specify how Simulink signal values are mapped in the shared memory. It also uses this structure to determine the total size and address of the shared memory. See <a href="scgt2.html">Create Shared Memory Partitions</a>.</p>
+
+<p><strong>Partition struct</strong> -- Enter the name of the predefined shared memory partition structure. The block uses this structure to specify how Simulink signal values map into shared memory.</p>
+
+<p><strong>Sampletime</strong> -- Enter the base sample time or a multiple of the base sample time.</p>
+
+<p><strong>PCI Slot (-1:autosearch)</strong> --  If only one board of this type is physically present in the target PC, enter -1. </p>
+
+<p>If two or more boards of this type are physically present in the target PC, enter the bus number and the PCI slot number of the board associated with this driver block. Use the format [BusNumber, SlotNumber]. To determine the bus number and the PCI slot number, type</p>
+
+<ul class=continued><li class=continued><pre>getxpcpci</pre></li></ul>
+
+<br>
+
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt5.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;SCGT Init</td><td>&nbsp;</td><td align=right>SCGT Write&nbsp;</td><td align=right width=20><a href="scgt7.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></td></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

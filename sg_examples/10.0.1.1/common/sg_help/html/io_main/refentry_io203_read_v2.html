@@ -1,0 +1,32 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO203 - Read v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io203_read_v1.html" title="IO203 - Read"><link rel="next" href="refentry_io203_write_v1.html" title="IO203 - Write v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io203_read_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO203 - Read v2</h2><p>IO203 - Read v2 &#8212; <span class="phrase">Reads the IO203 digital
+                    inputs</span></p></div><div class="refsect1"><a name="d5e652"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io203_read_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e660"></a><h2>Description</h2><p>The IO203 Read block is used to read the channels defined as digital inputs in the
+                Setup block.</p><p>For each IO203 module, only one Read block is permitted. </p></div><div class="refsect1"><a name="d5e664"></a><h2>Ports</h2><p>This driver block has no input ports. The number of output ports is determined by
+                the IO203 Setup block configuration, and the <span class="bold"><strong>Port
+                    Configuration</strong></span> setting of the IO203 Read block. The channel
+                configurations are transmitted by the Setup block; the Read block does not
+                automatically request these configurations. If the Setup block is configured before
+                the Read block is added to the model, then the Setup block must be reinitialized (by
+                changing a setting and clicking <span class="bold"><strong>Apply</strong></span>, or by
+                updating the model) in order to update the new Read block.</p><p>The output ports can be configured in the following two ways:</p><p>
+                <span class="bold"><strong>1 port with a 64-element vector </strong></span></p><p>One output port with a fixed width of 64 is used. The index of each array element
+                is equivalent to the channel number. Each element has a value of either 0 (Low) or 1
+                (High). Array elements for channels that have not been configured as digital inputs
+                remain 0.</p><p>
+                <span class="bold"><strong>1 port for each active input channel </strong></span></p><p>For each channel configured as digital input, one port is added to the IO203 Read
+                block. Each port outputs a scalar with a value of either 0 (Low) or 1 (High).</p><p>
+                <span class="bold"><strong>Data Type </strong></span></p><p>Select either <span class="bold"><strong>Boolean</strong></span> or <span class="bold"><strong>Double</strong></span> as the output data type.</p></div><div class="refsect1"><a name="d5e681"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Configuration</span>
+                    </span></dt><dd><p>Select one of the two available port types.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>Select the data type of the block output signals.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Read Ports Indices</span>
+                    </span></dt><dd><p>This part of the mask shows which channels are selected to be inputs.
+                            Modifying this field will not influence the configuration.</p></dd></dl></div></div></div></body></html>

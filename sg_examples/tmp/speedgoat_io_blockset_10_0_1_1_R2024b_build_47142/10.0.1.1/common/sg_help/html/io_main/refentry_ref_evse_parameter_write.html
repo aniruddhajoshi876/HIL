@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EVSE - Parameter Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_evse_parameter_read.html" title="EVSE - Parameter Read"><link rel="next" href="refentry_ref_evse_isolation_read.html" title="EVSE - Isolation Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_evse_parameter_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>EVSE - Parameter Write</h2><p>EVSE - Parameter Write &#8212; <span class="phrase">Writes data to the EVSE
+                    board during the Parameter Discovery state of the charge
+                cycle.</span></p></div><div class="refsect1"><a name="d5e74121"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_evse_parameter_write.png"></span></span></p></div><div class="refsect1"><a name="d5e74129"></a><h2>Description</h2><p>The EVSE Parameter Write block writes data to the EVSE charging board during the
+                Parameter Discovery state of the charge cycle.</p></div><div class="refsect1"><a name="d5e74132"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">EVSE Processing</span>
+                    </span></dt><dd><p>This enumeration signal provides the actual status of the parameter
+                            discovery of the charger, following the enumeration table
+                            "EVSEProcessingType" of ISO 15118-2: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Finished</p></li><li class="listitem"><p>1: Ongoing</p></li><li class="listitem"><p>2: Ongoing, waiting for customer interaction</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">SA-Schedule: ID</span>
+                    </span></dt><dd><p>Tuple ID of the charging schedule.</p></dd><dt><span class="term">
+                        <span class="guilabel">SA-Schedule: Start</span>
+                    </span></dt><dd><p>Start time of the charging schedule in seconds from now. Typically
+                            0.</p></dd><dt><span class="term">
+                        <span class="guilabel">SA-Schedule: Duration</span>
+                    </span></dt><dd><p>Duration of the charging schedule in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">SA-Schedule: PMax</span>
+                    </span></dt><dd><p>The maximum amount of power the EVSE power outlet can deliver to the
+                            EV in the time interval of the schedule.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max Voltage Limit</span>
+                    </span></dt><dd><p>The maximum voltage limit of the EVSE in volts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max Current Limit</span>
+                    </span></dt><dd><p>The maximum current limit of the EVSE in amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max Power Limit</span>
+                    </span></dt><dd><p>The maximum power limit of the EVSE in watts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Min Voltage Limit</span>
+                    </span></dt><dd><p>The minimum voltage limit of the EVSE in volts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Min Current Limit</span>
+                    </span></dt><dd><p>The minimum current limit of the EVSE in amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Current Regulation Tolerance</span>
+                    </span></dt><dd><p>Set the current regulation tolerance of the EVSE in amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Peak Current Ripple</span>
+                    </span></dt><dd><p>Set the peak current ripple of the EVSE in amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Energy to be Delivered</span>
+                    </span></dt><dd><p>Set the amount of energy to be delivered by the EVSE in
+                            watt-hours.</p></dd><dt><span class="term">
+                        <span class="guilabel">Notification Max Delay</span>
+                    </span></dt><dd><p>The maximum delay in seconds in which the EV has to react on a
+                            notification requested by the EVSE.</p></dd><dt><span class="term">
+                        <span class="guilabel">Notification</span>
+                    </span></dt><dd><p>Enumerated notification following enumeration table
+                            "EVSENotificationType" of ISO 15118-2.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: None</p></li><li class="listitem"><p>1: Stop charging</p></li><li class="listitem"><p>2: Renegotiation</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Isolationstatus</span>
+                    </span></dt><dd><p>Set the charger's isolation status following enumeration table
+                            "isolationLevelType" of ISO 15118-2.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Invalid</p></li><li class="listitem"><p>1: Valid</p></li><li class="listitem"><p>2: Warning</p></li><li class="listitem"><p>3: Fault</p></li><li class="listitem"><p>4: No isolation monitoring device (IMD) present</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Statuscode</span>
+                    </span></dt><dd><p>Set the charger's status following enumeration table
+                            "DC_EVSEStatusCodeType" of ISO 15118-2.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Not Ready</p></li><li class="listitem"><p>1: Ready</p></li><li class="listitem"><p>2: Shutdown</p></li><li class="listitem"><p>3: Utility interrupt event</p></li><li class="listitem"><p>4: Isolation monitoring active</p></li><li class="listitem"><p>5: Emergency shutdown</p></li><li class="listitem"><p>6: Malfunction</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e74261"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Defines the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Defines the Connection ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Enable/Disable Signals Tab</div><p>Some settings, like min. and max. voltage limits, are already set by the Setup
+                    block but can be overwritten during the Parameter Discovery state of the charge
+                    if desired. However, unused signals that remain unconnected are set to zero. To
+                    avoid setting parameters to zero, unused signals should be unchecked here to
+                    disable the write operation.</p><p>The following signals can be disabled:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Max Voltage Limit</p></li><li class="listitem"><p>Max Current Limit</p></li><li class="listitem"><p>Max Power Limit</p></li><li class="listitem"><p>Min Voltage Limit</p></li><li class="listitem"><p>Min Current Limit</p></li><li class="listitem"><p>Current Regulation Tolerance</p></li><li class="listitem"><p>Peak Current Ripple</p></li><li class="listitem"><p>Notification Max Delay</p></li><li class="listitem"><p>Notification</p></li></ul></div><dl class="variablelist"></dl></div></div></div></body></html>

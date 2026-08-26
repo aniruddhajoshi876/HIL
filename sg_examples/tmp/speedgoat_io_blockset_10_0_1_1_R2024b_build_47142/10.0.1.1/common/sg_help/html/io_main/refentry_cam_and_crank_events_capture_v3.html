@@ -1,0 +1,54 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Events Capture v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_cam_encoder_v3.html" title="Cam and Crank - Cam Encoder v3"><link rel="next" href="refentry_cam_and_crank_knock_generator_v3.html" title="Cam and Crank - Knock Generator v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_events_capture_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Events Capture v3</h2><p>Cam and Crank - Events Capture v3 &#8212; <span class="phrase">This Events
+                    Capture code module records the current crank angle (0 to 720&deg;) when an event
+                    pulse is detected.</span></p></div><div class="refsect1"><a name="d5e12769"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_events_capture_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e12778"></a><h2>Description</h2><p>This Events Capture code module records the current crank angle (0 to 720&deg;) when
+                an event pulse is detected. This Code Module also records the length (in angle) of the
+                input event.</p><p>The driver block provides the last four (4) events captured to Simulink.</p></div><div class="refsect1"><a name="d5e12782"></a><h2>Ports</h2><p>This driver block has up to two (2) output ports:</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Start </span>
+                    </span></dt><dd><p>Displays the start angle in degrees of the input event.</p></dd><dt><span class="term">
+                        <span class="guilabel">Length </span>
+                    </span></dt><dd><p>Displays the angle length in degrees of the input event.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12797"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Crank Master Channel: </span>
+                    </span></dt><dd><p>The corresponding crank encoder master. The crank encoder master is
+                            predefined during the pin layout.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector </span>
+                    </span></dt><dd><p>A vector of capture events channels this driver block entity will
+                            access. Channels can be specified in the range 1 to N. The order of
+                            channels can be freely mixed, but the same channel should not be used
+                            more than once. The width of this vector also defines the resulting size
+                            of some of the following parameters if scalar expansion applies. Channel
+                            helps set the output ports dimension. (e.g., if channel vector is set to
+                            [1:12] and event width is set to 4, then the output port is of size
+                            [12x4]). Matrix columns outputs events per channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Debounce Duration </span>
+                    </span></dt><dd><p>Defines the time in seconds during which the Events Capture input
+                            signal must be stable before an edge is detected. Defaults to 100e-9
+                            (100 ns).</p><p>The range and resolution of the debounce duration depends on the
+                            module frequency configured in the Setup block. The <span class="bold"><strong>Effective Debounce Duration</strong></span> therefore
+                            indicates the applied duration at the module level.</p><p>To disable debouncing, enter the value 0.</p><p>Valid values are in the range 0 to 2^8-1 ticks (e.g., 3.413 &micro;s
+                            at a frequency of 75 MHz). The parameter is only visible if
+                            the configuration file supports Events Capture v3.2. The parameter must
+                            be a scalar value which applies to all channels defined in the <span class="bold"><strong>Channel Vector</strong></span>.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Events Width </span>
+                    </span></dt><dd><p>This parameter defines how many events are displayed to Simulink.
+                            Valid values are between 1 and 4. Events width helps set the output
+                            port dimension. (e.g., if channel vector is set to [1:12] and event width
+                            is set to 4, then the output port is of size [12x4]). Matrix rows
+                            outputs events from events(1) to events(Events width), where events(1)
+                            is the most recent captured event and events(Events width) is the
+                            oldest.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Angle Start Output </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the start information of the captured events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Angle Length Output </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the length information of the captured events.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,46 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">I2C - Slave read v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_i2c_slave_setup_v1.html" title="I2C - Slave setup v1"><link rel="next" href="refentry_i2c_slave_write_v1.html" title="I2C - Slave write v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_i2c_slave_read_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>I2C - Slave read v1</h2><p>I2C - Slave read v1 &#8212; <span class="phrase">The I2C Slave read driver
+                    block allows the register bank of the code module to be read. This read
+                    operation is asynchronous with the I2C protocol.</span></p></div><div class="refsect1"><a name="d5e11735"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_i2c_slave_read_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e11743"></a><h2>Description</h2><p>The I2C Slave read driver block allows the register bank of the code module to be
+                read. This read operation is asynchronous with the I2C protocol.</p></div><div class="refsect1"><a name="d5e11746"></a><h2>Ports</h2><p>This driver block has one data output port and three additional outputs which can
+                be enabled with the show settings.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data </span>
+                    </span></dt><dd><p>The data read from the register map. The output port width is equal to
+                            the number of registers as configured with the <span class="bold"><strong>Registers</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data valid </span>
+                    </span></dt><dd><p>The data valid indicates if the value on the data output port is new
+                            or was already read in a previous sample step. A new value from the I2C
+                            slave buffer is indicated with a 1 and an old value with a 0. The output
+                            port width is equal to the number of registers as configured with the
+                                <span class="bold"><strong>Registers</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Last register </span>
+                    </span></dt><dd><p>The last register output port shows the last register that has been
+                            written by the I2C Master.</p></dd><dt><span class="term">
+                        <span class="guilabel">Last register valid </span>
+                    </span></dt><dd><p>The last register valid indicates if the value on the Last Register
+                            output port is new or was already read in a previous sample step. A new
+                            value from the I2C slave buffer is indicated with a 1 and an old value
+                            with a 0.</p></dd></dl></div></div><div class="refsect1"><a name="d5e11773"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel"></a><span class="term">
+            <span class="guilabel">Channel</span>
+        </span></dt><dd><p>The number of the channel which this driver block entity will access. Only one
+                channel per driver block can be addressed. You can specify channels in the range 1-N
+                (N = the number of channels implemented in your specific configuration file defined
+                in the Setup block).</p></dd><dt><span class="term">
+                        <span class="guilabel">Registers </span>
+                    </span></dt><dd><p>A vector which defines the registers to read. Registers are numbered
+                            in the range 1 to 256.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show data valid port</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>data
+                                valid</strong></span> output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show last register port</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>last register
+                            </strong></span> Output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show last register vaild port</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>last register
+                                valid </strong></span> output is shown.</p></dd></dl></div></div></div></body></html>

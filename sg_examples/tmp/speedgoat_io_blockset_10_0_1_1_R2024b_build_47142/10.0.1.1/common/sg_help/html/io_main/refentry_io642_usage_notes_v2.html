@@ -1,0 +1,93 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO642 Usage Notes v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io642_usage_notes.html" title="IO642 Usage Notes"><link rel="next" href="refentry_io642_setup.html" title="IO642 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io642_usage_notes_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO642 Usage Notes v2</h2><p>IO642 Usage Notes v2 &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsection"><a name="refsection_pbs_description"></a><h2>Description</h2><p>This section provides further information about how to configure the IO642
+                PROFIBUS Slave module.</p></div><div class="refsection"><a name="refsection_pbs_introduction"></a><h2>Introduction</h2><p>To set up PROFIBUS communication, you must import the device description files of
+                the PROFIBUS slaves (GSD file) into your PROFIBUS Master configuration tool or PLC
+                programming tool (refer to Step 7). The GSD file tells the master about device
+                identification, cyclic data modules, parameters, acyclic data and the services the
+                particular slave supports. When the connection is being established, the master
+                sends configuration requests which the slave must compare with its internal
+                configuration in order to accept or reject the connection. There are different types
+                of slave devices:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>slaves with a fixed module configuration</p></li><li class="listitem"><p>slaves where the final configuration depends on pluggable modules</p></li><li class="listitem"><p>slaves which are freely configurable</p></li></ul></div><p>The IO642 I/O module belongs to the last group. You can use the IO642 in two
+                modes</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>the I/O module acts as the default device</p></li><li class="listitem"><p>the I/O module emulates a device of a different vendor</p></li></ul></div></div><div class="refsection"><a name="refsection_pbs_gsdfile"></a><h2>GSD File</h2><p>Find the default GSD file here:</p><p><code class="literal">&gt;&gt; [speedgoatroot, '\sg_blocks\cifx\eds\HIL_0B69.gsd']</code>.</p><p>If you want to emulate a PROFIBUS slave of a different vendor, you generally find
+                the GSD file on the vendor's website.</p></div><div class="refsection"><a name="refsection_pbs_application_example"></a><h2>Application Example</h2><p>
+                <span class="inlinemediaobject"><img src="././graphics/io642_example_00_00.png" width="594"></span>
+            </p></div><div class="refsection"><a name="refsection_pbs_stepbystep_example"></a><h2>Step-by-step Example</h2><div class="refsection"><a name="d5e46668"></a><h3>General</h3><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_10.png" width="756"></span>
+                </p><p>The network contains a Siemens PLC acting as a master and a Speedgoat
+                    Performance real-time target machine with two IO642 PROFIBUS Slave modules.
+                    Slave 1 is configured as the default device. Slave 2 emulates a Siemens ET
+                    200M-1. In a real plant, such a device is referred to as a bus coupler with a
+                    backplane bus where the user can plug hardware modules like analog and digital
+                    modules whose data is mapped to the PROFIBUS network.</p><p>The Siemens software TIA Portal is used to configure and program the
+                    PLC.</p></div><div class="refsection"><a name="d5e46678"></a><h3>Master Side</h3><p>In the TIA portal, click <span class="bold"><strong>Options</strong></span> --&gt;
+                        <span class="bold"><strong>Manage General Station Description Files
+                        (GSD)</strong></span>. Navigate to the folder where the GSD files of both slaves
+                    are stored. Select both rows and click Install.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_01.png" width="486"></span>
+                </p><p>In the project tree right-click the PLC node and select <span class="bold"><strong>Open</strong></span>. The Hardware Configuration opens.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_00.png" width="378"></span>
+                </p><p>Switch to the <span class="bold"><strong>Network view</strong></span> and open the
+                        <span class="bold"><strong>Hardware catalog</strong></span>.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_02.png" width="756"></span>
+                </p><p>Drag both slave nodes from the hardware catalog to the network canvas.
+                    Connect the PROFIBUS port of each slave with the port of the master.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_03.png" width="756"></span>
+                </p><p>Right-click the connection line and select <span class="bold"><strong>Properties</strong></span>. Adjust the PROFIBUS timing if necessary.</p><p>Select a slave and switch to the <span class="bold"><strong>Device
+                    view</strong></span>. Open the <span class="bold"><strong>Properties</strong></span> window and
+                    enter the correct PROFIBUS address. Drag and drop the desired I/O data modules
+                    from the hardware catalog to the module table of the slave. This table shows the
+                    structured content of the payload of the cyclic frames the master exchanges with
+                    the slave. When the connection is being established, the PROFIBUS master sends
+                    this information to the slave and the slave checks if the module configuration
+                    matches the expected configuration. The Speedgoat IO642 PROFIBUS slave is
+                    special because it always accepts the module configuration and updates its
+                    internal registers.</p><p>Furthermore, the module table helps you to calculate the overall length of I/O
+                    data of a slave. You need this information to configure the input and output
+                    data length of the IO642 send and receive blocks.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Slave_1</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Input length (RX Master, TX Slave): 16 bytes</p></li><li class="listitem"><p>Output length (TX Master, RX Slave): 16 bytes</p></li></ul></div></li><li class="listitem"><p>Slave_2</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Input length (RX Master, TX Slave): 9 bytes</p></li><li class="listitem"><p>Output length (TX Master, RX Slave): 5 bytes</p></li></ul></div></li></ul></div><p>Furthermore the module table shows the addresses of the I/O data modules
+                    within the memory of the PLC. You need this information to define variables for
+                    your PLC program.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_04.png" width="594"></span>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_05.png" width="702"></span>
+                </p><p>In the project tree right-click <span class="bold"><strong>PLC tags</strong></span> and
+                    add a new tag table. Define variables which point to the addresses of the
+                    PROFIBUS slave I/O modules.</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_06.png" width="756"></span>
+                </p><p>Finally, write your application code. Manage the code in the project tree in
+                    the <span class="bold"><strong>Program blocks</strong></span> folder. The PLC application
+                    of this example only sends back the data the master receives from the slaves.</p><p>In the project tree right-click the PLC node and use the compile and download
+                    commands to run the application on the PLC.</p><p>In the <span class="bold"><strong>Distributed I/O</strong></span> folder you can check
+                    the connection status of the PROFIBUS slaves.</p></div><div class="refsection"><a name="d5e46759"></a><h3>Slave Side</h3><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_07.png" width="486"></span>
+                </p><p>In the Simulink model you need one Setup, one Receive and one Send block for
+                    each Slave respectively. In each Setup block, import the related GSD file and
+                    set the correct PROFIBUS address (the same as in the TIA project).</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_08.png" width="756"></span>
+                </p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_example_01_09.png" width="918"></span>
+                </p><p>In the Send block enter the length of the data you would like to write to the
+                    TX buffer of the IO642 PROFIBUS slave module. In the Receive block enter the
+                    length of the data you would like to read from the RX buffer of the IO642
+                    PROFIBUS slave module. Reading and writing is performed in relation to the
+                    parameter Sample time. The bus cycle time specified in TIA must not match the
+                    Sample time in the Send and Receive blocks. The IO642 has an internal triple
+                    buffer which guarantees consistent data exchange between the protocol side and
+                    the application side running at different rates.</p></div></div><div class="refsection"><a name="d5e46781"></a><h2>Front Plate Description</h2><div class="variablelist"><div class="variablelist-title">IO642 PCI and PCIe modules</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io641_io642_pci_front.png" width="594"></span>
+                        </p><p><a name="para_common_rotary_switch_note"></a>The rotary switch has no functional role.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO642 mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io643_mpci_front.png" width="216"></span>
+                        </p><p><a name="para_common_mPCIe_error_LED_reversed"></a>Note that in some real-time target machines,
+        the mPCIe module is reversed; that is, the Error LED appears on the right.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO642-32 Multi-node simulator</div><p>The IO643-32 simulates 32 PROFIBUS Slave nodes. Each node has two LEDs that
+                    indicate the communication status.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io642_32_front.png" width="1080"></span>
+                        </p></dd></dl></div></div><div class="refsection"><a name="d5e46819"></a><h2>LED Status Description</h2><div class="variablelist"><div class="variablelist-title">IO642 PCI and PCIe modules</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>SYS</td><td>Green</td><td>On</td><td>Operating system running</td></tr><tr><td>&nbsp;</td><td>Green/Yellow</td><td>Blinking</td><td>Second stage bootloader is waiting for
+                                            firmware</td></tr><tr><td>&nbsp;</td><td>Yellow</td><td>On</td><td>Bootloader netX (= romloader) is waiting for second
+                                            stage bootloader</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Power supply for the device is missing or hardware
+                                            defect</td></tr><tr><td>COM</td><td>Green</td><td>On</td><td>RUN, cyclic communication</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Flashing, cyclic (2 Hz) </td><td>Master is in CLEAR state</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Flashing, acyclic (1 Hz) </td><td>Device is not configured</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Flashing, cyclic (2 Hz) </td><td>STOP, no communication, connection error</td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>Wrong configuration at PROFIBUS DP Slave</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Device is not switched on or power is missing.
+                                            During firmware download process </td></tr></tbody></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO642 mPCIe module and IO642-32 Multi-node simulator</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>STATUS/COM1</td><td>Green</td><td>On</td><td>RUN, cyclic communication</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Flashing, cyclic (2 Hz) </td><td>Master is in CLEAR state</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>
+                                            <p>LED ERROR is off: Device is not switched on or
+                                                network power is missing</p>
+                                            <p>LED ERROR is flashing or &#8220;on&#8221;: Refer to
+                                                description LED ERROR</p>
+                                        </td></tr><tr><td>ERROR/COM2</td><td>Off</td><td>Off</td><td>Refer to description for LED STATUS</td></tr><tr><td>&nbsp;</td><td>Red</td><td>
+                                            <p>Flashing, acyclic (1 Hz)</p>
+                                        </td><td>Device is not configured</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Flashing, cyclic (2 Hz) </td><td>STOP, no communication, connection error</td></tr><tr><td>&nbsp;</td><td>Red</td><td>On </td><td>Wrong configuration at PROFIBUS DP Slave</td></tr></tbody></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e46951"></a><h2>Status Codes</h2><p>For the list of status codes, please refer to <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for Protocols Supported
+                with the IO64x/IO75x Modules</a>.</p></div></div></body></html>

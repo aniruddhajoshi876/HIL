@@ -1,0 +1,132 @@
+%implements sg_IO752_record_s "C"
+
+%<LibAddToCommonIncludes("cifxapi.h")>
+%<LibAddToCommonIncludes("PNS_api.h")>
+%<LibAddToCommonIncludes("cifx_common.h")>
+
+%% =================================================================================================
+%function Start(block, system) Output
+    
+    %with block.SFcnParamSettings[0]
+
+    {
+    /* Initialize work vectors **/
+    %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+    %<LibBlockPWork(Record, "", "", 0)> = NULL;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+
+    {
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+    PNS_RECORD_T* Record = (PNS_RECORD_T*)%<LibBlockPWork(Record, "", "", 0)>;
+
+    /* Find the corresponding node structure in the driver */
+    if (Channel == NULL)
+    {
+        CIFX_NODE_T* Node = NULL;
+
+        if (0 != Cifx_FindNode(%<ModuleId>, %<NodeId>, &Node))
+        {
+            %<LibSetRTModelErrorStatus("\"Cannot find Speedgaot IO module %<ModuleId>\"")>;
+            return;
+        }
+
+        Channel = Node->Channels[0];
+        %<LibBlockPWork(Channel, "", "", 0)> = Channel;
+
+        /* Create an internal record object */
+        if (0 != PNS_AddRecord_v2(Channel, &Record, %<Api>, %<Slot>, %<SubSlot>, %<RecordIndex>, %<MaxDataLen>))
+        {
+            %%<LibSetRTModelErrorStatus("\"Adding PROFINET records failed \"")>;
+            %<LibSetRTModelErrorStatus("CifxMsg")>;
+            return;
+        }
+
+        %<LibBlockPWork(Record, "", "", 0)> = Record;
+
+        /* Copy the init value to the internal record value */
+        memcpy((void*)Record->Data, (void*)%<LibBlockMatrixParameterBaseAddr(InitValue)>, %<MaxDataLen>);
+
+        %if ReadOp
+            %if LibBlockOutputSignalConnected(0)
+                /* Copy the init value to the data output port */  
+                %assign rollVars  = ["Y", "P"]
+                %roll sigIdx=RollRegions, lcv = RollThreshold, block, "Roller", rollVars
+                    %<LibBlockAssignOutputSignal(0, "", lcv, sigIdx, LibBlockParameter(InitValue, "", lcv, sigIdx))>
+                %endroll
+            %endif
+            
+            %if Extended
+                %if LibBlockOutputSignalConnected(2)
+                /* Initialize the data length output port */
+                 %<LibBlockAssignOutputSignal(2, "", "", 0, MaxDataLen)>
+                %endif
+            %endif  
+        %endif
+
+        
+    }
+
+    %assign DataInPort = "NULL"
+    %assign EnableInPort = "NULL"
+    %assign LenInPort = "NULL"
+    %assign DataOutPort = "NULL"
+    %assign StatusOutPort = "NULL"
+    %assign LenOutPort = "NULL"
+
+    %if ReadOp
+        %if LibBlockOutputSignalConnected(0)
+            %assign DataOutPort = "(void*)%<LibBlockOutputSignalAddr(0, "", "", 0)>"
+        %endif
+        %if Extended
+            %if LibBlockOutputSignalConnected(1)
+                %assign StatusOutPort = "(uint32_t*)%<LibBlockOutputSignalAddr(1, "", "", 0)>"
+            %endif
+            %if LibBlockOutputSignalConnected(2)
+                %assign LenOutPort = "(uint32_t*)%<LibBlockOutputSignalAddr(2, "", "", 0)>"
+            %endif
+        %endif
+    %endif
+
+    %if WriteOp
+        %if LibBlockInputSignalConnected(0)
+            %assign DataInPort = "(void*)%<LibBlockInputSignalAddr(0, "", "", 0)>"
+        %endif
+        %if LibBlockInputSignalConnected(1)
+            %assign EnableInPort = "(bool*)%<LibBlockInputSignalAddr(1, "", "", 0)>"
+        %endif
+        %if Extended
+            %if LibBlockInputSignalConnected(2)
+                %assign LenInPort = "(uint32_t*)%<LibBlockInputSignalAddr(2, "", "", 0)>"
+            %endif
+        %endif
+    %endif
+
+    /* Process the input ports, update the internal record object and serve the output ports */
+    PNS_UpdateRecord( \
+        Record, \
+        %<DataInPort>, \
+        %<EnableInPort>, \
+        %<LenInPort>, \
+        %<DataOutPort>, \
+        %<StatusOutPort>, \
+        %<LenOutPort>);
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

@@ -1,0 +1,57 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Select BM Message</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_encode_bc_message.html" title="IO672 - Encode BC Message"><link rel="next" href="refentry_ref_io682.html" title="IO682"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_select_bm_message"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Select BM Message</h2><p>IO672 - Select BM Message &#8212; <span class="phrase">Select message from a
+                    Bus Monitor list</span></p></div><div class="refsect1"><a name="d5e52118"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_select_bm_message.png"></span></span></p></div><div class="refsect1"><a name="d5e52126"></a><h2>Description</h2><p>This block picks a message with specified properties out of a Bus Monitor list
+                from the Bus Monitor block.</p></div><div class="refsect1"><a name="d5e52129"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>BC Message List from the Bus Monitor block.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">MSG List</span>
+                    </span></dt><dd><p>The passed through BM Message List</p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>Time in microseconds at which this message was received</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Status (seven component vector with contents) </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>message index</p></li><li class="listitem"><p>cmd1 (Rx for RT-&gt;RT)</p></li><li class="listitem"><p>resp1</p></li><li class="listitem"><p>status1 (Transmit for RT-&gt;RT or Broadcast RT-&gt;RT)</p></li><li class="listitem"><p>cmd2 (Tx for RT-&gt;RT)</p></li><li class="listitem"><p>resp2</p></li><li class="listitem"><p>status2 (Receive for RT-&gt;RT or NULL for Broadcast
+                                        RT-&gt;RT)</p></li></ul></div><p>Elements cmd1 and cmd2 contain address information in bit
+                            fields in the 16-bit integer.
+                            cmdN=&lt;RRRRR&gt;T&lt;SSSSS&gt;&lt;CCCCC&gt; Where RRRRR is the 5-bit
+                            field with the remote terminal address. T is 1 if a transmit message, 0
+                            if receive. S is the sub address and C is the count.</p><p>Elements rsp1 and rsp2 contain the response time from the remote
+                            terminal (Time delay between BC data or command word and the received
+                            status word form RT). </p><p>Elements status1 and status2 contain the status word provided by the
+                            remote terminal in response to the BC message.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Elements 5, 6, and 7 are only nonzero for the RT-&gt;RT
+                                messages.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>32 element (uint16) vector data. <code class="literal">cmd 1</code> has the
+                            length of real data in the low order 5 bits.</p></dd></dl></div><p>The block clears the status and data words to 0 if a matching message is not found
+                in the list.</p></div><div class="refsect1"><a name="d5e52181"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message selection mode </span>
+                    </span></dt><dd><p>The message selection (filtering) mode: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>message number</strong></span> &#8212; By
+                                        message number</p></li><li class="listitem"><p><span class="bold"><strong>BC-&gt;RT</strong></span> or <span class="bold"><strong>RT-&gt;BC</strong></span> &#8212; By Remote Terminal
+                                        and sub address</p></li><li class="listitem"><p><span class="bold"><strong>RT-&gt;RT </strong></span>&#8212; By both
+                                        Remote Terminal and sub addresses</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Message number </span>
+                    </span></dt><dd><p>An index into a Bus Monitor list. Use this parameter if you set
+                                <span class="bold"><strong>Message selection mode</strong></span> to <span class="bold"><strong>message number</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Terminal address 1 (Receive if RT-RT) </span>
+                    </span></dt><dd><p>The Remote Terminal from which to select the message. Use this
+                            parameter if you set <span class="bold"><strong>Message selection mode
+                            </strong></span>to one of the following: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>BC-&gt;RT</strong></span> or <span class="bold"><strong>RT-&gt;BC</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>RT-&gt;RT (receive
+                                        side)</strong></span></p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Sub address 1 (Receive if RT-RT) </span>
+                    </span></dt><dd><p>The sub address from which to select the message Use this parameter if
+                            you set <span class="bold"><strong>Message selection mode</strong></span> to one
+                            of the following: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>BC-&gt;RT </strong></span>or<span class="bold"><strong> RT-&gt;BC</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>RT-&gt;RT (receive
+                                        side)</strong></span></p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Remote Terminal address 2 (Transmit if RT-RT) </span>
+                    </span></dt><dd><p>The Remote Terminal from which to select the message. Use this
+                            parameter if you set <span class="bold"><strong>Message selection
+                                mode</strong></span> to <span class="bold"><strong>RT-&gt;RT (send
+                                side)</strong></span>. </p></dd><dt><span class="term">
+                        <span class="guilabel">Sub address 2 (Transmit if RT-RT) </span>
+                    </span></dt><dd><p>The sub address from which to select the message. Use this parameter
+                            if you set <span class="bold"><strong>Message selection mode</strong></span> to
+                                <span class="bold"><strong>RT-&gt;RT (send side)</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction </span>
+                    </span></dt><dd><p>The encode direction. Use this parameter if you set <span class="bold"><strong>Message selection mode</strong></span> to <span class="bold"><strong>BC-&gt;RT</strong></span> or <span class="bold"><strong>RT-&gt;BC</strong></span>. Choose from: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>R (BC-&gt;RT)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>T (RT-&gt;BC)</strong></span></p></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

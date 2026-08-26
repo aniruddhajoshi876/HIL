@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO145 - Analog input</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io145_setup.html" title="IO145 - Setup"><link rel="next" href="refentry_io145_analog_output.html" title="IO145 - Analog Output"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io145_analog_input"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO145 - Analog input</h2><p>IO145 - Analog input &#8212; 
+                <span class="phrase">Reads the IO145 analog inputs</span>
+            </p></div><div class="refsect1"><a name="d5e20569"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io145_analog_input.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="refsect_common_analog_input_ports_with_dma"></a><h2>Ports</h2><p>This driver block has n double-type scalar output ports, where n is the number of
+            selected analog input channels. Each port (signal) returns the analog value in
+            volts.</p><p>If DMA is disabled, then the port width is 1. If DMA is enabled, then the width of the
+            output port is equal to the frame size and each element of this vector contains one
+            sample, where the value at position 1 was taken first.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                    <span class="guilabel">X (X is the analog channel number)</span>
+                </span></dt><dd><p>The value from analog channel X in volts.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                        <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e20594"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the Setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

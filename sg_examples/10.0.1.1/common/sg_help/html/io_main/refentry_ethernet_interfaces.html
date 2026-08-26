@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Ethernet Interfaces</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_sdlc_landing.html" title="SDLC and HDLC"><link rel="next" href="refentry_tcp.html" title="TCP"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ethernet_interfaces"></a><div class="titlepage"></div><div class="refnamediv"><h2>Ethernet Interfaces</h2><p>Ethernet Interfaces</p></div><div class="refsect1"><a name="d5e72964"></a><h2>Introduction</h2><p>Speedgoat real-time target machines provide one or more additional general-purpose
+                Ethernet interfaces. This onboard I/O connectivity can be used for communication
+                protocols, such as UDP, PTP, or EtherCAT Main Device.</p></div><div class="refsect1"><a name="d5e72967"></a><h2>Driver Blocks</h2><p>Drivers for the Ethernet controllers are provided and maintained by MathWorks.
+                They are available in the Simulink Real-Time driver library and can also be accessed
+                via the Speedgoat I/O Blockset: speedgoatlib.</p></div><div class="refsect1"><a name="d5e72970"></a><h2>Ethernet Controllers on I/O Modules</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="49%" class="col1"><col width="51%" class="col2"></colgroup><thead><tr><th>I/O Module</th><th>Ethernet Controller</th></tr></thead><tbody><tr><td>IO710</td><td>Intel 82541</td></tr><tr><td>IO710-10</td><td>Intel I210</td></tr><tr><td>IO712</td><td>Intel 82574IT</td></tr><tr><td>IO713</td><td>Intel 82574IT</td></tr><tr><td>IO715</td><td>Intel I210</td></tr><tr><td>IO716</td><td>Realtek RTL8111H</td></tr><tr><td>IO717</td><td>Intel X550</td></tr><tr><td>IO791</td><td>Intel I210</td></tr><tr><td>IO791-11</td><td>Intel I211</td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e73008"></a><h2>Ethernet Controllers on Real-Time Target Machines</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="49%" class="col1"><col width="51%" class="col2"></colgroup><thead><tr><th>Real-Time Target Machine</th><th>Ethernet Controller</th></tr></thead><tbody><tr><td>Performance P3 (Item ID: 109301)</td><td>
+                                <p>1x Intel I219LM (Host Link)</p>
+                                <p>1x Intel I210AT (ETH1)</p>
+                            </td></tr><tr><td>Performance (Item ID: 109100)</td><td>
+                                <p>1x Intel 82579 (ETH1/Host Link)</p>
+                                <p>1x Intel 82574 (ETH2)</p>
+                            </td></tr><tr><td>Performance Core (Item ID: 109200)</td><td>
+                                <p>1x Intel I219 (ETH1/Host Link)</p>
+                                <p>1x Intel I210 (ETH2) </p>
+                            </td></tr><tr><td>Performance Core (Item ID: 109202)</td><td>
+                                <p>1x Intel I219 (Host Link) </p>
+                                <p>1x Intel I210 (ETH1) </p>
+                            </td></tr><tr><td>Performance Core+ (Item ID: 109900)</td><td>
+                                <p>1x Intel I210 </p>
+                            </td></tr><tr><td>Pulse </td><td>
+                                <p>2x AMD Zynq&#8482; UltraScale+&#8482; MPSoC Gigabit Ethernet MAC (GEM)
+                                    (Host Link &amp; ETH1)</p>
+                                <p>2x Intel I210 (ETH2 &amp; ETH3)</p>
+                            </td></tr><tr><td>Baseline </td><td>3x Intel I210</td></tr><tr><td>Mobile M3 (Item ID: 105301)</td><td>
+                                <p>1x Intel I219 (Host Link) </p>
+                                <p>4x Intel I210 (ETH1-ETH4) </p>
+                            </td></tr><tr><td>Mobile</td><td>
+                                <p>4x Intel 82574IT </p>
+                            </td></tr><tr><td>Unit</td><td>
+                                <p>2x Intel I210 </p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e73064"></a><h2>Supported Ethernet Protocols</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Real-Time UDP</strong></span>: Supported by all Ethernet
+                        interfaces, including the one used as Host Link.</p></li><li class="listitem"><p><span class="bold"><strong>TCP</strong></span>: Supported by all Ethernet
+                        interfaces, including the one used as Host Link.</p></li><li class="listitem"><p><span class="bold"><strong>XCP Master or Slave</strong></span>: Supported by all
+                        Ethernet interfaces, including the one used as Host Link.</p></li><li class="listitem"><p><span class="bold"><strong>EtherCAT Main Device</strong></span>: Supported by all
+                        Ethernet interfaces, except the one used as Host Link and the IO716. Refer
+                        to the <a href="refentry_ethernet_configuration.html" class="olink">Ethernet Configuration
+                            Tool</a>.</p></li><li class="listitem"><p><span class="bold"><strong>PTP IEEE 1588</strong></span>: Only supported on
+                        interfaces with an I210 controller. It can also be used as Host Link. Note
+                        that PTP does not support Model Triggering.</p></li><li class="listitem"><p><span class="bold"><strong>Raw-Ethernet</strong></span>: Supported with R2022a and
+                        later.</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>On the ETH1 interface of the Pulse real-time target machine, EtherCAT Main
+                    Device communication is limited to a sample time of 1 ms.</p></td></tr></table></div></div></div></body></html>

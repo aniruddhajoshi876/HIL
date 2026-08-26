@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BiSS - Sniffer v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_biss_encoder_v1.html" title="BiSS - Encoder v1"><link rel="next" href="refentry_ref_quadrature.html" title="Quadrature"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_biss_sniffer_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>BiSS - Sniffer v2</h2><p>BiSS - Sniffer v2 &#8212; <span class="phrase">The BiSS Sniffer code module is
+                    used to monitor the data stream of an existing BiSS data communication. The
+                    current implementation is intended to be generic and can capture up to 64-bits
+                    of data.</span></p></div><div class="refsect1"><a name="d5e4673"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_biss_sniffer_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e4681"></a><h2>Description</h2><p>The BiSS Sniffer code module is used to monitor the data stream of an existing
+                BiSS data communication. The current implementation is intended to be generic and
+                can capture up to 64-bits of data.</p><p>The following sections describe the code module in more detail:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Usage notes</p></li><li class="listitem"><p>Input and output ports</p></li><li class="listitem"><p>Dialog fields</p></li></ul></div></div><div class="refsect1"><a name="d5e4693"></a><h2>Ports</h2><p>The driver has three outputs port and no input ports.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">RX (63:32) </span>
+                    </span></dt><dd><p>This output returns up to 32-bits of data. Data is captured MSB first.
+                            In a frame of 64-bits, bit 63 corresponds to the first bit of the
+                            transmission.</p></dd><dt><span class="term">
+                        <span class="guilabel">RX (31:0) </span>
+                    </span></dt><dd><p>This output returns up to 32-bits of data. Data is captured MSB first.
+                            In a frame of 64-bits, bit 0 corresponds to the last bit of the
+                            transmission.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bits </span>
+                    </span></dt><dd><p>This output returns the number of bits that the BiSS Sniffer Code
+                            Module captured between the start condition and the timeout event.
+                        </p></dd></dl></div><p>The output width is defined by the channel count parameter.</p></div><div class="refsect1"><a name="d5e4714"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: BiSS Sniffer configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Timeout vector </span>
+                    </span></dt><dd><p>The timeout to abort the current communication in case insufficient
+                            master clock cycles are received. Units are in ticks, Range 0 to 65535
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Line delay compensation vector </span>
+                    </span></dt><dd><p>The line delay compensation vector intends to compensate. Units are in
+                            ticks. Range 0 to 255</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div></div></body></html>

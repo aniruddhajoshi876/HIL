@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MQTT - Client Connection</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mqtt_client_setup.html" title="MQTT - Client Setup"><link rel="next" href="refentry_mqtt_client_subscribe.html" title="MQTT - Client Subscribe"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mqtt_client_connection"></a><div class="titlepage"></div><div class="refnamediv"><h2>MQTT - Client Connection</h2><p>MQTT - Client Connection &#8212; <span class="phrase">Connects the local MQTT
+                    client with one remote MQTT broker</span></p></div><div class="refsect1"><a name="d5e70446"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mqtt_client_connection.png"></span></span></p></div><div class="refsect1"><a name="d5e70454"></a><h2>Description</h2><p>The Connection block connects the local MQTT client with one remote MQTT broker.
+                Each broker connection requires a Connection block in the model. The connection
+                start point is given by the local IP address, entered in the Setup block mask, and a
+                random TCP port. The connection endpoint is given by the IP address and TCP port of
+                the remote broker. Enter both remote parameters in the Connection block mask.
+            </p></div><div class="refsect1"><a name="d5e70457"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Boolean output to inform the user when a connection with the defined
+                            MQTT broker is established.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e70473"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The Connection ID is used to assign Publish and Subscribe blocks to a
+                            particular client-broker connection. Connection IDs range between 0 to
+                            65535 and must be unique along all Connections blocks of the client
+                            (these blocks have the same Station ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the remote MQTT broker.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote TCP Port </span>
+                    </span></dt><dd><p>Enter the TCP port the remote MQTT broker is listening on for
+                            connection requests. The default value is 1883.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Security</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">User Authentication</span>
+                    </span></dt><dd><p>If selected, the client uses the credentials defined in the <span class="bold"><strong>Username</strong></span> and <span class="bold"><strong>Password</strong></span> parameters when connecting to the broker.
+                            Otherwise, the client tries to connect anonymously.</p></dd><dt><span class="term">
+                        <span class="guilabel">Username</span>
+                    </span></dt><dd><p>Specify the user name with which the client should log in to the
+                            broker.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Password</span>
+                    </span></dt><dd><p>Enter the password associated with the username.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd></dl></div></div></div></body></html>

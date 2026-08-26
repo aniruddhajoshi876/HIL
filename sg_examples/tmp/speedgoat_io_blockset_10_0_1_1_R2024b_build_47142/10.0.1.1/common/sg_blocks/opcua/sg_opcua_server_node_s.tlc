@@ -1,0 +1,146 @@
+%implements sg_opcua_server_node_s "C"
+
+%include "sg_opcua.tlc"
+
+%<LibAddToCommonIncludes("%<LibGetModelName()>_opcua.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void    
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+%realformat "CONCISE"
+
+    %<createUniqueBlockId(block)>
+    %<opcuaFileCreation(block)>
+
+    %openfile tmpBuf
+    %assign DataProps = getDataProps(block, 0, -1)
+    %assign NodeIdProps = getNodeIdProps(block, 0)
+    /* Node properties of block %<block.Name> */
+    %<deployValSpecifier(block, DataProps, 0)>
+    %<deployNodeSpecifier(block, NodeIdProps, DataProps, 0)>
+    %closefile tmpBuf
+	%<LibSetSourceFileSection(cFileOpcUa, "Definitions", tmpBuf)>
+
+    %openfile tmpBuf
+    extern OPCUA_NODE_PROPS_T %<LibGetModelName()>_var_%<block.UBID>_0;
+    %closefile tmpBuf
+    %<LibSetSourceFileSection(hFileOpcUa, "Definitions", tmpBuf)>
+
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %% Module registry
+    %<opcuaCreateRemanentItem(block, "cServerNode", 0)>
+
+    %with block.SFcnParamSettings[0]
+    {
+        int32_t ret = 0;
+        opcua::cServerStation* Station = NULL;
+        opcua::cServerNode *Node = NULL;
+
+        /* Add one server station */
+        ret = opcua::Root.addStation(%<ServerID>, OPCUA_STATION_TYPE_SERVER, (opcua::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA server station %i failed!", %<ServerID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add node */
+        ret = Station->addNode(&Node);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Error %i while adding OPC UA variable to block!", ret);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the node */
+        ret = Node->init(&%<LibGetModelName()>_var_%<block.UBID>_0);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Error %i while initializing OPC UA variable!", ret);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        %if NodeType == 1
+            %if EXISTS(InitValueRun)
+                %if LibBlockParameterWidth(InitValueRun) >= 1
+                    %if ReadOp
+                        %assign TotalLen = LibGetDataTypeSLSizeFromId(LibBlockOutputSignalDataTypeId(0)) * LibBlockOutputSignalWidth(0)
+                        memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, \
+                                %<LibBlockParameterBaseAddr(InitValueRun) >, \
+                                %<TotalLen>);
+                    %endif
+    
+                        %assign TotalLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValueRun)) * LibBlockParameterWidth(InitValueRun)
+                        memcpy(Node->Data, \
+                                %<LibBlockParameterBaseAddr(InitValueRun) >, \
+                                %<TotalLen>);
+    
+                %endif
+            %endif
+        %endif
+
+        /* Store node instance in module registry */
+        %<opcuaSetRemanentItem(block, "Node", 0)>
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+    
+    {
+		
+        %if NodeType == 1
+            %if WriteOp || ReadOp
+                %<opcuaGetRemanentItem(block, "Node", "cServerNode", 0)>
+            %endif
+
+            %if WriteOp
+                %if Extended
+                    %if LibBlockInputSignalConnected(1)
+                        if (%<LibBlockInputSignal(1, "", "", 0)> != 0)
+                    %endif
+                %endif
+
+                %assign TotalLen = LibGetDataTypeSLSizeFromId(LibBlockInputSignalDataTypeId(0)) * LibBlockInputSignalWidth(0)
+                {
+                    memcpy(Node->Data, \
+                            %<LibBlockInputSignalAddr(0,"","",0)>, \
+                            %<TotalLen>);
+                }
+            %endif
+            
+            %if ReadOp
+                %assign TotalLen = LibGetDataTypeSLSizeFromId(LibBlockOutputSignalDataTypeId(0)) * LibBlockOutputSignalWidth(0)
+                memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, \
+                        Node->Data, \
+                        %<TotalLen>);
+            %endif
+        %endif
+
+    }
+
+    %<opcuaFileCompletion(block)>
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

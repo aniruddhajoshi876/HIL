@@ -1,0 +1,111 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO106 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io106_pin_mapping.html" title="IO106 Pin Mapping"><link rel="next" href="refentry_io106_analog_input.html" title="IO106 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io106_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO106 - Setup</h2><p>IO106 - Setup &#8212; 
+                <span class="phrase">Configure the IO106 input/output blocks</span>
+            </p></div><div class="refsect1"><a name="d5e4830"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io106_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e4838"></a><h2>Description</h2><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on the other driver blocks
+                (Analog input, Start conversion and Read channels). The Analog input (DMA) block is
+                an exception as it does not use the Setup block.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e4844"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Parameter Group</span>
+                    </span></dt><dd><p>This control selects the displayed configuration section, the
+                            parameters of which are then shown in the dialog box below the
+                            "Parameter Group" field. The groups available are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Module setup</p></li><li class="listitem"><p>Analog input setup</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Module setup</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Autocalibration</span>
+                    </span></dt><dd><p>The autocalibration is enabled by default to obtain maximum
+                            measurement accuracy. The autocalibration function compensates for
+                            component aging and minimizes the effects of temperature on accuracy.
+                            The calibration normally takes approximately 2 seconds, so we recommend
+                            increasing the host-target communication time-out in the model
+                            configuration parameters to allow for this. The calibration is not
+                            re-executed during normal start/stop operation once the target
+                            application has been downloaded. All input channels are calibrated to a
+                            single internal voltage reference. Offset and gain error corrections for
+                            each channel are determined during the autocalibration process and are
+                            applied to each channel in real-time during data acquisition.</p><p><span class="bold"><strong>Warning: Disabling the autocalibration may cause
+                                the wrong values when the input range is changed.</strong></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Inter-Module Synchronization</span>
+                    </span></dt><dd><p>Select either Initiator (default) or Target. If Initiator is selected,
+                            A/D conversions are initiated by this module and the module outputs a
+                            pulse train to optionally trigger other IO106 I/O modules where
+                            "Inter-Module Synchronization" is set to Target. The pulse train is sent
+                            on the I/O connector SYNC I/O pin. Ground is on the SYNC RTN pin (see
+                            the I/O pin mapping section for pin numbers).</p><p>If your target machine contains a single IO106 I/O module, then
+                            Initiator must be selected. If Target is selected, the module itself
+                            does not start its A/D conversions, but instead triggers them using a
+                            pulse train from another IO106 I/O module where "Inter-Module
+                            Synchronization" is set to Initiator. The pulse train is received on the
+                            SYNC I/O pin (ground is on the SYNC RTN pin). With this setting, there
+                            must be at least one other IO106 I/O module present with "Inter-Module
+                            Synchronization" set to Initiator, and the modules' SYNC I/O and SYNC
+                            RTN pins must be physically wired together (SYNC I/O to SYNC I/O, SYNC
+                            RTN to SYNC RTN). To use this feature with more than two IO106 I/O
+                            modules, all SYNC I/O pins and all SYNC RTN pins must be wired together
+                            (see the I/O pin mapping section for pin numbers). Exactly one IO106 I/O
+                            module must be set to Initiator and all others to Target.</p><p>When using the "Inter-Module Synchronization" setting, the initiator
+                            must use the Start Conversion driver block, and the target the Read
+                            Channels driver block. Otherwise, with a single module, use the Analog
+                            input driver block to read the channels.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>DMA cannot be used with inter-module synchronization.</p></td></tr></table></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Analog input setup</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of Channels</span>
+                    </span></dt><dd><p>The number of channels to read. This parameter is a scalar value and
+                            must be a multiple of 2. The IO106 I/O module has 32 input channels in
+                            single-ended mode (see "Input Coupling" field below), 31 (30) input
+                            channels in pseudo-differential mode, and 16 channels in differential
+                            mode. This field is restricted to multiples of 2 because the IO106 I/O
+                            module returns two channels with each read of the analog input data
+                            FIFO. If you, for example, want to acquire 13 channels, define the
+                            "Number of Channels" as 14 and ignore the last channel (14) in your
+                            model. In single-ended and differential input coupling mode, the first
+                            channel returned by either the Analog input or the Read Channels driver
+                            block is always channel 1 (or 0 according to the IO106 reference
+                            manual), and the last channel is always the n'th channel based on the
+                            "Number of Channels" setting. In pseudo-differential input coupling
+                            mode, channel 1 is used as a common reference for all other input
+                            channels and its value is of no interest. Therefore, when in this mode,
+                            the Analog input and Read Channels driver blocks only output channels 2
+                            to n.</p></dd><dt><span class="term">
+                        <span class="guilabel">Range</span>
+                    </span></dt><dd><p>The input range for all A/D channels. This driver does not allow
+                            different ranges for individual channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Coupling</span>
+                    </span></dt><dd><p>Either Single-ended, Pseudo-differential or Differential. The same
+                            setting applies to all input channels. For more information see the
+                            "Number of Channels" field above, and the IO106 reference manual.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Single-ended: For single-ended channels, each input signal
+                                        is measured with respect to the common input return. That
+                                        is, each channel reports the difference between the input
+                                        signal voltage and the voltage present on the common input
+                                        return. This configuration provides the maximum number of
+                                        input channels, but allows noise and other forms of
+                                        interference on the common return line to appear in the
+                                        signal measurement</p></li><li class="listitem"><p>Pseudo-differential: In this mode the first channel is
+                                        designated as the reference for all other channels, and its
+                                        sampled value is subtracted from the sampled values of all
+                                        other channels. With this arrangement, noise and
+                                        interference on the common return line is essentially
+                                        canceled, and the first input line can be used as a "remote
+                                        sense" line for channels 1 to 31</p></li><li class="listitem"><p>Differential: Each input channel has a dedicated
+                                        associated reference level channel</p></li></ul></div></dd></dl></div></div></div></body></html>

@@ -1,0 +1,14 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO731 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io731.html" title="IO731"><link rel="next" href="refentry_io731_configuration.html" title="IO731 - Configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io731_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO731 Usage Notes</h2><p>IO731 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e56608"></a><h2>Configure gPTP</h2><p>If you want to synchronize your target machine's clock with gPTP (IEEE 802.1AS),
+                you need to configure the Ethernet interface of the IO731. The PTP daemon on your
+                target is configured with the following commands:</p><p>Master </p><pre class="programlisting">tg.ptpd.Command = 'ptpd-avb -L -K -W -b wm1'</pre><p>
+                </p><p>Slave </p><pre class="programlisting">tg.ptpd.Command = 'ptpd-avb -L -K -g -b wm1'</pre><p>
+                This
+                example shows the basic set of options needed to configure the PTP daemon. Make sure
+                these settings align with the configuration of the IO731 and the network.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>A valid IP address must be assigned to the Ethernet interface of the IO731 to
+                    be able to use PTP.</p></td></tr></table></div><p>Refer to the <a href="refentry_ethernet_configuration.html" class="olink">Speedgoat Ethernet Configuration
+                    Tool</a> help for more information.</p><p>For information on all the PTP options available, refer to the <a class="link" href="https://www.qnx.com/developers/docs/7.1/#com.qnx.doc.neutrino.utilities/topic/p/ptpd.html" target="_blank">ptpd daemon documentation</a>.
+            </p></div><div class="refsect1"><a name="d5e56621"></a><h2>Connectors</h2><p><span class="inlinemediaobject"><img src="./graphics/io731_connector.png" width="486"></span></p><p>The PPS output is synchronized by gPTP (IEEE 802.1AS). The amplitude of the signal is
+                3.3 V and has a pulse width of 200 ms.</p></div></div></body></html>

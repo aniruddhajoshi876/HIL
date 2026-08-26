@@ -1,0 +1,45 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial Onboard - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_ref_serial_onboard_examples.html" title="Serial Onboard - Examples"><link rel="next" href="refentry_serial_onboard_write.html" title="Serial Onboard - Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_onboard_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial Onboard - Setup </h2><p>Serial Onboard - Setup  &#8212; <span class="phrase">Setup of parameters for
+                    serial onboard ports</span></p></div><div class="refsect1"><a name="d5e377"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="./graphics/icon_serial_onboard_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e385"></a><h2>Description</h2><p>This block is part of the Serial driver blockset for real-time target machines
+                supporting the RS232, RS422 and RS485 protocols. Each model for a target machine
+                must contain exactly one Setup block.</p><p>The Setup block dialog box allows you to specify and configure all available
+                onboard ports of a supported real-time target machine. This block therefore has an
+                impact on the other driver blocks (Serial Onboard Write and Serial Onboard Read).
+                The number of available ports may vary depending on the generation of the real-time
+                target machine. As a result, the ports shown in the Setup block may not reflect the
+                actual hardware configuration.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e392"></a><h2>Block Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Machine Type</span></span></dt><dd><p>Select the type of your real-time target machine.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Setup </span>
+                    </span></dt><dd><p>Configuration of the transceiver for each port. This parameter defines
+                            the physical layer of the serial protocol. </p><p>Each real-time target machine has a specific configuration. Refer to
+                            the <a href="refentry_ref_serial_onboard.html" class="olink">Serial Onboard introduction
+                                page</a> for more information.</p><p>The options are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RS232</p></li><li class="listitem"><p>RS485 Half-Duplex</p></li><li class="listitem"><p>RS422/RS485 Full-Duplex</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Port Setup Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Custom Baud Rate</span>
+                    </span></dt><dd><p>Switches the baud rate selection from a dropdown menu to a text field,
+                            where any baud rate in the <a href="refentry_ref_serial_onboard.html" class="olink">declared range</a> can
+                            be chosen. An <span class="bold"><strong>onboard serial runtime license is
+                                required</strong></span> to use this feature.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is only available when <span class="bold"><strong>Pulse</strong></span> is chosen as the <span class="bold"><strong>Machine
+                                    Type</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Custom Baud Rate</span>
+                    </span></dt><dd><p>Select a baud rate from the <a href="refentry_ref_serial_onboard.html" class="olink">declared range</a>. An
+                                <span class="bold"><strong>onboard serial runtime license is
+                                required</strong></span> to use this feature.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is only available when <span class="bold"><strong>Pulse</strong></span> is chosen as the <span class="bold"><strong>Machine
+                                    Type</strong></span>. </p><p>Also, the actual baud rate will always be within 1 % of the
+                                selected baud rate.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Baud Rate</span>
+                    </span></dt><dd><p>Select the baud rate from a list of standard baud rates. The <a href="refentry_ref_serial_onboard.html" class="olink">declared range</a> varies between target machines.</p></dd><dt><span class="term">
+                        <span class="guilabel">Parity</span>
+                    </span></dt><dd><p>Parity is a method for detecting errors during transmission. Options
+                            are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>None</p></li><li class="listitem"><p>Even</p></li><li class="listitem"><p>Odd</p></li><li class="listitem"><p>Mark</p></li><li class="listitem"><p>Space</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Bits</span>
+                    </span></dt><dd><p>The number of data bits for each character. Options are: 5, 6, 7 or 8.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Stop Bits</span>
+                    </span></dt><dd><p>The number of stop bits sent at the end of every character. Options
+                            are: 1 or 2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Software FIFO Size</span>
+                    </span></dt><dd><p>The size of the software FIFO used to buffer transmitted characters.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Software FIFO Size</span>
+                    </span></dt><dd><p>The size of the software FIFO to buffer characters between interrupt
+                            service and periodic execution.</p></dd><dt><span class="term"><span class="guilabel">Enable auto RTS/CTS</span></span></dt><dd><p>Use the RTS/CTS pins for flow control.<a href="#ftn.d5e488" class="footnote" name="d5e488"><sup class="footnote">[1]</sup></a></p></dd></dl></div></div><div class="footnotes"><br><hr class="footnote-hr"><div id="ftn.d5e488" class="footnote"><p><a href="#d5e488" class="para"><sup class="para">[1] </sup></a>Only available for RS232 serial protocol</p></div></div></div></body></html>

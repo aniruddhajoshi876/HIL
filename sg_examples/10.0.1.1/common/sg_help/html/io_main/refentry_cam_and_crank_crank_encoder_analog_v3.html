@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Crank Encoder Analog v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_knock_generator_v3.html" title="Cam and Crank - Knock Generator v3"><link rel="next" href="refentry_cam_and_crank_vrs_v3.html" title="Cam and Crank - Variable Reluctance Sensor v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_crank_encoder_analog_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Crank Encoder Analog v3</h2><p>Cam and Crank - Crank Encoder Analog v3 &#8212; <span class="phrase">This Crank
+                    Encoder Analog code module is an extension to the Crank Encoder v3 code module.
+                    It generates an analog output signal from the crankshaft.
+                </span></p></div><div class="refsect1"><a name="d5e12929"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_crank_encoder_analog_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e12938"></a><h2>Description</h2><p>This Crank Encoder Analog code module receives the crankshaft angle from the
+                corresponding Crank Encoder v3 code module channel. The settings, such as tooth and
+                missing tooth number, are also adopted from the corresponding Crank Encoder v3 code
+                module. The analog output signal is either a sine wave or square wave representing
+                the crank teeth.</p><p>This driver block must be used in combination with a Crank Encoder v3 block as
+                well as an Analog Output block to enable and parameterize the corresponding Crank
+                encoder and Analog output channels.</p></div><div class="refsect1"><a name="d5e12942"></a><h2>Ports</h2><p>This driver block has two input ports:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Amplitude </span>
+                    </span></dt><dd><p>This input signal defines the amplitude [V] of the analog crankshaft
+                            output signal. It is limited by the range of the analog output interface
+                            on the configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bias </span>
+                    </span></dt><dd><p>This input signal defines the bias [V] of the analog crankshaft
+                            output signal. It is limited to -5 to 5 volts.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12957"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector </span>
+                    </span></dt><dd><p>A vector of Crank encoder analog channels which this driver block
+                            entity will access. Channels can be specified in the range 1 to N (N is
+                            the number of crank encoder channels in the configuration file). The
+                            order of the channels can be freely mixed, but the same channel should
+                            not be used more than once. The width of this vector also defines the
+                            resulting size of some of the following parameters if scalar expansion
+                            applies. The length of the channel vector defines the dimension of the
+                            input signals.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Output Sine Wave </span>
+                    </span></dt><dd><p>The analog output signal will be a sine wave representing the teeth of
+                            the crankshaft if this checkbox is enabled. The output signal will be a
+                            square wave if this checkbox is cleared.</p></dd></dl></div></div></div></body></html>

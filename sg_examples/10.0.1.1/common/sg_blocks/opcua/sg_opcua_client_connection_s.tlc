@@ -1,0 +1,91 @@
+%implements sg_opcua_client_connection_s "C"
+
+%include "sg_opcua.tlc"
+
+%<LibAddToCommonIncludes("%<LibGetModelName()>_opcua.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+    %realformat "CONCISE"
+
+    %<createUniqueBlockId(block)>
+    %<opcuaFileCreation(block)>
+    %%<opcuaAddModuleRegistryField(block, "Connection", "cClientConnection*")>
+        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+	%% Module registry
+	%%<opcuaAddModuleRegistryInitCode()>  
+    %<opcuaCreateRemanentItem(block, "cClientConnection", 0)>
+
+    %with block.SFcnParamSettings
+
+    {
+        int32_t ret = 0;
+        opcua::cClientStation *Station = NULL;
+        opcua::cClientConnection *Connection = NULL;
+
+        /* Add one client station */
+        ret = Root.addStation(%<ClientID>, OPCUA_STATION_TYPE_CLIENT, (opcua::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA client station %i failed!", %<ClientID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one connection */
+        ret = Station->addConnection(%<ConnectionID>, (opcua::cClientConnection**)&Connection);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA connection %i to client %i failed!", %<ClientID>, %<ConnectionID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the connection */
+        ret = Connection->init((char*)"%<IpAddr>", %<TcpPort>, %<SecurityPolicy>, %<MessageSecurityMode>, %<UserTokenPolicy>, (char*)"%<Username>", (char*)"%<Password>", (char*)"%<Certificate>", (char*)"%<PrivateKey>", (char*)"%<AppUri>");
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing OPC UA connection %i failed!", %<ConnectionID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Store connection instance in module registry */
+        %%<opcuaAssignToRegistryField(block, "Connection", "Connection", "")>
+        %<opcuaSetRemanentItem(block, "Connection", 0)>
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+    
+    %<opcuaFileCompletion(block)>
+
+    {
+        using namespace opcua;
+        %%cClientConnection* Connection;
+        %%<opcuaAssignFromRegistryField(block, "Connection", "Connection", "")>
+        %<opcuaGetRemanentItem(block, "Connection", "opcua::cClientConnection", 0)>
+        %<LibBlockOutputSignal(0, "", "", 0)> = Connection->SessionState;
+        %<LibBlockOutputSignal(0, "", "", 1)> = Connection->SecureChannelState;
+        %<LibBlockOutputSignal(0, "", "", 2)> = Connection->ConnectStatus;
+    }
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

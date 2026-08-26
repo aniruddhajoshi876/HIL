@@ -1,0 +1,162 @@
+{
+    "General": {
+        "brand": "TDK Lambda",
+        "deviceName": "GEN",
+        "nChannels": 1,
+        "comInterfaces": ["Serial"],
+        "usMinMsgDelay": 200e3,
+        "msgSendTermination": [13],
+        "msgReceiveTermination": [13],
+        "stdSCPI": false,
+        "mdlStopMsg": "['GRST' char(13)]"
+    },
+    "DaisyChain": {
+        "present": true,
+        "devSelection": "ADR <adr>",
+        "selectionAck": "OK"
+    },
+    "ErrorHandling":{
+        "autoError": true
+    },
+    "Msg":{
+        "Set": [
+            {
+                "cmd": "PV <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Voltage",
+                "portText": "Volt"
+            },
+            {
+                "cmd": "PC <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Current",
+                "portText": "Curr"
+            },
+            {
+                "cmd": "OUT <value>",
+                "valueType": "uint",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Out State",
+                "portText": "OutS"
+            },
+            {
+                "cmd": "FLD <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Foldback Protection",
+                "portText": "FLD Prot"
+            },
+            {
+                "cmd": "FBD <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Fold Back Delay",
+                "portText": "FBD Delay"
+            },
+            {
+                "cmd": "OVP <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "OVP",
+                "portText": "OVP"
+            },
+            {
+                "cmd": "UVL <value>",
+                "valueType": "double",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "UVL",
+                "portText": "UVL"
+            },
+            {
+                "cmd": "RST",
+                "valueType": "none",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Reset",
+                "portText": "RST"
+            },
+            {
+                "cmd": "CLS",
+                "valueType": "none",
+                "expectedResponse": "OK",
+                "responseType": "string",
+                "dropdownText": "Clear Status",
+                "portText": "CLS"
+            }
+        ],
+        "Request": [
+            {
+                "cmd": "PV?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Set Voltage",
+                "portText": "SetVolt"
+            },
+            {
+                "cmd": "MV?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Actual Voltage",
+                "portText": "RealV"
+            },
+            {
+                "cmd": "PC?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Set Current",
+                "portText": "SetCurr"
+            },
+            {
+                "cmd": "MC?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Actual Current",
+                "portText": "RealCurr"
+            },
+            {
+                "cmd": "OUT?",
+                "expectedResponse": "<value>",
+                "responseType": "ON/OFF",
+                "dropdownText": "Out State",
+                "portText": "OutS"
+            },
+            {
+                "cmd": "FLD?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Foldback Protection",
+                "portText": "FLD Prot"
+            },
+            {
+                "cmd": "FBD?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Fold Back Delay",
+                "portText": "FBD Delay"
+            },
+            {
+                "cmd": "OVP?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "OVP",
+                "portText": "OVP"
+            },
+            {
+                "cmd": "UVL?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "UVL",
+                "portText": "UVL"
+            }
+        ]
+    }
+}

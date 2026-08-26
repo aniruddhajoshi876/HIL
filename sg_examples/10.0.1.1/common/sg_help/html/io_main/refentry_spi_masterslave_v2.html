@@ -1,0 +1,133 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SPI - Master / Slave v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_spi_masterslave_v1.html" title="SPI - Master / Slave v1"><link rel="next" href="refentry_spi_sniffer_v1.html" title="SPI - Sniffer v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_spi_masterslave_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>SPI - Master / Slave v2</h2><p>SPI - Master / Slave v2 &#8212; <span class="phrase">The SPI driver block can act
+                    as SPI Master or SPI slave.</span></p></div><div class="refsect1"><a name="d5e10981"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_spi_masterslave_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e10989"></a><h2>Description</h2><p>The SPI driver block can act as SPI Master or SPI slave.</p></div><div class="refsect1"><a name="d5e10992"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Tx Data n (n is the channel number) </span>
+                    </span></dt><dd><p>The data of this input signal are transferred within the next
+                            available SPI frame.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Rx Data n (n is the channel number) </span></span></dt><dd><p>This output signal represents the data of the last frame
+                            received.</p></dd><dt><span class="term">
+                        <span class="guilabel">Rx Data n valid (n is the channel number) </span>
+                    </span></dt><dd><p>This output indicates that a complete SPI frame has been received and
+                            all <span class="bold"><strong>Rx Data n</strong></span> are valid. This output is
+                            not visible if the SPI mode is master and <span class="bold"><strong>Sync
+                                Mode</strong></span> is set.</p></dd><dt><span class="term"></span></dt><dd><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The number of vector elements of <span class="bold"><strong>Tx Data
+                                    n</strong></span> and <span class="bold"><strong>Rx Data n</strong></span> is
+                                defined with the frame size parameter in the SPI configuration tab.
+                                Each element of the data vector corresponds to a SPI data word.
+                            </p></td></tr></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e11022"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SPI Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Role </span>
+                    </span></dt><dd><p>SPI role, there are two possibilities:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Master</strong></span></p></li></ul></div><p> In this case, the SPI block controls the SPI data
+                            transfer. It initiates frame starts and defines all frame parameters.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Slave</strong></span></p></li></ul></div><p>In this case, the SPI block receives and transmits its
+                            data depending on the incoming SPI frame.</p></dd><dt><a name="refsect_spi_parameter_sync_mode"></a><span class="term">
+                        <span class="guilabel">Sync Mode </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>When set, the SPI block starts a new frame when the simulation step
+                            begins and actively waits until the complete SPI frame is transferred.
+                            Note that the CPU is blocked for at least the complete SPI frame time
+                            (for details see <a href="refentry_spi_usage_notes.html#refsect_spi_timing_master_synchronized" class="olink">SPI Transfer
+                                Timing with synchronized Master</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Multislave Mode </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>When set, the SPI master can communicate with up to 8 different slaves
+                            using multiple chip selection signals.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Channel Vector</strong></span> is limited to
+                                one element in multislave mode. One driver block cannot contain more
+                                than one SPI master that is running in multislave mode. All the
+                                scalar expandable parameters described below will be used for the
+                                frame settings of each multislave channel.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Multislave Channel Vector </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master and <span class="bold"><strong>Multislave Mode</strong></span> is set.</p><p>A vector of slave channels that is accessed by this master driver
+                            block. You can specify channels in the range 1-8. The width of this
+                            vector also defines the subsequent size of some of the following
+                            parameters if scalar expansion applies. The order of these channels
+                            corresponds to the order of the SPI frames sent to the different
+                            slaves.</p></dd><dt><span class="term">
+                        <span class="guilabel">Write Tx Data Only </span>
+                    </span></dt><dd><p>When set, there will be no <span class="bold"><strong>Rx Data n</strong></span>
+                            output signals.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read Rx Data Only </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to slave.</p><p>When set, there will be no <span class="bold"><strong>Tx Data n</strong></span>
+                            input signals.</p></dd><dt><span class="term">
+                        <span class="guilabel">CPOL Vector</span>
+                    </span></dt><dd><p>The clock polarity parameter (for details see <a href="refentry_spi_usage_notes.html#refsect_spi_cpol_cpha" class="olink">CPOL
+                                and CPHA</a>): </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: SCLK idle state is low</p></li><li class="listitem"><p>1: SCLK idle state is high</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">CPHA Vector</span>
+                    </span></dt><dd><p>The clock phase parameter (for details see <a href="refentry_spi_usage_notes.html#refsect_spi_cpol_cpha" class="olink">CPOL
+                                and CPHA</a>):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: sample on the leading (first) clock edge regardless of
+                                    whether the first clock is rising or falling</p></li><li class="listitem"><p>1: sample on the trailing (second) clock edge regardless of
+                                    whether the second clock is rising or falling</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Transmission Frequency Vector [Hz] </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>This parameter defines the clock rate of the serial clock I/O
+                            line.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The frequency actually applied is always an integer fraction of
+                                the FPGA frequency. For example, if the FPGA frequency is
+                                75&nbsp;MHz and the desired frequency is 510&nbsp;kHz, the closest
+                                possible frequency of 75&nbsp;MHz/147 = 510.2041&nbsp;kHz will be
+                                applied.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Start Delay Vector [s]</span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>The time between the activaction of the chip select I/O line and the
+                            first applied edge of the serial clock I/O line (for details see <a href="refentry_spi_usage_notes.html#refsect_spi_timing_diagram" class="olink">Timing Diagram</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Interword Delay Vector [s]</span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>Idle time between words of a single frame (for details see <a href="refentry_spi_usage_notes.html#refsect_spi_timing_diagram" class="olink">Timing Diagram</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop Delay Vector [s]</span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>The time between the last applied edge of the serial clock I/O line
+                            and the deactivaction of the chip select I/O line (for details see
+                                <a href="refentry_spi_usage_notes.html#refsect_spi_timing_diagram" class="olink">Timing
+                            Diagram</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Delay Compensation Vector [s] </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master.</p><p>The time to compensate the signal delay which is the sum of
+                            the:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Delay of the master clock I/O line output to the slave clock
+                                    I/O line input</p></li><li class="listitem"><p>Delay of the slave clock I/O line input to the slave serial
+                                    I/O line output (slave data processing delay)</p></li><li class="listitem"><p>Delay of the slave serial I/O line output to the master serial
+                                    I/O line input</p></li></ul></div><p>For details see <a href="refentry_spi_usage_notes.html#refsect_spi_timing_diagram" class="olink">Timing Diagram</a></p></dd><dt><span class="term">
+                        <span class="guilabel">Words per Frame Vector </span>
+                    </span></dt><dd><p>Defines the number of words per frame. The range of this parameter
+                            depends upon the SPI mode:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Master Synchronized: Valid range is 1 to 1024. With this
+                                    setting, the number of words sent within one frame can be
+                                    controlled with an input signal when the <span class="bold"><strong>Make dynamic</strong></span> checkbox is enabled. Note that the
+                                        <span class="bold"><strong>Words per Frame Vector</strong></span>
+                                    parameter still defines the maximum possible frame size.</p></li><li class="listitem"><p>Master Non-Synchronized: Valid range is 1 to 512</p></li><li class="listitem"><p>Slave: Valid range is 1 to 256</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Bits per Word Vector </span>
+                    </span></dt><dd><p>Defines the number of bits per word. Valid range is 1 to 32</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The signals <span class="bold"><strong>Tx Data n</strong></span> and
+                                    <span class="bold"><strong>Rx Data n</strong></span> are uint32 values.
+                                The number of bits that are packed into a SPI data word is always
+                                right-aligned (least significant bits are used).</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Transmit LSbit first Vector</span>
+                    </span></dt><dd><p>Defines the order of the bits being transferred.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The least significant bit is transmitted as the last bit
+                                    within a single SPI word</p></li><li class="listitem"><p>1: The least significant bit is transmitted as the first bit
+                                    within a single SPI word</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">No Chip Select </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to slave.</p><p>When activated, the slave ignores the chip select I/O line. Instead, a
+                            frame start is detected with the first detected edge on the clock I/O
+                            line and a frame end occurs when the clock I/O line is idle for a time
+                            greater than <span class="bold"><strong>Clock Timeout</strong></span>.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When <span class="bold"><strong>No Chip Select</strong></span> is set and
+                                    <span class="guilabel">Write Tx Data Only </span> is not set, <span class="bold"><strong>CPHA</strong></span> must be set to 1. (for details see
+                                    <a href="refentry_spi_usage_notes.html#refsect_spi_no_cs" class="olink">SPI Transfer without chip
+                                    select</a>)</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Clock Timeout Vector </span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to slave and <span class="bold"><strong>No Chip
+                                Select</strong></span> is set.</p><p>If the clock I/O line was inactive for this time (no signal edges
+                            detected), the present SPI frame is finished.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Sync Length Vector</span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master and if the configuration file
+                            supports SPI v2.7 or newer.</p><p>Defines the length in seconds of the physical SYNC signal of the SPI
+                            unit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate Data Sync at Frame Start Vector</span>
+                    </span></dt><dd><p>This parameter is only available when <span class="bold"><strong>Role</strong></span> is set to master and if the configuration file
+                            supports SPI v2.7 or newer.</p><p>Defines the behavior of the physical SYNC signal of the SPI unit at
+                            frame start.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: No pulse is generated at SPI frame start on the physical
+                                    SYNC signal</p></li><li class="listitem"><p>1: A pulse is generated at SPI frame start on the phsyical
+                                    SYNC signal</p></li></ul></div></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div></div></body></html>

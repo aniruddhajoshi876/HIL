@@ -1,0 +1,22 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DMA Controller v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_dma_controller_usage_notes.html" title="DMA Controller Usage Notes"><link rel="next" href="refentry_ref_endat.html" title="EnDat"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dma_controller_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>DMA Controller v1</h2><p>DMA Controller v1 &#8212; <span class="phrase">The DMA Controller shows
+                    detailed information about rate timing in case the model is set up with the
+                    Optimize Data Transfer switched on.</span></p></div><div class="refsect1"><a name="d5e9980"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dma_controller_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e9988"></a><h2>Description</h2><p>If the model is set up with an IO3xx module and Optimize Data Transfer is used,
+                you can add this block to the model to get detailed information about duration of
+                the fastest rate in your model.</p></div><div class="refsect1"><a name="d5e9991"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sample Number </span>
+                    </span></dt><dd><p>This output indicates the corresponding sample step. It is a counter
+                            that overflows at 127</p></dd><dt><span class="term">
+                        <span class="guilabel">Overload</span>
+                    </span></dt><dd><p>This output indicates if the last sample step has been overloaded over
+                            time</p></dd><dt><span class="term">
+                        <span class="guilabel">Duration</span>
+                    </span></dt><dd><p>This output indicates the total amount of time in seconds that was
+                            needed for the last sample step. This includes data transfer to and from
+                            the FPGA and the TET for the model step</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>These ports are only visible if the parameter <span class="bold"><strong>Show
+                        Status Info</strong></span> is set</p></td></tr></table></div></div><div class="refsect1"><a name="d5e10013"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd></dl></div></div></div></body></html>

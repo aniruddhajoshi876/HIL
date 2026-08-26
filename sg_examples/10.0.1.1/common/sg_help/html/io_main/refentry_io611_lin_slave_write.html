@@ -1,0 +1,35 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO611 - LIN Slave Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io611_lin_master_read.html" title="IO611 - LIN Master Read"><link rel="next" href="refentry_io611_lin_slave_read.html" title="IO611 - LIN Slave Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io611_lin_slave_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO611 - LIN Slave Write</h2><p>IO611 - LIN Slave Write &#8212; <span class="phrase">Write to the Transmit
+                    Buffers of the LIN Slave</span></p></div><div class="refsect1"><a name="d5e12228"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io611_lin_slave_write.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_lin_slave_write"></a><h2>Description</h2><p>Write to the Transmit Buffers of the LIN Slave.</p></div><div lang="" class="refsect1"><a name="refsect_ports_lin_slave_write"></a><h2>Ports</h2><p>All the input ports of this block are vectors with as many elements as values are
+                configured to be updated per sample hit. Except the number of elements of the data
+                input port is 8 times the number of configured messages.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Prot.ID</span>
+                    </span></dt><dd><p>The LIN identifier (ID). Range 0 to 63.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Checksum</span>
+                    </span></dt><dd><p>Checksum version to use:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Classic Checksum (LIN 1.1, LIN 1.2, LIN 1.3)</p></li><li class="listitem"><p>1: Enhanced Checksum (LIN 2.0, LIN 2.1, LIN 2.2)</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Len</span>
+                    </span></dt><dd><p>Data length code (DLC). Range 0 to 8.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The new data. The LIN protocol allows for messages with up to eight
+                            data bytes. If N values in the buffer are configured to be updated per
+                            sample hit, this vector will simply be sized N * 8.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_lin_slave_write"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Specifies the ID of the IO61X module this driver block should be
+                            connected to. It must correspond to the module ID of the according setup
+                            block. Check the setup block help for more details.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. It can also be set to -1 for inherited sample time. The
+                            units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Send Message with Channel</span>
+                    </span></dt><dd><p>Choose the LIN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Number of LIN Messages</span>
+                    </span></dt><dd><p>Configures how many values in the buffer to update per sample hit.
+                            This parameter directly sets the input port width. Range is between 1
+                            and 50.</p></dd></dl></div></div></div></body></html>

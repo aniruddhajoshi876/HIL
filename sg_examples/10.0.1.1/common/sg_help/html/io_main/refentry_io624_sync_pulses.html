@@ -1,0 +1,106 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Sync Pulses</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_control.html" title="IO624 - Wheel Speed Control"><link rel="next" href="refentry_io624_sync_status.html" title="IO624 - Sync Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_sync_pulses"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Sync Pulses</h2><p>IO624 - Sync Pulses &#8212; <span class="phrase">Reads sensor synchronous
+                    pulses</span></p></div><div class="refsect1"><a name="d5e20811"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_sync_pulses.png"></span></span></p></div><div class="refsect1"><a name="d5e20819"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+                machine.</p><p>When <span class="bold"><strong>PSI5-U/P (Synchronous without Daisy Chain)</strong></span>
+                is selected in the Setup block, the Sync Pulses block reads the synchronous pulses
+                of the corresponding channel.</p><p>When <span class="bold"><strong>PSI5-D (Synchronous Daisy Chain)</strong></span> is selected
+                in the Setup block, the Sync Pulses block reads the synchronous pulses of the
+                corresponding channel and decodes the information that the sync pulses contain. The
+                frame data content reads from the ECU can be read through the outputs ports for the
+                specified channel selected in the Setup block.</p></div><div class="refsect1"><a name="d5e20826"></a><h2>Ports</h2><p>This driver block has n uint32-type(f) scalar output ports, where n is the number
+                of selected channels in the Setup block and f is the number of data items selected
+                in the <span class="bold"><strong>Channel Data</strong></span> tab of the Sync Pulses block.
+                Each port (signal) returns the data in frame format and in the order the data have
+                been selected.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the sync channel number)</span>
+                    </span></dt><dd><p>The following data are obtained from sync channel X:</p></dd><dt><span class="term">
+                        <span class="guilabel">Sync Pulses</span>
+                    </span></dt><dd><p>The following two data frames are obtained if the following is
+                            selected in the Setup block: <span class="bold"><strong>ECU to Sensor
+                                Communication &gt; Pulse Width Method</strong></span>:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>First frame: 1 means a long sync pulse and 0 means no long
+                                        sync pulse</p></li><li class="listitem"><p>Second frame: 1 means a short sync pulse and 0 means no
+                                        short sync pulse</p></li></ul></div><p>The following two data frames are obtained if the following is
+                            selected in the Setup block: <span class="bold"><strong>ECU to Sensor
+                                Communication &gt; Tooth Gap Method</strong></span>:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>First frame: 1 means a short sync pulse and 0 means no
+                                        short sync pulse</p></li><li class="listitem"><p>Second frame: 1 means an absence sync pulse and 0 means no
+                                        absence sync pulse</p></li></ul></div><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Start Bits</span>
+                    </span></dt><dd><p>Contains the Start data from the ECU. The start bits of frame 1
+                            "Short" format in Tooth Gap method must be [0 1 0] or 2, and in Pulse
+                            Width method must be [1 1 1 1 1 1 1] or 127.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Sensor Address</span>
+                    </span></dt><dd><p>Contains the sensor address data from the ECU. The address of an
+                            unprogrammed sensor is zero at the beginning.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Function Codes</span>
+                    </span></dt><dd><p>Contains the function code (FC) data from the ECU.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Field</span>
+                    </span></dt><dd><p>Contains the data frame from the ECU. In frame 1 "Short" format: the
+                            data frame content, the sensor address, and the FC. The first three bits
+                            are the sensor address [A2 A1 A0] and the next three bits the FC [F2 F1
+                            F0]. The broadcast instruction is represented by an address [1 1 1] or
+                            7. The ECU sends the RUN broadcast instruction, which can be read in the
+                                <span class="bold"><strong>Data Field</strong></span>.</p><p>In Frame 2a "Long" (4-Bit Data Nibbles), Frame 2b "Long" (8-Bit Data
+                            Word) and Frame 3 "XLong" format: the data frame content, the sensor
+                            address, the FC, the RAdr and the Data. The number of bits in sensor
+                            address and FC is the same for all the frames as in frame 1. In Frame 2a
+                            the RAdr is 6 bits and Data 4 bits, in Frame 2b the RAdr is 2 bits and
+                            Data 8 bits, and in Frame 3 RAdr and Data are 8 bits.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">CRC</span>
+                    </span></dt><dd><p>Contains the cyclic redundancy check (CRC) data from the ECU. Refer to
+                            the documentation for the <a class="link" href="https://www.psi5.org/" target="_blank">Peripheral Sensor Interface for Automotive
+                                Applications</a> chapter 3.3.2 for more information. In Tooth Gap
+                            method CRC is 3 bits, and in Pulse Width method 6 bits.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Frame Status</span>
+                    </span></dt><dd><p>The following values are obtained from Data Frame Status for Tooth Gap
+                            method or Pulse Width method:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - No Data Frame Status message</p></li><li class="listitem"><p>1 - Start Bits OK</p></li><li class="listitem"><p>2 - Wrong Start Bits. Restart data frame
+                                        transmission</p></li><li class="listitem"><p>3 - Waiting for Sensor Address to be assigned</p></li><li class="listitem"><p>4 - Broadcast Message received. Start runtime mode</p></li><li class="listitem"><p>5 - Sensor Address assigned!</p></li><li class="listitem"><p>6 - No Sync Bits (Tooth Gap method) or Stuffing Bit (Pulse
+                                        Width method) during reception of the data frame. Restart
+                                        data frame transmission</p></li><li class="listitem"><p>7 - Frame 1 "Short" detected</p></li><li class="listitem"><p>8 - Frame 2a "Long" (4-Bit Data Nibbles) detected</p></li><li class="listitem"><p>9 - Frame 2b "Long" (8-Bit Data Word) detected</p></li><li class="listitem"><p>10 - Frame 3 "XLong" detected</p></li></ul></div><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p><p>The following two data frames are obtained if the frame 2a, 2b, or 3
+                            is detected</p></dd><dt><span class="term">
+                        <span class="guilabel">RAdr</span>
+                    </span></dt><dd><p>Contains the RAdr data from the ECU.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Contains the Data information from the ECU.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e20949"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channel Data Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sync Pulses</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Sync Pulses</strong></span> frames from
+                            the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Start Bits</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Start Bits</strong></span> frame from the
+                            respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sensor Address</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Sensor Address</strong></span> frame from
+                            the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Function Codes</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Function Codes</strong></span> frame from
+                            the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Field</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Data Field</strong></span> frame from the
+                            respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Cyclic redundancy check</strong></span>
+                            frame from the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Frame Status</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Data Frame Status</strong></span> frame
+                            from the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">RAdr</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>RAdr</strong></span> frame from the
+                            respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Enables the <span class="bold"><strong>Data</strong></span> frame from the
+                            respective channel.</p></dd></dl></div></div></div></body></html>

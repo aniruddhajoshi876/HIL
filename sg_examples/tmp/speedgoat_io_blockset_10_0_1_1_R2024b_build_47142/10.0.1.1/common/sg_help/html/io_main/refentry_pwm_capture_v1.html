@@ -1,0 +1,122 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">PWM - Capture v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_pwm_generation_v5.html" title="PWM - Generation v5"><link rel="next" href="refentry_io_sync_pwm_generation.html" title="I/O Sync and PWM Generation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_pwm_capture_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>PWM - Capture v1</h2><p>PWM - Capture v1 &#8212; <span class="phrase">The PWM Capture driver block
+                    records information from the connected PWM signal</span></p></div><div class="refsect1"><a name="d5e1813"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pwm_capture_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e1821"></a><h2>Description</h2><p>The CAP driver block performs timing measurements (period, high time, low time,
+                duty cycle) on an input signal.</p><p>The signal is recorded between two triggering events. The detection of an event
+                can be set through the driver (<span class="bold"><strong>Capture</strong></span> tab).</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e1828"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">High </span>
+                    </span></dt><dd><p>The number of ticks during which the signal was high between two
+                            triggering events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Low </span>
+                    </span></dt><dd><p>The number of ticks during which the signal was low between two
+                            triggering events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Period </span>
+                    </span></dt><dd><p>This output returns the number of ticks counted between two triggering
+                            events.</p></dd><dt><span class="term">
+                        <span class="guilabel">DC16 </span>
+                    </span></dt><dd><p>This output returns the duty cycle coded on 16 bits. The range is
+                            between 0.0 and 1.0 (only visible if the configuration file supports
+                            duty cycle calculations).</p></dd><dt><span class="term">
+                        <span class="guilabel">DC8 </span>
+                    </span></dt><dd><p>This output returns the duty cycle coded on 8 bits. The range is
+                            between 0.0 and 1.0 (only visible if the configuration file supports
+                            duty cycle calculations).</p></dd><dt><span class="term">
+                        <span class="guilabel">TOn </span>
+                    </span></dt><dd><p>This output returns the number of ticks counted between a triggering
+                            event and the rising edge of the input signal (only visible if the
+                            configuration file supports PWM Capture v1.2 or newer).</p></dd><dt><span class="term">
+                        <span class="guilabel">TOff </span>
+                    </span></dt><dd><p>This output returns the number of ticks counted between a triggering
+                            event and the falling edge of the input signal (only visible if the
+                            configuration file supports PWM Capture v1.2 or newer).</p></dd><dt><span class="term">
+                        <span class="guilabel">Valid Data Flag </span>
+                    </span></dt><dd><p>This output returns true when two triggering events occur before the
+                            timeout duration (only visible if the configuration file supports PWM
+                            Capture v1.2 or newer).</p></dd></dl></div><p>The output width is defined by the channel count parameter.</p><p>DC16 and DC8 outputs are optimized in terms of latency, since the computation is
+                done on the configurable I/O module.</p></div><div class="refsect1"><a name="d5e1874"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Capture </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Capture Mode </span>
+                    </span></dt><dd><p>Defines the nature of a trigger event. Four modes are available: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>High transitions triggered</p></li></ul></div><p>Each rising edge of the input signal generates a trigger event</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Low transitions triggered</p></li></ul></div><p>Each falling edge of the input signal generates a trigger event</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Use dedicated trigger input</p></li></ul></div><p>Each rising edge of the additional trigger input signal
+                            generates a trigger event</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Software triggered</p></li></ul></div><p>A trigger event is generated with every model step</p></dd><dt><span class="term">
+                        <span class="guilabel">Capture Timeout Vector </span>
+                    </span></dt><dd><p>When Capture mode is set to <span class="bold"><strong>High Transitions
+                                Triggered</strong></span> or <span class="bold"><strong>Low Transitions
+                                Triggered</strong></span>, the absence of transitions for a duration
+                            greater than the <span class="bold"><strong>Capture Timeout Vector</strong></span>
+                            will cause the PWM Capture to initiate an internal trigger. Correct
+                            values are in the range 0 to 223 ms. When the <span class="bold"><strong>Capture Timeout Vector</strong></span> is set to 0, the feature is
+                            disabled. The parameter is only visible if the configuration file
+                            supports PWM Capture v1.2 or newer.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Debounce Time </span>
+                    </span></dt><dd><p>Defines the time in seconds during which the input and the trigger
+                            input signal must be stable before an edge is detected. Defaults to
+                            100e-9 (100 ns).</p><p>The range and resolution of the debounce duration depend on the module
+                            frequency that is shown in the Setup block. The <span class="bold"><strong>Effective Debounce Time</strong></span> therefore indicates the applied
+                            duration at the module level.</p><p>To disable debouncing, enter the value 0.</p><p>Correct values are in the range 0 to 2^18-1 ticks (e.g., 3.495 ms at a
+                            frequency of 75 MHz). The parameter is only visible if the configuration
+                            file supports PWM Capture v1.12 or newer. The parameter must be a scalar
+                            value that applies to all channels defined in the <span class="bold"><strong>Channel Vector</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show High Duration </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the high duration of the recorded signal between two trigger
+                            events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Low Duration </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the low duration of the recorded signal between two trigger
+                            events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Period </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the total duration between two trigger events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Duty Cycle (16 bits) </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the duty cycle computed by the configurable I/O module and coded on
+                            16 bits. The module will compute the ratio between high duration and the
+                            period. The duty cycle is encoded between 0.0 and 1.0 with an accuracy
+                            of 2<sup>-15</sup>. Compared to duty cycle computation
+                            within Simulink, one PCI access is saved. When more than one channel is
+                            selected and if these channels are contiguous, the PCI read access is
+                            packed. Two CAP channels can be read in one PCI access. The parameter is
+                            only visible if the configuration file supports duty cycle calculations.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Show Duty Cycle (8 bits) </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the duty cycle computed by the configurable I/O module and coded on
+                            8 bits. The module will compute the ratio between high duration and the
+                            period. The duty cycle is encoded between 0.0 and 1.0 with an accuracy
+                            of 2<sup>-7</sup>. Compared to duty cycle computation
+                            within Simulink, one PCI access is saved. When more than one channel is
+                            selected and if these channels are contiguous, the PCI read access is
+                            packed. Four CAP channels can be read in one PCI access. This is the
+                            suggested option if maximum performance is required (Minimum I/O
+                            latency). The parameter is only visible if the configuration file
+                            supports duty cycle calculations.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show TOn </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the time (in ticks) between a trigger event and the rising edge of
+                            the input signal. The parameter is only visible if the configuration
+                            file supports PWM Capture v1.2 or newer.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show TOff </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the time (in ticks) between a trigger event and the falling edge of
+                            the input signal. The parameter is only visible if the configuration
+                            file supports PWM Capture v1.2 or newer.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Valid Data Flag </span>
+                    </span></dt><dd><p>When this parameter is checked an additional output is available to
+                            read the Valid Data Flag. Data Flag is true when the PWM input is
+                            captured within the timeout duration. The parameter is only visible if
+                            the configuration file supports PWM Capture v1.2 or newer.</p></dd></dl></div></div></div></body></html>

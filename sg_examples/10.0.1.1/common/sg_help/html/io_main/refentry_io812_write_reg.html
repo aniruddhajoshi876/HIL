@@ -1,0 +1,22 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO812 - Write register</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_zmi4104.html" title="ZMI 4104"><link rel="up" href="book_zmi4104.html" title="ZMI 4104"><link rel="prev" href="refentry_io812_sample_position.html" title="IO812 - Sample position"><link rel="next" href="refentry_io812_read_reg.html" title="IO812 - Read register"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io812_write_reg"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO812 - Write register</h2><p>IO812 - Write register &#8212; 
+                <span class="phrase">Performs a write operation on a register in the ZMI4104 card.</span>
+            </p></div><div class="refsect1"><a name="d5e708"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io812_write_register.png"></span></span></p></div><div class="refsect1"><a name="d5e716"></a><h2>Description</h2><p>This driver block is for debugging purposes only and performs a 16-bit or 32-bit
+                PCI write operation. Please refer to the Zygo User&#8217;s Manual for further information
+                how to use.</p></div><div class="refsect1"><a name="d5e719"></a><h2>Ports</h2><p>This driver block has three input ports.</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If value is 1, the register write is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Register </span>
+                    </span></dt><dd><p>Select the register offset (16-bit based) to write.</p></dd><dt><span class="term">
+                        <span class="guilabel">Value </span>
+                    </span></dt><dd><p>Value to write at the specified register, either 16-bit or 32-bit
+                            size.</p></dd></dl></div></div><div class="refsect1"><a name="d5e739"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Block setup Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">ZMI4104C identifier</span>
+                    </span></dt><dd><p>Select the identifier for the ZMI card identity with 1 for ZMI card
+                            one and 2 for ZMI card two.</p></dd><dt><span class="term"><span class="guilabel">Measurement axis</span>
+                    </span></dt><dd><p>Select the axis for the measurement (1 to 4)</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">PCI access</span>
+                    </span></dt><dd><p>Select the either 16-bit or 32-bit write</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

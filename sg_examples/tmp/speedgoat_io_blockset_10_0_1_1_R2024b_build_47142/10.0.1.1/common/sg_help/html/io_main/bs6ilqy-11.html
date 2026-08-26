@@ -1,0 +1,28 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor 1553 Decode BC Message</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs6ilqy-5.html" title="Condor 1553 Create BC Message List"><link rel="next" href="bs6ilqy-16.html" title="Condor 1553 Decode BC Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bs6ilqy-11"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor 1553 Decode BC Message<a name="CondorI-1553_DecodeBCMessage"></a></h2><p>Condor 1553 Decode BC Message<a name="CondorI-1553_DecodeBCMessage"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg; 1553
+                Decode BC Message block for bus controller (not recommended)<b>MilStd1553Blocks</b><b>CondorEngineering</b></p></div><div class="refsect1"><a name="bs6ilqy-13"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bs6ilqy-14"></a><h2>Description</h2><p>Each instance of this block extracts information out of one message in the receive
+                list. This block has three outputs.</p><p>L &#8212; Specifies the input and output message list passed to other Decode BC
+                Message blocks. If your model contains only one Decode BC Message block, connect the
+                signal to a terminator or ground.</p><p>S &#8212; The <code class="literal">S</code> output is a vector of six elements from the
+                received message, bit packed with information:</p><pre class="programlisting" width="66">control, command1, status1, command2, status2, overall status</pre><p>These elements derive from the <code class="literal">API_BC_MBUF</code> structure, which is
+                contained in the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> file
+                    <code class="literal">matlab\toolbox\rtw\targets\xpc\target\build\xpcblocks\
+                    include\busapi.h</code>. See the <span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc (formerly <span class="trademark"><a name="tp_condorengineering"></a>Condor
+            Engineering</span>&reg;) 1553 software user documentation for details
+                on this structure.</p><p>Use the Decode BC Status block to extract individual status bits from this status.
+                To get multiple status bits, use multiple Decode BC Status blocks and feed, in
+                parallel, the same signal to the S ports.</p><p>D &#8212; The <code class="literal">D</code> output is a vector of 32 short integers with
+                the data from that message. For a message sent to an RT (<code class="literal">R</code>
+                direction), these values are the ones sent. For a message from an RT
+                    (<code class="literal">T</code> direction), this vector contains the values from the RT.
+                You do not need to decode the received message from an <code class="literal">R</code>
+                message.</p></div><div class="refsect1"><a name="bs6ilqy-15"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Message number</strong></span></span></dt><dd><p>Enter the number of the message to decode.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd></dl></div></div></div></body></html>

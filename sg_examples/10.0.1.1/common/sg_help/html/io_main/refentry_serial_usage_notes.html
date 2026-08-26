@@ -1,0 +1,104 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_serial_landing.html" title="Serial"><link rel="next" href="refentry_ref_serial_onboard.html" title="Serial Onboard"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial Usage Notes</h2><p>Serial Usage Notes &#8212; <span class="phrase">Usage information for onboard
+                    COM ports as well as serial I/O modules and code modules</span></p></div><div class="refsect1"><a name="d5e87"></a><h2>Usage Notes</h2><p>Serial communication on Speedgoat real-time target machines is enabled as
+                follows:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Onboard COM ports</strong></span>: motherboards used in
+                        most of the target machines include one or more COM serial ports, featuring
+                        a 9-pin D-sub connector. The pin mapping is included in the target machine
+                        user manual. These ports typically offer a limited baud rate (115&nbsp;kbps)
+                        and software configuration options, and are intended for slow, asynchronous,
+                        non-cyclic communication (for example, read inputs from a terminal). The
+                        buffer is limited to a few bytes, so they are not appropriate for long
+                        messages</p></li><li class="listitem"><p><span class="bold"><strong>Serial I/O modules</strong></span>: these are dedicated
+                        I/O modules designed for robust serial communication. They are fully
+                        software configurable and support higher baud rates. The driver construction
+                        can be optimized to accommodate various use cases, including cyclic
+                        communication at fast sampling rates</p></li><li class="listitem"><p><span class="bold"><strong>Code modules</strong></span>: specific serial
+                        communication can be integrated into a configuration file for the
+                        configurable I/O modules or used in HDL Coder models using the Communication
+                        HDL I/O Blockset. Code modules can be customized to achieve very specific
+                        baud rates and meet special buffer sizes. Transceivers cannot be modified,
+                        and some special wiring requirements may not be supported</p></li></ul></div><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="25%" class="c1"><col width="25%" class="c2"><col width="25%" class="c3"><col width="25%" class="c4"></colgroup><thead><tr><th>&nbsp;</th><th>Onboard COM</th><th>Serial I/O Modules</th><th>Code Modules</th></tr></thead><tbody><tr><td>Baud rates</td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Up to 115&nbsp;kbps</p></li><li class="listitem"><p>Configurable based on fixed base-clock dividers</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Configurable based on fixed base-clock dividers</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Configurable based on fixed base-clock dividers</p></li><li class="listitem"><p>Base clock can be configured (requires FPGA bitstream
+                                            update)</p></li></ul></div>
+                            </td></tr><tr><td>Transceivers</td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RS232, RS422, RS485</p></li><li class="listitem"><p>Hardware configurable, depending on the target
+                                            machine</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RS232, RS422, RS485</p></li><li class="listitem"><p>Software configurable</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RS422, RS485, TTL, LVDS</p></li><li class="listitem"><p>Cannot be modified (depends on the I/O
+                                            channels)</p></li></ul></div>
+                            </td></tr><tr><td>Buffer size</td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Typically 8 to 16 bytes</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>IO503 - IO505:</p><p>64 bytes</p></li><li class="listitem"><p>IO581:</p><p>256 bytes</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Depends on the code module</p></li><li class="listitem"><p>Can be customized upon request (requires configuration
+                                            file update)</p></li></ul></div>
+                            </td></tr><tr><td>Read/write modes</td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Interrupts mode only</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Interrupts mode only</p></li></ul></div>
+                            </td><td>
+                                <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Polling mode only</p></li></ul></div>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e185"></a><h2>RS422/RS485 Wiring Examples</h2><p>The RS422 and RS485 protocols use differential transceivers. When using long
+                cables, it is important to terminate the lines appropriately, to avoid data
+                reflection. A few examples are provided below of the most common
+                configurations.</p><p>Serial I/O modules may allow software configuration of the termination resistors
+                and onboard COM ports, and FPGA I/O modules may or may not have termination
+                resistors and options. Please refer to the specific target machine or I/O module
+                user manual.</p><div class="refsect2"><a name="d5e189"></a><h3>RS422 Multidrop</h3><p>RS422 Multidrop configuration consists of one channel transmitting to multiple
+                    receivers. The transmitting node does not require a termination resistor. The
+                    receiving node at the end of the line does however require a termination
+                    resistor.</p><p>Some I/O modules have termination resistors that cannot be enabled/disabled
+                    and therefore may not be appropriate for multidrop configuration. Some drivers
+                    include "RS422 Multidrop" for the Transceiver Setup parameter.</p><p><span class="inlinemediaobject"><img src="./graphics/rs422_multidrop.png"></span></p></div><div class="refsect2"><a name="d5e197"></a><h3>RS422 Full-Duplex Point-to-Point</h3><p>Full-duplex communication means that each node can receive and transmit data
+                    at the same time. Separate TX and RX channels are used. The termination resistor
+                    is required at the end of the line. Some drivers include "RS422 full duplex" or
+                    "RS422" for the Transceiver Setup parameter.</p><p><span class="inlinemediaobject"><img src="./graphics/rs422_full_duplex.png"></span></p></div><div class="refsect2"><a name="d5e204"></a><h3>RS485 Full-Duplex Point-to-Point</h3><p>For RS485, the termination resistor is required on both ends. Some drivers
+                    include "RS485 full duplex" for the Transceiver Setup parameter. If there is an
+                    option for "RS485 turnaround", it must be enabled.</p><p><span class="inlinemediaobject"><img src="./graphics/rs485_full_duplex.png"></span></p></div><div class="refsect2"><a name="d5e211"></a><h3>RS485 Half-Duplex Point-to-Point</h3><p>Half-duplex configuration allows bytes to be sent and received on the same
+                    node, but not at the same time (the sender and receiver are mutually excluded).
+                    In this case, the termination resistor is required at the receiver side only.
+                    Some drivers include "RS485 half duplex" for the Transceiver Setup parameter. If
+                    there is an option for "RS485 turnaround", it must be enabled.</p><p><span class="inlinemediaobject"><img src="./graphics/rs485_half_duplex.png"></span></p></div></div><div class="refsect1"><a name="d5e218"></a><h2>Sampling Time</h2><p>When we use serial communication, by definition, nodes are transmitting and
+                receiving bytes one after the other.</p><p>In most cases, the message frame length will set the minimum sampling time for
+                sending a new message. To configure the receiving sampling time, it is also
+                important to consider the delay between two messages. It is important that the
+                buffer is read faster than the minimum delay, to ensure that no messages are
+                missing.</p><p>The message frame length is defined as follows and depends on the baud rate
+                expressed in bits per second (bps):</p><p><span class="inlinemediaobject"><img src="./graphics/sampling_time_formula_1.png" width="300"></span></p><p>For simple RS232/RS422/RS485 communication, data bytes have one start bit and one
+                or two stop bits. Consequently, the number of data bytes is multiplied by 10 (or 11)
+                instead of 8 bits.</p><div class="refsect2"><a name="d5e228"></a><h3><span class="underline">Example</span></h3><p>
+                    </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Baud rate = 230400&nbsp;bps</p></li><li class="listitem"><p>Number of data bytes = 32</p></li><li class="listitem"><p>RS232 communication, 1 start and 1 stop bit</p></li></ul></div><p>
+                </p><p><span class="inlinemediaobject"><img src="./graphics/sampling_time_formula_2.png" width="450"></span></p><p>This means that a 32-byte message at 230400 bps will physically take 1.4 ms on
+                    the serial line. The main consequence of this result is that after sending this
+                    message, 1.4 ms at the very least must elapse before another message is sent on
+                    the line.</p><p>If the buffer size is smaller than the message size, then we must also
+                    consider the time required to flush the buffer. This will introduce an
+                    additional delay (typically about a few tens of microseconds, depending on the
+                    I/O module).</p><p>It is also important to consider cable length and other nodes on the line
+                    which may also transmit other messages (or send responses).</p><p>The sampling time of the transmitter side must eventually be slow enough to
+                    accommodate the above requirements.</p></div></div><div class="refsect1"><a name="d5e247"></a><h2>Polling Mode</h2><p>Code modules support polling. In this case, the hardware driver blocks are used
+                without requiring the software FIFO blocks or interrupts.</p><p>Data transmission: the data is sent directly to the hardware buffer at a defined
+                sample time.</p><p>Data reception: the hardware buffer block is read at a regular sample time, fast
+                enough to avoid missing data.</p><p>Depending on the specific use case, it may be possible to optimize the
+                construction; for example, data could be sent using the hardware FIFO and received
+                with interrupts and software FIFO blocks to ensure full synchronization.</p></div><div class="refsect1"><a name="d5e253"></a><h2>Legacy Mode</h2><p>When activating the legacy mode for a specific <a href="refentry_serial_onboard_read.html#refsect_read_enable_legacy_mode" class="olink">read</a> or <a href="refentry_serial_onboard_write.html#refsect_write_enable_legacy_mode" class="olink">write</a> block, the first element of the data in-/output vector contains
+                the information about the size of the payload in bytes. The following is an example
+                of a possible input configuration:</p><p><span class="inlinemediaobject"><img src="./graphics/serial_legacy_mode_input.png" width="500"></span></p><p>Without legacy mode the read and write blocks use two different ports. The count
+                port gives or receives information about the payload size, such as the first element
+                in a vector when using the legacy mode.</p><p><span class="inlinemediaobject"><img src="./graphics/serial_non_legacy_mode_input.png" width="500"></span></p><p>The input or output port widths must always be the same size as the FIFO buffers
+                defined in the Simulink block mask. To achieve the same length, even if the payload
+                is less, the rest of the buffer must be filled up with zero padding bytes (as seen
+                in the pictures above).</p></div><div class="refsect1"><a name="d5e268"></a><h2>Utilities</h2><p>The Simulink Real-Time/RS232 library provides utilities blocks that can be used in
+                combination with the send and receive blocks.</p><p>Examples can be found in the MathWorks <a class="link" href="https://www.mathworks.com/help/releases/R2025b/slrealtime/rs-232.html" target="_blank">help</a> documentation for Simulink Real-Time.</p><p>The library and examples refer to "RS232" but can also be used for any other
+                serial communication protocol.</p><p>Detailed information about serial communication using Simulink Real-Time is
+                available in the following online application notes:</p><p><a class="link" href="https://www.mathworks.com/matlabcentral/answers/95267-where-can-i-find-information-about-serial-communication-using-simulink-real-time" target="_blank">Where can I find information about serial communication using
+                    Simulink Real-Time?</a>
+            </p></div></div></body></html>

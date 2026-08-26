@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: E2E Profile 1 Check</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_e2e_p1_protect.html" title="CAN Message Utilities: E2E Profile 1 Protect"><link rel="next" href="refentry_ref_e2e_p2_protect.html" title="CAN Message Utilities: E2E Profile 2 Protect"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_e2e_p1_check"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: E2E Profile 1 Check</h2><p>CAN Message Utilities: E2E Profile 1 Check &#8212; <span class="phrase">Computes and inserts a counter
+                    value in a CAN or CAN FD message payload.</span></p></div><div class="refsect1"><a name="d5e4556"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_e2e_p1_check.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_counter_insert"></a><h2>Description</h2><p><span class="bold"><strong>The E2E Profile 1 Check </strong></span>block implements the
+                receiver-side logic of the AUTOSAR E2E Profile 1 specification. The block extracts
+                the Counter and CRC from the received message, recalculates the expected CRC using
+                the configured parameters, and compares it to the received CRC. If the values match,
+                the data is considered valid; otherwise, an error is detected. The block also uses
+                the Counter for plausibility checks, depending on configuration. <span class="bold"><strong>Data ID</strong></span>, <span class="bold"><strong>Data ID Mode</strong></span>,
+                    <span class="bold"><strong>Counter location</strong></span>, <span class="bold"><strong>CRC
+                    location</strong></span>, <span class="bold"><strong>Max Delta Counter Init</strong></span> are
+                all configurable to support flexible message layouts.</p><p>For in-depth documentation about the E2E Profile 1, please refer to the <a class="link" href="https://www.autosar.org/fileadmin/standards/R19-03/FO/AUTOSAR_PRS_E2EProtocol.pdf" target="_top">relevant AUTOSAR documentation</a>.</p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the configuration settings
+                in the block mask:</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>This port outputs the result of the E2E P1 Check operation. The output
+                            can take one of the following values.</p><p>
+                            </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="12%" class="c1"><col width="17%" class="newCol2"><col width="71%" class="c2"></colgroup><thead><tr><th>Status Code</th><th>Short Name</th><th>Status</th></tr></thead><tbody><tr><td>0</td><td>E2E_P01STATUS_OK</td><td>The last received data frame is valid. Both the
+                                                CRC and the counter checks passed, and no frames
+                                                were lost or duplicated.</td></tr><tr><td>1</td><td>E2E_P01STATUS_NONEWDATA</td><td>No new data was received since the last check.
+                                                The counter value matches the previous one.</td></tr><tr><td>2</td><td>E2E_P01STATUS_WRONGCRC</td><td>The CRC check failed for the received data,
+                                                indicating possible data corruption or
+                                                alteration.</td></tr><tr><td>3</td><td>E2E_P01STATUS_INITIAL</td><td>The receiver accepted the first valid frame and
+                                                initialized its internal counter. Counter checking
+                                                will be applied to subsequent frames.</td></tr><tr><td>4</td><td>E2E_P01STATUS_REPEATED</td><td>A repeated frame was received. The counter value
+                                                is the same as the last valid one, indicating a
+                                                duplicate message.</td></tr><tr><td>5</td><td>E2E_P01STATUS_OKSOMELOST</td><td>The received frame is valid, but the counter
+                                                indicates that one or more frames were lost (jump
+                                                within MaxDeltaCounter range).</td></tr><tr><td>6</td><td>E2E_P01STATUS_WRONGSEQUENCE</td><td>The counter jump exceeds the allowed
+                                                MaxDeltaCounter range, indicating a possible
+                                                synchronization issue or message loss.</td></tr></tbody></table></div><p>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Counter Offset</span>
+                    </span></dt><dd><p>Specifies the location from where the Counter is extracted. The value
+                            is expressed in bits and is zero-based.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC Offset</span>
+                    </span></dt><dd><p>Specifies the location from where the CRC is extracted. The value is
+                            expressed in bits and is zero-based.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID</span>
+                    </span></dt><dd><p>Specifies the <span class="bold"><strong>Data ID</strong></span> number used for
+                            CRC calculation. <span class="bold"><strong>Data ID</strong></span> must be
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID Mode</span>
+                    </span></dt><dd><p>Specifies the way <span class="bold"><strong>Data ID </strong></span>is included
+                            in the CRC calculation. Available options are <span class="bold"><strong>BOTH</strong></span>, <span class="bold"><strong>ALT</strong></span> and <span class="bold"><strong>LOW</strong></span>. Refer to the <a class="link" href="https://www.autosar.org/fileadmin/standards/R19-03/FO/AUTOSAR_PRS_E2EProtocol.pdf" target="_top">relevant AUTOSAR documentation</a> for a detailed explanation of
+                            these modes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max Delta Counter Init</span>
+                    </span></dt><dd><p>Specifies the initial tolerance threshold for the difference between
+                            expected and received sequence counter. Refer to the <a class="link" href="https://www.autosar.org/fileadmin/standards/R19-03/FO/AUTOSAR_PRS_E2EProtocol.pdf" target="_top">relevant AUTOSAR documentation</a> for a detailed explanation of
+                            these modes.</p></dd></dl></div></div></div></body></html>

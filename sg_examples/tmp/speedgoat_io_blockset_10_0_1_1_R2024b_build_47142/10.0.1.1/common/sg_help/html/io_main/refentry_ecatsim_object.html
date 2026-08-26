@@ -1,0 +1,97 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EtherCAT SubDevice Emulator - Object</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ecatsim_receive.html" title="EtherCAT SubDevice Emulator - Receive"><link rel="next" href="refentry_iec61850_landing.html" title="IEC 61850"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ecatsim_object"></a><div class="titlepage"></div><div class="refnamediv"><h2>EtherCAT SubDevice Emulator - Object</h2><p>EtherCAT SubDevice Emulator - Object &#8212; 
+                <span class="phrase">Provides access to the object dictionaries of the emulated EtherCAT
+                    subordinate devices</span>
+            </p></div><div class="refsect1"><a name="d5e6973"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_ecatsim_object.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e6981"></a><h2>Description</h2><p>This block provides an interface to the objects defined in the EtherCAT network
+                information (ENI) file. Use one block for each object you want to access from
+                Simulink. Read the object's value using the block's output ports. Write the object's
+                value using the block's input ports. On the network side, the remote EtherCAT main
+                device reads and writes the objects via service data object (SDO)
+                communication.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Use the <span class="olink">extendEni</span> function to copy
+                    object information from EtherCAT subordinate information (ESI) files to the
+                    initial ENI file and create an extended EtherCAT network information (EXI) file.
+                    Only when using EXI files will the emulator host objects for remote access and
+                    access from Simulink.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e6987"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The data that should be written to the local object. The port inherits
+                            the data type and the dimensions from the <span class="bold"><strong>Init
+                                Value</strong></span> parameter. This port is simply a buffer. The length
+                            to be written can be less than the port size and be defined by the
+                                <span class="bold"><strong>Length</strong></span> input port.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block writes data to the object as long as this input port is
+                            TRUE.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This allows event-based writing of the value as well as
+                            immediate updates of the output ports.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>The actual size of the data that should be written to the object,
+                            specified in number of bytes.</p><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter, the port limits the size of the data to be written to the
+                            object. In this case, the block writes a subset of the signal connected
+                            with the <span class="bold"><strong>Data</strong></span> input port.</p><p>If disabled, the entire signal connected with the <span class="bold"><strong>Data</strong></span> input port will be written to the
+                            object.</p><p>If the data size that remote EtherCAT devices want to read exceeds the
+                            size last written, the emulator replies with the current data
+                            size.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the current value of the object. The port inherits the data
+                            type and dimensions from the <span class="bold"><strong>Init Value</strong></span>
+                            parameter. This port is just a buffer. Depending on the size of the data
+                            that was last written to the object, the port fills up the buffer with
+                            zeros. The <span class="bold"><strong>Length</strong></span> output port outputs
+                            the actual size.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates a completed write operation. The
+                            object's value was either written by the block's input ports or by a
+                            write request from the remote EtherCAT main device.</p><p>If this output does not change, the write operation is still in
+                            progress or the block is idle.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>The size of the data that was last written to the object. Defined in
+                            number of bytes. As remote EtherCAT devices are allowed to write less
+                            than the default size, the actual size can be less than the size of the
+                                <span class="bold"><strong>Data</strong></span> output port.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div></div><div class="refsect1"><a name="d5e7049"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Interface ID</span>
+                    </span></dt><dd><p>Enter the <span class="bold"><strong> Interface ID </strong></span> of the
+                            corresponding Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Device Address</span>
+                    </span></dt><dd><p>Enter the so-called physical address of the device to which the
+                            signals belong. You can find the address in the ENI file and the
+                            EtherCAT configuration tool.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/ecatsim_01.png"></span><span class="inlinemediaobject"><img src="././graphics/ecatsim_02.png" width="864"></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Index</span>
+                    </span></dt><dd><p>Enter the index of the object. Valid values are between 0 and
+                            0xFFFF.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sub-Index</span>
+                    </span></dt><dd><p>Enter the sub-index of the object. Valid values are between 0 and
+                            0xFF.</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The default value of the object. The <span class="bold"><strong>Data</strong></span> output port outputs this value until the first
+                            write request is received from the remote EtherCAT main device. The
+                            other way round, the EtherCAT main device reads this value as long as
+                            the object is not overwritten by the signal connected to the <span class="bold"><strong>Data</strong></span> input port. </p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operation</span>
+                    </span></dt><dd><p>This parameter defines the local operation on the object's value. You
+                            can read or write the value, or do both. <span class="bold"><strong>Write
+                            </strong></span> enables the input ports. <span class="bold"><strong>Read
+                            </strong></span> enables the output ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> input port, the <span class="bold"><strong>Status</strong></span> output port and the <span class="bold"><strong>Length</strong></span> input and output ports. Otherwise, the ports are
+                            hidden. </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

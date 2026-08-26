@@ -1,0 +1,52 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO756 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io756.html" title="IO756"><link rel="next" href="refentry_io756_setup.html" title="IO756 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io756_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO756 Usage Notes</h2><p>IO756 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e65671"></a><h2>Description</h2><p>This section describes how to configure the EtherNet/IP network.</p></div><div class="refsect1"><a name="d5e65674"></a><h2>EDS File</h2><p>To set up EtherNet/IP communication, you must import the device description files
+                of EtherNet/IP adapters (EDS file) into your EtherNet/IP scanner configuration tool
+                or PLC programming tool (for example, Studio 5000 Logix Designer). Find the EDS file
+                of the IO756 EtherNet/IP Adapter module here:</p><p><code class="literal">&gt;&gt; [speedgoatroot, '\sg_blocks\cifx\eds\CIFX-RE EIS V1.1.eds']</code>.</p><p>If you use warmstart parameters to simulate an EtherNet/IP adapter of a different
+                vendor, you must import the EDS file of that particular adapter into your scanner
+                configuration tool. The EDS file is generally available on the vendor's website.
+            </p></div><div class="refsect1"><a name="d5e65680"></a><h2>Front Plate Description</h2><div class="variablelist"><div class="variablelist-title">IO756 PCI and PCIe modules</div><p>The IO756 acts as one EtherNet/IP Adapter exclusively. The two RJ45
+                    connectors simply serve to build up a line-based network structure. Plug the
+                    cable from the EtherNet/IP Scanner or the previous Adapter into the first
+                    socket. Connect the second socket with the next EtherNet/IP Adapter. The LEDs
+                    described below indicate the communication status of the single EtherNet/IP
+                    Adapter.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_pci_front.png" width="486"></span>
+                        </p><p><a name="para_common_rotary_switch_note"></a>The rotary switch has no functional role.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO756 mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_mpci_front.png" width="270"></span>
+                        </p><p><a name="para_common_mPCIe_error_LED_reversed"></a>Note that in some real-time target machines,
+        the mPCIe module is reversed; that is, the Error LED appears on the right.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO756-32 Multi-node simulator</div><p>The IO756-32 simulates 32 EtherNet/IP Adapter nodes, split into two clusters
+                    with 16 protocol chips each. Within a cluster, the nodes represent a line-based
+                    network structure. Build up a combined network by connecting both center
+                    sockets. You can use the leftmost or rightmost socket to connect the EtherNet/IP
+                    Scanner device. Use the remaining socket to connect an external EtherNet/IP
+                    Adapter or another IO756-32 module.</p><p>Each node has two LEDs that indicate the communication status.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_32_front.png" width="1080"></span>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="d5e65720"></a><h2>LED Status Description</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="12%" class="LED"><col width="13%" class="Color"><col width="12%" class="State"><col width="63%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>SYS</td><td>Green</td><td>On</td><td>Operating system running</td></tr><tr><td>&nbsp;</td><td>Green/Yellow</td><td>Blinking</td><td>Second stage bootloader is waiting for firmware</td></tr><tr><td>&nbsp;</td><td>Yellow</td><td>On</td><td>Bootloader netX (= romloader) is waiting for second stage
+                                bootloader</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Power supply for the device is missing or hardware defect</td></tr><tr><td>MS/COM1</td><td>Green</td><td>On</td><td>Device operational: The device is operating correctly.</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Flashing (1 Hz) </td><td>Standby: The device has not been configured.</td></tr><tr><td>&nbsp;</td><td>Green/Red/Green</td><td>Flashing</td><td>
+                                <p>Self-test: The device is performing its power-up testing. The
+                                    module status indicator test sequence occurs before the network
+                                    status indicator test sequence, according to the following
+                                    sequence:</p>
+                                <p>&#8226; Network status LED off.</p>
+                                <p>&#8226; Module status LED turns green for approximately 250 ms,
+                                    turns red for approximately 250 ms, and again turns green (and
+                                    holds that state until the power-up test has completed).</p>
+                                <p>&#8226; Network status LED turns green for approximately 250 ms,
+                                    turns red for approximately 250 ms, and then turns off (and
+                                    holds that state until the power-up test has completed).</p>
+                            </td></tr><tr><td>&nbsp;</td><td>Red</td><td>Blinking (1 Hz)</td><td>Major recoverable fault: The device has detected a major
+                                recoverable fault. E.g., an incorrect or inconsistent configuration
+                                can be considered a major recoverable fault. </td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>Major unrecoverable fault: The device has detected a major
+                                unrecoverable fault. </td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>No power: The device is powered off.</td></tr><tr><td>NS/COM2</td><td>Green</td><td>On</td><td>Connected: An IP address is configured, at least one CIP
+                                connection (any transport class) is established, and an Exclusive
+                                Owner connection has not timed out. </td></tr><tr><td>&nbsp;</td><td>Green</td><td>Flashing (1 Hz)</td><td>No connections: An IP address is configured, but no CIP
+                                connections are established, and an Exclusive Owner connection has
+                                not timed out. </td></tr><tr><td>&nbsp;</td><td>Red/Green/Off</td><td>Flashing</td><td>Self-test: The device is performing its power-up testing. Refer
+                                to description for module status LED self-test. </td></tr><tr><td>&nbsp;</td><td>Red</td><td>Blinking (1 Hz)</td><td>Connection timeout: An IP address is configured and an Exclusive
+                                Owner connection for which this device is the target has timed out.
+                                The network status indicator returns to steady green only when all
+                                timed out Exclusive Owner connections are reestablished. </td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>Duplicate IP: The device has detected that its IP address is
+                                already in use.</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Not powered, no IP address: The device does not have an IP
+                                address (or is powered off). </td></tr></tbody></table></div><p>Note that only the IO756 PCI and PCIe modules have the SYS LED. This LED does not
+                feature on the IO756 mPCIe module and the IO756-32 multi-node simulator.</p></div><div class="refsect1"><a name="d5e65823"></a><h2>Status Codes</h2><p>For the list of status codes, please refer to <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for Protocols Supported
+                    with the IO64x/IO75x Modules</a>.</p></div></div></body></html>

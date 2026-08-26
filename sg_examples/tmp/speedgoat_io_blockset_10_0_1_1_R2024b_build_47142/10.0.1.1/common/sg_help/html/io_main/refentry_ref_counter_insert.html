@@ -1,0 +1,96 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: Counter Insert</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_msg_utilities_examples.html" title="CAN Message Utilities Examples"><link rel="next" href="refentry_ref_counter_validation.html" title="CAN Message Utilities: Counter Validation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_counter_insert"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: Counter Insert</h2><p>CAN Message Utilities: Counter Insert &#8212; <span class="phrase">Computes and inserts a counter
+                    value in a CAN or CAN-FD message payload.</span></p></div><div class="refsect1"><a name="d5e3898"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/counter_insert.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_counter_insert"></a><h2>Description</h2><p>The Counter Insert block inserts a counter value of a certain bit width at a
+                certain bit position inside the data payload of a CAN or CAN-FD frame. The block
+                inherits the sample time from the CAN or CAN-FD message line connected to its input.
+                The counter value can be generated internally (<span class="emphasis"><em>internal
+                counter</em></span>) to the block or provided by the model through a dedicated input
+                port. </p><p>During execution, the current value of the <span class="emphasis"><em>internal counter</em></span>
+                is first inserted into the payload and is then incremented. The incremented value
+                becomes the current counter value in the execution of the block in the next
+                simulation step.</p><p>The counter increment behavior can be controlled through an optional input port.
+                Using this input, the increment rate can be configured to occur every <span class="italic">d</span>-th sample step, or the increment can be paused or
+                stopped entirely. This port is intended to be used in conjunction with the Tx
+                Control input port of the CAN Write block.</p><p>The user needs to pay particular attention when configuring counter width, counter
+                location and other counter parameters to ensure that no overflow or truncation occur
+                when computing and inserting the counter into the payload.</p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the settings configuration
+                in the block mask.</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Enable Port</strong></span> in the mask to
+                            enable this input port. The datatype is double. When the <span class="bold"><strong>Enable</strong></span> input signal is 0, the block does not
+                            modify the input message. It simply mirrors it directly to the message
+                            output port. If <span class="bold"><strong>Enable</strong></span> is not 0, the
+                            block inserts the counter value in the message data payload based on the
+                            values of the other parameters. The counter value is incremented
+                            regardless of the <span class="bold"><strong>Enable</strong></span> input signal
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Control</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Counter Control Port</strong></span> in the
+                            mask to enable this input port. The datatype is uint32.</p><p>The <span class="emphasis"><em>internal counter</em></span> increment is controlled by
+                            the value of the uint32 scalar:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>'0' to reset the counter to the value specified in the
+                                        <span class="bold"><strong>Counter Start Value</strong></span>
+                                    field</p></li><li class="listitem"><p>'1' to increment at every sample step of the block</p></li><li class="listitem"><p>Value <span class="emphasis"><em>d</em></span> (&gt;'1') to only increment at every
+                                        <span class="emphasis"><em>d</em></span>-th sample step of the block (e.g.,
+                                        <span class="emphasis"><em>d</em></span> = '4' increments the counter value at
+                                    every 4th sample step of the block)</p></li><li class="listitem"><p>'0xFFFF' to hold the current counter value</p></li></ul></div><p>The counter value is always inserted in the message data payload based
+                            on the values defined for the other parameters, except when the value of
+                            the <span class="bold"><strong>Counter Control</strong></span> port is '0'.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Counter from Input Port</strong></span> in the
+                            mask to enable this input port. The following datatypes are supported:
+                            uint8, uint16 and uint32. When using this option, the counter value
+                            inserted in the payload is generated in the model and sent to the block
+                            using this port. Ensure that the counter value is configured
+                            consistently with the <span class="bold"><strong>Counter Length
+                                (Bits)</strong></span> and <span class="bold"><strong>Counter Location
+                                (Bits)</strong></span> parameters specified in the mask. Incorrect
+                            configuration of these parameters in relation to the counter value may
+                            result in unexpected behavior.</p><p>The <span class="bold"><strong>Counter Control</strong></span> port is
+                            unavailable if a counter value is sent using this input port.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message Port</span>
+                    </span></dt><dd><p>This output port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with of length
+                            inherited from the input) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask. The CAN message,
+                            CAN-FD message or uint8 array with the payload modified by counter
+                            insertion is output on this port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Counter Output Port</strong></span> in the
+                            mask to enable this output port. The datatype is uint32 by default. This
+                            port outputs the counter value that can be either generated internally
+                            or sent externally using the counter input port (in the latter case, the
+                            input (including the datatype) is simply mirrored to this output
+                            port).</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Port</span>
+                    </span></dt><dd><p>Adds an "Enable" input port to enable/disable the Counter Insert block
+                            at runtime.</p></dd><dt><span class="term"><span class="guilabel">Counter Control Port</span>
+                    </span></dt><dd><p>Adds a "Counter Control" input port to control the increment of the
+                                <span class="emphasis"><em>internal counter</em></span> at runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter from Input Port </span>
+                    </span></dt><dd><p>Adds a "Counter" input port to allow the counter value to be provided
+                            from the model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Output Port </span>
+                    </span></dt><dd><p>Adds a "Counter" output port providing the value of the counter added
+                            to the payload.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Start Value</span>
+                    </span></dt><dd><p>The initial value of the internal counter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Stop Value</span>
+                    </span></dt><dd><p>The stop value of the internal counter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Step Value</span>
+                    </span></dt><dd><p>The value by which the internal counter is increased at each block
+                            execution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Location (Bits)</span>
+                    </span></dt><dd><p>The location, expressed in bits, where the counter is inserted in the
+                            payload. Counter Location is expressed in 0-based indexing (e.g., if the
+                            user wants to insert the counter in the 2nd byte, this parameter should
+                            be configured to the value 8).</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Length (Bits)</span>
+                    </span></dt><dd><p>The number of bits that are overwritten by the counter value, starting
+                            from the Counter Location parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Protocol</span>
+                    </span></dt><dd><p>This parameter determines the datatype of the block's input
+                            port.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,258 @@
+%%
+%% Copyright 2023 Speedgoat GmbH
+%%
+%% Abstract:
+%%   This TLC library file contains utility functions to be used by Speedgoat Inlined S-functions
+%%
+
+%% sgAddInitCode ===================================================================================
+%% Abstract:
+%%   Use this function to register your initialize code (what is supposed to go 
+%%   into [model]_initialize()). This function will take care of the Early Init workflow starting 
+%%   from MATLAB R2024a.
+%%
+%%   Input arguments:
+%%     code - A buffer containing your initialization code
+%%     location - where to place it in the initalization process
+%%                  ("header", "declaration", "execution", "trailer", "output")
+%%                if "output" is specified, the code will be executed in order
+%%                if any of the others are specified, LibMdlStartCustomCode() will be used
+%%
+%%   Usage example:
+%%       %openfile initCode
+%%          init_my_driver();
+%%       %closefile initCode
+%%       %<sgAddInitCode(initCode, "execution")>
+%function sgAddInitCode(code, location) Output
+    %if FEVAL("sg.utils.compareMatlabVersion", ">=", "R2024a")
+        %assign ret = FEVAL("sg.model.build.EarlyInit.addContent", "%<code>", "%<location>")
+        %if location == "output"
+            %% Put a comment in the source file so we can locate it in the build hook
+            %if !EXISTS(::sgInitCodeIdx)
+                %assign ::sgInitCodeIdx = 1
+            %endif
+            // Adding this NOP to prevent TLC from erasing functions
+            // without an explicit implementation. Ensures the
+            // [model]_Init() function is retained.
+            (void)0; 
+            // Speedgoat Inlined Early Init code block [%<::sgInitCodeIdx>] %<TypeLevel> Block: '%<Name>' (%<ParamSettings.FunctionName>) 
+            %assign ::sgInitCodeIdx = ::sgInitCodeIdx + 1
+        %endif
+    %else
+        %if location == "output"
+            %<code>
+        %else
+            %<LibMdlStartCustomCode(code, location)>
+        %endif
+    %endif
+%endfunction
+
+%% sgRegisterModule ================================================================================
+%% Abstract:
+%%   This function provides the code to register your module in the module registry.
+%%   This should be done in the initialization part.
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%     moduleType - Normally a preprocess define from sg_module_types.h
+%%     moduleId   - The module ID to register
+%%
+%%   Usage example:
+%%        %openfile tmpBuf
+%%        %<sgRegisterModule("opcua", "SG_MODULE_TYPE_OPCUA", 1)>
+%%        %closefile tmpBuf
+%%        %<LibMdlStartCustomCode(tmpBuf, "header")>
+
+%function sgRegisterModule(identifier, moduleType, moduleId) Output
+    %assign registryRecord = sgGetRegistryRecord(identifier)
+    %addtorecord registryRecord moduleType "%<moduleType>"
+    %if registryRecord.nFields > 0
+
+    //Register module in module registry
+    sg_mod_info* sg_%<identifier>_mod = sg_module_register(%<moduleType>, %<moduleId>);
+    sg_module_alloc_custom_data(sg_%<identifier>_mod, sizeof(custom_data_%<identifier>_t)); 
+
+    %endif
+%endfunction
+
+%% sgGetRegistryHeaderCode =========================================================================
+%% Abstract:
+%%   This function provides the includes and typedefs your code needs to work with the 
+%%   module registry and associated custom data structures. 
+%%   This stuff normally goes into an include file
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%
+%%   Usage example:
+%%        %openfile tmpBuf
+%%        %<sgGetRegistryHeaderCode("opcua")>
+%%        %closefile tmpBuf
+%%        %<LibSetSourceFileSection(hFile, "Typedefs", tmpBuf)>
+
+%function sgGetRegistryHeaderCode(identifier) Output
+    %assign registryRecord = sgGetRegistryRecord(identifier)
+    %if registryRecord.nFields > 0
+        //Store custom data in the Speedgoat module registry
+        #include "sg_module_registry.h"
+        #include "sg_module_types.h"
+        typedef struct _custom_data_%<identifier>_t
+        {
+            %foreach i = registryRecord.nFields
+                %<registryRecord.fields[i].type> %<registryRecord.fields[i].name>;
+            %endforeach
+        } custom_data_%<identifier>_t;
+    %endif
+%endfunction
+
+%% sgAddRegistryField ==============================================================================
+%% Abstract:
+%%   Use this function to declare fields in the custom data that your driver requires.
+%%   It is important that you use this already in the Setup functions (e.g. BlockInstanceSetup),
+%%   such that all the required fields are known to the framework 
+%%   when generating initialization code.
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%     field      - The name of your custom data field
+%%     type       - The type of your custom data field
+%%
+%%   Usage example:
+%%     %<sgAddRegistryField("opcua", "my_server_node", "server_node_t*")>
+
+%function sgAddRegistryField(identifier, field, type) void
+    %assign registryRecord = sgGetRegistryRecord(identifier)
+    %assign registryRecord.nFields = registryRecord.nFields + 1
+    %addtorecord registryRecord fields { type "%<type>"; name "%<field>" }
+%endfunction
+
+%% sgGetRegistryStruct =============================================================================
+%% Abstract:
+%%   This function implements the read of the customdata struct from the module registry. 
+%%   The struct will be stored in a pointer whose name is returned for further use.
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%     moduleId   - The module ID to search for in the module registry
+%%     errorReturnValue - The return value in case of failure. 
+%%                  Empty string ("") will cause a return without return value
+%%
+%%   Returns;
+%%     Name of the custom data struct in the code
+%%
+%%   Usage example:
+%%     %assign customDataStruct = %<sgGetRegistryStruct("opcua", 1, "")>
+%%     my_driver_func(%<customDataStruct>->driverHandle);
+%%     (Functions sgAssignFromRegistryField & sgAssignToRegistryField also show usage)
+
+%function sgGetRegistryStruct(identifier, moduleId, errorReturnValue) Output
+    %assign registryRecord = sgGetRegistryRecord(identifier)
+    %assign customDataStruct = "custom_data_%<identifier>"
+    %<customDataStruct>_t *%<customDataStruct> = 
+        (%<customDataStruct>_t*)sg_module_get_custom_data(%<registryRecord.moduleType>, %<moduleId>);
+    if(%<customDataStruct> == NULL)
+    {
+        const char* errMsg = "Failed to retrieve custom module data from registry";
+        %<LibSetRTModelErrorStatus("errMsg")>;
+        %if ISEMPTY(errorReturnValue)
+            return;
+        %else
+            return %<errorReturnValue>;
+        %endif
+    }
+    %return customDataStruct
+%endfunction
+
+%% sgAssignFromRegistryField =======================================================================
+%% Abstract:
+%%   This function is a shortcut to provide a one-liner for data exchange with the module registry.
+%%   You can use it to import a value from a custom data field to a local variable
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%     field      - The name of the custom data field
+%%     destination - The local variable to store the field in
+%%     moduleId   - The module ID to search for in the module registry
+%%     errorReturnValue - The return value in case of failure. 
+%%                  Empty string ("") will cause a return without return value
+%%
+%%   Usage example:
+%%     %<sgAssignFromRegistryField("id", "field", "local", "1", "-2")> 
+%%   Will generate the following code:
+%%     custom_data_id_t *custom_data_id =
+%%         (custom_data_id_t*)sg_module_get_custom_data([MODULE_TYPE], 1);
+%%     if (custom_data_id == NULL) {
+%%         const char* errMsg = "Failed to retrieve custom module data from registry";
+%%         rtmSetErrorStatus([model], errMsg);
+%%         return -2;
+%%     }
+%%     local = custom_data_id->field;
+
+%function sgAssignFromRegistryField(identifier, field, destination, moduleId, errorReturnValue) Output
+    %assign customDataStruct = "%<sgGetRegistryStruct(identifier, moduleId, errorReturnValue)>"
+    %<destination> = %<customDataStruct>->%<field>;
+%endfunction
+
+%% sgAssignToRegistryField =======================================================================
+%% Abstract:
+%%   This function is a shortcut to provide a one-liner for data exchange with the module registry.
+%%   You can use it to store a value from a local variable to a custom data field
+%%
+%%   Input arguments:
+%%     identifier - Used to distinguish your code (and associated generated typedefs) 
+%%                  from the code of other users of functions in this file
+%%     field      - The name of the custom data field
+%%     source     - The local variable to store in the registry
+%%     moduleId   - The module ID to search for in the module registry
+%%     errorReturnValue - The return value in case of failure. 
+%%                  Empty string ("") will cause a return without return value
+%%
+%%   Usage example:
+%%     %<sgAssignToRegistryField("id", "field", "local", "1", "-2")> 
+%%   Will generate the following code:
+%%     custom_data_id_t *custom_data_id =
+%%         (custom_data_id_t*)sg_module_get_custom_data([MODULE_TYPE], 1);
+%%     if (custom_data_id == NULL) {
+%%         const char* errMsg = "Failed to retrieve custom module data from registry";
+%%         rtmSetErrorStatus([model], errMsg);
+%%         return -2;
+%%     }
+%%     custom_data_id->field = local;
+
+%function sgAssignToRegistryField(identifier, field, source, moduleId, errorReturnValue) Output
+    %assign customDataStruct = "%<sgGetRegistryStruct(identifier, moduleId, errorReturnValue)>"
+    %<customDataStruct>->%<field> = %<source>;
+%endfunction
+
+%% Internal functions (THESE SHOULD NOT BE USED IN YOUR CODE) ======================================
+%%   If you feel you need to use any of these functions in your code, 
+%%   please contact the Platform team
+
+%function sgCreateRegistryRecord(identifier) void
+    %createrecord records { identifier "%<identifier>"; nFields 0 }
+    %return records
+%endfunction
+
+%function sgGetRegistryRecord(identifier) void
+    %%Create global structure if not yet existing
+    %if !EXISTS(::sgRegistry)
+        %createrecord ::sgRegistry {nRecords 0}
+    %endif
+
+    %%Search for existing registry record
+    %foreach i = ::sgRegistry.nRecords
+        %if ISEQUAL(identifier, ::sgRegistry.records[i].identifier)
+            %return ::sgRegistry.records[i]
+        %endif
+    %endforeach
+
+    %%Create new registry record
+    %assign ::sgRegistry.nRecords = ::sgRegistry.nRecords + 1
+    %addtorecord ::sgRegistry records %<sgCreateRegistryRecord(identifier)>
+    %return ::sgRegistry.records[::sgRegistry.nRecords - 1]
+%endfunction

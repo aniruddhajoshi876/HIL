@@ -1,0 +1,36 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#define S_FUNCTION_LEVEL    (0x1989+2089-0x21b0)
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME     sg_io623_receive_s
+#include "simstruc.h"
+#ifdef MATLAB_MEX_FILE
+#include "mex.h"
+#else
+#include "IoModuleRegistry.h"
+#endif
+#include "sg_callback.h"
+#include "sg_mask_init.h"
+#include "sg_param.h"
+#include "sg_printf.h"
+#include "Io623Module.h"
+#include "sg_io623_flexray_type.h"
+enum z0fd5855f21{zc7d8502b91,z3b2ca49b81,za2c6d5f765,z0fdca69a02,z2041d72f5c};enum zbb1f615c1d{z32297f1282};enum z93bcf30780{z81b97a1b0d};enum zb06a9f15ae{zbeb0b06c22};static void z16c5d92797(SimStruct*S,sg::zd43ee5c691*zae10e3f17f);static void zcca0be1dd8(SimStruct*S,z6d51461349*params);static void z11b220552f(z6d51461349*params);static void zd14406467d(const z6d51461349*params);static void mdlInitializeSizes(SimStruct*S){static char errorMsg[(0xe2b+1701-0x1450)];int moduleId=sgParam_getInt(S,zc7d8502b91);DTypeId typeId=INVALID_DTYPE_ID;SgMaskInit_SetupSettingsArgs args;args.numberOfParams=z2041d72f5c;args.integerWorkVecLength=z32297f1282;args.realWorkVecLength=z81b97a1b0d;args.pointerWorkVecLength=zbeb0b06c22;if(sgMaskInit_initSizesForRegularBlock(S,&args)){sprintf(errorMsg,"\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20\x57\x72\x6f\x6e\x67\x20\x6e\x75\x6d\x62\x65\x72\x20\x6f\x66\x20\x69\x6e\x70\x75\x74\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x70\x61\x73\x73\x65\x64\x2e" "\n""\x25\x64\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x61\x72\x65\x20\x65\x78\x70\x65\x63\x74\x65\x64\x2e",moduleId,z2041d72f5c);ssSetErrorStatus(S,errorMsg);return;}
+#ifdef MATLAB_MEX_FILE
+typeId=ssRegisterDataType(S,"\x49\x6f\x36\x32\x33\x5f\x46\x6c\x65\x78\x72\x61\x79\x46\x72\x61\x6d\x65");if(typeId==INVALID_DTYPE_ID){sprintf(errorMsg,"\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20""\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x67\x69\x73\x74\x65\x72\x20\x63\x75\x73\x74\x6f\x6d\x20\x64\x61\x74\x61\x20\x74\x79\x70\x65\x20" "\"" "\x49\x6f\x36\x32\x33\x5f\x46\x6c\x65\x78\x72\x61\x79\x46\x72\x61\x6d\x65" "\"" "\x2e",moduleId);ssSetErrorStatus(S,errorMsg);return;}Io623_FlexrayFrame zfc9c2f36bb;if(!ssSetDataTypeSize(S,typeId,sizeof(zfc9c2f36bb))){sprintf(errorMsg,"\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20""\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x67\x69\x73\x74\x65\x72\x20\x63\x75\x73\x74\x6f\x6d\x20\x64\x61\x74\x61\x20\x74\x79\x70\x65\x20" "\"" "\x49\x6f\x36\x32\x33\x5f\x46\x6c\x65\x78\x72\x61\x79\x46\x72\x61\x6d\x65" "\"" "\x2e",moduleId);ssSetErrorStatus(S,errorMsg);return;}memset(&zfc9c2f36bb,(0x7b3+6791-0x223a),sizeof(zfc9c2f36bb));if(!ssSetDataTypeZero(S,typeId,&zfc9c2f36bb)){return;}
+#endif  
+sgMaskInit_setNoInputPorts(S);int z8af8ebd4a3=(0x1490+4720-0x2700);SgParam_IntVec*z04994b2b47=sgParam_newIntVec(S,z3b2ca49b81);for(int i=(0x4ea+2281-0xdd3);i<z04994b2b47->len;i++){z8af8ebd4a3+=z04994b2b47->val[i];}sgParam_deleteIntVec(z04994b2b47);ssSetNumOutputPorts(S,z8af8ebd4a3);for(int i=(0xfd1+3684-0x1e35);i<z8af8ebd4a3;i++){ssSetOutputPortDataType(S,i,typeId);ssSetOutputPortWidth(S,i,sgParam_getInt(S,z0fdca69a02));}}static void mdlInitializeSampleTimes(SimStruct*S){double sampleTime=sgParam_getDouble(S,za2c6d5f765);sgMaskInit_initSampleTimesForRegularBlock(S,sampleTime);}static void sg_ModelLoad(SimStruct*S){}static void sg_ModelStart(SimStruct*S){
+#ifndef MATLAB_MEX_FILE
+int moduleId=sgParam_getInt(S,zc7d8502b91);sg::zd43ee5c691*zae10e3f17f=static_cast<sg::zd43ee5c691*>(sg::IoModuleRegistry::find(sg::ModuleTypes::zda9a6809a6,moduleId));if(zae10e3f17f==nullptr){zae10e3f17f=new sg::zd43ee5c691(moduleId);zae10e3f17f->z798a78318b("\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x65\x69\x76\x65\x20\x6d\x6f\x64\x65\x6c\x20\x66\x72\x6f\x6d\x20\x72\x65\x67\x69\x73\x74\x72\x79\x20\x69\x6e\x20\x4d\x6f\x64\x65\x6c\x53\x74\x61\x72\x74\x2e" "\n",moduleId);z16c5d92797(S,zae10e3f17f);return;}zcca0be1dd8(S,&zae10e3f17f->za0f6ca2e0c);zd14406467d(&zae10e3f17f->za0f6ca2e0c);SG_PRINTF(DEBUG,"\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x3a\x20\x25\x64" "\n",zae10e3f17f->za0f6ca2e0c.moduleId);
+#endif  
+}static void sg_ModelStep(SimStruct*S){
+#ifndef MATLAB_MEX_FILE
+int moduleId=sgParam_getInt(S,zc7d8502b91);sg::zd43ee5c691*zae10e3f17f=static_cast<sg::zd43ee5c691*>(sg::IoModuleRegistry::find(sg::ModuleTypes::zda9a6809a6,moduleId));if(zae10e3f17f==nullptr){zae10e3f17f=new sg::zd43ee5c691(moduleId);zae10e3f17f->z798a78318b("\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x65\x69\x76\x65\x20\x6d\x6f\x64\x65\x6c\x20\x66\x72\x6f\x6d\x20\x72\x65\x67\x69\x73\x74\x72\x79\x20\x69\x6e\x20\x4d\x6f\x64\x65\x6c\x53\x74\x65\x70\x2e" "\n",moduleId);z16c5d92797(S,zae10e3f17f);return;}Io623_FlexrayFrame*z7160ccfcc8[sg::zd43ee5c691::z0b03e1bc6a];memset(z7160ccfcc8,(0x202a+1349-0x256f),sizeof(z7160ccfcc8));for(int cc=(0x53f+1395-0xab2),z0add1d1c25=(0x406+4943-0x1755);cc<zae10e3f17f->za0f6ca2e0c.z3af98d0046->len;cc++){if(zae10e3f17f->za0f6ca2e0c.z3af98d0046->val[cc]){z7160ccfcc8[cc]=static_cast<Io623_FlexrayFrame*>(ssGetOutputPortSignal(S,z0add1d1c25++));}}if(zae10e3f17f->z6160b72eba(z7160ccfcc8,zae10e3f17f->za0f6ca2e0c.z000d0f5ef7)){z16c5d92797(nullptr,zae10e3f17f);return;}
+#endif  
+}static void sg_ModelStop(SimStruct*S){
+#ifndef MATLAB_MEX_FILE
+int moduleId=sgParam_getInt(S,zc7d8502b91);sg::zd43ee5c691*zae10e3f17f=static_cast<sg::zd43ee5c691*>(sg::IoModuleRegistry::find(sg::ModuleTypes::zda9a6809a6,moduleId));if(zae10e3f17f==nullptr){zae10e3f17f=new sg::zd43ee5c691(moduleId);zae10e3f17f->z798a78318b("\x49\x6e\x20\x49\x4f\x36\x32\x33\x2c\x20\x52\x65\x63\x65\x69\x76\x65\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x65\x69\x76\x65\x20\x6d\x6f\x64\x65\x6c\x20\x66\x72\x6f\x6d\x20\x72\x65\x67\x69\x73\x74\x72\x79\x20\x69\x6e\x20\x4d\x6f\x64\x65\x6c\x53\x74\x6f\x70\x2e" "\n",moduleId);z16c5d92797(S,zae10e3f17f);return;}z11b220552f(&zae10e3f17f->za0f6ca2e0c);
+#endif  
+}static void z16c5d92797(SimStruct*S,sg::zd43ee5c691*zae10e3f17f){const char*z4576acf721=zae10e3f17f->z3af791a73f("\x52\x65\x63\x65\x69\x76\x65");if(S==nullptr){SG_PRINTF(WARNING,"\x25\x73" "\n",z4576acf721);}else{ssSetErrorStatus(S,z4576acf721);return;}}static void zcca0be1dd8(SimStruct*S,z6d51461349*params){params->moduleId=sgParam_getInt(S,zc7d8502b91);params->z3af98d0046=sgParam_newBoolVec(S,z3b2ca49b81);params->sampleTime=sgParam_getInt(S,za2c6d5f765);params->z000d0f5ef7=sgParam_getInt(S,z0fdca69a02);}static void z11b220552f(z6d51461349*params){sgParam_deleteBoolVec(params->z3af98d0046);}static void zd14406467d(const z6d51461349*params){SG_PARAM_PRINT_INT(params,moduleId);SG_PARAM_PRINT_BOOL_VEC(params,z3af98d0046);SG_PARAM_PRINT_INT(params,sampleTime);SG_PARAM_PRINT_INT(params,z000d0f5ef7);}
+#include "sg_sfcn_glue.h"   
+

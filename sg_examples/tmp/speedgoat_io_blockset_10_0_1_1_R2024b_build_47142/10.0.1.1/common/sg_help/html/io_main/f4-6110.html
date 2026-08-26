@@ -1,0 +1,155 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN FIFO Basics</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bkur.html" title="Chapter&nbsp;10.&nbsp;CAN I/O FIFO Support"><link rel="prev" href="bu3bkur.html" title="Chapter&nbsp;10.&nbsp;CAN I/O FIFO Support"><link rel="next" href="f4-6137.html" title="Acceptance Filters"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f4-6110"></a>CAN FIFO Basics</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="brc19kw"></a>FIFO Mode</h3></div></div></div><p>This topic describes the alternative First In First Out (FIFO) mode CAN drivers
+                provided with the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> blocks. The standard CAN drivers for the CAN boards
+                from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; GmbH
+                        (<code class="literal"><a class="link" href="https://company.softing.com" target="_top">https://www.company.softing.com</a></code>) program the CAN board firmware to
+                run in dynamic object buffer (DOB) mode. This mode is best suited for real-time
+                environments where it is mandatory that the driver latency time is time
+                deterministic. Running the
+                firmware in dynamic object buffer mode is the best choice, except for the undesired
+                side effect of
+                high driver latency times.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="guilabel">Sending a CAN message</span> &#8212; When sending a CAN
+                        message, the latency time is the time interval between:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>The time at which the driver accesses the board to provide the
+                                information for the CAN message being sent.</p></li><li class="listitem"><p>The time at which the board returns the acknowledgment that the
+                                firmware received the information.</p></li></ul></div><p>FIFO mode blocks send messages in the order that they are input to the
+                        block. They do not order them by the priority of the input.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Each CAN channel has two FIFOs: DPRAM and SRAM. The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> FIFO
+                            block writes into the DPRAM FIFO. The <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; board
+                            transfers the messages from the DPRAM FIFO to the SRAM FIFO, from which
+                            the messages are transmitted onto the CAN bus. Although the SRAM can
+                            buffer up to 127 messages, the DPRAM can only buffer up to 31 messages.
+                            Therefore, the 31 message limit of the DPRAM limits how many messages a
+                            model can write at one time.</p></td></tr></table></div></li><li class="listitem"><p><span class="guilabel">Receiving a CAN message</span> &#8212; When receiving a CAN
+                        message, the latency time is the time interval between:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>The time at which the driver accesses the board to ask for current
+                                data (object data) of a certain CAN identifier.</p></li><li class="listitem"><p>The time at which the board returns the actual data and other
+                                information about the CAN message.</p></li></ul></div></li></ul></div><p><span class="guilabel">Disadvantages of Dynamic Object Buffer mode</span> &#8212; The
+                reaction time of the board firmware defines these latency times. For the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; boards, the latency
+                time is the same for sending and receiving messages, with a fixed value of about 40
+                &micro;s. If your real-time application has to manage many messages, the latency time can
+                increase until you cannot run the application at the required sample time.</p><p>For example, assume that a specific real-time application gets data from 12 CAN
+                identifiers and transmits data by using 8 CAN messages. The total number of CAN
+                board read and write accesses adds up to 20. This network traffic results in a total
+                CAN I/O latency time of:</p><pre class="programlisting">20*40 &micro;s = 800 &micro;s</pre><p>With such an application, base sample times below 800 &micro;s are impossible even if
+                the corresponding <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model would only need 20 &micro;s of computation time.</p><p><span class="guilabel">Advantages of Dynamic Object Buffer mode</span> &#8212; Even if the
+                CAN I/O latency time is high, the latency time stays constant almost independent of
+                the traffic volume on the CAN network. Therefore, dynamic object buffer mode is best
+                suited for real-time applications that deal with only a small subset of the CAN
+                messages going over the network.</p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="br8p7uc-1"></a>Data Types</h4></div></div></div><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN
+                    blocks support the following message data types. If you have <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; ISA CAN boards, you
+                    can use only the double data type for messages. If you have <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; PCI and PC/104 CAN
+                    boards, you can use either CAN_MESSAGE or double data types for new
+                    messages.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN_MESSAGE &#8212; Structure that contains an array of eight
+                            unsigned 8-bit integers that contains the data. This structure also
+                            contains the ID, and the standard and extended ID range. CAN blocks can
+                            pass data of this type without requiring complicated bit packing and
+                            unpacking. This capability enables you to create simpler models. Use
+                            messages of this data type for new CAN system models. Consider updating
+                            existing CAN models to use CAN_MESSAGE data types.</p><p>Use <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> blocks to
+                            pack individual signals into a CAN message for sending. Use <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a> blocks to
+                            unpack individual signals from CAN messages.</p><p>You can construct a CAN_MESSAGE by using the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a>. You can use this
+                            block to pass raw data packed elsewhere, by packing a data pattern
+                            manually. You can also use a CANDB file and select a predefined data
+                            pattern. If you have several CAN_MESSAGE messages, use a <a class="link" href="matlab: doc Mux;" target="_top">Mux</a> block to combine them into
+                            a vector that you connect to a CAN FIFO send block.</p></li><li class="listitem"><p>Double &#8212; Double that represents 8 bytes of message in a signal.
+                            CAN blocks manipulate data of this type before passing it. Do not use
+                            this data type to create new CAN system models. The maximum size of the
+                            data frame of a CAN message is 8 bytes. This size is the same as the C
+                            data type double uses on PC-compatible systems. At the same time, the
+                            double data type is the default data type for <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signals.
+                            Represent the CAN data frame within a <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model with
+                            a scalar <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signal. You can represent the data frame
+                            even if the data frame has nothing in common with a double
+                            floating-point value. The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN library provides a Utility sublibrary
+                            that offers bit-packing and bit-unpacking blocks. Use these blocks to
+                            pack data types other than doubles into 64 bits (8 bytes or a double)
+                            and for the opposite operation. <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signals of
+                            data type double represent CAN data frames.</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="br8p7uc-2"></a>Updating Existing Models to Use CAN_MESSAGE Data Types</h4></div></div></div><p>If you have <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; PCI and PC/104 CAN boards, you can update existing models to use CAN_MESSAGE
+                    data types. As a rule:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If your existing model contains <a class="link" href="matlab: doc Can Bit-Packing;" target="_top">CAN Bit-Packing</a> and
+                                <a class="link" href="matlab: doc Can Bit-Unpacking;" target="_top">CAN
+                                Bit-Unpacking</a> blocks, replace them with the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> and <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a>
+                            blocks.</p></li><li class="listitem"><p>Open and reconfigure the CAN Send and Receive blocks to use
+                            CAN_MESSAGE data types.</p></li><li class="listitem"><p>Remove FIFO Mode CAN Message and CANDBC Translator blocks. Updated
+                            models do not require the conversions that these blocks perform.</p></li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f4-6119"></a>FIFO Mode Drivers for CAN Boards from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;</h3></div></div></div><p>The CAN boards from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; support another mode, called first-in-first-out (FIFO)
+                mode. In FIFO mode, the dynamic object buffer mode abstraction layer in the firmware
+                is missing. Instead, the firmware provides an interface between the receive and
+                transmit FIFOs and the drivers in the real-time application code. Because of this
+                slimmer interface, the I/O latency times are considerably smaller. Writing to the
+                transmit FIFO takes 4 &micro;s per CAN message and reading one event (CAN message) from
+                the receive FIFO takes 17 &micro;s. Both of these latency times are smaller than the 40 &micro;s
+                for dynamic object buffer mode.</p><p>While writing to the transmit FIFO is efficient, reading from the receive FIFO is
+                not. The receive FIFO contains all of the CAN
+                messages (identifiers) going over the CAN network. Your program must read much data
+                (CAN messages) out of the FIFO even if their data is not used in the real-time
+                application. Because of the FIFO structure, events (messages) have to be read until
+                the message is returned that is propagated to the real-time application. The driver
+                code for reading the receive FIFO is principally a while loop, which can add the
+                problem of nondeterministic
+                latency times.</p><p>To resolve the latency time issue in the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN FIFO drivers,
+                define a receive FIFO read depth that is a constant number during real-time
+                application execution. For example, assume that the FIFO read depth is
+                    <code class="literal">5</code>. Each time the Read Receive FIFO driver block is executed,
+                the driver code reads and returns five events (messages) from the receive FIFO. This
+                number is independent of how many events the FIFO currently contains. If the FIFO
+                contains only two messages, the third to fifth attempts return the
+                "No new event" code. Nevertheless, because the
+                FIFO read latency does not exceed 17 &micro;s, the latency time becomes
+                deterministic and is the Read FIFO
+                Depth multiplied by 17 &micro;s.</p><p>The driver block returns all new events and
+                therefore all CAN messages going over the
+                network. If your real-time application processes only a small subset of the CAN
+                messages received, the total latency can exceed the latency of dynamic object buffer
+                mode.</p><p>For the read-receive FIFO side, FIFO mode creates another specific restriction.
+                You cannot use more than one Read Receive FIFO block in a <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model. After one block
+                instance reads a new event (message), another block instance cannot read it (the
+                event was removed from the FIFO buffer). Therefore, you must concentrate the entire
+                CAN receive part of your model in one Read Receive FIFO block. For the write
+                transmit FIFO side, this restriction does not apply. Here you can use as many
+                instances as you want.</p><p>The Setup block for the CAN FIFO mode controls the CAN acceptance filters of the
+                CAN controller. The acceptance filter defines a range of CAN messages not to be
+                forwarded to the receive FIFO. Filtering out unwanted CAN messages can drastically
+                reduce the read receive FIFO latency time because the unwanted messages do not reach
+                the receive FIFO. Unfortunately, the acceptance filter process uses binary
+                evaluation, which does not allow filtering messages below and above a certain
+                decimal range. Therefore the use of the acceptance filter only resolves the problem
+                for a small subset of CAN system models. For more information, see <a href="f4-6137.html" class="olink">Acceptance
+                Filters</a>.</p><p>Look again at the example of 12 messages to be received and 8 messages to be
+                transmitted. If those 20 messages are the only messages going over the CAN network
+                (100% usage ratio), then the total latency time is:</p><pre class="programlisting">12*17 &micro;s + 8*4 &micro;s = 236 &micro;s</pre><p>This latency is considerably smaller than the 800 &micro;s that results when you use
+                dynamic object buffer mode drivers.</p><p>For the next case, assume that the network regularly passes only 12 additional
+                messages that the real-time application does not process. Also, assume that the CAN
+                controller acceptance filter cannot filter those messages. Then the total latency
+                time increases to</p><pre class="programlisting">12*17 &micro;s +20*4 &micro;s = 284 &micro;s</pre><p>There is little impact on the final result. The FIFO mode drivers are best suited
+                for either CAN network monitoring or for low-latency CAN systems. In both cases, the
+                ratio between the number of messages to be processed and the number of total
+                messages going over the network is high.</p><p>FIFO mode drivers can return additional information, such as the bus state or the
+                reception of error frames. For this reason, FIFO mode drivers are especially suited
+                for network monitoring. Dynamic object buffer mode drivers do not allow you to query
+                such information.</p><p>This documentation only covers the differences between the dynamic object buffer
+                mode drivers (standard drivers) and the FIFO mode drivers. It assumes that you are
+                familiar with the dynamic object buffer mode drivers and have run without an error
+                one of the loopback tests provided with <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>.</p><p>If you use FIFO mode drivers in your model, you must replace the dynamic object
+                buffer mode blocks (Setup, Send, Receive) with FIFO mode driver blocks. Because the
+                CAN-AC2 boards from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; do not let you run the two CAN ports in different modes,
+                the mode has to be same for both ports. However, you can use more than one CAN board
+                and run the boards in different just by selecting different I/O driver
+                blocks.</p><p>FIFO mode drivers are provided for the CAN-AC2-PCI and the CAN-AC2-104
+                boards.</p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="bqmn7j7"></a>CAN-AC2-PCI (FIFO) with SJA1000 Controller</h4></div></div></div><a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO"></a><p>The CAN-AC2-PCI driver blocks support the CAN-AC2-PCI board using FIFO mode.
+                    The Philips SJA1000 chip is used as the CAN controller in this configuration and
+                    supports both standard and extended identifier ranges in parallel. The driver
+                    block set for this board is found in the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O block library
+                    in the group CAN/<span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;. The CAN-AC2-PCI SJA 1000 block group contains the
+                    FIFO mode CAN subgroup.</p></div></div></div></body></html>

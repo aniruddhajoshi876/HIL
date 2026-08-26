@@ -1,0 +1,153 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature - Decoder v5</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_quadrature_encoder_v2.html" title="Quadrature - Encoder v2"><link rel="next" href="refentry_quadrature_encoder_v3.html" title="Quadrature - Encoder v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_decoder_v5"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature - Decoder v5</h2><p>Quadrature - Decoder v5 &#8212; <span class="phrase">The QAD driver block allows quadrature
+                    encoders to be read.</span></p></div><div class="refsect1"><a name="d5e5561"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_qad_v5.png"></span></span></p></div><div class="refsect1"><a name="d5e5569"></a><h2>Description</h2><p>The QAD driver block allows quadrature encoders to be read.</p></div><div class="refsect1"><a name="d5e5572"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs is equal to the channel count as
+                defined in the <span class="bold"><strong>Channel Vector</strong></span> parameter.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed Filter Width</span>
+                    </span></dt><dd><p>This port sets the width of the speed filter. This input is only
+                            visible if the <span class="bold"><strong>Make Dynamic</strong></span> option of
+                            the <span class="bold"><strong>Speed Measurement Filter</strong></span> parameter
+                            is set. Valid input for this port is an integer number between 1 and 256
+                            (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_decoding_speedfilter" class="olink">Quadrature
+                                Decoding Speedfilter</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Position</span>
+                    </span></dt><dd><p>Options for the input are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1: The <span class="bold"><strong>Position</strong></span> and
+                                            <span class="bold"><strong>Turns</strong></span> outputs are set
+                                        to 0</p></li><li class="listitem"><p>0: The <span class="bold"><strong>Position</strong></span> and
+                                            <span class="bold"><strong>Turns</strong></span> outputs change
+                                        according to the detected QAD signals</p></li></ul></div><p>This input is only visible if the <span class="bold"><strong>Show Clear Position Input</strong></span> parameter is set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Index Found Flag</span>
+                    </span></dt><dd><div class="itemizedlist"><p>Options for the input are:</p><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1: The <span class="bold"><strong>Index Found</strong></span> output is
+                                    set to 0</p></li><li class="listitem"><p>0: The <span class="bold"><strong>Index Found</strong></span> output
+                                    indicates when the index was found</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Enabling the input ports introduces additional latency.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position [Number of Slot]</span></span></dt><dd><p>This port shows the current position of the decoded signal. The
+                            current slot number is shown. Depending upon the <span class="bold"><strong>Captured Edges</strong></span> and <span class="bold"><strong>Extrapolate
+                                Position Output</strong></span> parameters, this output is either an
+                            integer or a fraction between 0 and the number set in the <span class="bold"><strong>Number of Slots Vector</strong></span> parameter minus 1 (for
+                            details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_decoding" class="olink">Quadrature
+                            Decoding</a>). This output is only visible if the <span class="bold"><strong>Show Position Output</strong></span> parameter is set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Turns</span></span></dt><dd><p>This port shows the number of revolutions recorded by the QAD. The
+                            output is signed, the range is -2<sup>27</sup> &#8230; 0 &#8230;
+                                2<sup>27</sup> -1. The output overflows if the limit
+                            is attained; for example, when rotating forward and the position number
+                            reaches 2<sup>27</sup> minus 1, the next number will be
+                                -2<sup>27</sup>. This output is only visible if the
+                                <span class="bold"><strong>Show Turns Output</strong></span> parameter is
+                            set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Speed [RPM]</span></span></dt><dd><p>This output shows the speed in RPM (Revolutions per Minute). The
+                            output is positive when rotating forward (i.e. clockwise) and negative
+                            when rotating backward (i.e. counterclockwise). This output is only
+                            visible if the <span class="bold"><strong>Show Speed Output</strong></span>
+                            parameter is set.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The detection of the rotation direction is only possible when the
+                                    <span class="bold"><strong>Captured Signal Edges</strong></span> parameter
+                                is set to <span class="bold"><strong>Captured A + B
+                                Signal</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Speed Valid</span></span></dt><dd><p>This output shows if the <span class="bold"><strong>Speed [RPM]</strong></span>
+                            output is valid. If the <span class="bold"><strong>Speed Filter
+                                Width</strong></span> input changes, the <span class="bold"><strong>Speed
+                                [RPM]</strong></span> output might become invalid. This output is only
+                            visible if the <span class="bold"><strong>Show Speed Output</strong></span>
+                            parameter is set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index Found</span></span></dt><dd><p>This output is set high if the C/index position has been detected
+                            once. Possible values for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Encoder has not reached C/Index position</p></li><li class="listitem"><p>1: Encoder has reached C/Index position. The value remains
+                                        at 1 until it is reset by setting the <span class="bold"><strong>Clear Index Found Flag</strong></span> input to 1.</p></li></ul></div><p>This output is only visible if the <span class="bold"><strong>Show Index Found Flag Output</strong></span> parameter is set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Since Last Signal Edge [s]</span></span></dt><dd><p>This output shows the time in seconds since the last signal edge was
+                            detected. This output is only visible if the <span class="bold"><strong>Show
+                                Time Since Last Signal Edge Output</strong></span> parameter is
+                            set.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Enabling the output ports introduces additional latency.</p></td></tr></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e5676"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Quadrature Decoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of Slots Vector</span></span></dt><dd><p>The number of slots per revolution (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding" class="olink">Quadrature Encoding</a>).</p></dd><dt><span class="term">
+                        <span class="guilabel">Captured Edges</span>
+                    </span></dt><dd><p>Selects which signal edges will be captured: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Capture A + B Signal: Each rising and falling edge of the
+                                        QAD A and B signals is used to detect the position and
+                                        speed.</p></li><li class="listitem"><p>Capture A Signal Only: Each rising and falling Edge of the
+                                        QAD A signal is used to detect the position and speed. This
+                                        setting can be used for single channel sensors. With this
+                                        setting, the direction cannot be evaluated</p></li><li class="listitem"><p>Capture Rising Edges A Signal Only: Only the rising edges
+                                        of the QAD A signal are used to detect the position and
+                                        speed. This setting can be used for single channel sensors.
+                                        With this setting, the direction cannot be evaluated</p></li><li class="listitem"><p>Capture Falling Edges A Signal Only: Only the falling
+                                        edges of the QAD A signal are used to detect the position
+                                        and speed. This setting can be used for single channel
+                                        sensors. With this setting, the direction cannot be
+                                        evaluated</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>For single channel encoders, this parameter must not
+                                            be set to <span class="bold"><strong>Captured A + B
+                                                Signal</strong></span>. The measured values will be wrong
+                                            in this case</p></td></tr></table></div></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Extrapolate Position Output</span></span></dt><dd><p>When set, the QAD code module will extrapolate the position (number of
+                            slot) between two detected signal edges. The extrapolation uses the
+                            current measured speed and the time since the last signal edge was
+                            detected. Note that the extrapolation is only 100 % valid if the speed
+                            of the measured signals is constant (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_decoding_extrapolate" class="olink">Quadrature
+                                Decoding Extrapolate</a>).</p></dd><dt><span class="term">
+                        <span class="guilabel">Swap AB Inputs</span></span></dt><dd><p>When set, the QAD A and B signals are interchanged.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index Control Mode</span></span></dt><dd><p>Defines how the C/Index signal is used by the QAD code module. The
+                            settings are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Ignore Index: The C/Index signal is completely
+                                        ignored</p></li><li class="listitem"><p>Reset on Index: Counter is reset at every rising edge
+                                        occurrence of the C/Index signal</p></li><li class="listitem"><p>Enable on Index: The complete QAD measurement is only
+                                        enabled when C/Index is high</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Latch Mode</span>
+                    </span></dt><dd><p>Defines the latch mode. The settings are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled: the values of all configured channels of the QAD
+                                        driver block are latched at model sampling time</p></li><li class="listitem"><p>Latch on C/Index Input: the values of all configured
+                                        channels of the QAD driver block are latched at a rising
+                                        edge on the C/Index signal</p></li><li class="listitem"><p>Latch on D Input: the values of all configured channels of
+                                        the QAD driver block are latched at a rising edge on the D
+                                        signal</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Index Signal Gating</span></span></dt><dd><p>Defines how the C/Index signal is passed to the QAD code module. The
+                            settings are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>No Gating: the C/Index signal is directly passed</p></li><li class="listitem"><p>Gate with A Signal: the C/Index signal is only passed if
+                                        the A signal is high</p></li><li class="listitem"><p>Gate with A + B Signal: the C/Index signal is only passed
+                                        if A and B signals are both high</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Speed Measurement Filter</span></span></dt><dd><p>Each signal edge (configured by the <span class="bold"><strong>Captured
+                                Signal Edges</strong></span> parameter) generates a new speed value. The
+                            speed values are filtered by a moving average filter on the QAD code
+                            module (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_decoding_speedfilter" class="olink">Quadrature
+                                Decoding Speedfilter</a>). When the <span class="bold"><strong>Make
+                                Dynamic</strong></span> parameter is not set, the depth of the filter can
+                            be set with the <span class="bold"><strong>Filter Width [Number of
+                                Measurements]</strong></span> parameter. In this case the number of
+                            averaged speed values is the same for a complete model run. When the
+                                <span class="bold"><strong>Make Dynamic</strong></span> parameter is set, the
+                            depth of the filter can be set with the <span class="bold"><strong>Speed
+                                Filter Width</strong></span> block input signal. In this case the number
+                            of averaged speed values can be changed during model runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Signals Glitch Filter</span></span></dt><dd><p>Each of the QAD code module input signals passes a glitch filter.
+                            Signal glitches (positive and negative) with a time less than the time
+                            defined by the <span class="bold"><strong>Filter Width [s] Vector</strong></span>
+                            parameter do not pass. (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_decoding_glitchfilter" class="olink">Quadrature
+                                Decoding Glitchfilter</a>)</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Set the glitch filter as low as possible since this parameter also
+                                limits the maximum frequency of the QAD signal to be measured. In
+                                addition, we recommend setting the glitch filter time to a value not
+                                greater than half of the measurable QAD signal pulse time, for
+                                example; if the expected maximum frequency of the QAD signal (the A-
+                                or B-Signal) to be measured is 1 MHz (meaning the QAD signal is 500
+                                ns low and 500 ns high), then the glitch filter should be set to 250
+                                ns or less.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Clear Position Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Clear
+                                Position</strong></span> input is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Clear Flag Index Found Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Clear Index
+                                Found Flag</strong></span> input is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Position Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Position [Number
+                                of Slot]</strong></span> output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Turns Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Turns</strong></span>
+                            output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Speed Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Speed</strong></span>
+                            output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Index Found Flag Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Index
+                                Found</strong></span> output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Time Since Last Signal Edge Output</span>
+                    </span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Time Since Last
+                                Signal Edge</strong></span> output is shown.</p></dd></dl></div></div></div></body></html>

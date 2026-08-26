@@ -1,0 +1,121 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Resolver Emulation v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_resolver.html" title="Resolver"><link rel="next" href="refentry_resolver_measurement_v1.html" title="Resolver Measurement"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_resolver_emulation_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Resolver Emulation v1</h2><p>Resolver Emulation v1 &#8212; <span class="phrase">The Resolver Emulation
+                    driver block provides the simulation functionality for a
+                Resolver.</span></p></div><div class="refsect1"><a name="d5e6048"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_resolver_emulation_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e6056"></a><h2>Description</h2><p>The Resolver Emulation driver block provides the simulation functionality for a
+                Resolver.</p><p>This driver block can only be used in combination with an analog setup block.
+                Analog settings such as voltage range and trigger selection must be set in the
+                analog setup block.</p></div><div class="refsect1"><a name="d5e6060"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed / Position</span>
+                    </span></dt><dd><p>This port is used to input the speed at which the Resolver rotates
+                            [rad/s]. By selecting <span class="bold"><strong>Position</strong></span> in the
+                            mask dropdown, the input will switch its functionality to position input
+                            [rad]. The width of this input signal must be equal to the number of
+                            active channels defined in the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gain</span>
+                    </span></dt><dd><p>The gain represents the transfer ratio between the input and output
+                            windings of the resolver. The resolver emulation code module uses four
+                            single-ended analog outputs to generate quasi-differential signals: sin
+                            (+), sin (-), cos(+), and cos (-). The gain can be set independently for
+                            each output. This input expects a vector, which must contain 4 elements
+                            per active channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Offset</span>
+                    </span></dt><dd><p>An independent DC offset voltage can be applied to each of the four
+                            resolver output signals: sin (+), sin (-), cos(+), and cos (-). This
+                            input expects a vector, which must contain 4 elements per active
+                            channel. Each element represents the offset for one of the four resolver
+                            output signals. The unit is [V]. </p></dd><dt><span class="term">
+                        <span class="guilabel">Excitation Fault</span>
+                    </span></dt><dd><p>The excitation input signal of the resolver emulation model is set to
+                            zero if this input goes to 1. The width of this input signal must be
+                            equal to the number of active channels defined in the <span class="bold"><strong>Channel Vector</strong></span> parameter.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>The width of each output signal is equal to the number of active channels
+                    defined in the <span class="bold"><strong>Channel Vector</strong></span> parameter.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Resolver Angle</span></span></dt><dd><p>This port shows the angular position of the resolver [rad].</p></dd><dt><span class="term">
+                        <span class="guilabel">Rotor Angle</span></span></dt><dd><p>This port shows the angular position of the rotor [rad].</p></dd><dt><span class="term">
+                        <span class="guilabel">Overshoot Flag</span></span></dt><dd><p>The flags indicate an overshoot of the excitation signal and resolver
+                            output signals.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Bit 0</strong></span> indicates an overshoot
+                                    of the sin and cos resolver output signals.</p></li><li class="listitem"><p><span class="bold"><strong>Bit 1</strong></span> indicates an overshoot
+                                    of the excitation signal.</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e6113"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Resolver Sample Time</span></span></dt><dd><p>The sample time at which the resolver module is triggered on the FPGA.
+                            The unit is [s].</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Resolver </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Pole Pairs</span></span></dt><dd><p>The number of resolver pole pairs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Resolver Angle Offset</span>
+                    </span></dt><dd><p>Angular offset [degree] between the rotor zero position and the zero
+                            position at which the resolver is mounted.</p></dd><dt><span class="term">
+                        <span class="guilabel">Speed / Position Input</span></span></dt><dd><p>The functionality of the Speed / Position input is selected from this
+                            dropdown.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Selecting <span class="bold"><strong>Speed</strong></span> will rename
+                                    the mask input to Speed. The input values will be considered as
+                                    speed values in rad/s</p></li><li class="listitem"><p>Selecting <span class="bold"><strong>Position</strong></span> will
+                                    rename the mask input to Position. The input values will be
+                                    considered as position values in rad</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Initial Position</span></span></dt><dd><p>The initial angular position of the Resolver in degrees. This
+                            parameter is only available if the Speed input has been selected in the
+                            dropdown. If Position is chosen, the initial position will be read from
+                            the mask input.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use Internal Excitation Signal</span></span></dt><dd><p>If checked, the Resolver will use the internally generated excitation
+                            signal. The signal characteristics are defined with the <span class="bold"><strong>Excitation Amplitude</strong></span> and <span class="bold"><strong>Excitation Frequency</strong></span> parameters. These
+                            parameters are visible when the checkbox is selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Excitation Amplitude</span>
+                    </span></dt><dd><p>Amplitude of internal excitation signal [V].</p></dd><dt><span class="term">
+                        <span class="guilabel">Excitation Frequency</span>
+                    </span></dt><dd><p>Frequency of internal excitation signal [kHz].</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Gain</span></span></dt><dd><p>The gain represents the transfer ratio between the input and output
+                            windings of the resolver. The resolver emulation code module uses four
+                            single-ended analog outputs to generate quasi-differential signals: sin
+                            (+), sin (-), cos(+), and cos (-). The gain can be set independently for
+                            each output. This parameter expects a scalar value or a vector of 4
+                            elements per active channel; for example, set the parameter to '[0.5,
+                            0.5, 0.5, 0.5, 1, 1, 1, 1]' if you have two active resolver emulation
+                            channels. The first resolver will have a transfer ratio of 0.5 and the
+                            second one a transfer ratio of 1.</p><p>The <span class="bold"><strong>Initial Gain</strong></span> applies a). when the
+                            model is initialized; and b). until the first model step, if the
+                                <span class="bold"><strong>Gain</strong></span> input is active. If the
+                                <span class="bold"><strong>Gain</strong></span> input is disabled, the
+                                <span class="bold"><strong>Initial Gain</strong></span> applies during the
+                            entire model execution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Offset</span></span></dt><dd><p>An independent DC offset voltage can be applied to each of the four
+                            resolver output signals: sin (+), sin (-), cos(+), and cos (-). This
+                            parameter expects a scalar value or a vector of 4 elements per active
+                            channel containing the offset for each of the four resolver output
+                            signals. The unit is [V]. For example, set the parameter to
+                            '[2,2,2,2,1,1,1,1]' if you use two resolver emulation channels and you
+                            want an offset of 2 V for all the outputs of channel 1 and an offset of
+                            1 V for all the outputs of channel 2.</p><p>The <span class="bold"><strong>Initial Offset</strong></span> applies a). when
+                            the model is initialized; and b). until the first model step, if the
+                                <span class="bold"><strong>Offset</strong></span> input is active. If the
+                                <span class="bold"><strong>Offset</strong></span> input is disabled, the
+                                <span class="bold"><strong>Initial Offset</strong></span> applies during the
+                            entire model execution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Phase Delay [Degree]</span></span></dt><dd><p>Phase delay between the excitation input signal and the modulated sine
+                            and cosine outputs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Phase Delay[FPGA Model Sample Steps]</span></span></dt><dd><p>Number of resolver model sample steps for which the excitation signal
+                            is delayed. This parameter is automatically computed and shown by the
+                            driver block based on the defined phase delay in degrees.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Offset Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>
+                                Offset</strong></span> input is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Gain Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong> Gain</strong></span>
+                            input is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Excitation Fault Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong> Excitation
+                                Fault</strong></span> input is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Overshoot Flag Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Overshoot Flag
+                            </strong></span> output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Rotation Angle Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Rotation Angle
+                            </strong></span>output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Resolver Angle Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Resolver
+                                Angle</strong></span> output is shown.</p></dd></dl></div></div></div></body></html>

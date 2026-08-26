@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.getMemoryInfo</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_get_io_interfaces.html" title="speedgoat.getIoInterfaces"><link rel="next" href="refentry_sgapi_get_target_authentication.html" title="speedgoat.getTargetAuthentication"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_get_memory_info"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.getMemoryInfo</h2><p>speedgoat.getMemoryInfo &#8212; 
+            <span class="phrase">Get information on the physical memory usage of your Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e729"></a><h2>Description</h2><p>This Speedgoat API function retrieves information about the status of your Speedgoat real-time
+target machine's physical memory.</p></div><div class="refsect1"><a name="d5e732"></a><h2>Examples</h2><p>Get information on the available physical memory on the default target machine in bytes:</p><pre class="programlisting">free = speedgoat.getMemoryInfo</pre><p>Get information on the available as well as the total installed physical memory of the target
+machine in bytes:</p><pre class="programlisting">[free, total] = speedgoat.getMemoryInfo</pre><p>Get information on the available and the installed physical memory of the target machine as well
+as the percentage of physical memory in use:</p><pre class="programlisting">[free, total, used] = speedgoat.getMemoryInfo</pre><p>Display all available information about the default target machine's physical memory:</p><pre class="programlisting">speedgoat.getMemoryInfo</pre><pre class="screen">&gt;&gt; 62.0GB of 63.0GB physical memory available (1.59% used)</pre><p>Get memory usage information for a specific target using the target name
+(for example, 'TargetPC1'):</p><pre class="programlisting">[___] = speedgoat.getMemoryInfo('TargetName', 'TargetPC1')</pre><p>Get memory usage information for a specific target using the target object (for example, tg):</p><pre class="programlisting">[___] = speedgoat.getMemoryInfo('TargetObject', tg)</pre></div><div class="refsect1"><a name="d5e747"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e751"></a><h2>Output Arguments</h2><p>free - Available physical memory
+[double].
+Available physical memory in Bytes.</p><p>total - Total physical memory
+[double].
+Total installed physical memory in Bytes.</p><p>used - Used physical memory
+[double].
+Percentage of physical memory used.</p></div><div class="refsect1"><a name="d5e756"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p></div></div></body></html>

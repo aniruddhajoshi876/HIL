@@ -1,0 +1,28 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850 - Client Connection</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_client_setup.html" title="IEC 61850 - Client Setup"><link rel="next" href="refentry_iec61850_client_transceiver.html" title="IEC 61850 - Client Transceiver"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_client_connection"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850 - Client Connection</h2><p>IEC 61850 - Client Connection &#8212; <span class="phrase">Establishes a unique
+                    connection to a remote IEC 61850 Server.</span></p></div><div class="refsect1"><a name="d5e7727"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_client_connection.png"></span></span></p></div><div class="refsect1"><a name="d5e7735"></a><h2>Description</h2><p>The Connection block connects the local IEC 61850 Client to one remote IEC 61850
+                Server. Each server connection requires a Connection block in the model. Your model
+                can contain multiple Connection blocks for each IEC 61850 Client station in your
+                target machine.</p></div><div class="refsect1"><a name="d5e7738"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Uint8 output to inform the user about the connection status to the MMS
+                            Server. 0 means disconnected and 1 means connected.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7747"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client Station ID</span>
+                    </span></dt><dd><p>Apply the Client Station ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The Connection ID is used to assign Connection and Transceiver blocks
+                            to a particular client connection. Connection IDs range between 0 to
+                            65535 and must be unique for each Client (Station ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Server IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the MMS Server to which you want to
+                            connect.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote TCP Server Port</span>
+                    </span></dt><dd><p>Enter the TCP Port of the MMS Server. The default port for MMS is 102.
+                            The reserved ports should not be used. Refer to the following online
+                            documentation: <a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">List of TCP and UDP Port Numbers</a></p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

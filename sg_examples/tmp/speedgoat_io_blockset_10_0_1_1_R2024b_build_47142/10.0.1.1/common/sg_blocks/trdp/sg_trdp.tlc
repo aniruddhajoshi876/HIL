@@ -1,0 +1,22 @@
+%function TrdpTerminate(block) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+        SgTrdp->Run = false;
+        SgTrdp->stop();
+    }
+
+    %endwith
+
+%endfunction
+
+%function TrdpCommonIncludes() Output
+
+    %<LibAddToCommonIncludes("sg_common.h")>
+    %<LibAddToCommonIncludes("trdp_def.h")>
+    %<LibAddToCommonIncludes("trdp.h")>
+    %<LibAddToCommonIncludes("trdp_station.h")>
+    %<LibAddToCommonIncludes("trdp_transceiver.h")>
+    
+%endfunction

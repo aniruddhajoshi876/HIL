@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DMA Controller Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_dma_controller.html" title="DMA Controller"><link rel="next" href="refentry_dma_controller_v1.html" title="DMA Controller v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dma_controller_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>DMA Controller Usage Notes</h2><p>DMA Controller Usage Notes &#8212; Information about the I/O module</p></div><div class="refsect1"><a name="refsect_dma_controller_modelBehavior"></a><h2>Model Behavior</h2><p>Using <span class="bold"><strong>Optimize Data Transfer</strong></span> changes the timing
+                relationship between the configurable I/O module and the model execution:</p><div class="refsect2"><a name="refsect_dma_controller_modelBehaviorWithoutDmaController"></a><h3>Standard Model Behavior without Optimized Data Transfer</h3><p>If <span class="bold"><strong>Optimize Data Transfer</strong></span> is not activated,
+                    the timing behavior is as follows:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/dma_controller_modelBehaviorWithoutDmaController.svg"></span></span></p><p>
+                    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>The CPU triggers each step. Each code module (Model Block x in the
+                                drawing) is executed one after the other, starting with Block
+                                1</p></li><li class="listitem"><p>The block writes all necessary data to an internal write buffer in
+                                the CPU. When completed, the DMA is triggered</p></li><li class="listitem"><p>The DMA transfers all data from the CPU write buffer to the I/O
+                                module write buffer</p></li><li class="listitem"><p>The last entry of the DMA write transfer to the I/O module
+                                triggers a latch event that internally copies the data from the I/O
+                                module write buffer to ensure that all the data become active in the
+                                I/O module at the exact same point in time (timing consistency).
+                                Concurrently to this process, all data to be read from the CPU are
+                                copied to a read buffer on the I/O module</p></li><li class="listitem"><p>The DMA continues with read transfer: the data from the I/O module
+                                read buffer are transferred to the CPU read buffer</p></li><li class="listitem"><p>The block reads the data from the internal read buffer on the
+                                CPU</p></li><li class="listitem"><p>The block execution is finished. The execution of the next block
+                                then starts</p></li></ol></div><p>
+                </p><p>These steps are repeated for every block in the model. Once all the blocks
+                    have executed, the CPU returns to idle and the next step can be
+                    triggered.</p><p>Note: For a model without DMA Controller, each block transfers data from and
+                    to the I/O module using an individual DMA transfer.</p></div><div class="refsect2"><a name="refsect_dma_controller_modelBehaviorWithDmaController"></a><h3>Model Behavior with Optimized Data Transfer and Synchronization to the I/O
+                    Module</h3><p>If <span class="bold"><strong>Optimize Data Transfer</strong></span> is activated, the
+                    timing behavior is as follows:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/dma_controller_modelBehaviorWithDmaController.svg"></span></span></p><p>
+                    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Data transfer between the I/O module and CPU from the model blocks
+                                are gathered into one common transfer from I/O module to CPU and
+                                into one common transfer from CPU to I/O module.</p></li><li class="listitem"><p>The I/O module triggers each step. All data to be read from the
+                                CPU (for all blocks with this FPGA I/O module identifier) are then
+                                copied timing-consistent to a read buffer on the I/O module. The I/O
+                                module CPU DMA transfer then starts</p></li><li class="listitem"><p>The DMA transfers all data from the I/O module read buffer to the
+                                CPU read buffer</p></li><li class="listitem"><p>The last transfer of the previous DMA transaction triggers the
+                                model on the CPU</p></li><li class="listitem"><p>All the code module blocks are executed one after the other. Each
+                                block reads data from the CPU read buffer and writes data to the CPU
+                                write buffer</p></li><li class="listitem"><p>When all the blocks on the CPU have executed, the CPU &agrave; I/O module
+                                DMA transfer then starts</p></li><li class="listitem"><p>The DMA transfers all data from the CPU write buffer to the I/O
+                                module write buffer</p></li><li class="listitem"><p>The I/O module triggers the next step. Additionally, all data from
+                                the I/O module write buffer are copied internally at this exact
+                                point in time</p></li></ol></div><p>
+                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>All data to read is latched at the start of a step, processed during the
+                        step, and becomes active on the I/O module at the start of the next
+                        step.</p><p>Depending upon the used code module functionality, not all blocks are
+                        applicable or capable to insert their data into the common data transfers.
+                        These blocks will use the individual block data transfers as described in
+                        the chapter above.</p></td></tr></table></div></div><div class="refsect2"><a name="refsect_dma_controller_modelBehaviorOverload"></a><h3>Model Behavior in Case of Overload</h3><p>The following situation leads to an overload of the model-step:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/dma_controller_modelBehaviorOverload.svg"></span></span></p><p>An overload occurs when the processing (DMA read, CPU calculation, DMA write)
+                    exceeds the maximum time for a single step. When this happens, the I/O module
+                    will not start the next step until the overloaded step is completed. The model
+                    behaves as follows, depending on the setting for the <span class="bold"><strong>Stop
+                        Model on Overload</strong></span> parameter: </p><p>
+                    </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Stop Model on Overload</strong></span> =
+                                ON</p><p>- The DMA Controller block throws an error and stops the
+                                model</p></li><li class="listitem"><p><span class="bold"><strong>Stop Model on Overload</strong></span> =
+                                OFF</p><p>- The DMA Controller block continues operation; the output
+                                    <span class="bold"><strong>Overload</strong></span> of the DMA Controller
+                                block is set to true</p></li></ul></div><p>
+                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When an overload occurs, the delay will impact the real-time behavior of
+                        your model (step execution jitter)</p></td></tr></table></div></div></div></div></body></html>

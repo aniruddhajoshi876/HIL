@@ -1,0 +1,33 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO644 - Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io644_setup_v2.html" title="IO644 - Setup v2"><link rel="next" href="refentry_io644_receive.html" title="IO644 - Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io644_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO644 - Send</h2><p>IO644 - Send &#8212; <span class="phrase">Transmits cyclic data to the CANopen
+                    master</span></p></div><div class="refsect1"><a name="d5e49768"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io644_send.png"></span></span></p></div><div class="refsect1"><a name="d5e49776"></a><h2>Description</h2><p>This block is used to transmit data to the CANopen master.</p><p lang=""><a name="para_cifx_only_one_send"></a>Your model can contain only one Send block for each I/O
+        module in your target machine.</p></div><div class="refsect1"><a name="d5e49780"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>One vector of data type UINT8 which the block writes to the TX area of
+                            the dual-port memory. This area contains data which is sent to the
+                            CANopen master. Use <span class="bold"><strong>Byte Packing</strong></span> blocks
+                            to assemble the vector from specific data. The <span class="bold"><strong>Number of Bytes</strong></span> parameter sets the length of this
+                            vector.</p><p>The TX area has a length of 512 bytes. Each byte is represented by a
+                            TX application object in the CANopen object dictionary.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="Byte number"><col width="33%" class="Object Index:Sub-index [hex]"><col width="34%" class="Byte offset in the TX area"></colgroup><tbody><tr><td><span class="bold"><strong>Byte number</strong></span></td><td><span class="bold"><strong>Object
+                                                Index:Sub-index</strong></span> [hex]</td><td><span class="bold"><strong>Byte offset in the TX
+                                                area</strong></span></td></tr><tr><td>1</td><td>2000:01</td><td>0</td></tr><tr><td>2</td><td>2000:02</td><td>1</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>128</td><td>2000:80</td><td>127</td></tr><tr><td>129</td><td>2001:01</td><td>128</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>256</td><td>2001:80</td><td>255</td></tr><tr><td>257</td><td>2002:01</td><td>256</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>384</td><td>2002:80</td><td>383</td></tr><tr><td>385</td><td>2003:01</td><td>384</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>512</td><td>2003:80</td><td>511</td></tr></tbody></table></div><p>The slave transmits data via process data objects (PDO). The maximum
+                            number of TX PDOs is 64. One PDO can contain up to 8 application objects
+                            and therefore has a maximum length of 8 bytes. The link of an
+                            application object to a position in a process data object is stored in
+                            the PDO mapping configuration. The I/O module retrieves the PDO mapping
+                            from the master during the connection process. The corresponding manual
+                            of the master device describes how to configure communication objects in
+                            the master.</p><p>The TX PDOs are included in the CANopen object dictionary from
+                            addresses 0x1800 to 0x183F. The mapping information for each TX PDO is
+                            stored in the CANopen object dictionary from 0x1A00 to 0x1A3F.</p><p><span class="bold"><strong>Type:</strong></span>
+                            <code class="literal">scalar | vector</code></p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any output ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e49870"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bytes </span>
+                    </span></dt><dd><p>The number of bytes that should be written to the TX data area. This
+                            parameter sets the length of the input port.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

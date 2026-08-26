@@ -1,0 +1,132 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">I/O Sync and PWM Generation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_pwm_capture_v1.html" title="PWM - Capture v1"><link rel="next" href="refentry_ref_cmu.html" title="CMU"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io_sync_pwm_generation"></a><div class="titlepage"></div><div class="refnamediv"><h2>I/O Sync and PWM Generation</h2><p>I/O Sync and PWM Generation &#8212; <span class="phrase">The PWM generation driver
+                    block allows for synchronization with selected analog I/O modules and configures
+                    the PWM generation on the configurable I/O module</span></p></div><div class="refsect1"><a name="d5e1983"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io_sync_and_pwm_generation.png"></span></span></p></div><div class="refsect1"><a name="d5e1991"></a><h2>Description</h2><p>The I/O Sync and PWM (Pulse Width Modulation) Generation code module provides the
+                following functionality:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Symmetric PWM generation for user signals with dynamic duty cycle
+                            adjustment</p></li><li class="listitem"><p>Dead band compensation</p></li><li class="listitem"><p>Dedicated PWM channels to output synchronization signals for IO106 and
+                            IO132-IO135 Speedgoat Analog modules</p></li></ul></div><p>
+                </p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>If you are using two blocks, the same channel must not be used twice. If a
+                        different configuration for other channels is required, you must use an
+                        additional driver block in your model. This will not, however, guarantee
+                        that the channels are synchronized.</p><p>You should use a single PWM block in your model if the PWM signals must be
+                        synchronized; for example, if you need to control a three-phase inverter,
+                        you should use a single block for the three channels, rather than using
+                        three separate blocks (one for each channel).</p><p>If separate blocks are used, the FPGA registers are updated at different
+                        times (separate PCI write operations, without latching), resulting in
+                        different PWM update times.</p></td></tr></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e2006"></a><h2>Ports</h2><p>This driver block has one input port and contains no output ports.</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">PWM DC </span>
+                    </span></dt><dd><p>The duty cycle to apply on the different PWM signals (values between
+                            0.0 and 1.0). This input is commonly a vector signal of the size of the
+                            active PWM channels.</p></dd></dl></div></div><div class="refsect1"><a name="d5e2016"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of user PWM channels</span>
+                    </span></dt><dd><p>Select the number of active user PWM channels to be used together
+                            with the synchronization signals. This number added to the number of
+                            sync channels should not exceed the total number of available channels.
+                            When using synchronization with the IO106, only the first PWM channel
+                            will be used for sync signals. When using synchronization with the
+                            IO132-IO135 family, the first three PWM channels will be used for sync
+                            signals. Note that the selected number of user channels will follow the
+                            sync signals in an ascending order. If your model contains another PWM
+                            block with the same module ID, make sure to not use any channel
+                            twice.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: PWM generation </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Desired base PWM period (s) </span>
+                    </span></dt><dd><p>Defines the base PWM period in seconds. All the generated PWM signals
+                            of the block will try to conform to this period length.</p></dd><dt><span class="term">
+                        <span class="guilabel">Effective base PWM period (s) </span>
+                    </span></dt><dd><p>This field displays the actual base PWM period in seconds. If the
+                            desired PWM period cannot be output exactly, the value of the actual PWM
+                            base period will be rounded to the nearest possible value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Duty cycle alignment </span>
+                    </span></dt><dd><p>Defines how the base PWM signal is aligned. There are three
+                            possibilities:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Center-aligned</strong></span></p></li></ul></div><p>In this case, the PWM impulse is located at the middle of the base
+                            period length</p><p>
+                            <span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_centeralign_dc_a.png" width="50%"></span></span>
+                        </p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_centeralign_dc_b.png" width="50%"></span></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Left-aligned</strong></span></p></li></ul></div><p>In this case, the PWM impulse is located at the start of the base
+                            period length</p><p>
+                            <span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_leftalign_dc_a.png" width="50%"></span></span>
+                        </p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_leftalign_dc_b.png" width="50%"></span></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Right-aligned</strong></span></p></li></ul></div><p>In this case, the PWM impulse is located at the end of the base period
+                            length</p><p>
+                            <span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_rightalign_dc_a.png" width="50%"></span></span>
+                        </p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_rightalign_dc_b.png" width="50%"></span></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Deadband Duration Vector </span>
+                    </span></dt><dd><p>Defines how a rising edge on PWM A and on PWM B output is canceled.
+                            The deadband mechanism forces low A/B output until the Deadband Duration
+                            is complete. The units are in seconds. The I/O Sync and PWM Generation
+                            only accepts a scalar value, valid for all elements of the <span class="bold"><strong>Channel Vector</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable the Second Update at Half of the PWM Period </span>
+                    </span></dt><dd><p>Updates the PWM parameters (A, B and C-On and -Off values) at the
+                            halfway point of the PWM period. The PWM period is always updated once
+                            at the start of the period.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is no longer visible in PWM 5.7 and subsequent
+                                versions.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Intermodule Sync</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">I/O module family </span>
+                    </span></dt><dd><p>Use this drop down menu to select which Sync format you would like to
+                            output on the sync channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sampling mode</span>
+                    </span></dt><dd><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Single sample per
+                                    period</strong></span></p></li></ul></div><p>In this mode, only one sample is triggered per base sample period. The
+                                <span class="bold"><strong>Sample position</strong></span> dropdown menu
+                            allows you to select the position of that single sample. Possible
+                            selections are: <span class="bold"><strong>Start of base PWM
+                                period</strong></span> and <span class="bold"><strong>Middle of base PWM
+                                period</strong></span>.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Multiple samples per
+                                    period</strong></span></p></li></ul></div><p>In this mode, multiple samples can be triggered per sample period.
+                            Adapt the number with the help of the <span class="bold"><strong>Number of
+                                samples</strong></span> edit field. If <span class="bold"><strong>I/O module
+                                family</strong></span> IO132-IO135 is selected, you can additionally
+                            define on which sample the frame should be triggered, by specifying a
+                            number between 1 and the <span class="bold"><strong>Number of
+                                samples</strong></span> value, in the <span class="bold"><strong>Frame trigger
+                                position</strong></span> edit field.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/pwm_iosync_multiple_samples.png" width="100%"></span></span></p><p>Depicted above is an example of a setting of <span class="bold"><strong>Number of samples</strong></span> = 8 and <span class="bold"><strong>Frame
+                                trigger position</strong></span> = 1.</p></dd><dt><span class="term">
+                        <span class="guilabel">Recommended settings </span>
+                    </span></dt><dd><p>At the bottom of the <span class="bold"><strong>Intermodule sync</strong></span>
+                            tab, the recommended timing settings for the selected Analog module are
+                            listed, based on the settings defined in the <span class="bold"><strong>PWM
+                                generation</strong></span> and <span class="bold"><strong>Intermodule
+                                sync</strong></span> tab.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Triggering </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Trigger Duration Vector </span>
+                    </span></dt><dd><p>The duration of a trigger pulse in seconds. This duration can be
+                            different from channel to channel, but the duration is the same for each
+                            trigger selected within one channel. The width of this vector must be
+                            equal to the width of the Channel Vector parameter.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The PWM C and triggers share the same I/O line: the triggers and the PWM C
+                    output are OR wired and then applied to the I/O line of the configurable I/O
+                    module. More than one trigger option can be selected at the same time.</p></td></tr></table></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at Period Start </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            period starts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at Half of the Period </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the middle of the defined PWM period.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at A-On </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of A-On. If the rising edge of the PWM
+                            A output is delayed because of the <span class="bold"><strong>Deadband
+                                Duration</strong></span>, the trigger is still generated at A-On as
+                            defined by the user and not when the signal effectively changes its
+                            level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at A-Off </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of A-Off.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at B-On </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of B-On. If the rising edge of the PWM
+                            B output is delayed because of the <span class="bold"><strong>Deadband
+                                Duration</strong></span>, the trigger is still generated at B-On as
+                            defined by the user and not when the signal effectively changes its
+                            level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at B-Off </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of B-Off.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if the FPGA base clock is equal to 75&nbsp;MHz, then the resolution is
+                    13.33&nbsp;ns.</p></td></tr></table></div></div></div></body></html>

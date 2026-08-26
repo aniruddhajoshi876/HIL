@@ -1,0 +1,35 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC 825 - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_arinc825_update_scheduled_message.html" title="ARINC 825 - Update Scheduled Message"><link rel="next" href="refentry_arinc825_status.html" title="ARINC 825 - Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc825_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC 825 - Read</h2><p>ARINC 825 - Read &#8212; <span class="phrase">Receive CAN
+                messages</span></p></div><div class="refsect1"><a name="d5e591"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc825_read.png"></span></span></p></div><div class="refsect1"><a name="d5e599"></a><h2>Description</h2><p>This block receives the specified CAN message(s) from the bus. Multiple blocks can
+                be used per channel.</p></div><div class="refsect1"><a name="d5e602"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Enable</span></span></dt><dd><p>Enable/Disable message reception.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Received CAN(-FD) message(s).</p><p>CAN-FD message:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Protocol Mode: 1 if a CAN-FD message was received
+                                        otherwise 0</p></li><li class="listitem"><p>Extended: Always 1 (29-Bit ID)</p></li><li class="listitem"><p>Length: Number of data bytes</p></li><li class="listitem"><p>Remote: Not used</p></li><li class="listitem"><p>Error: Not used</p></li><li class="listitem"><p>BRS: Bit Rate Switch is 0 if data is received with the
+                                        nominal baud rate otherwise 1 (Only valid for CAN-FD
+                                        messages)</p></li><li class="listitem"><p>ESI: Error State Indicator is 0 if error state is active
+                                        otherwise 1, if error state is passive (Only valid for
+                                        CAN-FD messages)</p></li><li class="listitem"><p>DLC: Data Length Code (Only valid for CAN-FD
+                                        messages)</p></li><li class="listitem"><p>ID: Message ID</p></li><li class="listitem"><p>Timestamp: Time of message reception</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Timestamp resolution 12.5&nbsp;ns</p></td></tr></table></div></li><li class="listitem"><p>Data: Payload data vector</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Status vector for every message received indicating if the specified
+                            message was received.</p></dd></dl></div></div><div class="refsect1"><a name="d5e649"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module Type</span>
+                    </span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Select the channel to which this driver block corresponds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message ID</span>
+                    </span></dt><dd><p>Specify the 29-bit ID of the message(s) which should be
+                            received.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Input</span>
+                    </span></dt><dd><p>Select whether the enable input is active. Otherwise message reception
+                            is always enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Status Output</span>
+                    </span></dt><dd><p>Select whether the status output is active.</p></dd></dl></div></div></div></body></html>

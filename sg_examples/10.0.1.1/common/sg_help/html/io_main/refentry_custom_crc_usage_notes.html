@@ -1,0 +1,85 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Custom CRC Algorithm Insert and Validation Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_crc_validation.html" title="CAN Message Utilities: CRC Validation"><link rel="next" href="refentry_ref_e2e_p1_protect.html" title="CAN Message Utilities: E2E Profile 1 Protect"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_custom_crc_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Custom CRC Algorithm Insert and Validation Usage Notes</h2><p>CAN Custom CRC Algorithm Insert and Validation Usage Notes &#8212; <span class="phrase">Usage information for
+                    computing a custom CRC value for insert and validation in CAN and CAN FD
+                    messaging</span></p></div><div class="refsect1"><a name="d5e4410"></a><h2>Description</h2><p>The CRC Insert and Validation blocks support the use of a custom CRC algorithm,
+                which is available when the <span class="bold"><strong>CRC Type</strong></span> option is set
+                to <span class="bold"><strong>Custom</strong></span>. Users can specify a .c or .cpp file
+                containing the custom CRC algorithm. The CRC Insert and Validation blocks then use
+                this algorithm instead of any of the built-in CRC calculation methods.</p></div><div class="refsect1"><a name="d5e4415"></a><h2>Custom CRC Algorithm Definition</h2><p>A C/C++ source and header file pair located on the MATLAB path is required to
+                implement a custom CRC algorithm. The source and header pair must define at least
+                one function with a template signature.</p><pre class="programlisting">extern "C" uint64_t customFnc(const uint8_t* byteArray, unsigned int bitLength)</pre><p>The first input is the full payload, provided as a <code class="code">uint8</code> array,
+                excluding the bits pre-allocated for the CRC value. The bit order matches the
+                original CAN payload packing. Bits surrounding the pre-allocated CRC area are
+                shifted according to the <span class="bold"><strong>Custom CRC Bit Width</strong></span>. Any
+                unused bits in the allocated byte array are zero-padded on the most significant bit
+                (MSB) side. The second input is the length of the payload in bits. Both byte-aligned
+                and non-byte-aligned payloads are supported.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/CustomCRCInputs.png" width="300"></span></span></p><p>The output is the CRC value as a uint64. The CRC value is bitwise inserted into
+                the payload in least-significant-bit-first (LSB-first) and little-endian-byte order,
+                using exactly the <span class="bold"><strong>Custom CRC Bit Width</strong></span> specified in
+                the CRC Insert or Validation block.</p></div><div class="refsect1"><a name="d5e4429"></a><h2>Usage Example</h2><p>The following example for a custom CRC algorithm definition can be used as a
+                template. Other custom implementations can be used in the same way, provided the
+                following requirements are met:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The custom CRC bit width is allocated in the packed CAN message</p></li><li class="listitem"><p>The custom CRC bit width and bit location are correctly set in the CRC
+                            Insert or Validation block mask</p></li><li class="listitem"><p>The custom CRC function follows the required signature, including the
+                            extern "C" specifier</p></li><li class="listitem"><p>The return value of the custom CRC function is masked to match the
+                            custom CRC bit width</p></li></ul></div><p>The example code computes a 12-bit CCITT polynomial CRC for payloads of various
+                lengths. A version suitable for use can be found at the end of this page.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/CustomCRCTemplateCpp.png"></span></span> Custom CRC Algorithm .cpp template
+                (custom_crc_template.cpp)</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/CustomCRCTemplateHpp.png"></span></span> Custom CRC Algorithm .h template
+                (custom_crc_template.h)</p><p>To meet the above requirements, the 12-bit wide CRC must first be allocated using
+                a CAN pack block. In this example the CRC is inserted in bit location 27.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/CustomCRCPacking.png"></span></span></p><p>The <span class="bold"><strong>CRC Type</strong></span> parameter must be set to <span class="bold"><strong>Custom</strong></span> in the CRC Insert/Validation block. The <span class="bold"><strong>Bit Location</strong></span> is also set to 27 and the <span class="bold"><strong>Bit Width</strong></span> to 12. The file to be used
+                (custom_crc_template.cpp) is defined in <span class="bold"><strong>Custom CRC Function
+                    File</strong></span>, and the function to be used (ComputeCustomCrc) must be
+                specified in <span class="bold"><strong>Custom CRC Function Name</strong></span>. The source
+                and header files must be placed on the MATLAB path to compile correctly.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/CustomCRCInsert.png"></span></span></p><p>If everything is set up correctly, a CRC value is inserted into the CAN message
+                and output on the optional <span class="bold"><strong>CRC Port</strong></span> of the CRC
+                Insert.</p></div><div class="refsect1"><a name="d5e4472"></a><h2>Appendix</h2><p><span class="bold"><strong>custom_crc_template.cpp</strong></span></p><pre class="programlisting">#include "custom_crc_template.h"
+
+unsigned char reflect(unsigned char data, unsigned char numBits) {
+    unsigned char reflection = 0x00;
+    for (unsigned char i = 0; i &lt; numBits; i++) {
+        if (data &amp; (1 &lt;&lt; i)) {
+            reflection |= (1 &lt;&lt; ((numBits - 1) - i));
+        }
+    }
+    return reflection;
+}
+
+uint64_t ComputeCustomCrc(const uint8_t* byteArray, unsigned int bitLength) {
+    const uint16_t polynomial = 0x80F; // CRC-12/CCITT polynomial
+    uint16_t crc = 0xFFF;              // Initial value (12 bits)
+    uint8_t reflectOutput = false;
+    uint8_t reflectInput = false;
+    
+    // Loop through byteArray bytewise
+    for (unsigned int i = 0; i &lt; (bitLength/8); ++i) {
+        uint8_t byte = byteArray[i];
+        if (reflectInput) {
+            byte = reflect(byte, 8);
+        }
+        crc ^= (byte &lt;&lt; 4); // Align byte with top 8 bits of 12-bit CRC
+
+        for (int j = 0; j &lt; 8; ++j) {
+            if (crc &amp; 0x800) { // Check top bit of 12-bit CRC
+                crc = (crc &lt;&lt; 1) ^ polynomial;
+            } else {
+                crc &lt;&lt;= 1;
+            }
+        }
+    }
+
+    if (reflectOutput) {
+        crc = reflect(crc, 8);
+    }
+    crc &amp;= 0xFFF; // Mask to 12 bits
+    return crc;
+}
+            </pre><p><span class="bold"><strong>custom_crc_template.h</strong></span></p><pre class="programlisting">#ifndef CUSTOM_CRC_TEMPLATE_HPP
+#define CUSTOM_CRC_TEMPLATE_HPP
+
+#include "stdint.h"
+
+unsigned char reflect(unsigned char data, unsigned char numBits) ;
+
+extern "C" uint64_t ComputeCustomCrc(const uint8_t* byteArray, unsigned int bitLength);
+
+#endif</pre></div></div></body></html>

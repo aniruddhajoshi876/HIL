@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.model.createFromEni</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_model_create_from_eds.html" title="speedgoat.model.createFromEds"><link rel="next" href="refentry_sgapi_model_extend_eni.html" title="speedgoat.model.extendEni"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_model_create_from_eni"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.model.createFromEni</h2><p>speedgoat.model.createFromEni &#8212; 
+            <span class="phrase">Autogenerate Simulink models from EtherCAT ENI files</span>
+         </p></div><div class="refsect1"><a name="d5e811"></a><h2>Description</h2><p>This Speedgoat API function reads EtherCAT Network Information files (ENI) and autogenerates a
+communication interface in Simulink ready for use with the built-in Ethernet interfaces and the
+IO71x/IO79x I/O modules. During runtime, the real-time application emulates the EtherCAT subordinate devices
+described in the ENI file and allows data to be exchanged with the remote EtherCAT main device
+connected with the local Ethernet interface.</p><p>The function places the EtherCAT Emulator Setup, Send and Receive driver blocks into the model and
+automatically sets the block parameters according to the devices and their input and output
+signals defined in the ENI file.</p><p>In addition to the standard ENI files, this function also supports the extended ENI (EXI) file.</p></div><div class="refsect1"><a name="d5e816"></a><h2>Examples</h2><p>Autogenerate the Simulink model by selecting the ENI file using the file dialog:</p><pre class="programlisting">speedgoat.model.createFromEni</pre><p>Autogenerate the Simulink model by specifying the ENI file as an argument:</p><pre class="programlisting">speedgoat.model.createFromEni('FileName', 'MyNetwork.eni')</pre></div><div class="refsect1"><a name="d5e822"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'FileName' - Name of the ENI file including the file extension
+[character vector]. Pass the file name if the corresponding directory is the current
+working directory or is included in the MATLAB path. Otherwise, pass the full or
+relative path of the file.</p><p>'InterfaceId' - Ethernet Interface ID
+[numeric]. The ID of the relevant Ethernet Interface. The number is passed to the
+Interface ID parameter of all the EtherCAT Emulator driver blocks added to the model. 
+If not defined, the default Interface ID is 1.</p><p>'SampleTime' - Sample time [s]
+[numeric]. The sample time is passed to the Sample Time parameter of all the EtherCAT
+Emulator Send and Receive driver blocks added to the model. If not defined, the default
+sample time is 0.001 seconds.</p></div></div></body></html>

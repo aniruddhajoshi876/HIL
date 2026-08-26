@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO641/IO642 Pin Mapping</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io641_io642_examples.html" title="IO641 &amp; IO642 - Examples"><link rel="next" href="refentry_io641_usage_notes.html" title="IO641 Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io641_pin_mapping"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO641/IO642 Pin Mapping</h2><p>IO641/IO642 Pin Mapping &#8212; <span class="phrase">Reference information about
+                    the I/O module connector</span></p></div><div class="refsect1"><a name="d5e21583"></a><h2>I/O Pin Mapping for PROFIBUS DP</h2><p>The 9-pin female D-sub connector provides one isolated PROFIBUS DP interface
+                according to IEC 61158 and allows transmission according to RS-485.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/io641_connector.png" width="270"></span>
+            </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="33%" class="col2"><col width="34%" class="col3"></colgroup><thead><tr><th>Pin </th><th>Signal </th><th>Description</th></tr></thead><tbody><tr><td>1 </td><td>NC </td><td>Not connected </td></tr><tr><td>2 </td><td>NC </td><td>Not connected </td></tr><tr><td>3 </td><td>RxD/TxD-P </td><td>Data line plus (B conductor) </td></tr><tr><td>4 </td><td>NC </td><td>Not connected </td></tr><tr><td>5 </td><td>DGND </td><td>Data ground </td></tr><tr><td>6 </td><td>VP </td><td>Internal +5 V supply for bus termination </td></tr><tr><td>7 </td><td>NC </td><td>Not connected </td></tr><tr><td>8 </td><td>RxD/TxD-N </td><td>Data line minus (A conductor) </td></tr><tr><td>9 </td><td>NC </td><td>Not connected </td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e21639"></a><h2>Wiring</h2><p>Use a standard PROFIBUS cable with 9-pin male D-sub sockets to connect the I/O
+                module with external PROFIBUS devices. PROFIBUS devices are connected in a line
+                topology with each other (from A to B, B to C, and so on). As almost every PROFIBUS
+                device has only one connector, use Y split cables to connect multiple devices to the
+                network.</p><p>For proper operation, a PROFIBUS topology requires terminating resistors on both
+                ends. The IO641 and IO642 I/O modules do not include termination resistors. Instead,
+                switchable resistors are integrated in the connectors of the PROFIBUS cable.</p><p>The IO642-32 module contains 32 PROFIBUS DP slaves, which are connected
+                internally. You can add the module to a PROFIBUS line by connecting the PROFIBUS
+                master or the previous slave with the Bus IN connector. You connect the next slave
+                with the Bus OUT connector to extend the PROFIBUS line.</p><p>The IO642-32 has an internal termination resistor for the Bus OUT connector. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Moving the termination switch towards the D-sub connector, turns the
+                            termination off</p></li><li class="listitem"><p>Moving the termination switch away from the D-sub connector, turns the
+                            termination on</p></li></ul></div><p>Disable the termination if Bus OUT is connected with a PROFIBUS device. Enable the
+                termination if Bus OUT is not connected with a PROFIBUS device.</p><div class="refsect2"><a name="d5e21651"></a><h3></h3><p>IO642-32 front plate:</p><p>
+                    <span class="inlinemediaobject"><img src="././graphics/io642_32_front.png" width="1080"></span>
+                </p></div></div></div></body></html>

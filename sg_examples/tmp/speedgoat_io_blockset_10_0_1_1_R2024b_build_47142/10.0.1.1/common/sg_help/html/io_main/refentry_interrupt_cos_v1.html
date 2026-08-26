@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Interrupt - CoS v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_interrupt_usage_notes.html" title="Interrupt Usage Notes"><link rel="next" href="refentry_interrupt_cos_v2.html" title="Interrupt - CoS v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_interrupt_cos_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Interrupt - CoS v1</h2><p>Interrupt - CoS v1 &#8212; <span class="phrase">The CoS (Change of State)
+                    interrupt driver block allows a change of state on an input of the configurable
+                    I/O module in order to trigger the Simulink model.</span></p></div><div class="refsect1"><a name="d5e9696"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_cos_interrupt_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e9704"></a><h2>Description</h2><p>The CoS interrupt driver block allows a change of state on an FPGA input to
+                trigger the Simulink model.</p></div><div class="refsect1"><a name="d5e9707"></a><h2>Ports</h2><p>This block has no inputs or outputs.</p></div><div class="refsect1"><a name="d5e9710"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Interrupt </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Debounce duration </span>
+                    </span></dt><dd><p>The time during which the interrupt input signal is tested for
+                            validity. If the signal level does not change during the test duration,
+                            the Interrupt code module assumes that the signal value is stable and
+                            asserts the interrupt. To turn off the debouncing, enter the value 0.
+                            The duration is defined in number of FPGA clock ticks. The range is from
+                            0 to 2^10 &#8211; 1 (0 to 1023).</p></dd><dt><span class="term">
+                        <span class="guilabel">Interrupt delay </span>
+                    </span></dt><dd><p>Defines time that the tested (debounced) signal is delayed before the
+                            interrupt is asserted. To turn off the delay enter value 0. The
+                            interrupt delay is defined in number of FPGA clock ticks. The range is
+                            from 0 to 2^20 &#8211; 1 (0 to 1048575).</p></dd><dt><span class="term">
+                        <span class="guilabel">Polarity </span>
+                    </span></dt><dd><p>Defines whether the signal's low-to-high (value 1) or high-to-low
+                            (value 0) transition produces an interrupt.</p></dd></dl></div></div></div></body></html>

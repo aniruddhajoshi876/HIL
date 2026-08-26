@@ -1,0 +1,17 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modem Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="mw_ebefb990-e878-4650-838f-44b82f7f1b6e.html" title="Chapter&nbsp;13.&nbsp;RS232 blocks"><link rel="prev" href="mw_c5ca66ad-e2e2-42cf-ac6b-0002ce0c14fb.html" title="Modem Control"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="mw_8e9c4d00-8b55-4afb-838e-21616a2abaf6"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modem Status</h2><p>Modem Status &#8212; Modem Status block<b>RS232Blocks</b></p></div><div class="refsect1"><a name="mw_b8cc561a-0735-4ce1-bb4a-3425e29babb8"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library for
+                RS-232</p></div><div class="refsect1"><a name="mw_6838fed1-1625-4e97-a1be-ce18c3c370a8"></a><h2>Description</h2><p>The Modem Status block reads the state of the four input modem control
+                lines.</p><p>This block has an output of type <code class="literal">Boolean</code>. If the input voltage
+                is positive, the output is true. If the input voltage is negative, the output is
+                false.</p></div><div class="refsect1"><a name="mw_b014d7c2-5a9a-4f87-81d5-2d9676a1dc8e"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Port</span></span></dt><dd><p>From the list, choose a port. The <span class="guilabel">Port</span> parameter
+                            defines the port to configure for this driver block.</p></dd><dt><span class="term"><span class="guilabel">CTS</span></span></dt><dd><p>Select this check box to monitor the CTS line.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="guilabel">Slot (PCI boards)</span>
+                    </span></dt><dd><p>If only one board of this type is in the target computer, enter
+                                <code class="literal">-1</code> to automatically locate the board.</p><p>If two or more boards of this type are in the target computer, enter
+                            the bus number and the PCI slot number of the board associated with this
+                            driver block. Use the format <code class="literal">[BusNumber, SlotNumber]</code>.
+                            To determine the bus number and the PCI slot number, type:</p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e11209"></a><h2>Related Links</h2><p><a class="link" href="https://fastcomproducts.com/" target="_top">https://fastcomproducts.com/</a></p><p><a class="link" href="https://www.advantech.com/en" target="_top">https://www.advantech.com/en</a></p></div></div></body></html>

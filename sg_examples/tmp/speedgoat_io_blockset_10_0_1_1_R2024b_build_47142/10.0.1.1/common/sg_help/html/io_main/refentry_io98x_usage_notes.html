@@ -1,0 +1,11 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO98X Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_sensors.html" title="Sensors I/O"><link rel="up" href="book_sensors.html" title="Sensors I/O"><link rel="prev" href="refentry_io98x_pin_mapping.html" title="IO98X Pin Mapping"><link rel="next" href="refentry_io98x_fault_insertion_control_v2.html" title="IO98X - Fault Insertion Control v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io98x_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO98X Usage Notes</h2><p>IO98X Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e2312"></a><h2>Switch control</h2><p><span class="inlinemediaobject"><img src="././graphics/FaultInsertion_Description.png"></span></p><p>Break relays directly connect Mn and Un I/O pins. The Break input port accepts a
+                vector to control each break relay of the module. Faults can be inserted using the
+                FaultBus switches provided. The switches are controlled over the FaultBus and
+                FaultBus Select ports.</p></div><div class="refsect1"><a name="d5e2319"></a><h2>Safety application</h2><p>Fault insertion buses allow any channel to be shorted to any other channel and
+                also enable any channel to be connected to an external signal. Be careful connecting
+                an I/O module to a fault insertion card. External signals may damage an I/O module
+                when short-circuited, as shown in this example. Refer to I/O module specification
+                for maximum ratings.</p><p><span class="inlinemediaobject"><img src="././graphics/FaultInsertion_OperationSafety.png"></span></p></div></div></body></html>

@@ -1,0 +1,30 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: E2E Profile 2 Protect</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_e2e_p1_check.html" title="CAN Message Utilities: E2E Profile 1 Check"><link rel="next" href="refentry_ref_e2e_p2_check.html" title="CAN Message Utilities: E2E Profile 2 Check"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_e2e_p2_protect"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: E2E Profile 2 Protect</h2><p>CAN Message Utilities: E2E Profile 2 Protect &#8212; <span class="phrase">Applies AUTOSAR E2E Profile 2
+                    Protection mechanism to an array of bytes</span></p></div><div class="refsect1"><a name="d5e4674"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_e2e_p2_protect.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_counter_insert"></a><h2>Description</h2><p>The <span class="bold"><strong>E2E Profile 2 Protect</strong></span> block implements the
+                transmitter-side logic of the AUTOSAR E2E Profile 2 specification. The block inserts
+                a 4-bit sequence counter and computes a CRC over the message data, including a
+                    configurable<span class="bold"><strong> Data ID</strong></span>.</p><p>For in-depth documentation about the E2E Profile 2, please refer to the <a class="link" href="https://www.autosar.org/fileadmin/standards/R19-03/FO/AUTOSAR_PRS_E2EProtocol.pdf" target="_top">AUTOSAR documentation</a>.</p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the configuration settings
+                in the block mask:</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID List</span>
+                    </span></dt><dd><p>This input port can be enabled with the <span class="bold"><strong>Data ID
+                                List from Input</strong></span> checkbox in the mask. <span class="bold"><strong>Data ID List</strong></span> input port expects an array of
+                            16 elements of data type uint8.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Protected Output</span>
+                    </span></dt><dd><p>This port outputs the E2E Profile 2 protected version of the Input
+                            signal. Its datatype (either CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a
+                            uint8 array with a maximum length of 256 bytes) is configured by the
+                                <span class="bold"><strong>Protocol</strong></span> parameter in the block
+                            mask.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data ID List from Input</span>
+                    </span></dt><dd><p>If enabled, adds a <span class="bold"><strong>Data ID List</strong></span> input
+                            port to provide the <span class="bold"><strong>Data ID List</strong></span> from
+                            the Simulink&reg; model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID List</span>
+                    </span></dt><dd><p>If <span class="guilabel">Data ID List from Input</span> checkbox is disabled,
+                            the 16 element-long <span class="bold"><strong>Data ID List </strong></span>can be
+                            configured with this parameter.</p></dd></dl></div></div></div></body></html>

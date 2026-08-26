@@ -1,0 +1,158 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mb_landing.html" title="Modbus"><link rel="next" href="refentry_mbtcp_landing.html" title="Modbus TCP"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbtcp_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus Usage Notes</h2><p>Modbus Usage Notes &#8212; <span class="phrase">Detailed information about the
+                    Modbus protocol and the Modbus blockset</span></p></div><div class="refsect1"><a name="d5e68461"></a><h2>Introduction to Modbus</h2><p>Modbus communication protocol that allows interoperability between components
+                mostly in electric grids and automation plants. These components are either client
+                or server. One client accesses multiple servers to read and write data that the
+                server manages in 4 data tables:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Coils (bit values the client can read and write)</p></li><li class="listitem"><p>Discrete Inputs (bit values the client can only read)</p></li><li class="listitem"><p>Holding Registers (word values the client can read and write)</p></li><li class="listitem"><p>Input Registers (word values the client can only read)</p></li></ul></div><p>
+            </p><p>Modbus TCP is a TCP/IP-based protocol. In Modbus TCP networks, each physical
+                device has a unique IP address. Servers normally listen on TCP port 502 for incoming
+                connection requests from clients. TCP port numbers on the client side are
+                random.</p><p>Modbus RTU is a widely used serial communication protocol. It operates over RS-485
+                (or sometimes RS-232) serial interfaces. In Modbus RTU, data is transmitted in
+                binary format, making it fast and reliable for communication between devices such as
+                programmable logic controllers (PLCs) and sensors.</p><p>For further information about the Modbus protocol, refer to the official online
+                    <a class="link" href="https://www.modbus.org/modbus-specifications" target="_blank"> Modbus documentation</a>.</p></div><div class="refsect1"><a name="d5e68478"></a><h2>Runtime License</h2><p>Modbus blocks require a runtime license installed on the target machine. Please refer to
+                the <a href="refentry_runtime_license.html" class="olink">Runtime Licensing</a> help.</p></div><div class="refsect1"><a name="d5e68482"></a><h2>Typical Target Machine Configurations - for Modbus TCP</h2><p>For Modbus TCP communication with Speedgoat target machines, you can use onboard
+                Ethernet interfaces and plug-in Ethernet I/O modules.</p><p>Use the Ethernet Configuration Tool to assign IP addresses to these Ethernet
+                interfaces. Enter the following in the MATLAB command window to open the tool:
+                </p><pre class="programlisting">&gt;&gt; speedgoat.configureEthernet</pre><p>
+                <span class="inlinemediaobject"><img src="././graphics/dnp3_configeth.png"></span>
+            </p><p>For Modbus TCP, you can use any Ethernet interface when <span class="bold"><strong>Configuration</strong></span> is set to <span class="bold"><strong>IP
+                    Protocols</strong></span>.</p><p>One real-time target machine can perform multiple Modbus TCP clients and servers.
+                There are four possible configurations:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">One IP Address per Ethernet Interface</span></dt><dd><p>One IP address is assigned to one Ethernet interface. This Ethernet
+                            interface acts as either one Modbus TCP client or one Modbus TCP server
+                            in the network. You can install multiple Ethernet I/O modules (providing
+                            up to 4 interfaces each) or use additional onboard Ethernet interfaces
+                            to set up multiple Modbus TCP clients or servers. As all the Ethernet
+                            interfaces of a target machine must be associated with different
+                            Ethernet subnets, each Modbus TCP station must operate in another
+                            Ethernet network. If an application requires multiple clients to
+                            communicate with different Modbus TCP networks, then this target
+                            configuration is the correct choice. In contrast, if the simulation of a
+                            Modbus TCP network with multiple servers is required, this setup cannot
+                            be used.</p><p>The subnet dedication of an Ethernet interface is defined by IP
+                            address and subnet mask.</p></dd><dt><span class="term">Multiple IP Addresses per Ethernet Interface (IP Aliasing)</span></dt><dd><p>IP aliasing can be used to assign multiple IP addresses to a single
+                            physical interface. This allows multiple Modbus TCP clients and servers
+                            to be operated on the same Ethernet I/O module or the same onboard
+                            Ethernet interface. As the related IP addresses are always associated
+                            with the same Ethernet subnet, this configuration is ideal for
+                            simulating a Modbus TCP network containing multiple servers. Even mixed
+                            operation (client and server) is possible for the purpose of loopback
+                            testing. Alias addresses can be configured in the advanced settings of
+                            the Ethernet Configuration Tool or by functions.</p><p>Enter the following in the MATLAB command window to manage IP
+                            aliasing:
+                            </p><pre class="programlisting">
+                                &gt;&gt; ipAliasObj = speedgoat.IpAliasConfiguration()
+                                &gt;&gt; ipAliasObj.add('ETH2', {'192.168.10.31','192.168.10.32','192.168.10.33'})
+                                &gt;&gt; ipAliasObj.remove('ETH2', {'192.168.10.33'})
+                                &gt;&gt; ipAliasObj.add('Host Link', {'192.168.1.15','192.168.1.19'})
+                            </pre><p>
+                            Enter the following in the MATLAB command window to check the available
+                            Ethernet interfaces and configured IP aliases:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj.show()
+                                Interface Name      IP Address          Subnet Mask
+                                ---------------     ---------------     ---------------
+                                ETH2                192.168.10.1        255.255.255.0
+                                192.168.10.31       255.255.255.255
+                                192.168.10.32       255.255.255.255
+                                192.168.10.33       255.255.255.255
+                                Host Link           192.168.1.14        255.255.255.0
+                                192.168.1.15        255.255.255.255
+                                192.168.1.19        255.255.255.255</pre><p>
+                        </p></dd><dt><span class="term">Multiple TCP Ports per IP Address</span></dt><dd><p>This is the normal operation for clients as each connection of the
+                            client to a server requires a separate TCP port.</p><p>For server simulation, you can ignore the default server port 502 and
+                            allow multiple servers to listen on different TCP ports. All these
+                            servers will then act in the same subnet.</p></dd></dl></div></div><div class="refsect1"><a name="d5e68513"></a><h2>Typical Serial I/O Module Configuration - for Modbus RTU</h2><div class="variablelist"><div class="variablelist-title">UART Protocol Configuration</div><dl class="variablelist"><dt><span class="term">The following values represent the standard settings for a serial
+                        interface defined by the Modbus normative.</span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="15%" class="Parameters"><col width="22%" class="Default Value"><col width="63%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>Parameters</strong></span></td><td><span class="bold"><strong>Default
+                                            Value</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>Physical Interface</td><td>RS485 Half-Duplex</td><td>The most common physical interface for Modbus RTU is
+                                            RS485 Half-Duplex.</td></tr><tr><td>Data Bits</td><td>8</td><td>Define how many bits come after the start bit</td></tr><tr><td>Parity Check</td><td>Even</td><td>The parity bit is used to identify transmission
+                                            errors. Parity checking reveals if a payload has changed
+                                            since sending.</td></tr><tr><td>Stop Bit</td><td>1</td><td>Sets the last bit after the parity bit</td></tr></tbody></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e68549"></a><h2>Modbus Data Exchange</h2><p>Modbus data is exchanged in request-response fashion. The client sends a request
+                frame to the server. The server sends a response frame to the client. The server is
+                not allowed to send data autonomously.</p><p>The client request consists of </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>a function code</p></li><li class="listitem"><p>the address of the data within the data table</p></li><li class="listitem"><p>the number of elements</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io754_intro.png" width="594"></span>
+            </p><p>For read requests, the server sends a response to the client which contains the
+                original function code and the data which has been requested. For write requests the
+                server sends a simple confirmation containing the function code.</p><p>The following function codes are supported by the Speedgoat Modbus blocks:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>FC1</p></li><li class="listitem"><p>FC2</p></li><li class="listitem"><p>FC3</p></li><li class="listitem"><p>FC4</p></li><li class="listitem"><p>FC5</p></li><li class="listitem"><p>FC6</p></li><li class="listitem"><p>FC15</p></li><li class="listitem"><p>FC16</p></li></ul></div><p>In addition to the above list, the Modbus RTU Server also supports the diagnostics
+                FC8 with Subfunction 00.</p><p>Depending on the data area, there are two types of address and length
+                information:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Coils/Discrete Inputs: Bit address, Number of bits (bit-based)</p></li><li class="listitem"><p>Holding Registers/Input Registers: Word address, Number of words (16
+                        bit-based)</p></li></ul></div><p>In the following tables you can see how the four data tables are structured and
+                how bit- and word-addressing works. The Modbus addresses 0XXXX, 1XXXX, 3XXXX and
+                4XXXX are still commonly used to label Modbus TCP registers. They have been taken
+                over from serial Modbus RTU but serve no purpose in Modbus TCP addressing.</p><div class="figure"><a name="d5e68592"></a><div class="figure-title">Figure&nbsp;17.&nbsp;Coils</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/io754_intro_coils.png" width="594" alt="Coils"></div></div></div><br class="figure-break"><div class="figure"><a name="d5e68599"></a><div class="figure-title">Figure&nbsp;18.&nbsp;Discrete Inputs</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/io754_intro_discreteinputs.png" width="594" alt="Discrete Inputs"></div></div></div><br class="figure-break"><div class="figure"><a name="d5e68606"></a><div class="figure-title">Figure&nbsp;19.&nbsp;Input Registers</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/io754_intro_inputregisters.png" width="594" alt="Input Registers"></div></div></div><br class="figure-break"><div class="figure"><a name="d5e68613"></a><div class="figure-title">Figure&nbsp;20.&nbsp;Holding Registers</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/io754_intro_holdingregisters.png" width="513" alt="Holding Registers"></div></div></div><br class="figure-break"><div class="itemizedlist"><div class="itemizedlist-title"><span class="bold"><strong>Detailed Description of supported MODBUS function
+                        codes</strong></span></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>FC1 (Read Multiple Coils):</strong></span></p><p>The function code can read the status coils. The request message specifies
+                        the starting address, meaning the <span class="bold"><strong>Index</strong></span> of
+                        the first coil specified, and the <span class="bold"><strong>Quantity</strong></span>
+                        of coils. In the message, Coils are addressed starting at zero. Therefore
+                        the coils numbered 1-16 are addressed as 0-15.</p></li><li class="listitem"><p><span class="bold"><strong>FC2 (Read Multiple Discrete
+                        Inputs)</strong></span></p><p>This function code is used for reading from contiguous discrete inputs.
+                        The request message specifies the starting <span class="bold"><strong>Index</strong></span>, for example, the address of the first input
+                        specified, and the <span class="bold"><strong>Quantity</strong></span> of inputs. In
+                        the message, Discrete Inputs are addressed starting at zero. Therefore the
+                        discrete inputs numbered 1-16 are addressed as 0-15.</p></li><li class="listitem"><p><span class="bold"><strong>FC3 (Read Multiple Holding
+                        Registers)</strong></span></p><p>The function code is used for reading the content of a contiguous block of
+                        holding registers. The request message specifies the starting register
+                            <span class="bold"><strong>Index</strong></span> and the <span class="bold"><strong>Quantity</strong></span> of registers. In the message, Registers are
+                        addressed starting at zero. Therefore the registers numbered as 1-16 are
+                        addressed as 0-15.</p></li><li class="listitem"><p><span class="bold"><strong>FC4 (Read Multiple Input
+                        Registers)</strong></span></p><p>The function code is used for reading contiguous input registers. The
+                        request message specifies the starting register <span class="bold"><strong>Index</strong></span> and the <span class="bold"><strong>Quantity</strong></span> of
+                        registers. In the message, Registers are addressed starting at zero.
+                        Therefore the input registers numbered 1-16 are addressed as 0-15.</p></li><li class="listitem"><p><span class="bold"><strong>FC5 (Write Single Coil)</strong></span></p><p>This function code is used to write a single output to either On or Off.
+                        The requested On/Off state is specified by a constant in the request data
+                        field. A value of 0xFF00 requests the output to be On. A value of 0x0000
+                        requests it to be Off. All the other values serve no purpose and will not
+                        affect the output. Coils are addressed starting at zero. Therefore the coil
+                        numbered 1 is addressed as 0.</p></li><li class="listitem"><p><span class="bold"><strong>FC6 (Write Single Holding
+                        Register)</strong></span></p><p>This function code is used to write a single holding register. The request
+                        message specifies the <span class="bold"><strong>Index</strong></span> of the register
+                        to be written. Registers are addressed starting at zero. Therefore the
+                        register numbered 1 is addressed as 0.</p></li><li class="listitem"><p><span class="bold"><strong>FC15 (Write Multiple Coils)</strong></span></p><p>This function code is used to force each coil in a sequence of coils to
+                        either On or Off. The request message specifies the coil references to be
+                        forced. Coils are addressed starting at zero. Therefore the coil numbered 1
+                        is addressed as 0.</p></li><li class="listitem"><p><span class="bold"><strong>FC16 (Write Multiple Holding
+                        Registers)</strong></span></p><p>This function code is used to write a block of contiguous registers. Data
+                        is packed as two bytes per register (for example, 0xF5A1 - 16 bits).</p></li></ul></div></div><div class="refsect1"><a name="d5e68664"></a><h2>Exception Responses</h2><div class="variablelist"><div class="variablelist-title">Function Codes</div><dl class="variablelist"><dt><span class="term">In a normal response the server answers with the same function code as in
+                        the request message. The indication of a present exception response means
+                        that the server answer contains the function code but with its highest bit
+                        set. All function codes have 0 for their most significant bit. Therefore,
+                        setting this bit to 1 will indicate that the server cannot process the
+                        request.</span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="Function Code in Request Message"><col width="50%" class="Function Code in Exception Response Message"></colgroup><tbody><tr><td align="center"><span class="bold"><strong>Function Code in
+                                                Request Message</strong></span></td><td align="center"><span class="bold"><strong>Function Code in
+                                                Exception Response Message</strong></span></td></tr><tr><td align="center">01 / 0x01 / 0000 0001b</td><td align="center">129 / 0x81 / 1000 0001b</td></tr><tr><td align="center">02 / 0x02 / 0000 0010b</td><td align="center">130 / 0x82 / 1000 0010b</td></tr><tr><td align="center">03 / 0x03 / 0000 0011b</td><td align="center">131 / 0x83 / 1000 0011b</td></tr><tr><td align="center">04 / 0x04 / 0000 0100b</td><td align="center">132 / 0x84 / 1000 0100b</td></tr><tr><td align="center">05 / 0x05 / 0000 0101b</td><td align="center">133 / 0x85 / 1000 0101b</td></tr><tr><td align="center">06 / 0x06 / 0000 0110b</td><td align="center">134 / 0x86 / 1000 0110b</td></tr><tr><td align="center">15 / 0x0F / 0000 1111b</td><td align="center">143 / 0x8F / 1000 1111b</td></tr><tr><td align="center">16 / 0x10 / 0001 0000b</td><td align="center">144 / 0x90 / 1001 0000b</td></tr></tbody></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Exception Code Meaning</div><dl class="variablelist"><dt><span class="term">The exception message contains the function code, and the exception code.
+                        The exception code indicates the possible cause of the problem.</span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="25%" class="Exception Code"><col width="25%" class="Issue"><col width="50%" class="Explanation"></colgroup><tbody><tr><td align="center"><span class="bold"><strong>Exception
+                                                Code</strong></span></td><td align="center"><span class="bold"><strong>Issue</strong></span></td><td align="center"><span class="bold"><strong>Explanation</strong></span></td></tr><tr><td align="center">01 / 0x01</td><td align="center">Illegal Function Code</td><td>The function code is unknown by the server.</td></tr><tr><td align="center">02 / 0x02</td><td align="center">Illegal Data Address</td><td>The data address received in the query is not
+                                            permitted by the server. More specifically, the
+                                            combination of reference number and transfer length is
+                                            invalid.</td></tr><tr><td align="center">03 / 0x03</td><td align="center">Illegal Data Value</td><td>A value contained in the query data field is not a
+                                            permitted value for the server. This indicates a fault
+                                            in the structure of the remainder of a complex request.
+                                            It is likely that the implied length is
+                                            incorrect.</td></tr><tr><td align="center">04 / 0x04</td><td align="center">Server Device Failure</td><td>An unrecoverable error occurred while the server was
+                                            attempting to perform the requested action.</td></tr><tr><td align="center">05 / 0x05</td><td align="center">Acknowledge</td><td>The server accepted the service invocation but the
+                                            service requires a relatively long time to execute. The
+                                            server therefore only returns an acknowledgement of the
+                                            service invocation receipt.</td></tr><tr><td align="center">06 / 0x06</td><td align="center">Server Busy</td><td>The server was unable to accept the Modbus request
+                                            payload. The client application is responsible for
+                                            deciding if and when to resend the request. </td></tr><tr><td align="center">07 / 0x07</td><td align="center">Negative Acknowledge</td><td>The server cannot perform the program function
+                                            received in the query. This code is returned for an
+                                            unsuccessful programming request using function code 13
+                                            or 14 decimal. The client should request diagnostic or
+                                            error information from the server.</td></tr><tr><td align="center">08 / 0x08</td><td align="center">Memory Parity Error</td><td>Specialized use in conjunction with function codes 20
+                                            and 21, and reference type 6, to indicate that the
+                                            extended file area failed to pass a consistency check.
+                                            The server attempted to read extended memory or a record
+                                            file, but detected a parity error in the memory. The
+                                            client can try to resend the request, but the service
+                                            may be required on the server.</td></tr><tr><td align="center">10 / 0x0A</td><td align="center">Gateway Path Error</td><td>Gateway paths not available. Specialized use in
+                                            conjunction with gateways, indicates that the gateway
+                                            was unable to allocate an internal communication path
+                                            from the input port to the output port for processing
+                                            the request. Usually this means the gateway is
+                                            misconfigured or overloaded.</td></tr><tr><td align="center">11 / 0x0B</td><td align="center">Gateway Device Error </td><td>The targeted device failed to respond. Specialized
+                                            use in conjunction with gateways, indicates that no
+                                            response was obtained from the target device. Usually
+                                            this means that the device is not present on the
+                                            network. The gateway generates this exception.</td></tr></tbody></table></div></dd></dl></div></div></div></body></html>

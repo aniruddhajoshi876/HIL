@@ -1,0 +1,67 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BiSS - Encoder v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_biss_decoder_v1.html" title="BiSS - Decoder v1"><link rel="next" href="refentry_biss_sniffer_v2.html" title="BiSS - Sniffer v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_biss_encoder_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>BiSS - Encoder v1</h2><p>BiSS - Encoder v1 &#8212; <span class="phrase">The BiSS Encoder code module
+                    acts as the slave implementation of the BiSS communication. The driver block can
+                    be configured for generic support of different BiSS encoders and
+                    setups.</span></p></div><div class="refsect1"><a name="d5e4549"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_biss_encoder_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e4557"></a><h2>Description</h2><p>The BiSS Encoder code module acts as the slave implementation of the BiSS
+                communication. The driver block can be configured for generic support of different
+                BiSS encoders and setups.</p><p>The following sections describe the code module in more detail:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Usage notes</p></li><li class="listitem"><p>Input and output ports</p></li><li class="listitem"><p>Dialog fields</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e4569"></a><h2>Ports</h2><p>This BiSS Encoder driver block has no outputs, and up to four input ports.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">TxData </span>
+                    </span></dt><dd><p>The data value to be sent to the BiSS master.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC </span>
+                    </span></dt><dd><p>The value of the BiSS CRC bits specified in the configuration.</p></dd><dt><span class="term">
+                        <span class="guilabel">Warning </span>
+                    </span></dt><dd><p>The value of the BiSS Warning flag.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error </span>
+                    </span></dt><dd><p>The value of the BiSS Error flag.</p></dd></dl></div></div><div class="refsect1"><a name="d5e4594"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: BiSS configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Line Delay Vector </span>
+                    </span></dt><dd><p>Configures the Line Delay time introduced on the data line. This
+                            allows to emulate the line delay introduced by a long cable. E.g. if we
+                            define a value of [10], the data will be delayed for 10 FPGA ticks.
+                            Units are in ticks. Valid range 0 to 1000, which corresponds to a line
+                            delay of approx. 0 to 13.34us.</p></dd><dt><span class="term">
+                        <span class="guilabel">Busy Delay Vector </span>
+                    </span></dt><dd><p>Configures the Busy Delay time introduced on the data line. The busy
+                            delay allows the slave to take more time for e.g. calculations before
+                            the data is sent. E.g. if we define a value of [10], the start bit will
+                            be delayed for 10 FPGA ticks. Units are in ticks. Valid range 0 to 3000.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Timeout Time Vector </span>
+                    </span></dt><dd><p>Configures the BiSS Encoder timeout time. The BiSS Encoder starts
+                            measuring the timeout at the last rising edge on the clock. Once
+                            expired, a rising edge at SLO flags the timeout to the BiSS Decoder.
+                            Common times are set to 40&nbsp;us, which corresponds to 3000 ticks @ 75
+                            MHz FPGA frequency.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Bits Vector </span>
+                    </span></dt><dd><p>The number of BiSS data bits. Additional transmission bits like
+                            Warning, Error and CRC are configured separately. The valid range is 0
+                            to a maximum of 64 (the maximum depends on the additional flag and CRC
+                            port settings).</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Flag </span>
+                    </span></dt><dd><p>Configures an Error flag port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Warning Flag </span>
+                    </span></dt><dd><p>Configures a Warning flag port.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC Bits </span>
+                    </span></dt><dd><p>Configures the CRC bits port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of CRC Bits </span>
+                    </span></dt><dd><p>Configures the number of CRC Bits. Valid range 0 to 8.</p></dd><dt><span class="term"></span></dt><dd><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Error Flag</strong></span>, <span class="bold"><strong>Warning Flag</strong></span> and the <span class="bold"><strong>CRC Bits</strong></span> are concatenated with the data
+                                bits into the BiSS frame. The code module does not calculate a CRC
+                                value.</p></td></tr></table></div></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div></div></body></html>

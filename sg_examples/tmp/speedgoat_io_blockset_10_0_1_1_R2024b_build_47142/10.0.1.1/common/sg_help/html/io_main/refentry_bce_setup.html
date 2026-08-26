@@ -1,0 +1,214 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BMTS Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_ref_bce.html" title="Battery Management Testing Systems"><link rel="next" href="refentry_bce_write.html" title="BMTS Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bce_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>BMTS Setup</h2><p>BMTS Setup &#8212; <span class="phrase">Configure the BMTS Setup
+                    block</span></p></div><div class="refsect1"><a name="d5e501"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_bce_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e509"></a><h2>Description</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The <span class="bold"><strong>BMTS Setup block</strong></span> allows the user to configure
+                an entire EtherCAT chain consisting of the Speedgoat real-time target machine acting
+                as the EtherCAT main device and a configurable number of Battery Cell Emulator
+                (BCE), Fault Insertion Unit (FIU) and Temperature Sensor Emulator (TSE)
+                devices.</p><p>The order of the devices listed in the BMTS Setup block must match the order in
+                which the devices on the EtherCAT bus are daisy-chained. The real-time target
+                machine is connected to device 1, device 1 is connected to device 2, and so
+                forth.</p><p>The device types and the order of the devices can be changed by modifying the
+                table in the BMTS Setup block mask.</p></div><div class="refsect1"><a name="d5e518"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e521"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Setup Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of BCE Units</span>
+                    </span></dt><dd><p>Selects the number of BCE units present in the EtherCAT network. The
+                            value is automatically updated when devices are added or removed. This
+                            parameter can be used to quickly add multiple BCE units at the end of
+                            the table.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of FIU/TSE Units</span>
+                    </span></dt><dd><p>Selects the number of FIU/TSE units present in the EtherCAT network.
+                            The value is automatically updated when devices are added or removed.
+                            This parameter can be used to quickly add multiple FIU/TSE units at the
+                            end of the table.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Configure Sample Time</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Configure the sample time of the data exchange on the EtherCAT
+                            network. All BMTS Read and BMTS Write blocks for devices on this
+                            EtherCAT network will operate with this sample time.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">EtherCAT Network Parameters</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">EtherCAT Network Index</span>
+                    </span></dt><dd><p>The EtherCAT Network Index is a user-defined ID to associate the BMTS
+                            Read and BMTS Write blocks with the corresponding BMTS Setup block. The
+                            value must be an integer between 0 and 11.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ethernet Port Number</span>
+                    </span></dt><dd><p>Identifies the Ethernet port to be used on the real-time target
+                            machine. The first port reserved for EtherCAT by the
+                            speedgoat.configureEthernet function is port 1. The value only needs to
+                            be changed when using more than one Ethernet port for EtherCAT
+                            communication.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Buttons</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Import ENI</span>
+                    </span></dt><dd><p>The Network Topology&#8212;namely the table showing all the devices in
+                            order&#8212;can be reconstructed from a previously saved ENI (EtherCAT Network
+                            Information) file. Click this button to select an ENI file and load the
+                            topology. When the mask is saved and closed, a new ENI file will still
+                            be generated based on the current table.</p></dd><dt><span class="term">
+                        <span class="guilabel">Export ENI</span>
+                    </span></dt><dd><p>Generate the ENI file for the current network topology according to
+                            the table and save it to a user-defined location.</p></dd><dt><span class="term">
+                        <span class="guilabel">Help</span>
+                    </span></dt><dd><p>Opens this help page in the MATLAB Help browser.</p></dd><dt><span class="term">
+                        <span class="guilabel">Save and Close</span>
+                    </span></dt><dd><p>Saves all settings from the block mask, generates the ENI file, and
+                            configures all the blocks present in the model; this process can take a
+                            few seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cancel</span>
+                    </span></dt><dd><p>Discard all changes and close the block mask without saving.</p></dd></dl></div></div><div class="refsect1"><a name="d5e581"></a><h2>Configuration</h2><div class="variablelist"><div class="variablelist-title">Network Topology Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Editing the Table</span>
+                    </span></dt><dd><p>For existing device table entries, the device type can be changed by
+                            double-clicking the device type and selecting a different device from
+                            the drop-down menu. To change the device order, double-click the
+                                <span class="bold"><strong>EtherCAT Bus Device Index</strong></span> field of
+                            the respective row and enter a new index; the list will automatically be
+                            re-ordered.</p></dd><dt><span class="term">
+                        <span class="guilabel">Adding and Removing Devices</span>
+                    </span></dt><dd><p>New devices can be added by selecting the device from the <span class="bold"><strong>Add Device</strong></span> drop-down menu and then clicking
+                            the <span class="bold"><strong>+</strong></span> button. To quickly add multiple
+                            devices, you can also increase the <span class="bold"><strong>Number of
+                                Units</strong></span> drop-down values on the left. After adding devices
+                            this way, the device type can be set directly in the table.</p><p>One or multiple table entries can be removed by selecting them in the
+                            table and pressing the red <span class="bold"><strong>x</strong></span> button. A
+                            confirmation is required before the selected devices are deleted.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">BCE Device Configuration Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Device Selection and Configuration</span>
+                    </span></dt><dd><p>The device selection drop-down menu lists all the BCE units available
+                            in the table on the <span class="bold"><strong>Network Topology</strong></span>
+                            tab. Select a device to adjust the settings below for this
+                            device.</p><p>Click the <span class="bold"><strong>Copy and apply to all BCE
+                                devices</strong></span> button to apply the setting to all BCE units on
+                            the network.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The system sends configuration parameters to the BCE when model
+                                execution starts. It may take up to 2 s to apply the data.
+                                Consequently, the system forces all cell enable signals off during
+                                the first 2 s of execution.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Cell Operation Mode</span>
+                    </span></dt><dd><p>Select either <span class="bold"><strong>Cell-Auto-Mode </strong></span>or
+                                <span class="bold"><strong>Cell-Sync-Mode</strong></span>.</p><p>In <span class="bold"><strong>Cell-Auto-Mode</strong></span>, each cell operates
+                            autonomously. Cell output updates are performed sequentially, as soon as
+                            new data has been written to the DAC.</p><p>In <span class="bold"><strong>Cell-Sync-Mode</strong></span>, output updates are
+                            performed simultaneously in all cells. The synchronous cell output
+                            updates are triggered after all DACs have been pre-loaded with new data.
+                            Current monitoring and voltage monitoring are also synchronized
+                            internally for all cells.</p></dd><dt><span class="term">
+                        <span class="guilabel">Current Sink Mode</span>
+                    </span></dt><dd><p>Select either <span class="bold"><strong>Manual</strong></span> or <span class="bold"><strong>Automatic</strong></span> current sink mode.</p><p>In <span class="bold"><strong>Manual</strong></span> sink mode, the cell sink
+                            current is set by the user via the <span class="bold"><strong>BMTS Write
+                                block</strong></span>.</p><p>In <span class="bold"><strong>Automatic</strong></span> sink mode, the cell sink
+                            current is adjusted automatically based on the difference between the
+                            cell's voltage setpoint and the externally applied voltage.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cell Voltage Averaging/Cell Current Averaging</span>
+                    </span></dt><dd><p>Select the number of ADC samples to average for each resulting
+                            measurement of cell voltage and cell current.</p><p>ADC samples are taken at a rate of 50 kHz. Oversampling reduces
+                            measurement noise by averaging a certain number of samples.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Increasing this value will increase measurement lag. Selecting a
+                                value of 64 or higher causes the update rate to fall below 1
+                                kHz.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Cell Over-Voltage/Under-Voltage/Source Current/Sink Current
+                            Shutdown Limit</span>
+                    </span></dt><dd><p>Configure upper or lower limit values for each cell's voltage and
+                            current readings. When you enable a shutdown limit by checking the
+                            checkbox and the cell exceeds the limit, it enters shutdown state. In
+                            this state, the system sets the current and voltage to zero, powers down
+                            the DACs, and turns on the red LED. ADCs and the temperature sensor
+                            continue operating to allow uninterrupted cell monitoring.</p></dd><dt><span class="term">
+                        <span class="guilabel">Custom Calibration Values</span>
+                    </span></dt><dd><p>Click <span class="bold"><strong>Edit</strong></span> to enter custom gain and
+                            offset values for voltage and current of each BCE cell. <span class="bold"><strong>Export</strong></span> saves the calibration values for all
+                            BCE devices to a .mat file. It can be imported with <span class="bold"><strong>Import</strong></span> only if the network topology matches
+                            the layout exactly.</p><p>The calibration values are only applied if the <span class="bold"><strong>Enable</strong></span> checkbox is checked.</p><p>For more information, refer to the <a href="refentry_bce_usage_notes.html#refsect_bce_user_calibration" class="olink">BCE Usage
+                            Notes</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Copy and apply to all BCE Devices</span>
+                    </span></dt><dd><p>Copies the BCE device configuration parameters from the currently
+                            selected device to all other BCE devices on the network.</p><p>Custom calibration values are specific to each BCE and remain
+                            unchanged. Only the status of the Enable flag is copied to other
+                            devices.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">BCE AC Signal Modulation Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Device Selection</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Device Selection</strong></span> drop-down menu
+                            lists all the BCE units available in the table on the <span class="bold"><strong>Network Topology</strong></span> tab. After selecting a
+                            device, the following AC Signal Modulation settings can be
+                            configured.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable AC Signal Modulation Mode</span>
+                    </span></dt><dd><p>To use AC Signal Modulation functionality, this checkbox must be
+                            enabled; otherwise, only the normal operation mode is available.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Ensure that the BCE devices are updated to SoC Firmware version
+                                1.1.0.0 or later before enabling AC Signal Modulation mode. If the
+                                BCE firmware is outdated, the device will not go into operational
+                                mode with AC Signal Modulation mode enabled.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">AC Signal Modulation Data</span>
+                    </span></dt><dd><p>Use the file selector to link a .mat file containing the AC Signal
+                            Modulation data. Data must be provided in the form of an array or a
+                            table with exactly 12 columns and up to 256 rows. Each of the 12 columns
+                            represents AC signal data points for the respective BCE cell to add to
+                            the starting value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cell-Specific AC Signal Modulation Settings</span>
+                    </span></dt><dd><p>Select a cell from the list on the left-hand side to configure
+                            additional settings for this cell.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Step</span>
+                    </span></dt><dd><p>Set the time step after which the AC Signal Modulation outputs the
+                            next sample from the signal data array. The unit can be set to
+                            milliseconds or microseconds. The minimum value is 7 &#956;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Path</span>
+                    </span></dt><dd><p>Select whether the AC Signal Modulation data is applied to the cell
+                            voltage or to the cell sink current.</p></dd><dt><span class="term">
+                        <span class="guilabel">Start Time Delay</span>
+                    </span></dt><dd><p>Add an AC Signal Modulation start time delay for this cell. To achieve
+                            exact synchronization or time offsets between cells, the AC signal must
+                            be started simultaneously for all cells from Simulink. Each cell will
+                            start AC data output after its start time delay has passed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop after X Passes Through the Data File</span>
+                    </span></dt><dd><p>To stop AC Signal Modulation deterministically after a certain number
+                            of iterations, enter the number of passes through the data file after
+                            which to stop AC Signal Modulation. When stopped, the cell returns to
+                            normal operation mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gain Adjustment Value</span>
+                    </span></dt><dd><p>Add an additional gain factor to apply to the data points from the AC
+                            signal data file. The gain value must be in the range of 0 to 2.0.
+                            Setting it to 1 disables the gain adjustment.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gain Sweep Mode</span>
+                    </span></dt><dd><p>This mode allows the gain value applied to the AC Signal Modulation
+                            data to change periodically. When enabled, the gain adjustment is
+                            updated each time the number of entered time steps have elapsed. The
+                            current gain adjustment value defines the starting point (1 if
+                            disabled); the gain sweep limit value defines the endpoint. Counting
+                            occurs between these two boundaries. If one boundary is reached, the
+                            counting direction reverses. The current gain value is adjusted
+                            (increased or decreased) by the update step value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timer Sweep Mode</span>
+                    </span></dt><dd><p>This mode allows the AC Signal Modulation output update time step (or
+                            frequency) to change periodically. When enabled, the time step is
+                            updated each time the number of entered time steps have elapsed. The
+                            current time step value defines the starting point; the timer sweep
+                            limit value defines the endpoint. Counting occurs between these two
+                            boundaries. If one boundary is reached, the counting direction reverses.
+                            The current timer value is adjusted (increased or decreased) by the
+                            update step value.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">FIU/TSE Device Configuration Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Device Selection and Configuration</span>
+                    </span></dt><dd><p>The device selection drop-down menu lists all the FIU and TSE units
+                            available in the table on the <span class="bold"><strong>Network
+                                Topology</strong></span> tab. After selecting a device, additional
+                            settings for this device can be configured, namely <span class="bold"><strong>Synchronous Read</strong></span> mode, <span class="bold"><strong>Synchronous
+                                Write</strong></span> mode, and <span class="bold"><strong>TSE Switching
+                                Mode</strong></span> (only applicable to TSE devices). Hover the mouse
+                            cursor over each field for additional tooltip information.</p><p>The settings can be applied to all FIU and TSE units present in the
+                            network by pressing the <span class="bold"><strong>Copy and apply to all
+                                FIU/TSE devices</strong></span> button.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Utilities Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Read Device Information</span>
+                    </span></dt><dd><p>By clicking the button <span class="bold"><strong>Generate
+                                DeviceInfoMdl</strong></span>, a new Simulink model can be automatically
+                            generated. The purpose of this model is to easily read out device
+                            information of all the BMTS devices connected to the target machine.
+                            Note that the network topology must match the configuration set up on
+                            the <span class="bold"><strong>Network Topology</strong></span> tab. Run the
+                            generated model to read out serial numbers, product codes, and firmware
+                            versions of connected BMTS devices.</p></dd><dt><span class="term">
+                        <span class="guilabel">Firmware Update</span>
+                    </span></dt><dd><p>By clicking the button <span class="bold"><strong>Start Firmware
+                                Update</strong></span>, the process to update the firmware of connected
+                            BMTS devices as set up on the <span class="bold"><strong>Network
+                                Topology</strong></span> tab is initiated. Follow the on-screen
+                            instructions to update the firmware of all connected BMTS
+                            devices.</p><p>Firmware updates are provided with new versions of the Speedgoat I/O
+                            Blockset.</p><p>For detailed instructions, refer to the <a href="refentry_bmts_update_instructions.html" class="olink">BMTS Firmware Update
+                                Instructions</a> page.</p></dd><dt><span class="term">
+                        <span class="guilabel">Export Bus Objects to Data Dictionary</span>
+                    </span></dt><dd><p>When working with a data dictionary, it can be preferable to have the
+                            BMTS Simulink bus structures saved in the data dictionary instead of the
+                            base workspace. Click the button <span class="bold"><strong>Export Bus
+                                Objects to DD</strong></span> to export all BMTS bus objects present in
+                            the base workspace and add them to the data dictionary that is linked to
+                            the Simulink model.</p></dd></dl></div></div></div></body></html>

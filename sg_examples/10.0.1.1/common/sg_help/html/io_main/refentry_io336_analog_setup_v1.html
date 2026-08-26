@@ -1,0 +1,226 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Analog IO336-325k - Analog Setup v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_analog_io336_325k.html" title="Analog IO336-325k"><link rel="next" href="refentry_io336_analog_input_v1.html" title="Analog IO336-325k - Analog Input v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io336_analog_setup_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Analog IO336-325k - Analog Setup v1</h2><p>Analog IO336-325k - Analog Setup v1 &#8212; <span class="phrase">This driver block is available for the
+                    IO336-325k.</span></p></div><div class="refsect1"><a name="d5e8236"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io336_analog_setup_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e8244"></a><h2>Description</h2><p>Your model can only contain one such driver block per IO336-325k installed in your
+                target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e8250"></a><h2>Parameters</h2><p>The three tabs of the setup parameter dialog box contain the IO336-325k I/O module
+                analog configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_io3xx_analog_codeModuleFunc"></a><span class="term">
+                        <span class="guilabel">Code Module Functionality</span>
+                    </span></dt><dd><p>This box is only visible if your configuration file contains a code
+                            module that is using the analog inputs/outputs. If you want to use one
+                            of these analog code modules, you need to select the corresponding
+                            checkbox. The Analog setup block will then be automatically configured
+                            to support this analog code module. Parameters needing to be set to a
+                            specific value will be grayed out.</p><p>Analog input and output channels not reserved by an analog code module
+                            can still be used, but the channel group will be triggered by the code
+                            module. When the DMA interrupt is enabled, the whole channel group will
+                            be automatically disabled.</p></dd><dt><a name="varlistentry_io3xx_analog_enbIndTrigger"></a><span class="term">
+                        <span class="guilabel">Analog Input Trigger - Enable Individual Trigger
+                            Settings</span>
+                    </span></dt><dd><p>This checkbox selects between individual trigger settings per channel
+                            group or common trigger settings, which apply for all channels.</p></dd><dt><a name="varlistentry_io3xx_analog_adcSampleTrigger"></a><span class="term">
+                        <span class="guilabel">Trigger Settings - ADC Sample Trigger</span>
+                    </span></dt><dd><p>The block supports up to four trigger options for the analog inputs
+                            depending on the settings of <span class="bold"><strong>Enable Individual
+                                Trigger Settings</strong></span> and <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Model Step</strong></span> At each model
+                                        sample step the analog input channels are triggered and the
+                                        driver actively waits until the analog data is converted and
+                                        read back. The task execution time will depend on the number
+                                        of analog input channels selected. This option is only
+                                        available when <span class="bold"><strong>Enable DMA Interrupt
+                                        </strong></span> is not selected.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Clock</strong></span> The
+                                        triggering of the analog channels is based on the internal
+                                        clocking functionality. The <span class="bold"><strong>ADC Sample
+                                            Rate</strong></span> can be configured to the desired
+                                        rate.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Internal
+                                            Signal</strong></span> The triggering of the analog channels
+                                        is based on I/O module internal signals. The available
+                                        signals depend on what is supported in the corresponding
+                                        configuration file.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Digital I/O</strong></span>
+                                        The triggering of the analog channels is based on a
+                                        configurable digital I/O pin. Both input and output signals
+                                        can be used for triggering.</p></li></ul></div><p>
+                        </p></dd><dt><a name="varlistentry_io3xx_analog_readPrev"></a><span class="term">
+                        <span class="guilabel">Read Value From Previous Model Step</span>
+                    </span></dt><dd><p>At each model sample step the analog input data from the previous time
+                            step is read and new conversions of the enabled analog input channels
+                            are triggered, which will be read in the next model execution. This mode
+                            avoids the active wait time of the analog conversion and therefore has a
+                            lower task execution time.</p></dd><dt><a name="varlistentry_io3xx_analog_adcSampleRate"></a><span class="term">
+                        <span class="guilabel">ADC Sample Rate [Hz] </span>
+                    </span></dt><dd><p>This parameter is used to configure the internal sampling clock of the
+                            ADC.</p></dd><dt><a name="varlistentry_io3xx_analog_adcInternSig"></a><span class="term">
+                        <span class="guilabel">Internal Signal</span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>ADC Sample
+                                Trigger</strong></span> is set to <span class="bold"><strong>I/O Module
+                                Internal Signal</strong></span>. A list of available internal trigger
+                            signals is shown in the drop-down menu. If no signal is available, then
+                            the selected configuration file does not include internal trigger
+                            signals; in this case choose a different trigger option.</p></dd><dt><a name="varlistentry_io3xx_analog_adcDigitalIO"></a><span class="term">
+                        <span class="guilabel">Digital I/O Channel</span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>ADC Sample
+                                Trigger </strong></span> is set to <span class="bold"><strong>I/O Module
+                                Digital I/O</strong></span>. Specify the digital I/O channel number to
+                            configure the corresponding signal as trigger signal. If the selected
+                            I/O line is configured as digital input in your model, an external
+                            signal can be connected for triggering. But the trigger signal routing
+                            also works for output signals and as well for code module functionality.
+                            For example if a digital line is configured as PWM-Trigger output
+                            signal, then the signal is also internally routed to the trigger input
+                            of the analog channels and can be used for triggering.</p></dd><dt><a name="varlistentry_io3xx_analog_oversamplingFac"></a><span class="term">
+                        <span class="guilabel">Oversampling Factor</span>
+                    </span></dt><dd><p>Select the oversampling configuration: none, 2, 4, 8, 16, 32 or 64. If
+                            oversampling is active, the I/O module takes the selected number of
+                            samples and averages them to one sample. In Frame-Based mode, only every
+                            nth sample is transferred over DMA. In Sample-Based mode, the filter
+                            acts as a moving average, and the CPU reads out the latest value.</p></dd><dt><a name="varlistentry_io3xx_analog_adcEnbInterrupt"></a><span class="term">
+                        <span class="guilabel">Enable DMA Interrupt</span>
+                    </span></dt><dd><p>The analog input data read back is organized in frames and can be
+                            synchronized using an interrupt. Either a triggered subsystem or the
+                            whole model can be executed based on the DMA interrupt. This checkbox is
+                            only visible, when <span class="bold"><strong>Enable Individual Trigger
+                                Settings</strong></span> is disabled.</p></dd><dt><a name="varlistentry_io3xx_analog_adcTriggerRes"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Trigger Resolution [s] </span>
+                    </span></dt><dd><p>This parameter is shown if <span class="bold"><strong>Enable DMA Interrupt</strong></span>
+                            is checked. The parameter is disabled and cannot be changed
+                            and only shows the applicable time resolution of the ADC trigger signal.
+                            The ADC sample time will be rounded to an integer multiple of the
+                            Trigger Resolution.</p></dd><dt><a name="varlistentry_io3xx_analog_adcSampleRateFrame"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - ADC Sample Rate [Hz] </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked. The ADC Sample Rate is used to
+                            configure the internal sampling clock, if <span class="bold"><strong>Sample
+                                Trigger</strong></span> is set to <span class="bold"><strong>I/O Module
+                                Clock</strong></span>. For the other ADC Trigger Settings it is used to
+                            calculate the expected block sample time.</p></dd><dt><a name="varlistentry_io3xx_analog_adcFrameSize"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Frame Size (samples/channel) </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked.</p><p>Select how many samples are transferred from the module at each CPU
+                            model step. The block port signal of every channel becomes a vector with
+                            the same number of values, where the value at position 1 is taken first.
+                            Enter "-1" to allow the system to determine the frame size automatically
+                            based on the <span class="bold"><strong>ADC Sample Rate</strong></span> and the
+                                <span class="bold"><strong>Input Block Sample Time</strong></span>.</p></dd><dt><a name="varlistentry_io3xx_analog_adcSampleTime"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Input Block Sample Time [s] </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked.</p><p>Define the base sample time at which the Analog input interrupt gets
+                            asserted. Enter "-1" to allow the system to determine the block sample
+                            time automatically based on the <span class="bold"><strong>ADC Sample
+                                Rate</strong></span> and <span class="bold"><strong>Frame
+                            Size</strong></span>.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="note_io3xx_analog_adcAutoFrame"></a>Note</th></tr><tr><td align="left" valign="top"><p>One of the three Frame-Based Settings must be configured automatically (-1).
+                    The exact settings used to configure the ADC will be calculated based on the
+                        <span class="bold"><strong>Trigger Resolution</strong></span> and are shown next to
+                    the parameters</p></td></tr></table></div><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_io3xx_analog_dacSampleTrigger"></a><span class="term">
+                        <span class="guilabel">Analog Output Trigger - DAC Sample Trigger</span>
+                    </span></dt><dd><p>The block supports four trigger options for the analog outputs: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Model Step</strong></span> At each model
+                                        sample step, the analog values are written to the I/O module
+                                        and the analog output channels get updated.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Clock</strong></span> The
+                                        triggering of the analog channels is based on the internal
+                                        clocking functionality. If <span class="bold"><strong>Enable DMA
+                                            Interrupt</strong></span> is checked, then the <span class="bold"><strong>DAC Sample Rate</strong></span> can be
+                                        configured; otherwise the <span class="bold"><strong>DAC Sample
+                                            Rate</strong></span> is set to the maximum achievable
+                                        rate.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Internal
+                                            Signal</strong></span> The triggering of the analog channels
+                                        is based on I/O module internal signals. The available
+                                        signals depend on what is supported in the corresponding
+                                        configuration file.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Digital I/O</strong></span>
+                                        The triggering of the analog channels is based on a
+                                        configurable digital I/O pin. Both input and output signals
+                                        can be used for triggering.</p></li></ul></div><p>
+                        </p></dd><dt><a name="varlistentry_io3xx_analog_dacInternSig"></a><span class="term">
+                        <span class="guilabel">Internal Signal</span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>DAC Sample
+                                Trigger</strong></span> is set to <span class="bold"><strong>I/O Module
+                                Internal Signal</strong></span>. A list of available internal trigger
+                            signals is shown in the drop-down menu. If no signal is available, then
+                            the selected configuration file does not include internal trigger
+                            signals; in this case choose a different trigger option.</p></dd><dt><a name="varlistentry_io3xx_analog_dacDigitalIO"></a><span class="term">
+                        <span class="guilabel">Digital I/O Channel</span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>DAC Sample
+                                Trigger </strong></span> is set to <span class="bold"><strong>I/O Module
+                                Digital I/O</strong></span>. Specify the digital I/O channel number to
+                            configure the corresponding signal as a trigger signal. If the selected
+                            I/O line is configured as a digital input in your model, an external
+                            signal can be connected for triggering. But the trigger signal routing
+                            also works for output signals and also for code module functionality.
+                            For example, if a digital line is configured as a PWM-Trigger output
+                            signal, then the signal is also internally routed to the trigger input
+                            of the analog channels and can be used for triggering.</p></dd><dt><a name="varlistentry_io3xx_analog_dacEnbInterrupt"></a><span class="term">
+                        <span class="guilabel">Analog Output Trigger - Enable DMA Interrupt</span>
+                    </span></dt><dd><p>The analog output data is written to the I/O module and synchronized
+                            using an interrupt to ensure continuous data. Either a triggered
+                            subsystem or the whole model can be executed based on the DMA interrupt.
+                        </p></dd><dt><a name="varlistentry_io3xx_analog_dacFifoThresh"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - FIFO Threshold </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked. The <span class="bold"><strong>FIFO
+                                Threshold</strong></span> determines when the interrupt is asserted to
+                            request new data from the CPU; this means that the interrupt is asserted
+                            as soon as only <span class="bold"><strong>FIFO Threshold</strong></span>
+                            samples/channel remain. The threshold should be chosen such that enough
+                            samples are still in the FIFO to output on the DAC, while new data is
+                            requested and received from the CPU (this includes: trigger interrupt
+                            time, execution of CPU model step, DMA data transfer). The <span class="bold"><strong>FIFO Threshold</strong></span> value must be equal to or less
+                            than the <span class="bold"><strong>Frame Size</strong></span> value.</p></dd><dt><a name="varlistentry_io3xx_analog_dacTriggerRes"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Trigger Resolution [s] </span>
+                    </span></dt><dd><p>This parameter is shown if <span class="bold"><strong>Enable DMA Interrupt</strong></span>
+                            is checked. The parameter is disabled and cannot be changed
+                            and only shows the applicable time resolution of the DAC trigger signal.
+                            The DAC sample time will be rounded to an integer multiple of the
+                            trigger resolution.</p></dd><dt><a name="varlistentry_io3xx_analog_dacSampleRateFrame"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - DAC Sample Rate [Hz] </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt </strong></span> is checked. The <span class="bold"><strong>DAC
+                                Sample Rate</strong></span> is used to configure the internal sampling
+                            clock, if <span class="bold"><strong>Sample Trigger</strong></span> is set to
+                                <span class="bold"><strong>I/O Module Clock</strong></span>; otherwise it is
+                            used to calculate the expected block sample time.</p></dd><dt><a name="varlistentry_io3xx_analog_dacFrameSize"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Frame Size (samples/channel) </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked.</p><p>Select how many samples are transferred to the module at each sample
+                            hit. The block port signal of every channel becomes a vector with the
+                            same number of values, where the value at position 1 is taken first.
+                            Enter "-1" to allow the system to determine the frame size automatically
+                            based on the <span class="bold"><strong>DAC Sample Rate</strong></span> and
+                                <span class="bold"><strong>Frame Size</strong></span>.</p></dd><dt><a name="varlistentry_io3xx_analog_dacSampleTime"></a><span class="term">
+                        <span class="guilabel">Frame-Based Settings - Output Block Sample Time [s] </span>
+                    </span></dt><dd><p>This parameter is available if <span class="bold"><strong>Enable DMA
+                                Interrupt</strong></span> is checked.</p><p>Define the base sample time at which the Analog output interrupt gets
+                            asserted. Enter "-1" to allow the system to determine the block sample
+                            time automatically based on the <span class="bold"><strong>DAC Sample
+                                Rate</strong></span> and <span class="bold"><strong>Frame
+                            Size</strong></span>.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="note_io3xx_analog_dacAutoFrame"></a>Note</th></tr><tr><td align="left" valign="top"><p>One of the three Frame-Based Settings must be configured automatically (-1).
+                    The exact settings used to configure the DAC will be calculated based on the
+                        <span class="bold"><strong>Trigger Resolution</strong></span> and are shown next to
+                    the parameters</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Analog Inputs Tab</div><p>The settings of the analog input channels are organized in two groups,
+                    corresponding to the two physical ADC chips on the I/O module.</p><dl class="variablelist"><dt><span class="term"><span class="guilabel">Available Channels </span>
+                    </span></dt><dd><p>Choose the active analog input channels by selecting the corresponding
+                            checkboxes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Voltage Range</span>
+                    </span></dt><dd><p>&plusmn;5&nbsp;V, &plusmn;10&nbsp;V, &plusmn;20&nbsp;V</p><p>The voltage range can be configured for all channels of the same group
+                            or individually for channel pairs by checking the <span class="bold"><strong>Set Voltage Range per Channel Pair</strong></span> checkbox.</p></dd><dt><span class="term">
+                        <span class="guilabel">Set Voltage Range per Channel Pair</span>
+                    </span></dt><dd><p>Enable individual voltage range selection per channel pairs for each
+                            input group.</p></dd></dl></div><div class="variablelist"><a name="variablelist_io3xx_analog_AnalogOutputTab"></a><div class="variablelist-title">Analog Outputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Available Channels </span>
+                    </span></dt><dd><p>Choose the active output channels by selecting the corresponding
+                            checkboxes. For each active channel, a separate row for the channel
+                            settings is displayed. For all the enabled code module functionalities,
+                            the corresponding channels will be automatically enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Voltage Range</span>
+                    </span></dt><dd><p>&plusmn;2.5&nbsp;V, &plusmn;5&nbsp;V, &plusmn;10&nbsp;V,</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Value [V]</span>
+                    </span></dt><dd><p>Define the initial signal level present on the specific output after
+                            the application has been downloaded. The values can be set individually
+                            by entering the initial value for each channel according to the selected
+                            output range.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset to Initial Value</span>
+                    </span></dt><dd><p>Define whether the initial value is also applied once the application
+                            has stopped. The behavior can be set individually for each channel using
+                            the checkbox.</p></dd></dl></div></div></div></body></html>

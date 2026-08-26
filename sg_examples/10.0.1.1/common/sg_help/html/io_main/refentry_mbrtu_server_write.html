@@ -1,0 +1,55 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus - Server Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mbrtu_server_read.html" title="Modbus - Server Read"><link rel="next" href="refentry_mbrtu_client_setup.html" title="Modbus RTU - Client Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbrtu_server_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus - Server Write</h2><p>Modbus - Server Write &#8212; <span class="phrase">Writes data to local Modbus
+                    data tables</span></p></div><div class="refsect1"><a name="d5e69902"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mbrtu_server_write.png"></span></span></p></div><div class="refsect1"><a name="d5e69910"></a><h2>Description</h2><p>This block is used to write data to the local Modbus data tables, such as coils and
+                registers. You can use multiple Modbus RTU Server Write blocks for each Modbus
+                server node defined in the model.</p></div><div class="refsect1"><a name="d5e69913"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input</span>
+                    </span></dt><dd><p>Array of length <span class="bold"><strong>Quantity</strong></span> that is
+                            written to the given <span class="bold"><strong>Data Table</strong></span> for the
+                            data range specified by the <span class="bold"><strong>Index</strong></span> and
+                                <span class="bold"><strong>Quantity</strong></span> parameters. The data type
+                            depends on the selected data table.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For Coils and Discrete Inputs, the input port is a vector of
+                                    the BOOLEAN data type, where the length of the vector is defined
+                                    by the <span class="bold"><strong>Quantity</strong></span> parameter. Each
+                                    BOOLEAN element of the vector represents one bit.</p></li><li class="listitem"><p>For Holding Registers and Input Registers, the input port is a
+                                    vector of the UINT16 data type, where the length of the vector is
+                                    defined by the <span class="bold"><strong>Quantity</strong></span>
+                                    parameter. Each UINT16 element of the vector represents one
+                                    word/register.</p></li></ul></div><p>Use Byte Pack blocks to convert to signed values or floating-point
+                            numbers. You can pack one double value to a vector of type UINT16 and
+                            length 4.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e69941"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Server Interface ID</span>
+                    </span></dt><dd><p>Apply the Server Interface ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node ID</span>
+                    </span></dt><dd><p>Apply one of the Node IDs, which were defined in the Setup block. You
+                            can assign multiple Write blocks to the same Modbus node. Must range
+                            between 1 and 247.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Table</span>
+                    </span></dt><dd><p>Select the Modbus data table you want to write data to. The options
+                            are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Coils</p></li><li class="listitem"><p>Discrete Inputs</p></li><li class="listitem"><p>Holding Registers</p></li><li class="listitem"><p>Input Registers</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Index</span>
+                    </span></dt><dd><p>The first index of the data range you want to write. Must range
+                            between 0 and 65535.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For Coils and Discrete Inputs, the parameter defines the start
+                                    bit.</p></li><li class="listitem"><p>For Holding Registers and Input Registers, the value defines
+                                    the start word.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Quantity</span>
+                    </span></dt><dd><p>The length of the data range you want to write. <span class="bold"><strong>Index</strong></span> + <span class="bold"><strong>Quantity</strong></span> must
+                            not exceed 65536.</p></dd><dt><span class="term">
+                        <span class="guilabel">Swap Bytes</span>
+                    </span></dt><dd><p>The bytes of a register must be swapped if the sender and the receiver
+                            interpret the byte order in different ways (endianness). The Speedgoat
+                            real-time target machine uses little-endian, while some clients use big-endian.
+                            If the swap option is enabled, all register values from the
+                            application context will be swapped before they are sent to the network.
+                            All register values received from the network will be swapped before
+                            they are submitted to the application context. The swap option only
+                            affects input registers and holding registers (transmitted by function
+                            codes FC3, FC4, FC5, FC6, FC16). Discrete inputs and coils are not
+                            affected. Use Byte Reversal blocks instead of enabling the global byte
+                            swapping if only single registers need to be swapped.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

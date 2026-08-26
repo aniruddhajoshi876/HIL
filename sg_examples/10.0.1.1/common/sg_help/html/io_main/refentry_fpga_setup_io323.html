@@ -1,0 +1,85 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO323 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_fpga_io_module.html" title="FPGA I/O Modules"><link rel="up" href="book_fpga_io_module.html" title="FPGA I/O Modules"><link rel="prev" href="refentry_fpga_setup_io322.html" title="IO322 - Setup"><link rel="next" href="refentry_fpga_setup_io324_200k.html" title="IO324-200k - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_fpga_setup_io323"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO323 - Setup</h2><p>IO323 - Setup &#8212; Setup the IO323 configurable I/O module</p></div><div class="refsect1"><a name="d5e12515"></a><h2>Library</h2><p><span class="bold"><strong>Library:</strong></span> Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_setup_io323_v3.png"></span></span></p></div><div class="refsect1"><a name="refentry_IO3xx_description"></a><h2>Description</h2><p>Use the Setup block to define the functionality of this I/O module by selecting a
+            configuration file. You can also use this block to configure all the digital I/O pins
+            (pull resistors, I/O voltage, termination, etc.) of this configurable I/O module.</p><p>Your model must contain a Setup block for every configurable I/O module you intend to
+            use.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e12531"></a><h2>Parameters</h2><div class="refsect2"><a name="d5e12533"></a><h3>Module setup Tab</h3><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_IO3xx_module"></a><span class="term">
+            <span class="guilabel">Hardware</span>
+        </span></dt><dd><p>Select the name of the configurable I/O module for which you are defining the
+                setup parameters.</p></dd><dt><a name="varlistentry_IO3xx_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>The <span class="bold"><strong>Module ID</strong></span> identifies the configurable I/O
+                module in the target machine and creates a logical connection to all the code module
+                blocks associated with this I/O module. The <span class="bold"><strong>Module
+                    ID</strong></span> of all the code module blocks intended for use with a specific I/O
+                module in your machine must match the <span class="bold"><strong>Module ID</strong></span> in
+                the IO3xx Setup block.</p><p>Unlike other module types, the <span class="bold"><strong>Module ID</strong></span>
+                parameter must be unique for each Simulink-programmable and configurable I/O module.
+                To obtain the <span class="bold"><strong>Module ID</strong></span> for use with your I/O
+                modules, run the following Speedgoat API in the MATLAB command window:</p><pre class="programlisting">&gt;&gt; speedgoat.getIoInterfaces
+
+                Slot            IO_Interface          ModuleID
+                _________    _______________________    ________
+
+                Host Link    Onboard Ethernet (I219)       -
+                IO731_1      IO731 (I210)                  1
+                2            IO336-325k                    3
+                3            IO334-325k                    4
+                4            IO334-325k                    1
+                5            IO344-930k-27DR               2</pre><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>If your target machine contains more than one configurable or
+                    Simulink-programmable I/O module of the same type (e.g. 2x IO334-325k), but the
+                    model does not contain IO3xx Setup blocks for all of these modules, use explicit
+                    addressing for the <span class="bold"><strong>PCI Slot</strong></span> parameter to
+                    clarify the module you want to use. </p></td></tr></table></div><p><span class="bold"><strong>Example Setup for a Target Machine with the I/O Modules
+                    Listed Above:</strong></span></p><p>To run a model with PWM Generation on the IO336-325k in slot 2 and PWM Capture on
+                the IO334-325k in slot 3, configure two IO3xx Setup blocks: one with ModuleID=3 for
+                the IO336, and one with ModuleID=4 for the IO334. As there are two IO334 I/O modules
+                in the machine, use explicit addressing for the <span class="bold"><strong>PCI
+                    Slot</strong></span> parameter. Finally, set the ModuleIDs of the PWM blocks:
+                configure the PWM Generation block with ModuleID=3 and the PWM Capture block with
+                ModuleID=4.</p></dd><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd><dt><a name="varlistentry_IO3xx_bitstream"></a><span class="term">
+            <span class="guilabel">Configuration File (Bitstream)</span>
+        </span></dt><dd><p>This parameter defines the configuration file (bitstream) to download to the FPGA
+                of your configurable I/O module when your Simulink model is built and the
+                application deployed to the target machine. The configuration file defines the pin
+                mapping and the implemented functionality (code modules). The dropdown will show
+                installed configuration files, files located in the actual working directory and
+                files from installed Speedgoat I/O Configuration Packages. A configuration file can
+                also be selected from a different location by using the <span class="bold"><strong>Browse</strong></span> button. The entries are automatically limited to
+                configuration files matching the selected I/O module.</p></dd><dt><a name="varlistentry_IO3xx_browsebutton"></a><span class="term"><span class="guilabel">Browse...</span></span></dt><dd><p>This button opens a file explorer window to select a configuration file
+                (.mat-file) from any location. The selected file is automatically applied as the new
+                configuration file if compatible with the selected I/O module.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top">Moving or renaming the file will remove the file from the dropdown, since the
+                Setup block cannot find the file anymore.</td></tr></table></div></dd><dt><a name="varlistentry_IO3xx_configinfo"></a><span class="term"><span class="guilabel">Configuration File Information</span></span></dt><dd><p>This collapsible panel shows additional information about the selected
+                configuration file.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Timestamp</span></span></dt><dd><p>This field shows the timestamp information of the configuration file
+                            in the format dd/MM/YY hh:mm:ss.</p></dd><dt><span class="term"><span class="guilabel">Revision</span></span></dt><dd><p>This field shows the revision of the selected configuration file. By
+                            default, the revision is "1.0" and increases when there are updates to
+                            the configuration file.</p></dd><dt><span class="term"><span class="guilabel">FPGA Frequency</span></span></dt><dd><p>This field shows the FPGA base clock for the selected configuration
+                            file. The FPGA frequency defines the base rate of the implemented
+                            functionality from a configuration file. It therefore has a direct
+                            influence on the applicable rates in code modules.</p></dd><dt><span class="term"><span class="guilabel">Tick time</span></span></dt><dd><p>This field shows the corresponding time of one FPGA tick for the
+                            selected configuration file. For some code modules this value is used to
+                            calculate time-related parameters.</p></dd><dt><span class="term"><span class="guilabel">Pin Mapping</span></span></dt><dd><p>This button opens a window with the implemented pin mapping for the
+                            currently selected configuration file. The button is only visible, if
+                            the image is included in the selected configuration file.</p></dd></dl></div></dd><dt><a name="common_varlistentry_rear_io"></a><span class="term">
+            <span class="guilabel">I/O Interface Extension Selection</span>
+        </span></dt><dd><p>Selecting a checkbox will enable the corresponding I/O interface extension. When
+                not selected, the functionality located on the extension is disabled. The number and
+                the type of selectable extensions depends on the configuration file.</p></dd></dl></div></div><div class="refsect2"><a name="common_refsect2_IO3xx_pull"></a><h3>IO3xx Pull Resistor Tab</h3><p>This tab allows you to define the pull resistor settings for the front I/O
+            lines.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Settings per Port</span></span></dt><dd><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Pull Resistors</span></span></dt><dd><p>Select the pull resistor of the digital TTL I/O lines of the
+                                    corresponding port.</p></dd></dl></div></dd></dl></div></div><div class="refsect2"><a name="common_refsect2_interface_ext_pull"></a><h3>-2x Tab</h3><p>This tab is enabled if the corresponding I/O interface extension checkbox is selected.
+            From here you can configure the pull-resistor and I/O voltage settings of the digital
+            I/O lines located on the -2x extension.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Settings per Port</span></span></dt><dd><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Pull Resistors</span></span></dt><dd><p>Select the pull resistor of the digital TTL I/O lines of the
+                                    corresponding port.</p></dd><dt><span class="term"><span class="guilabel">I/O Voltage</span></span></dt><dd><p>Select the I/O voltage of the 8 digital I/O lines of the
+                                    corresponding port.</p></dd></dl></div></dd></dl></div></div></div></div></body></html>

@@ -1,0 +1,93 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Crank Decoder v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_cam_encoder_v2.html" title="Cam and Crank - Cam Encoder v2"><link rel="next" href="refentry_cam_and_crank_crank_decoder_event_v1.html" title="Cam and Crank - Crank Decoder Event v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_crank_decoder_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Crank Decoder v1</h2><p>Cam and Crank - Crank Decoder v1 &#8212; <span class="phrase">The crank decoder
+                    acquires a crankshaft signal (generated from a crank encoder) and a camshaft
+                    signal (generated from a cam encoder) and decodes position (0&deg; - 720&deg;), speed,
+                    etc., based on a predefined crankshaft pattern and a camshaft
+                tooth.</span></p></div><div class="refsect1"><a name="d5e12287"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_crank_decoder_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e12296"></a><h2>Description</h2><p>The crank decoder acquires a crankshaft signal (generated from a crank encoder)
+                and a camshaft signal (generated from a cam encoder) and decodes position (0&deg; -
+                720&deg;), speed, etc., based on a predefined crankshaft pattern and a camshaft
+                tooth.</p><p>The current implementation of this decoder supports cam profiles which meet the
+                following conditions:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Only one cam tooth</p></li><li class="listitem"><p>The start and stop angles of the cam tooth coincide with the start
+                            angle of a crank tooth. For example, for a crank profile with 18 teeth,
+                            of which 2 are missing, the possible cam start and stop angles are
+                            multiples of 360/18 = 20 degrees.</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e12306"></a><h2>Ports</h2><p>This driver block has no input, and up to five output ports:</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Round </span>
+                    </span></dt><dd><p>Displays the round information indicating the revolution number within
+                            the two revolution cycle. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Round 1: 0&deg; - 360&deg;</p></li><li class="listitem"><p>Round 2: 360&deg; - 720&deg;</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Position</span>
+                    </span></dt><dd><p>Displays the position with tooth resolution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Speed </span>
+                    </span></dt><dd><p>Displays the calculated speed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interpolated Position</span>
+                    </span></dt><dd><p>The interpolated position between two teeth assumes a constant speed,
+                            calculated from the average of the last four teeth speeds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchronization status </span>
+                    </span></dt><dd><p>0: No crank and no cam signal detected.</p><p>1: Crank signal detected, searching for missing teeth.</p><p>2: Crank signal synchronized, waiting for cam signal.</p><p>3: Rising edge cam signal detected (at expected round). Waiting for
+                            falling egde cam signal.</p><p>4: Crank and cam signal synchronized.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12345"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Crank Decoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of teeth vector: </span>
+                    </span></dt><dd><p>This parameter defines the number of teeth of the crankshaft. Note
+                            that the number of teeth also includes the missing tooth/teeth.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of missing tooth/teeth vector: </span>
+                    </span></dt><dd><p>This parameter defines the number of missing tooth/teeth of the crank
+                            shaft.</p></dd><dt><span class="term">
+                        <span class="guilabel">Missing tooth/teeth signal high: </span>
+                    </span></dt><dd><p>This checkbox defines the level during a segment of the crank signal.
+                            When the checkbox is not checked the even segments are high (and the
+                            missing tooth low) whereas when the box is checked the odd segments are
+                            high (and the missing tooth is also high).</p></dd><dt><span class="term">
+                        <span class="guilabel">Cam tooth offset vector (deg): </span>
+                    </span></dt><dd><p>This parameter defines the offset (starting point) of the camshaft
+                            pattern in degree. This angle has to coincide with a crank tooth start
+                            angle. e.g., for a crank profile with 18 teeth and 2 missing teeth,
+                            possible cam tooth offset angles are multiples of 360/18 = 20 degrees.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Cam tooth size vector (deg): </span>
+                    </span></dt><dd><p>This parameter defines the size (length) of the camshaft pattern in
+                            degree. The Cam tooth stop angle has to coincide with a crank tooth
+                            start angle. Thus for a crank profile with 18 teeth and 2 missing teeth,
+                            possible cam tooth offset angles are multiples of 360/18 = 20 degrees.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Top dead center position vector (deg): </span>
+                    </span></dt><dd><p>This parameter specifies the top dead center (TDC) position between 0&deg;
+                            and 720&deg;. The units are in degrees (&deg;). This angle has to coincide with
+                            a crank tooth start angle. e.g., for a crank profile with 18 teeth and 2
+                            missing teeth, possible dead center position angles are multiples of
+                            360/18 = 20 degrees.</p></dd><dt><span class="term">
+                        <span class="guilabel">Top dead center pulse duration vector (s): </span>
+                    </span></dt><dd><p>This parameter defines the duration of the top dead center pulse in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Start pulse duration vector (s): </span>
+                    </span></dt><dd><p>This parameter defines the duration of the start pulse in seconds.
+                        </p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Note: values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if FPGA base clock is equal to 75[MHz], then the resolution is
+                    13.33[ns].</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Tab: Output ports configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show round </span>
+                    </span></dt><dd><p>Enables round output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show position </span>
+                    </span></dt><dd><p>Enables position output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show speed </span>
+                    </span></dt><dd><p>Enables speed output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show interpolated position </span>
+                    </span></dt><dd><p>Enables interpolated position output port. The interpolated position
+                            between two teeth assumes a constant speed, calculated from the average
+                            of the last four teeth speeds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show synchronization status </span>
+                    </span></dt><dd><p>Enables synchronization status output port.</p></dd></dl></div></div></div></body></html>

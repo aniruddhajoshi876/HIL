@@ -1,0 +1,112 @@
+%implements sg_IO751_record_read_s "C"
+
+%<LibAddToCommonIncludes("cifxapi.h")>
+%<LibAddToCommonIncludes("PNM_api.h")>
+%<LibAddToCommonIncludes("cifx_common.h")>
+
+%% =================================================================================================
+%function Start(block, system) Output
+    
+    %with block.SFcnParamSettings[0]
+
+    {
+    /* Initialize work vectors */
+    %<LibBlockDWork(EnablePort,"","",0)> = 0;
+    %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+    %<LibBlockPWork(RecordHandle, "", "", 0)> = NULL;
+
+    %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockOutputSignalDataTypeId(0)) * LibBlockOutputSignalWidth(0)
+    %if MaxDataLen > 1500
+        %exit "Size of Init Value exceeds the maximum number of byte for a PROFINET record (%<MaxDataLen> > 1500)"
+    %endif
+
+    CIFX_NODE_T* Node = NULL;
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+    PNM_RECORD_T* RecordHandle = NULL;
+
+    /* Find the corresponding node structure in the driver */   
+    if (0 != Cifx_FindNode(%<ModuleId>, %<NodeId>, &Node))
+    {
+        %<LibSetRTModelErrorStatus("\"Cannot find Speedgaot IO module %<ModuleId>\"")>;
+        return;
+    }
+
+    Channel = Node->Channels[0];
+    %<LibBlockPWork(Channel, "", "", 0)> = Channel;
+
+    /* Create an internal record object */
+    if (0 != PNM_AddRecord(Channel, %<RecordIndex>, %<DeviceIndex>, %<Api>, %<Slot>, %<SubSlot>, %<MaxDataLen>, PNM_RECORD_BLOCK_TYPE_READ, &RecordHandle))
+    {
+        %<LibSetRTModelErrorStatus("\"Failed to add PROFINET record \"")>;
+        return;
+    }
+    RecordHandle->Timeout = %<Timeout>;
+    %<LibBlockPWork(RecordHandle, "", "", 0)> = RecordHandle;
+  
+    %if LibBlockOutputSignalConnected(0)
+        /* Copy the init value to the data output port */  
+        %assign rollVars  = ["Y", "P"]
+        %roll sigIdx=RollRegions, lcv = RollThreshold, block, "Roller", rollVars
+            %<LibBlockAssignOutputSignal(0, "", lcv, sigIdx, LibBlockParameter(InitValue, "", lcv, sigIdx))>
+        %endroll
+    %endif
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+    boolean_T* EnablePort = (boolean_T*)%<LibBlockDWorkAddr(EnablePort,"","",0)>;
+    PNM_RECORD_T* RecordHandle = (PNM_RECORD_T*)%<LibBlockPWork(RecordHandle, "", "", 0)>;
+
+    if (%<LibBlockInputSignal(0, "", "", 0)> != 0)
+    {
+        *EnablePort = true;
+    }
+
+    %assign DataPort = "NULL"
+    %assign StatusPort = "NULL"
+    %assign ErrorPort = "NULL"
+    %assign DataLenPort = "NULL"
+
+    %if LibBlockOutputSignalConnected(0)
+        %assign DataPort = "(void*)%<LibBlockOutputSignalAddr(0, "", "", 0)>"
+    %endif
+
+    %if Extended
+        %if LibBlockOutputSignalConnected(1)
+            %assign StatusPort = "(uint32_t*)%<LibBlockOutputSignalAddr(1, "", "", 0)>"
+        %endif
+        %if LibBlockOutputSignalConnected(2)
+            %assign ErrorPort = "(uint32_t*)%<LibBlockOutputSignalAddr(2, "", "", 0)>"
+        %endif
+        %if LibBlockOutputSignalConnected(3)
+            %assign DataLenPort = "(uint32_t*)%<LibBlockOutputSignalAddr(3, "", "", 0)>"    
+        %endif
+    %endif
+
+    /* Process the input ports, update the internal record object and serve the output ports */
+    PNM_UpdateRecord( \
+        RecordHandle, \
+        (bool*)EnablePort, \
+        %<StatusPort>, \
+        %<ErrorPort>, \
+        %<DataLenPort>, \
+        %<DataPort> \
+    );
+
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

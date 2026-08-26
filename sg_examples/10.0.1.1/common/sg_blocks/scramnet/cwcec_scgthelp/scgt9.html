@@ -1,0 +1,85 @@
+<html><head><title>Shared Memory Partition Structure :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: Shared Memory Partition Structure -->
+<!-- CHAPNAME:  Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt8.html"><img src="b_prev.gif" alt="Previous page" border=0></a>&nbsp;&nbsp;&nbsp;<a href="scgt10.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>Shared Memory Partition Structure</b></font><br class="hdr">
+
+<p>A shared memory partition structure has the following fields:</p>
+
+<ul class=continued><li class=continued><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Address: '0x0'
+         Type: 'uint32'
+         Size: '1'
+    Alignment: '4'
+     Internal: [1x1 struct]
+</pre></li></ul>
+
+<p>where</p>
+
+<p><table Border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>Partition Fields</b><br></td>
+<td><b>Description</b><br></td>
+
+<tr valign=top>
+<td><strong>Address</strong><br></td>
+<td>Specifies the base address (in hexadecimal) of the memory partition within the node's shared memory space. The default value is <code>'0x0'</code>, the first location in shared memory. Note that the base address is byte aligned.<br></td>
+
+<tr valign=top>
+<td><strong>Type</strong><br></td>
+<td>Specifies the data type of the memory segment. Specify one of the following types:<br>
+<ul>
+<li><code>double</code></li>
+<li><code>single</code></li>
+<li><code>uint8</code></li>
+<li><code>int8</code></li>
+<li><code>uint16</code></li>
+<li><code>int16</code></li>
+<li><code>uint32</code></li>
+<li><code>int32</code></li>
+<li><code>boolean</code> (a single byte represents a boolean value)</li>
+</ul>
+The default value is <code>'uint32'</code>. A minimum partition size is 32 bits.<br>
+</td>
+
+<tr valign=top>
+<td><strong>Size</strong><br></td>
+<td>Specifies the dimension and size of the memory segment. You can enter a scalar value or a value with the <code>[m,n]</code> format. The default value is <code>'1'</code>.<br>
+<ul>
+<li>scalar -- Treats the <code>Size</code> entry as the specification of the length of a non-oriented array or vector</li>
+<li><code>[m,n]</code> -- Treats the <code>Size</code> entry as an array dimension. The total number of elements in this segment is <code>m*n</code>.</li>
+</ul>
+</td>
+
+<tr valign=top>
+<td><strong>Alignment</strong><br></td>
+<td>If another partition precedes this partition, defines the byte alignment of this segment. Specify one of the following alignment values: <code>1</code>, <code>2</code>, <code>3</code>, or <code>4</code>. The default value is <code>'4'</code>. This value forces a double word boundary alignment for all elements.<br>
+</td>
+
+</table> 
+<Table> <tr valign=top><td></Table> 
+</p>
+
+<br>
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt8.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;Shared Memory Structure Reference</td><td>&nbsp;</td><td align=right>Shared Memory Node Initialization Structure&nbsp;</td><td align=right width=20><a href="scgt10.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></td></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

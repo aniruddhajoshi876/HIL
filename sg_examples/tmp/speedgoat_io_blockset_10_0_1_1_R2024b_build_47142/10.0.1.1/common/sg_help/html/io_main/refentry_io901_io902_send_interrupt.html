@@ -1,0 +1,41 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO901/IO902 - Send Interrupt</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_io901_io902_set_state.html" title="IO901/IO902 - Set State"><link rel="next" href="refentry_ref_io907.html" title="IO907/IO908"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io901_io902_send_interrupt"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO901/IO902 - Send Interrupt</h2><p>IO901/IO902 - Send Interrupt &#8212; <span class="phrase">Set State of the
+                    driver resource</span></p></div><div class="refsect1"><a name="d5e1117"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io901_io902_send_interrupt.png"></span></span></p></div><div class="refsect1"><a name="d5e1125"></a><h2>Description</h2><p>This function generates a Broadcast or Unicast interrupt at the specified sample
+                rate.</p><p>For Unicast interrupts set type equal to zero, set Id equal to the node Id of the
+                node you want to send an interupt to and set value equal to any user defined data
+                value. For broadcast interrupts set type equal to one, set Id to any desired
+                broadcast level in the range 0 to 31, and set value equal to any user define data
+                value.</p></div><div class="refsect1"><a name="d5e1129"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Type</span>
+                    </span></dt><dd><p>Interrupt Type. Set to one for Broadcast interrupts or Zero for
+                            Unicast Interrupts.</p></dd><dt><span class="term">
+                        <span class="guilabel">State ID</span>
+                    </span></dt><dd><p>Broadcast interupt ID in range 0 to 31 or unicast interrupt
+                            destination node id.</p></dd><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Enter the new user defined value you want to send.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1148"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

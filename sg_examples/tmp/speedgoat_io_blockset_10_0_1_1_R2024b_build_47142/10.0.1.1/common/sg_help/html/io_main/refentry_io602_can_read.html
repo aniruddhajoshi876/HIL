@@ -1,0 +1,62 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO602 - CAN Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io602_can_write.html" title="IO602 - CAN Write"><link rel="next" href="refentry_io602_can_status.html" title="IO602 - Controller Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io602_can_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO602 - CAN Read</h2><p>IO602 - CAN Read &#8212; <span class="phrase">Read CAN (HS) and CAN-FD messages
+                    from one channel of the IO602 I/O module</span></p></div><div class="refsect1"><a name="d5e10602"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io602_can_read.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_io602_can_read"></a><h2>Description</h2><p>The IO602 CAN Read block reads messages from one channel of the IO602 input queue.</p><p>In each execution step it reads one message and indicates if more messages are
+                available.</p><p>Refer to the "Usage Notes" to find out how this block can be used in a "do-while"
+                subsystem to prevent overflows of the read buffer.</p><p>The read buffer has a nominal capacity of 256 CAN messages per channel. The read
+                buffer's capacity will be reduced by higher DLCs possibly applied with CAN-FD. It
+                will be further reduced by one for each acknowledge of a sent message.</p></div><div class="refsect1"><a name="refsect_ports_io602_can_read"></a><h2>Ports</h2><p>Which outputs are available depends on the <span class="bold"><strong>Channel
+                    Selection</strong></span> setting of the corresponding IO602 Setup block and the
+                    <span class="bold"><strong>Message Type</strong></span> setting of the respective block: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN (HS) &amp; CAN: The only message type available is CAN_MESSAGE
+                            output</p></li><li class="listitem"><p>CAN-FD &amp; CAN: The only message type available is
+                            CAN_FD_MESSAGE_BUS output</p></li><li class="listitem"><p>CAN (HS) &amp; RAW: Identifier, Length, Identifier Type, Timestamp and
+                            Data outputs are available</p></li><li class="listitem"><p>CAN-FD &amp; RAW: Identifier, Data Length Code (DLC), Identifier Type,
+                            Timestamp, BRS and Data outputs are available</p></li><li class="listitem"><p>RAW + CAN: All output ports related to CAN (HS) or CAN-FD apply</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Present</span>
+                    </span></dt><dd><p>Status signal is "1" if new data is available and "0" otherwise. The
+                            data type is boolean.</p></dd><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The complete CAN message. Please use the "CAN Unpack" or "CAN-FD
+                            Unpack" block to resolve the data, depending on which setting applies to
+                            the channel.</p><p>The data type is CAN_MESSAGE if CAN (HS) is selected.</p><p>The data type is CAN_FD_MESSAGE_BUS if CAN-FD is selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">ID</span>
+                    </span></dt><dd><p>The CAN message identifier. The data type is uint32.</p></dd><dt><span class="term">
+                        <span class="guilabel">EFF</span>
+                    </span></dt><dd><p>The identifier type (Extended Frame Format) of the CAN message. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: 11-bit identifier</p></li><li class="listitem"><p>1: 29-bit extended identifier</p></li></ul></div><p>The data type is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">Length/DLC</span>
+                    </span></dt><dd><p>If CAN (HS) is selected in the related Setup block, this port outputs
+                            the length of the payload data. If CAN-FD is selected in the related
+                            Setup block, this port outputs the DLC.</p><p>The DLC and corresponding byte lengths are as follows.</p><div class="informaltable"><table class="informaltable" border="1" width="500"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>DLC</th><th>Byte Length</th></tr></thead><tbody><tr><td>0-8</td><td>0-8</td></tr><tr><td>9</td><td>9-12</td></tr><tr><td>10</td><td>13-16</td></tr><tr><td>11</td><td>17-20</td></tr><tr><td>12</td><td>21-24</td></tr><tr><td>13</td><td>25-32</td></tr><tr><td>14</td><td>33-48</td></tr><tr><td>15</td><td>48-64</td></tr></tbody></table></div><p>The data type is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>The timestamp for receipt of the CAN message. The resolution is
+                            1&nbsp;&micro;s. The data type is double.</p></dd><dt><span class="term">
+                        <span class="guilabel">BRS</span>
+                    </span></dt><dd><p>The Bit Rate Switch (BRS) indicates whether the data segment of the
+                            received message was transmitted with the fast data rate. The data type
+                            is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the payload of a message as a vector of data type uint8. If
+                            the payload is shorter than the size of this output port, it is
+                            completed with zeros.</p><p>The data length of the output port is 8 bytes with CAN (HS).</p><p>The data length of the output port is 64 bytes with CAN-FD.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_io602_can_read"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number </span>
+                    </span></dt><dd><p>Select the CAN channel to which this driver block corresponds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type </span>
+                    </span></dt><dd><p>Defines how the CAN message is represented at the block outputs. It
+                            depends also on the <span class="bold"><strong>Channel</strong></span> setting of
+                            the related IO602 Setup block.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN with CAN (HS): Only one CAN Msg output port is available.
+                                    The port will always be connected to one or more CAN Unpack
+                                    blocks</p></li><li class="listitem"><p>CAN with CAN-FD: Only one CAN Msg output port is available.
+                                    The port will always be connected to one or more CAN-FD Unpack
+                                    blocks</p></li><li class="listitem"><p>RAW with CAN (HS): The message content is presented by a
+                                    number of output ports: ID, Length, EFF, Timestamp and
+                                    Data</p></li><li class="listitem"><p>RAW with CAN-FD: The message content is presented by a number
+                                    of output ports: ID, DLC, EFF, BRS, Timestamp and Data</p></li><li class="listitem"><p>CAN + RAW: Both versions are displayed</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output as bus</span>
+                    </span></dt><dd><p>Select this option for the block to output CAN messages as a bus signal.
+                        </p></dd></dl></div></div></div></body></html>

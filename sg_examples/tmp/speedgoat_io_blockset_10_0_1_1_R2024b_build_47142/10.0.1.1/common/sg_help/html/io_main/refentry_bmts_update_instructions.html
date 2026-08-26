@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BMTS Firmware Update Instructions</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_ref_bce_examples.html" title="BMTS - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bmts_update_instructions"></a><div class="titlepage"></div><div class="refnamediv"><h2>BMTS Firmware Update Instructions</h2><p>BMTS Firmware Update Instructions &#8212; <span class="phrase">Instructions on how to update
+                    the firmware of BCE, FIU and TSE devices</span></p></div><div class="refsect1"><a name="d5e1720"></a><h2>Overview</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BCE, FIU and TSE devices each run a dedicated firmware which is programmed
+                onto the device. The firmware is continuously maintained and updated by Speedgoat.
+                This document explains the steps necessary to update the firmware of Speedgoat BMTS
+                devices. Firmware updates are included with new versions of the Speedgoat I/O
+                Blockset.</p></div><div class="refsect1"><a name="d5e1726"></a><h2>1. Preparation</h2><p>On one EtherCAT bus, multiple BCE, FIU and TSE devices are connected in a daisy
+                chain using Ethernet cables. The devices shall remain connected in the same way for
+                the update process. All devices of one EtherCAT bus will be updated consecutively. A
+                Simulink model with a correctly configured BMTS Setup block is required to initiate
+                the process.</p><p>After configuring the number and order of devices on the <span class="bold"><strong>Network Topology</strong></span> tab of the BMTS Setup block, switch to the
+                    <span class="bold"><strong>Utilities</strong></span> tab and click the <span class="bold"><strong>Start Firmware Update</strong></span> button.</p></div><div class="refsect1"><a name="d5e1733"></a><h2>2. Put BMTS devices into flash mode</h2><p>Follow the on-screen instructions to automatically generate a Simulink model that
+                enables you to switch all of the connected BMTS devices into flash mode. This is
+                necessary for the BMTS devices to be able to receive a firmware update. Flash mode
+                is activated by sending a dedicated signal from the Speedgoat real-time target
+                machine to each BMTS device over EtherCAT.</p><p>Make sure all BMTS devices and the real-time target machine are turned on and
+                linked correctly with Ethernet cables. An example setup with three BMTS devices is
+                illustrated below.</p><p>Build and run the generated Simulink model on your target machine.</p><p>After a few seconds of runtime, all BMTS devices switch into flash mode and the
+                Simulink model stops automatically.</p><p>Confirm that all of the BMTS devices have switched into flash mode by checking
+                the SYS LED on each device, which should blink yellow in flash mode.</p><p>Only continue with the next step if all BMTS devices have switched into flash
+                mode. If only some of the devices have switched, power-cycle the entire collection
+                of BMTS systems and run the Simulink model again.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_update_phase1.png"></span></span></p></div><div class="refsect1"><a name="d5e1746"></a><h2>3. Transfer Firmware Update</h2><p>The firmware update will be transferred directly from the host computer to the
+                BMTS devices, without using the real-time target machine.</p><p>Identify the Ethernet cable which connects the real-time target machine to the
+                first BMTS device in the daisy chain. Disconnect the cable from the real-time target
+                machine, and connect it to an Ethernet port of your host computer instead. The
+                Ethernet port should have DHCP enabled. Alternatively, an IP address from the
+                link-local address range (169.254.x.x) can be assigned to the host PC Ethernet port.
+                Otherwise, the BMTS devices may not be able to communicate with the host computer.
+                An example setup with three BMTS devices is illustrated below.</p><p class="remark"><em><span class="remark">For more info on how to configure IP addresses in Windows, refer to the Appendix
+                section at the bottom of the page.</span></em></p><p>Wait at least 10 seconds for the DHCP server to assign IP addresses.</p><p>Continue with the on-screen instructions to start the firmware update.</p><p>The remaining update process is automated. Observe the MATLAB Command Window for
+                status updates. Verify that all of the devices are detected and updated one after
+                the other.</p><p>The flash process can take up to two minutes per device. Do not interrupt the
+                update process at this point. However, if any issues occur during the update, these
+                can usually be fixed by repeating the flash process.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_update_phase2.png"></span></span></p></div><div class="refsect1"><a name="d5e1760"></a><h2>4. Verification</h2><p>Once the update process is finished, verify that all the connected devices have
+                updated successfully. It can occur that one or more devices were skipped during the
+                update due to network discovery issues. This is indicated by the SYS LED still
+                blinking yellow on affected devices.</p><p>If a BMTS device still has a yellow blinking SYS LED, connect that device directly
+                to your host computer via Ethernet, and disconnect any cable from the second
+                Ethernet port of the device, to achieve a single point-to-point connection. An
+                example setup is illustrated below. Then, click "Retry" to update only this device.
+                Repeat this step for all devices which were skipped before.</p><p>After successful transfer of the firmware update to each device, a BMTS device
+                internal update process is started. This phase can take up to 40 seconds. On newer
+                firmware versions, this phase is indicated with a yellow RES LED, and completion is
+                indicated by the RES LED blinking green three times, then the RES LED turns off.
+                Depending on the previous firmware version, no internal update process may be
+                required.</p><p>When the internal update has finished, the BMTS devices automatically reboot
+                using the latest firmware. After waiting at least 40 seconds, or when all of the RES
+                LEDs have turned off, the devices are operational again.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_update_phase3.png"></span></span></p></div><div class="refsect1"><a name="d5e1771"></a><h2>Appendix: Configure Windows Network Settings</h2><p>To communicate with the BMTS devices during a firmware update, the used Windows
+                Network Adapter must either be configured for DHCP, or assigned a link-local IP
+                address (169.254.xxx.xxx).</p><p>In the Windows Network and Sharing Center, configure the Internet Protocol Version
+                4 Properties for your Ethernet controller as follows (choose one of the
+                options):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Option 1: Use DHCP</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_ipconfig_dhcp.png"></span></span></p></li><li class="listitem"><p>Option 2: Manually assign a link-local IP address (169.254.xxx.xxx)</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_ipconfig_manual.png"></span></span></p></li><li class="listitem"><p>Option 3: Assign an additional link-local IP (169.254.xxx.xxx)</p><p>Open the <span class="bold"><strong>Advanced...</strong></span> settings and add a
+                        link-local IP address:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/BMTS_ipconfig_advanced.png"></span></span></p></li></ul></div></div></div></body></html>

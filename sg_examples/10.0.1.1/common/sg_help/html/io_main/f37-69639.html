@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Measurement Computing PCI-PDISO16 Digital Output</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f36-6068.html" title="Chapter&nbsp;7.&nbsp;Measurement Computing Blocks No Longer Recommended for Use"><link rel="prev" href="f37-22401.html" title="Measurement Computing PCI-PDISO16 Digital Input"><link rel="next" href="f37-23115.html" title="Measurement Computing PCI-DAS-TC"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f37-69639"></a><div class="titlepage"></div><div class="refnamediv"><h2>Measurement Computing PCI-PDISO16 Digital Output<a name="ComputerBoards_PCI-PDISO16_DOUT"></a></h2><p>Measurement Computing PCI-PDISO16 Digital Output<a name="ComputerBoards_PCI-PDISO16_DOUT"></a> &#8212; PCI-PDISO16 Digital Output block (not recommended)<b>MeasurementComputing</b><b>DOBlocks</b></p></div><div class="refsect1"><a name="d5e8227"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="f37-69528.html#f37-69533" class="olink"><span class="trademark">Measurement Computing</span>&#8482;
+                        PCI-PDISO16</a></p></li></ul></div></div><div class="refsect1"><a name="f37-77786"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcmeasurementcomputinglib</code> in the
+                Command Window.</p></div><div class="refsect1"><a name="f37-22449"></a><h2>Scaling Input to Output</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col width="33%" class="col1"><col width="45%" class="col2"><col width="22%" class="col3"></colgroup><thead><tr><th>
+                                <p>I/O Module Output</p>
+                            </th><th>
+                                <p>Block Input Data Type</p>
+                            </th><th>
+                                <p>Scaling</p>
+                            </th></tr></thead><tbody><tr><td>
+                                <p>RELAY</p>
+                            </td><td>
+                                <p>Double</p>
+                            </td><td>
+                                <p>&lt; 0.5 = relay off &#8805; 0.5 = relay on</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="f37-22450"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel vector</strong></span></span></dt><dd><p>Enter numbers between 1 and 8 to select the digital output lines to
+                            drive. This driver allows the selection of individual digital output
+                            lines in arbitrary order. The number of elements defines the number of
+                            digital lines used.</p><p>For example, to use all of the
+                            digital outputs, enter</p><pre class="programlisting">[1,2,3,4,5,6,7,8]</pre><p>Number the lines beginning with 1 even if this board manufacturer
+                            numbers the lines beginning with 0.</p></dd><dt><span class="term"><span class="bold"><strong>Port</strong></span></span></dt><dd><p>From the list choose either <code class="literal">A</code> or
+                                <code class="literal">B</code>. The <span class="bold"><strong>Port</strong></span>
+                            parameter defines which port is used for this driver block. Each port
+                            has a maximum of 8 digital outputs. More than one output block can be
+                            used with the same port, but each output channel can only be controlled
+                            by one block at a time.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e8300"></a><h2>Related Links</h2><p><a class="link" href="https://digilent.com/shop/data-acquisition-daq/" target="_top">www.mccdaq.com</a></p></div></div></body></html>

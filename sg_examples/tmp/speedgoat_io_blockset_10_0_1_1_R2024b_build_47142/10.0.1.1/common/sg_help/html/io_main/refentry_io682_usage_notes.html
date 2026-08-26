@@ -1,0 +1,170 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO682 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io682_previous_versions.html" title="IO682 Previous Versions"><link rel="next" href="refentry_ref_io691.html" title="IO691"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io682_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO682 Usage Notes</h2><p>IO682 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e54759"></a><h2>General</h2><p>Configuration files containing the timing information and data of each ARINC 429
+                message are required to use scheduled messages and for configuring the parser
+                blocks. The supported file type for scheduled messages is .csv, and for the parser
+                blocks it is .mat.</p></div><div class="refsect1"><a name="refsect1_io682_schedMsg_config"></a><h2>Scheduled Messages Configuration File</h2><p>To correctly configure the scheduled messages, a configuration file with the
+                following data is required:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="20%" class="col1"><col width="20%" class="col2"><col width="20%" class="col3"><col width="20%" class="col4"><col width="20%" class="col5"></colgroup><thead><tr><th>Channel</th><th>Rate</th><th>Offset</th><th>TxCnt</th><th>Data</th></tr></thead><tbody><tr><td>1</td><td>100</td><td>50</td><td>5</td><td>0</td></tr><tr><td>1</td><td>100</td><td>0</td><td>-1</td><td>66</td></tr><tr><td>2</td><td>50</td><td>0</td><td>-1</td><td>0</td></tr></tbody></table></div><p>Use one of the enabled output channel numbers for <span class="bold"><strong>Channel</strong></span>. <span class="bold"><strong>Rate</strong></span> and <span class="bold"><strong>Offset</strong></span> must be a multiple of 1&nbsp;ms, and must not
+                exceed 9999999&nbsp;ms. TxCnt can be a value between -1 and 9999999, where -1 is
+                infinite transmission. The data of the ARINC 429 word must not exceed 32 bits
+                (0xFFFF FFFF).</p></div><div class="refsect1"><a name="refsect1_io682_parser_config"></a><h2>ARINC 429 Parser Configuration File</h2><p>To easily configure an ARINC 429 network, the parser blocks work with a database
+                file containing the network information. The Parser Read and Write blocks consist of
+                subsystems dynamically populated with input/output ports, ARINC 429 unpack/pack
+                blocks, standard Read/Write blocks and the interconnecting lines using the
+                configuration file. All messages defined in the selected *.mat file are displayed in
+                the <span class="bold"><strong>Hierarchy</strong></span> tab. Detailed information about the
+                various signals is displayed when a specific message is selected. The configuration
+                file must follow the structure defined below:</p><pre class="programlisting">- Bus
+   &#9500; Channels
+   &#9500; Equipments
+   &#9492; Messages
+      &#9492; Signals</pre><p>The elements of Message and Signal are defined as follows:</p><pre class="programlisting">- Message
+    &#9500; Name
+    &#9500; Label
+    &#9500; SDI
+    &#9500; SSM
+    &#9500; CycleTime
+    &#9500; Scheduled
+    &#9500; TxEquipment
+    &#9500; RxEquipment
+    &#9500; TxChannel
+    &#9500; RxChannel
+    &#9492; Signals</pre><pre class="programlisting">- Signal
+    &#9500; Name
+    &#9500; StartBit
+    &#9500; NumberBits
+    &#9500; Type
+    &#9500; Resolution
+    &#9500; Offset
+    &#9500; Default
+    &#9500; Signed
+    &#9500; Units
+    &#9500; Min
+    &#9492; Max</pre><p>The elements Channel and Equipment optional, but they can help visualize the bus
+                topology more clearly and therefore make is easier to select messages for reading or
+                writing. If these elements are not present or are empty, all messages can be found
+                under the node Unassigned Messages.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Do not use special characters for names (except underscores)</p></td></tr></table></div><p>As an example, the following script generates a configuration file for the parser
+                blocks:</p><pre class="programlisting">%% Create example ARINC 429 database with two buses and multiple messages/signals, and export to .mat file
+% Create empty database object
+db = sgarinc429.db.Database();
+ 
+%% Create nav/guidance bus
+navBus = sgarinc429.db.Bus('NAV_GUIDANCE_BUS');
+ 
+% add equipment to bus
+navBus.addEquipment(sgarinc429.db.Equipment('002', 'Name', 'Flight Management Computer (702)'));
+navBus.addEquipment(sgarinc429.db.Equipment('00B', 'Name', 'Global Positioning System (743)'));
+navBus.addEquipment(sgarinc429.db.Equipment('025', 'Name', 'Electronic Flt Instruments (725)'));
+navBus.addEquipment(sgarinc429.db.Equipment('038', 'Name', 'ADIRS (738)'));
+ 
+% add channels to bus
+navBus.addChannel('IO682 Ch1');
+navBus.addChannel('IO682 Ch2');
+navBus.addChannel('IO682 Ch3');
+ 
+% Label 110: GNSS Latitude (BNR)
+msg = sgarinc429.db.Message('GNSS Latitude', 'Label', '110', 'SDI', -1);
+msg.SSM = 3;
+msg.CycleTime = 0.2;
+msg.TxEquipment = '00B';
+msg.RxEquipment = '025';
+msg.TxChannel = 'IO682 Ch2';
+msg.RxChannel = 'IO682 Ch3';
+ 
+sig = sgarinc429.db.Signal('GNSS Latitude', 9, 21, 'BNR');
+sig.Resolution = 0.000172;
+sig.Signed = true;
+sig.Units = 'Deg';
+sig.Min = -180;
+sig.Max = 180;
+ 
+msg.addSignal(sig);
+navBus.addMessage(msg);
+ 
+% Label 103: Selected Airspeed (BNR)
+msg = sgarinc429.db.Message('Selected Airspeed', 'Label', '103', 'SDI', 0);
+msg.CycleTime = 0.1;
+msg.TxEquipment = '002';
+msg.RxEquipment =  '038';
+msg.TxChannel = 'IO682 Ch1';
+msg.RxChannel = 'IO682 Ch3';
+ 
+sig = sgarinc429.db.Signal('Selected Airspeed', 19, 11, 'BNR');
+sig.Resolution = 0.25;
+sig.Signed = false;
+sig.Units = 'Knots';
+sig.Min = 0;
+sig.Max = 512;
+msg.addSignal(sig);
+ 
+% If the SSM signal must be controlled by a Simulink signal, it must be included in the database
+ssm = sgarinc429.db.Signal('SSM', 30, 2, 'SSM');
+ssm.Resolution = 1;
+ssm.Signed = false;
+ssm.Units = '';
+ssm.Min = -Inf;
+ssm.Max = Inf;
+msg.addSignal(ssm);
+ 
+% Add message to bus
+navBus.addMessage(msg);
+ 
+% Add nav/guidance bus to database
+db.addBus(navBus);
+ 
+%% Radio Bus
+% Channel names used by radio bus messages
+radioChannelNames = [ ...
+    sgarinc429.db.Channel('IO682 Ch4'), ...
+    sgarinc429.db.Channel('IO682 Ch5') ...
+    ];
+ 
+% RADIO/NAV bus equipment IDs and names.
+radioEquipments = [ ...
+    sgarinc429.db.Equipment('010', 'Name', 'Airborne ILS Receiver (710)'), ...
+    sgarinc429.db.Equipment('012', 'Name', 'Airborne ADF System (712)'), ...
+    sgarinc429.db.Equipment('112', 'Name', 'TACAN Adapter Unit (TAU)'), ...
+    sgarinc429.db.Equipment('025', 'Name', 'Electronic Flt Instruments (725)'), ...
+    ];
+ 
+% Create empty messages array
+radioMessages = sgarinc429.db.Message.empty();
+ 
+% Label 162: ADF Bearing (BNR) from Eqpt 012
+sig = sgarinc429.db.Signal('ADF Bearing', 16, 14, 'BNR', ...
+    'Resolution', 0.05, 'Offset', 0, 'Default', 0, 'Signed', true, ...
+    'Units', 'Deg/180', 'Min', -180, 'Max', 180);
+ssm = sgarinc429.db.Signal('SSM', 30, 2, 'SSM', ...
+    'Resolution', 1, 'Offset', 0, 'Default', 3, 'Signed', false, ...
+    'Units', '', 'Min', -Inf, 'Max', Inf);
+radioMessages(end+1) = sgarinc429.db.Message('ADF Bearing', ...
+    'Label', '162', 'SDI', 0, 'SSM', 3, 'CycleTime', 0.05, 'Scheduled', true, ...
+    'TxEquipment', '012', 'RxEquipment', '025', ...
+    'TxChannel', 'IO682 Ch4', 'RxChannel', 'IO682 Ch5', 'Signals', [sig, ssm]);
+ 
+% Label 174: Glideslope Deviation (BNR) from Eqpt 010
+sig = sgarinc429.db.Signal('Glideslope Deviation', 17, 13, 'BNR', ...
+    'Resolution', 0.0002, 'Offset', 0, 'Default', 0, 'Signed', true, ...
+    'Units', 'DDM', 'Min', -0.8, 'Max', 0.8);
+ssm = sgarinc429.db.Signal('SSM', 30, 2, 'SSM', ...
+    'Resolution', 1, 'Offset', 0, 'Default', 3, 'Signed', false, ...
+    'Units', '', 'Min', -Inf, 'Max', Inf);
+radioMessages(end+1) = sgarinc429.db.Message('Glideslope Deviation', ...
+    'Label', '174', 'SDI', 0, 'SSM', 3, 'CycleTime', 0.01, 'Scheduled', true, ...
+    'TxEquipment', '010', 'RxEquipment', '025', ...
+    'TxChannel', 'IO682 Ch4', 'RxChannel', 'IO682 Ch5', 'Signals', [sig, ssm]);
+ 
+% Create radio bus with channels, equipment, and messages
+radioBus = sgarinc429.db.Bus('RADIO_NAV_BUS', ...
+    'Channels', radioChannelNames, ...
+    'Equipments', radioEquipments, ...
+    'Messages', radioMessages);
+ 
+% Add radio bus to database
+db.addBus(radioBus);
+ 
+%% Export database to .mat file
+db.exportToMat('ARINC429Database_Example.mat');</pre><p>This configuration file can be directly used in the parser app. Execute the above
+                code in your MATLAB console, then select the generated
+                "ARINC429Database_Example.mat" file as the database in the Parser.</p></div></div></body></html>

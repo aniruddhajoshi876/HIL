@@ -1,0 +1,197 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO134 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io134_pin_mapping.html" title="IO134 Pin Mapping"><link rel="next" href="refentry_io134_analog_input_v2.html" title="IO134 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io134_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO134 - Setup</h2><p>IO134 - Setup &#8212; 
+                <span class="phrase">Configure the IO134 input/output blocks</span>
+            </p></div><div class="refsect1"><a name="d5e15094"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io134_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e15102"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input, Digital input and Digital output).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e15109"></a><h2>Parameters</h2><p>The three tabs of the setup parameter dialog box contain the IO134 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_inter_module_synchronization_IO13x"></a><span class="term">
+            <span class="guilabel">Inter-Module Synchronization</span>
+        </span></dt><dd><p>Use this parameter to synchronize multiple IO132-IO135 I/O modules. This parameter
+                ensures that for all the I/O modules concerned:</p><p>a) All the analog outputs are updated synchronously.</p><p>b) The samples of all the analog inputs are taken at exactly the same time.</p><p>In an inter-module synchronization setup, one of the I/O modules is required to be
+                set to <span class="bold"><strong>Initiator</strong></span>, while all the other I/O modules
+                concerned must be set to <span class="bold"><strong>Target</strong></span>. This forces all
+                target I/O modules to sample and update their ports synchronously with the <span class="bold"><strong>Initiator</strong></span> (the <span class="bold"><strong>Frame
+                    Trigger</strong></span> and both <span class="bold"><strong>Conversion Clocks</strong></span>
+                are transmitted between I/O modules). Note that both <span class="bold"><strong>DMA</strong></span> and <span class="bold"><strong>Frame Trigger</strong></span> must be
+                enabled to use this feature. Furthermore, all the modules concerned must have the
+                exact same settings in the <span class="bold"><strong>Clock Settings for DMA</strong></span>
+                and <span class="bold"><strong>Frame Trigger</strong></span> sections of the <span class="bold"><strong>Main</strong></span> tab, and in the <span class="bold"><strong>DMA
+                    Options</strong></span> sections of the <span class="bold"><strong>Analog
+                    Inputs</strong></span> and <span class="bold"><strong>Analog Outputs</strong></span> tabs. For
+                further information regarding signal requirements to use the inter-module
+                synchronization feature, refer to the IO132-IO135 usage notes.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>None:</strong></span> This is the default value. No
+                        inter-module synchronization is enabled for the I/O module. Updates and
+                        samples occur independently of any other I/O module present in the setup.
+                    </p></li><li class="listitem"><p><span class="bold"><strong>Initiator - Front I/O:</strong></span> Choose this
+                        setting if you wish to use the module in question as the <span class="bold"><strong>Initiator</strong></span> of the inter-module synchronization.
+                        The synchronization signals (<span class="bold"><strong>Frame Trigger</strong></span>,
+                            <span class="bold"><strong>Conversion Clock 1</strong></span> and <span class="bold"><strong>Conversion Clock 2</strong></span>) are sent over digital I/O 1,
+                        digital I/O 3 and digital I/O 5. Note that these lines are not available as
+                        normal digital I/O lines when this setting is selected.</p></li><li class="listitem"><p><span class="bold"><strong>Target - Front I/O:</strong></span> Choose this setting
+                        if you wish to use the module in question as the <span class="bold"><strong>Target</strong></span> of the inter-module synchronization. The
+                        synchronization signals (<span class="bold"><strong>Frame Trigger</strong></span>,
+                            <span class="bold"><strong>Conversion Clock 1</strong></span> and <span class="bold"><strong>Conversion Clock 2</strong></span>) are received over digital I/O
+                        1, digital I/O 3 and digital I/O 5. Note that these lines are not available
+                        as normal digital I/O lines when this setting is selected.</p></li><li class="listitem"><p><span class="bold"><strong>Initiator - Rear I/O:</strong></span> Choose this setting
+                        if you wish to use the module in question as the <span class="bold"><strong>Initiator</strong></span> of the inter-module synchronization. The
+                        synchronization signals (<span class="bold"><strong>Frame Trigger</strong></span>,
+                            <span class="bold"><strong>Conversion Clock 1</strong></span> and <span class="bold"><strong>Conversion Clock 2</strong></span>) are sent over a rear
+                        connection inside the real-time target machine. Note that this setting
+                        requires your real-time target machine to be equipped with a connection
+                        between the different I/O modules. If you do not have this connection
+                        installed or are unsure about whether your real-time target machine is
+                        capable of using this feature, please contact Speedgoat.</p></li><li class="listitem"><p><span class="bold"><strong>Target - Rear I/O:</strong></span> Choose this setting if
+                        you wish to use the module in question as the <span class="bold"><strong>Target</strong></span> of the inter-module synchronization. The
+                        synchronization signals (<span class="bold"><strong>Frame Trigger</strong></span>,
+                            <span class="bold"><strong>Conversion Clock 1</strong></span> and <span class="bold"><strong>Conversion Clock 2</strong></span>) are received over a rear
+                        connection inside the real-time target machine. Note that this setting
+                        requires your real-time target machine to be equipped with a connection
+                        between the different I/O modules. If you do not have this connection
+                        installed or are unsure about whether your real-time target machine is
+                        capable of using this feature, please contact Speedgoat.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Clock Base Rate</span>
+                    </span></dt><dd><p>This setting is only available if the Analog input block uses
+                            DMA.</p><p>The clock base rate is used by the two clock dividers for conversion
+                            clocks 1 and 2; for example, if the clock base rate is set to 20 MHz and
+                            the clock divider is set to 1000, the resulting conversion clock is 20
+                            kHz. On this basis, a new sample is generated or converted every 50
+                            &#956;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clock Divider</span>
+                    </span></dt><dd><p>This setting is only available if the Analog input block uses
+                            DMA.</p><p>The IO134 I/O module has two different conversion clocks which can be
+                            used by the Analog input block during DMA operation. During normal
+                            operation, the Simulink model triggers each conversion, but during DMA
+                            operation, the hardware does this independently from the model and
+                            therefore needs a clock. For more information refer to the description
+                            of the clock base rate.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use Frame Trigger</span>
+                    </span></dt><dd><p>This setting is only available if the Analog input block uses
+                            DMA.</p><p>It enables the frame trigger, which starts the conversion of a new
+                            analog data frame at a configurable rate. For more information refer to
+                            the usage notes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Trigger Clock Divider</span>
+                    </span></dt><dd><p>This setting is only available if the Analog input block uses DMA and
+                            the frame trigger has been enabled.</p><p>It defines the frame trigger rate. The conversion clock of the Analog
+                            input block acts as the source for the frame trigger.</p><p>As the frame trigger uses a fraction of the conversion clock, the
+                            maximum frame size is equal to the divider; for example, if the frame
+                            trigger clock divider has a value of 100, then the analog input frame
+                            size can be between 1 and 100 samples.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Input Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Range</span>
+                    </span></dt><dd><p>Select the voltage range for the input channels: &plusmn;5&nbsp;V or
+                            &plusmn;10&nbsp;V. The first chosen voltage range will apply to channels 1
+                            to 8 and the second chosen range will apply to channels 9 to 16, and so
+                            on. The selected voltage range refers to the ground-related voltage
+                            range analog to that of a single-ended input. Due to the module's full
+                            differential input, this results in an extended full scale range of each
+                            ADC.</p></dd><dt><a name="varlistentry_oversampling_factor"></a><span class="term">
+            <span class="guilabel">Oversampling Factor</span>
+        </span></dt><dd><p>Select the oversampling configuration: none, 2, 4, 8, 16, 32 or 64. If
+                oversampling is active, the I/O module takes the selected number of samples and
+                averages them to one sample. This improves the signal-to-noise ratio, but also
+                increases the total sampling time (for example, at oversampling configuration 64, 64
+                conversions are necessary for one sample).</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Correction</span>
+                    </span></dt><dd><p>Select the data correction method for the input channels: <span class="bold"><strong>None</strong></span>, <span class="bold"><strong>Automatic</strong></span> or <span class="bold"><strong>Manual</strong></span>.
+                                <span class="bold"><strong>None</strong></span> disables any data correction,
+                                <span class="bold"><strong>Automatic</strong></span> uses the factory
+                            calibrated onboard correction values, and <span class="bold"><strong>Manual</strong></span> lets you specify individual offset and gain
+                            values per channel and voltage range. Correction values are used to
+                            correct every analog-to-digital conversion.</p></dd><dt><a name="varlistentry_enable_dma"></a><span class="term">
+            <span class="guilabel">Enable DMA</span>
+        </span></dt><dd><p>This setting enables incoming data to be transferred over DMA. It also allows much
+                higher system sampling rates to be achieved as the CPU does not have to process the
+                data transfer. In addition, frame-based operation is possible, meaning that multiple
+                samples can be received from the I/O module in one sample hit. If DMA is enabled,
+                the model or subsystem containing the Analog input block must be triggered with the
+                I/O module DMA interrupt for consistent results. Refer to the usage notes for
+                information on configuring DMA.</p></dd><dt><span class="term">
+                        <span class="guilabel">Conversion Clock</span>
+                    </span></dt><dd><p>Select which clock is used to start the conversion of a new sample.
+                            The frequency of the clocks can be changed in the main tab.</p></dd><dt><a name="varlistentry_frame_size_input_io132_to_io135"></a><span class="term">
+            <span class="guilabel">Frame Size (samples/channel)</span>
+        </span></dt><dd><p>Select how many samples are transferred from the module at each sample hit. The
+                block output of every channel becomes a vector with the same number of values, where
+                the value at position 1 is taken first. Enter "-1" to allow the system to determine
+                the frame size automatically based on the conversion clock and input block sample
+                time.</p><p>Either the frame size or the input block sample time must be configured
+                automatically (-1).</p></dd><dt><a name="varlistentry_block_sample_time_input_io132_to_io135"></a><span class="term">
+            <span class="guilabel">Input Block Sample Time</span>
+        </span></dt><dd><p>Define the base sample time at which the Analog input block gets its sample hit.
+                Enter "-1" to allow the system to determine the input block sample time
+                automatically based on the conversion clock and frame size.</p><p>Either the frame size or the input block sample time must be configured
+                automatically (-1).</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital I/O Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_digital_activeOutputChannels"></a><span class="term">
+            <span class="guilabel">Active Output Channels</span>
+        </span></dt><dd><p>Select the active output channels in a vector. A defined number of channels can be
+                selected using square brackets, for example, [1 2 3]. A sequence of channels can be
+                selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_digital_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the <span class="bold"><strong>Initial Values</strong></span> vector
+                is applied to the channel as defined in the enabled channels. A scalar value applies
+                to all the channels; for example, for individual values, type "[1 0 0 1]", and to
+                set all channels to zero, type "0".</p></dd><dt><a name="varlistentry_common_digital_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_common_digital_activeInputChannels"></a><span class="term">
+            <span class="guilabel">Active Input Channels</span>
+        </span></dt><dd><p>Select the active input channels in a vector. Check the active output channels to
+                avoid conflicts.</p></dd><dt><a name="varlistentry_common_io13x_io14x_enable_debouncing"></a><span class="term">
+            <span class="guilabel">Enable Debounce Filter</span>
+        </span></dt><dd><p>Enable or disable the debounce filter to eliminate any switch bouncing on the
+                digital inputs. When enabled, the <span class="bold"><strong>Debounce Filter
+                    Time</strong></span> field appears where you can specify the required value.</p></dd><dt><a name="varlistentry_common_io13x_io14x_debounce_filter_time"></a><span class="term">
+            <span class="guilabel">Debounce Filter Time</span>
+        </span></dt><dd><p>Specify the middle of the two debounce filter times you require, where
+                    T<sub>pass</sub> is always 1.5 times the value of
+                    T<sub>reject</sub>. Pulses with a duration smaller than
+                    T<sub>reject</sub> are filtered and are not passed on to the
+                internal logic. After an input pin performs a rising or a falling edge,
+                    T<sub>pass</sub> defines how long this new logic level must be
+                stable before the level change is passed on to the internal logic. Please note that
+                pulses with a duration between T<sub>reject</sub> and
+                    T<sub>pass</sub> may or may not be filtered.
+                    T<sub>reject</sub> can be configured between 50 ns and 3.2768 ms.
+                    T<sub>pass</sub> can be configured between 75 ns and 4.9152
+                ms.</p></dd><dt><a name="varlistentry_common_io13x_io14x_pull_resistors"></a><span class="term">
+            <span class="guilabel">Pull Resistors - Front Connector</span>
+        </span></dt><dd><p>Select the reference voltage of the pull resistor for the front I/O: <span class="bold"><strong>Floating</strong></span>, <span class="bold"><strong>Weak pull-up
+                    5&nbsp;V</strong></span>, <span class="bold"><strong>Pull-up 3.3&nbsp;V</strong></span> or
+                    <span class="bold"><strong>Pull-down</strong></span>. Note: if <span class="bold"><strong>Floating</strong></span> is selected, the pull resistors will not be connected to a
+                reference level, but they will still nonetheless be connected to each other. If
+                    <span class="bold"><strong>Weak pull-up 5&nbsp;V</strong></span> is selected, the external
+                load current cannot exceed 250&nbsp;&micro;A in order to achieve a valid CMOS high
+                level.</p><p><span class="bold"><strong>Digital I/O Output Circuit:</strong></span></p><div class="mediaobject"><table border="0" summary="manufactured viewport for HTML img" style="cellpadding: 0; cellspacing: 0;" width="600"><tr><td><img src="././graphics/io13x_io14x_digital_io_scheme.svg" width="600"></td></tr></table></div></dd></dl></div></div></div></body></html>

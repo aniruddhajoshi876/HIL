@@ -1,0 +1,71 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor QPCI-1553</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs77exb.html" title="Condor Q104-1553 RT Send"><link rel="next" href="bs6ilqy-65.html" title="Condor QPCI-1553 Bus Controller Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="btw0pb1-1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor QPCI-1553</h2><p>Condor QPCI-1553 &#8212; Support for MIL-STD-1553 QPCI boards (not recommended)<b>CondorEngineering</b><b>MilStd1553Blocks</b></p></div><div class="refsect1"><a name="btw0pb1-2"></a><h2>Board</h2><p><span class="trademark"><a name="tp_condor"></a>Condor</span>&reg;
+                QPCI-1553</p></div><div class="refsect1"><a name="btw0pb1-3"></a><h2>General Description</h2><p>The MIL-STD-1553 driver library allows real-time applications to connect to a
+                MIL-STD-1553 bus network to send and receive messages of up to 32 16-bit words. You
+                must be familiar with the MIL-STD-1553 standard.</p><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> block
+                library supports the MIL-STD-1553 protocol with QPCI-1553 boards. These boards
+                connect a target computer to a MIL-STD-1553 data bus via the high-density PCI (QPCI)
+                bus.</p><p>The QPCI-1553 board is available with one, two, three, or four channels as either
+                a single function or multifunction configuration. The multifunction version supports
+                simultaneous use of the Bus Controller, Bus Monitor, and Remote Terminal functions.
+                If more than one function is initialized, the single function version emits an
+                error. This board also supports a loopback mode for testing. QPCI-1553 blocks
+                support up to four channels for this board.</p><p>To support these boards, the block library provides the following driver
+                blocks:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                        <a href="bs6ilqy-65.html" class="olink">Bus Controller
+                            Send</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-72.html" class="olink">Bus
+                            Monitor</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-76.html" class="olink">Initialize</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-80.html" class="olink">RT
+                            Initialize</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-85.html" class="olink">RT
+                            Receive</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-91.html" class="olink">RT Send</a>
+                    </p></li></ul></div><p>To format the Bus Controller messages, use the following utility blocks:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                        <a href="bs6ilqy-5.html" class="olink">Create BC
+                            Message List</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-11.html" class="olink">Decode BC
+                            Message</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-16.html" class="olink">Decode BC
+                            Status</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-21.html" class="olink">Encode BC
+                            Message</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-27.html" class="olink">Select BM
+                            Message</a>
+                    </p></li></ul></div></div><div class="refsect1"><a name="btw0pb1-4"></a><h2>Board Characteristics</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col width="39%" class="col1"><col width="61%" class="col2"></colgroup><tbody><tr><td>
+                                <p>Board name</p>
+                            </td><td>
+                                <p>QPCI-1553</p>
+                            </td></tr><tr><td>
+                                <p>Manufacturer</p>
+                            </td><td>
+                                <p><span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc (formerly <span class="trademark"><a name="tp_condorengineering"></a>Condor
+            Engineering</span>&reg;)</p>
+                            </td></tr><tr><td>
+                                <p>Bus type</p>
+                            </td><td>
+                                <p>QPCI</p>
+                            </td></tr><tr><td>
+                                <p>Multiple board support</p>
+                            </td><td>
+                                <p>Yes</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e5358"></a><h2>Related Links</h2><p><a href="bs52vej.html" class="olink">MIL-STD-1553
+                    Support</a></p><p><a href="btq9ck7.html" class="olink">MIL-STD-1553
+                    Initialization</a></p><p><a href="f0-6413.html" class="olink">Remote Terminal
+                    Operation</a></p><p><a href="f0-6414.html" class="olink">Bus Controller
+                    Operation</a></p><p><a href="f0-6415.html" class="olink">Remote Terminal and Bus
+                    Controller Operation</a></p><p><a href="f0-6416.html" class="olink">Bus Monitor
+                    Operation</a></p></div></div></body></html>

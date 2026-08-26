@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO756 - Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io756_send.html" title="IO756 - Send"><link rel="next" href="refentry_io756_module_status.html" title="IO756 - Module Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io756_receive"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO756 - Receive</h2><p>IO756 - Receive &#8212; <span class="phrase">Receives cyclic data from the
+                    EtherNet/IP scanner</span></p></div><div class="refsect1"><a name="d5e66383"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io756_receive.png"></span></span></p></div><div class="refsect1"><a name="d5e66391"></a><h2>Description</h2><p>This block is used to receive data from the EtherNet/IP scanner connected with the
+                IO756 module.</p><p lang=""><a name="para_cifx_only_one_receive"></a>Your model can contain only one Receive block for each
+        I/O module in your target machine.</p></div><div class="refsect1"><a name="d5e66395"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><p>In conjunction with the IO756 Setup v1 block, the Receive block outputs the
+                    data of the sole output assembly defined in the Setup block mask. In conjunction
+                    with the IO756 Setup v2 block, the output differs. If <span class="bold"><strong>Simple Mode</strong></span> is selected for the Setup block's <span class="bold"><strong>Configuration Mode</strong></span> parameter, the Receive block
+                    outputs the data of the sole output assembly. With <span class="bold"><strong>Extended Mode</strong></span>, the block outputs the data of all output and
+                    configuration assemblies defined.</p><dl class="variablelist"><dt><span class="term">Simple Mode</span></dt><dd><p>One vector of data type UINT8, which holds the data of the sole output
+                            assembly. This assembly contains data that has been received from the
+                            EtherNet/IP scanner. Use <span class="bold"><strong>Byte Unpacking</strong></span>
+                            blocks to extract specific data. The <span class="bold"><strong>Number of
+                                Bytes</strong></span> parameter sets the length of this vector.</p></dd><dt><span class="term">Extended Mode</span></dt><dd><p>The block shows one output port for each output and configuration
+                            assembly defined in the corresponding Setup block. Each port is a vector
+                            of data type UINT8, which holds the data of the specific assembly. This
+                            data has been received from the EtherNet/IP scanner.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any input ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e66419"></a><h2>Parameters</h2><p>Depending on the version of the corresponding Setup block, some parameters might
+                be invisible.</p><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_comms_cifx_porttype_obsolete"></a><span class="term">
+                <span class="guilabel">Port Type</span>
+            </span></dt><dd><p>Always select <span class="bold"><strong>1 port with n element vector of type
+                        uint8</strong></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bytes</span>
+                    </span></dt><dd><p>This parameter defines the length of the output port and thus the
+                            number of bytes to be read from the output assembly.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Retrieve Configuration</span>
+                    </span></dt><dd><p>Retrieves the assembly configuration from the related Setup block and
+                            updates the output ports.</p></dd></dl></div></div></div></body></html>

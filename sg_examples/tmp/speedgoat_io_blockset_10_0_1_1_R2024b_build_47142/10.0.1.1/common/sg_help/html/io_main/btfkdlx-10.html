@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Systran SC150 read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bvaxfo4.html" title="Chapter&nbsp;2.&nbsp;Curtiss-Wright Electronic Systems Blocks No Longer Recommended for Use"><link rel="prev" href="btfkdlx-5.html" title="Systran SC150 init"><link rel="next" href="btfkdlx-15.html" title="Systran SC150 rearm"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="btfkdlx-10"></a><div class="titlepage"></div><div class="refnamediv"><h2>Systran SC150 read<a name="Systran_SC150_Read"></a></h2><p>Systran SC150 read<a name="Systran_SC150_Read"></a> &#8212; <span class="trademark"><a name="tp_systran"></a>Systran</span>&reg; SC150
+                read block (not recommended)<b>Systran</b><b>SharedMemoryBlocks</b></p></div><div class="refsect1"><a name="d5e511"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="btfkdlx-1.html" class="olink">Systran&reg;
+                            SCRAMNet+ SC150 PCI</a></p></li></ul></div></div><div class="refsect1"><a name="btfkdlx-12"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcsystranlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="btfkdlx-13"></a><h2>Note</h2><p>Before you begin to configure this block, be sure that you have a predefined
+                shared memory partition structure. The SC150 read block requires this structure to
+                specify how <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+                signal values are mapped in the shared memory. It also uses this structure to
+                determine the total size and address of the shared memory. See <a href="btq8x2a-1.html" class="olink">Create Shared Memory
+                    Partitions</a>.</p></div><div class="refsect1"><a name="btfkdlx-14"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Partition struct</strong></span></span></dt><dd><p>Enter the name of the predefined shared memory partition structure.
+                            The block uses this structure to specify how <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signal
+                            values map into shared memory.</p></dd><dt><span class="term"><span class="bold"><strong>Error port</strong></span></span></dt><dd><p>Select this check box to monitor the status of the <span class="trademark"><a name="tp_systran"></a>Systran</span>&reg; Scramnet
+                            board CSR1 register modes. The enabled port is of type
+                                <code class="literal">uint16</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Sampletime</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited)</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e562"></a><h2>Related Links</h2><p><a class="link" href="https://www.cwcelectronicsystems.com" target="_top">www.cwcelectronicsystems.com</a></p></div></div></body></html>

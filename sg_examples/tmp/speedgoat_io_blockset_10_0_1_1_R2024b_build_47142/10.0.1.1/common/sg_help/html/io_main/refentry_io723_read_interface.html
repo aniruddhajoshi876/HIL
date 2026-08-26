@@ -1,0 +1,89 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO723 - Read Interface</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io723_setup.html" title="IO723 - Setup"><link rel="next" href="refentry_io723_write_interface.html" title="IO723 - Write Interface"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io723_read_interface"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO723 - Read Interface</h2><p>IO723 - Read Interface &#8212; <span class="phrase">IO723 Read Interface
+                    supporting database visualization and signal selection</span></p></div><div class="refsect1"><a name="d5e55942"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io723_read_interface.png"></span></span></p></div><div class="refsect1"><a name="d5e55951"></a><h2>Description</h2><p>The IO723 Read Interface block executes according to the settings in the IO723
+                Read Interface application. The execution primarily depends on the configured signal
+                status (enabled or disabled) on the parsed database.</p><p>Each execution of an IO723 Read Interface block consists of one or more message
+                payloads being retrieved from the block's software buffer.</p><p>Each Read Interface block can be configured using the application, which can be
+                opened by double-clicking the block. The IO723 Read Interface application bridges
+                <span class="bold"><strong>RBS project</strong></span> signals to Simulink<sup>&reg;</sup> model signals
+                based on a manual signal status selection process. The <span class="bold"><strong>RBS
+                    project</strong></span> must first be configured using the <a href="refentry_io723_fl3xConfig_usage_notes.html" class="olink">FL3X
+                    Config Software</a>and the <a href="refentry_io723_setup.html" class="olink">Setup</a> block. </p><p>As an alternative to configuring the Read Interface block using the application,
+                the <a href="refentry_sgapi_restbus_io723block_config.html" class="olink">IO723 Block Config</a>
+                class can be used to perform the mapping process programmatically.</p><p>The IO723 Read Interface block consists of a subsystem dynamically populated with
+                output ports that construct a virtual bus, IO723 Read blocks and the interconnecting
+                lines. Consequently, when an IO723 Read Interface block is placed in a model, the
+                link to the library is broken.</p></div><div class="refsect1"><a name="d5e55964"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data received as a virtual bus structure. The bus structure is built from the hierarchy levels of the <span class="bold"><strong>RBS project</strong></span> signal enabled. The top-level bus name is
+                            always the name of the <span class="bold"><strong>Data</strong></span> output
+                            port. Only signals enabled in the <span class="bold"><strong>IO723 Read Interface</strong></span> are output to the resulting bus.
+                            The size of the each signal is defined by the payload size
+                            described in the <span class="bold"><strong>RBS project</strong></span>.</p></dd></dl></div></div><div class="refsect1"><a name="d5e55977"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e55991"></a><h2>Configure Interface</h2><p>When configuring the interface, there is one tab for each communication protocol.
+                In the <span class="bold"><strong>RBS project</strong></span>, all available networks
+                corresponding to one protocol are combined into one tab. Each tab can be configured
+                differently from the others. The configuration settings of each tab are combined
+                into one when applying the final configuration settings.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io723_readInterfaceApp.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Hierarchy</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Hierarchy</strong></span> shows a tree view of
+                            the <span class="bold"><strong>RBS project</strong></span> structure. The icons
+                            indicate the node type in the according protocol structure. Nodes at any
+                            level can be enabled using the adjacent checkboxes. Enabling or
+                            disabling a node higher in the hierarchy will also automatically change
+                            the status of all subordinate nodes. </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Details Table</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Details</strong></span> table shows all the
+                            information available to the subordinate nodes of the node currently
+                            selected in the <span class="bold"><strong>Hierarchy</strong></span> tree. No
+                            actions are available for this table.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Search and Options Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Hierarchy</strong></span> tree has a <span class="bold"><strong>Search</strong></span> field available which will highlight
+                            nodes found in this tree. You can cycle through highlighted nodes using
+                            the up and down arrow buttons next to the search button. Clear the
+                            search field to clear the node highlighting. </p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Refresh</strong></span> button will update the
+                                <span class="bold"><strong>Hierarchy</strong></span> tree. Refreshing the
+                                <span class="bold"><strong>Hierarchy</strong></span> tree will update the
+                            structure of the <span class="bold"><strong>RBS project</strong></span> configured
+                            in the connected IO723 Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Expand All Nodes</strong></span> state button
+                            will expand or collapse all nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree depending on the state of the
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check All Nodes</strong></span> state button will
+                            check or uncheck all nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree depending on the state of the
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check Selected Use Physical</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check Selected Use Physical</strong></span> state
+                            button will check or uncheck all <span class="bold"><strong>Use
+                                Physical</strong></span> properties of selected nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree depending on the state of the
+                            button. Nodes with <span class="bold"><strong>Use Physical</strong></span> enabled
+                            will process the values of received signals as physical and if disabled
+                            process them as raw byte arrays. The physical attributes for processing
+                            a signal with <span class="bold"><strong>Use Physical</strong></span> enabled are
+                            defined in the <span class="bold"><strong>RBS project</strong></span>.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56059"></a><h2>Configure Global Variables</h2><p>When configuring the interface, there is a tab for retrieving values for global
+                variables. In the <span class="bold"><strong>RBS project</strong></span>, all available global
+                variables are combined into one tab.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io723_writeInterfaceGlobalVariablesApp.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Global Variables</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Global Variables</strong></span> shows a table
+                            view of the global variables defined in the <span class="bold"><strong>RBS
+                                project</strong></span> structure. Access to retrieving the value of a
+                            global variable can be enabled using the adjacent checkbox.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Search and Options Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Global Variables</strong></span> table has a
+                                <span class="bold"><strong>Search</strong></span> field available. Any rows
+                            found will be highlighted in the table. Clear the search field to clear
+                            the row highlighting. Rows are searched based on their <span class="bold"><strong>Name</strong></span> only.</p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Refresh</strong></span> button will update the
+                                <span class="bold"><strong>Global Variables</strong></span>table, based on the
+                            structure of the <span class="bold"><strong>RBS project</strong></span> configured
+                            in the connected IO723 Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check All Variables</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check All Variables</strong></span> state button
+                            will check or uncheck all variables in the <span class="bold"><strong>Global
+                                Variables</strong></span> table depending on the state of the
+                            button.</p></dd></dl></div></div></div></body></html>

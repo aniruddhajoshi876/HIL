@@ -1,0 +1,73 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BCE Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_tse_pin_mapping.html" title="TSE Pin Mapping"><link rel="next" href="refentry_fiu_usage_notes.html" title="FIU Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bce_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>BCE Usage Notes</h2><p>BCE Usage Notes &#8212; <span class="phrase">Usage information about the
+                    Battery Cell Emulator</span></p></div><div class="refsect1"><a name="d5e1338"></a><h2>Overview</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BMTS driver block library allows users to configure and operate the Battery
+                Cell Emulator (BCE), Fault Insertion Unit (FIU), and Temperature Sensor Emulator
+                (TSE) with a Speedgoat real-time target machine. These usage notes cover additional
+                topics about using the BMTS driver blocks with the BCE. For hardware-related topics,
+                such as setup and safety instructions, please refer to the respective documents
+                provided with each product.</p></div><div class="refsect1"><a name="d5e1344"></a><h2>AC Signal Modulation</h2><p>With BCE SoC Firmware version 1.1.0.0 and later, and Speedgoat I/O Blockset
+                version 9.10.0 and later, BCE AC Signal Modulation functionality is available. It
+                allows users to load a table with predefined output values onto the BCE device and
+                cyclically output this data at much higher frequencies than the base sample rate of
+                the model. The predefined data can be applied either to the cell voltage or to the
+                cell sink current.</p><p>When the AC Signal Modulation is started for multiple cells simultaneously using
+                the AC_Signal_Start signal, microsecond synchronization between the respective
+                cells' AC modulation signals is guaranteed.</p><p>Before starting the AC Signal Modulation, enable the cell and set the initial cell
+                voltage and sink current to the desired values. For the selected AC signal output
+                path (either voltage or sink current), the system adds the AC signal data to the
+                cell's voltage or sink current setpoint (value applied through V or I input of the
+                BMTS Write block).</p><p>While AC Signal Modulation is active, AC Signal Modulation takes full control of
+                the selected cell output path. The non-selected output path behaves normally. Data
+                acquisition remains unaffected. When you stop AC Signal Modulation, the cell returns
+                to normal operation mode.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The user is responsible for ensuring that the start value plus the amplitude
+                    of the AC signal data always remain within the legal output range of the
+                    device.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e1352"></a><h2>Bus Signal Structure</h2><p>The BMTS Read and BMTS Write blocks use Simulink bus signals as inputs/outputs.
+                The structure of the bus signal depends on the configured device.</p><p>The Simulink Bus structures are allocated in the MATLAB base workspace once the
+                parameters for the BMTS Setup, BMTS Read, and BMTS Write blocks have been defined.
+                The bus for a BCE device always has the same structure, while the structure for each
+                FIU or TSE device depends on the number of channels present in the device.</p><p>The bus structure to set the values of a BCE device is called BCE_Set and is as
+                follows:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">BCE_Set</span></dt><dd><p>Cell_1, Cell_2, [&#8230;], Cell_12</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Enable: Enables or disables the cell. Data type:
+                                    boolean</p></li><li class="listitem"><p>AC_Signal_Start: Start or stop the output of AC signal data.
+                                    Data type: boolean</p></li><li class="listitem"><p>V: Set the cell voltage (adjustable power supply mode). Data
+                                    type: single</p></li><li class="listitem"><p>I: Set the cell sink current (adjustable load mode). Data
+                                    type: single</p></li></ul></div></dd></dl></div><p>Note that all cell enable signals are forced off during the first 2 seconds of
+                execution time. This is to ensure that the device configuration is completed before
+                the cells are enabled.</p><p></p><p>The bus structure to get the values from a BCE device is called BCE_Get and is as
+                follows:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">BCE_Get</span></dt><dd><p>Cell_1, Cell_2, [&#8230;], Cell_12</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Status: Provides status information about the cell. Data type:
+                                    uint16</p></li><li class="listitem"><p>V: Measured cell voltage. Data type: single</p></li><li class="listitem"><p>I: Measured cell current. Data type: single</p></li><li class="listitem"><p>Charge: Coulomb charge count of the last sample step. Data
+                                    type: uint64</p></li></ul></div></dd></dl></div><p>The Status signal is of type uint16, where each bit indicates status or error
+                information according to the following table.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="col1"><col width="84%" class="col2"></colgroup><thead><tr><th>Bit</th><th>Description</th></tr></thead><tbody><tr><td>15 </td><td>Cell Coulomb Measurement Saturation Limit
+                                exceeded</td></tr><tr><td>14 </td><td>Cell Source Current Limit exceeded</td></tr><tr><td>13 </td><td>Cell Sink Current Limit exceeded</td></tr><tr><td>12 </td><td>Cell Over-Voltage Limit exceeded</td></tr><tr><td>11 </td><td>Cell Under-Voltage Limit exceeded</td></tr><tr><td>10 </td><td>Cell Adjustable Power Supply or Adjustable Load
+                                DAC Error </td></tr><tr><td>9 </td><td>Cell Thermal Alert</td></tr><tr><td>8 </td><td>Cell Current Monitoring ADC Error</td></tr><tr><td>7 </td><td>Cell Voltage Monitoring ADC Error</td></tr><tr><td>6 </td><td>Cell Temperature Sensor Error</td></tr><tr><td>5-4 </td><td>Reserved</td></tr><tr><td>3 </td><td>Cell Busy </td></tr><tr><td>2 </td><td>Cell Shutdown State </td></tr><tr><td>1 </td><td>Cell Functional State </td></tr><tr><td>0 </td><td>Cell Enabled </td></tr></tbody></table></div><p>Note that certain error states&#8212;such as cell undervoltage&#8212;may be set due to the
+                voltage exceeding the configured limit value, even when a cell shutdown based on
+                this limit is disabled. In this case, the cell continues to operate normally.</p><p>In Cell Shutdown State, Adjustable Power Supply and Adjustable Load are set to
+                zero and DAC devices are powered down.</p></div><div class="refsect1"><a name="d5e1445"></a><h2>Assigning Bus Signals</h2><p>There are various ways to handle bus signals in Simulink. One option is to use the
+                    <a href="refentry_bmts_buspack.html" class="olink">BMTS
+                    Bus Pack</a> block; this workflow is explained below. For other workflows,
+                please refer to the MathWorks <a class="link" href="https://www.mathworks.com/help/simulink/slref/simulink-buses.html" target="_blank">documentation</a>.</p><p>Insert a BMTS Bus Pack block and connect it to the BMTS Write block. In the block
+                mask of the BMTS Bus Pack block, select the correct BMTS device type from the
+                drop-down menu. The corresponding Simulink Bus object is automatically allocated in
+                the MATLAB base workspace.</p><p>By default, input ports are created for all signals inside the bus. To select only
+                a subset of signals and reduce the number of input ports, use the tree view on the
+                    <span class="bold"><strong>Signal Selection</strong></span> tab of the block mask.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/bmts_bus_pack_example_bce.png"></span></span></p></div><div class="refsect1"><a name="refsect_bce_user_calibration"></a><h2>Custom Calibration Values</h2><p>With Speedgoat I/O Blockset 10.0.1 and later, the BCE Calibration functionality
+                allows users to apply custom correction values for voltage and current measurements
+                of each BCE cell. Even though each BCE is factory calibrated, different operating
+                conditions or wear over time can create a need for gain and offset correction. The
+                calibration settings are integrated into the BMTS Setup block and can be accessed
+                from the <span class="bold"><strong>BCE Device Configuration </strong></span>tab.</p><p>For every cell channel, individual Gain and Offset correction values can be
+                defined separately for both voltage and current signals:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Voltage Gain/Voltage Offset: Adjust the measured cell voltage scaling and
+                        offset</p></li><li class="listitem"><p>Current Gain/Current Offset: Adjust the measured cell sink current scaling
+                        and offset</p></li></ul></div><p>Default values are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Gain = 1</p></li><li class="listitem"><p>Offset = 0</p></li></ul></div><p>The calibration values can be:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>edited manually in the table</p></li><li class="listitem"><p>imported from an existing calibration file using <span class="bold"><strong>Import Data</strong></span></p></li><li class="listitem"><p>exported for backup or reuse using <span class="bold"><strong>Export
+                            Data</strong></span></p></li><li class="listitem"><p>reset to default values using <span class="bold"><strong>Reset to Default
+                            Values</strong></span></p></li></ul></div><p>Note that the calibration values are stored with the Simulink model and not
+                transferred permanently to the BCE device. To move the calibration values from one
+                model to another, use one of the following methods:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">copy and paste the BMTS Setup block</li><li class="listitem"><p>use the export and import functionality</p></li></ul></div><p>Calibration values are only applied during model execution if the <span class="bold"><strong>Enable</strong></span> checkbox is set in the BMTS Setup block (<span class="bold"><strong>BCE Device Configuration </strong></span>tab).</p><p>Using the export button from the BCE Calibration mask exports the data for a
+                single BCE unit. The serial number is stored together with the correction values for
+                user reference, but has no functional impact on the calibration workflow.</p><p>If the calibration data is exported from the main BMTS Setup block mask (<span class="bold"><strong>BCE Device Configuration</strong></span> tab), the data for all
+                configured BCE devices is bundled into a single .mat file. This file can only be
+                imported again (from the <span class="bold"><strong>BCE Device Configuration</strong></span>
+                tab) when the setup of the <span class="bold"><strong>Network Topology</strong></span> tab
+                matches the setup used during export.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/bmts_bce_calibration.png" width="600"></span></span></p></div></div></body></html>

@@ -1,0 +1,46 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Model Execution Driven by CAN Messages</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="prev" href="f2-6145.html" title="CAN Basics"><link rel="next" href="f2-6329.html" title="Initialization and Termination CAN Messages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f2-6291"></a>Model Execution Driven by CAN Messages</h2></div></div></div><p>In certain applications, you can pace execution of the real-time application by
+            incoming CAN messages. The standard behavior of the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> kernel is to drive the
+            real-time application in time monotonic fashion using a time interrupt. However, you can
+            replace the driving interrupt by other interrupts. The supported CAN boards can fire an
+            interrupt upon reception of a specific CAN message. Therefore, you can replace the timer
+            interrupt line in the kernel by the interrupt line assigned to a CAN board. You can then
+            drive the real-time application by sending CAN messages, interpreting them in the CAN
+                <code class="literal">Receive</code> blocks, and firing an interrupt in response.</p><p>To set up this capability, do the following:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><a name="btgwyn2-1"></a>Replace the timer interrupt line in the kernel setup with
+                    the interrupt line of the board.</p></li><li class="listitem"><p><a name="btgwyn2-2"></a>Set up the CAN <code class="literal">Setup</code> and CAN
+                        <code class="literal">Receive</code> blocks.</p></li></ol></div><p>Both steps are slightly different for each of the supported CAN boards.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f2-6307"></a>CAN-AC2-PCI</h3></div></div></div><p>The CAN-AC2 is a PCI board, and the PCI BIOS automatically assigns the interrupt
+                line during the initialization of the target system. At the model level, open the <span class="guimenuitem">Simulation</span> &#8594; <span class="guimenuitem">Model Configuration Parameters</span> dialog box. At the <span class="guilabel">Simulink Real-Time Options</span>
+                node, set <span class="guilabel">Real-time interrupt source</span> Auto (PCI only). This
+                option enables the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> software to determine the IRQ that the BIOS assigned
+                to the board and use it. Alternatively, use the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> function <a class="link" href="matlab: doc SimulinkRealTime.target.getPCIInfo;" target="_top">SimulinkRealTime.target.getPCIInfo</a> at the command prompt to query the
+                target system for installed PCI devices and the assigned resources. Write down the
+                interrupt line number assigned to the CAN-AC2-PCI board.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><a name="f2-6309"></a>In the <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; Editor, select <span class="guimenuitem">Simulation</span> &#8594; <span class="guimenuitem">Model Configuration Parameters</span>.</p><p>The Configuration Parameters dialog box is displayed.</p></li><li class="listitem"><p><a name="f2-6311"></a>Select node <span class="guimenuitem">Code
+                            Generation</span>.</p></li><li class="listitem"><p><a name="f2-6312"></a>In the <span class="guilabel">Target selection</span> section, set
+                        the <span class="guilabel">System target file</span> box to slrt.tlc.</p></li><li class="listitem"><p><a name="f2-6313"></a>Select the <span class="guilabel">Simulink Real-Time
+                            Options</span> node.</p></li><li class="listitem"><p><a name="f2-6314"></a>In the <span class="guilabel">Real-time interrupt source</span>
+                        box, select the interrupt line number that you retrieved with the
+                            <code class="literal">SimulinkRealTime.target.getPCIInfo</code> command.</p><p>Alternatively, select Auto (PCI only) to enable the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> software to
+                        determine the IRQ that the BIOS assigned to the board and use it.</p></li><li class="listitem"><p>In the <span class="guilabel">I/O board generating the interrupt</span> field,
+                        select Softing_CAN-AC2-PCI.</p></li><li class="listitem"><p><a name="f2-6315"></a>Click <span class="guibutton">OK</span> and save the
+                        model.</p></li><li class="listitem"><p><a name="f2-6316"></a>Open the dialog box of the CAN <code class="literal">Receive</code>
+                        block in the model that defines the CAN message (identifier) to be used to
+                        fire the interrupt. Select the <span class="guilabel">Generate interrupts</span>
+                        check box. Selecting this box declares that the CAN messages defined through
+                        their identifiers in this <code class="literal">Receive</code> block instance are
+                        messages that fire an interrupt. In other words, you cannot define a single
+                        CAN message within the set of defined identifiers as the only one to fire an
+                        interrupt. Usually, the reception of one specific message is used to drive
+                        the application execution. Therefore use at least two instances of the
+                            <code class="literal">Receive</code> block: one to receive the CAN message that
+                        drives the execution (<span class="guilabel">Generate interrupts</span> selected) and
+                        the other for the remaining normal CAN messages to be received
+                            (<span class="guilabel">Generate interrupts</span> cleared).</p></li></ol></div></div></div></body></html>

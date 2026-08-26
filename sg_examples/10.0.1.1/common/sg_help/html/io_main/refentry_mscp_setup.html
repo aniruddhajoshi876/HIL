@@ -1,0 +1,65 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MSCP Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="up" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="prev" href="refentry_ref_mscp.html" title="Modular Signal Conditioning Platform"><link rel="next" href="refentry_mscp_read.html" title="MSCP Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mscp_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>MSCP Setup</h2><p>MSCP Setup &#8212; <span class="phrase">Configure the MSCP Setup
+                    block</span></p></div><div class="refsect1"><a name="d5e57"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mscp_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e66"></a><h2>Description</h2><p>The MSCP Setup block allows the user to configure an entire EtherCAT chain
+                consisting of the Speedgoat real-time target machine acting as the EtherCAT main
+                device connected to one or multiple MSCP devices. Multiple MSCP devices are
+                connected in a daisy chain.</p><p>The order and the configuration of the devices listed in the MSCP Setup block must
+                match the devices connected on the EtherCAT bus. The real-time target machine is
+                connected to device 1, device 1 is connected to device 2, and so on.</p></div><div class="refsect1"><a name="d5e70"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e73"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Network Parameters</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Configure the <span class="bold"><strong>Sample Time</strong></span> of the data
+                            exchange on the EtherCAT network. All MSCP Read and MSCP Write blocks
+                            will operate with this sample time.</p></dd><dt><span class="term">
+                        <span class="guilabel">Network Index</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Network Index</strong></span> is a user-defined
+                            ID to associate the MSCP Read and MSCP Write blocks with the
+                            corresponding MSCP Setup block. The value must be an integer between 0
+                            and 11.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Number</span>
+                    </span></dt><dd><p>Identifies the Ethernet port to be used on the real-time target
+                            machine. Use the <span class="bold"><strong>Port Number</strong></span> to select
+                            the nth EtherCAT interface as listed by
+                                <code class="code">speedgoat.configureEthernet</code>. With <span class="bold"><strong>Port Number</strong></span> 1 you select the first EtherCAT interface.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Buttons</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Help</span>
+                    </span></dt><dd><p>Opens this help page.</p></dd><dt><span class="term">
+                        <span class="guilabel">Save</span>
+                    </span></dt><dd><p>Saves all settings from the block mask. This process can take a few
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cancel</span>
+                    </span></dt><dd><p>Discards all changes and closes the block mask without saving.</p></dd></dl></div></div><div class="refsect1"><a name="d5e114"></a><h2>Configuration</h2><div class="variablelist"><div class="variablelist-title">Slot Configuration Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Adding and Removing Devices</span>
+                    </span></dt><dd><p>Add and remove MSCP devices with the buttons below the table (green
+                                <span class="bold"><strong>+</strong></span> to add and red <span class="bold"><strong>x</strong></span> to remove a device). Adding a new device
+                            will insert 11 rows, one for each slot of an MSCP device. Removing a
+                            device will delete the respective entries from the table. A confirmation
+                            is required before an MSCP device is deleted.</p></dd><dt><span class="term">
+                        <span class="guilabel">Editing the Table</span>
+                    </span></dt><dd><p>Specify the <span class="bold"><strong>Module Type</strong></span> for each
+                                <span class="bold"><strong>Slot</strong></span> to match the configuration of
+                            connected MSCP devices. The <span class="bold"><strong>Module Type</strong></span>
+                            can be changed by double-clicking the respective cell and selecting a
+                            different <span class="bold"><strong>Module Type</strong></span> from the
+                            drop-down menu.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Module Settings Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module Selection</span>
+                    </span></dt><dd><p>The selection drop-down menu lists all MSCP modules that have been
+                            configured in the table on the <span class="bold"><strong>Slot
+                                Configuration</strong></span> tab. After selecting an item, <span class="bold"><strong>Module Settings</strong></span> will load. The settings
+                            options can vary based on <span class="bold"><strong>Module Type</strong></span>.
+                                <span class="bold"><strong>Module Settings</strong></span> cannot be changed
+                            during runtime.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Utilities Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Read Device Information</span>
+                    </span></dt><dd><p>By clicking the button <span class="bold"><strong>Generate
+                                DeviceInfoMdl</strong></span>, a new Simulink model can be automatically
+                            generated. The purpose of this model is to easily read out device
+                            information of all the MSCP devices connected to the target machine. Run
+                            the generated model to read out firmware versions of connected MSCP
+                            devices.</p></dd><dt><span class="term">
+                        <span class="guilabel">Firmware Update</span>
+                    </span></dt><dd><p>Clicking the button <span class="bold"><strong>Start Firmware
+                                Update</strong></span> starts the process of updating the firmware of
+                            connected MSCP devices as set up on the <span class="bold"><strong>Slot
+                                Configuration</strong></span> tab. Follow the on-screen instructions to
+                            update the firmware of all connected MSCP devices.</p><p>Firmware updates are provided with new versions of the Speedgoat I/O
+                            Blockset.</p></dd></dl></div></div></div></body></html>

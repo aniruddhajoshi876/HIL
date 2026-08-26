@@ -1,0 +1,28 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO754 - Receive v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io754_receive.html" title="IO754 - Receive"><link rel="next" href="refentry_io754_message_v2.html" title="IO754 - Message v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io754_receive_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO754 - Receive v2</h2><p>IO754 - Receive v2 &#8212; <span class="phrase">Receives cyclic data from the
+                    Modbus TCP client</span></p></div><div class="refsect1"><a name="d5e64731"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io754_receive_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e64739"></a><h2>Description</h2><p>This block is used to receive data from the MODBUS TCP client connected with the
+                IO754 module. Further information about the operation modes is available in the
+                    <a href="refentry_io754_usage_notes.html#refsect_io754_opmodes" class="olink">IO754 Usage
+                    Notes</a>.</p><p lang=""><a name="para_cifx_only_one_receive"></a>Your model can contain only one Receive block for each
+        I/O module in your target machine.</p></div><div class="refsect1"><a name="d5e64744"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>One vector of data type UINT8 which the block reads from the input
+                            data area of the dual-port memory. This area contains data which has
+                            been received from the Modbus TCP client. Use <span class="bold"><strong>Byte
+                                Unpacking</strong></span> blocks to extract specific data. The <span class="bold"><strong>Number of Bytes</strong></span> parameter sets the length of
+                            this vector.</p><p><span class="bold"><strong>Type:</strong></span>
+                            <code class="literal">scalar | vector</code></p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any input ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e64766"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_comms_cifx_porttype_obsolete"></a><span class="term">
+                <span class="guilabel">Port Type</span>
+            </span></dt><dd><p>Always select <span class="bold"><strong>1 port with n element vector of type
+                        uint8</strong></span></p></dd><dt><a name="varlistentry_comms_cifx_num_bytes_receive"></a><span class="term">
+                <span class="guilabel">Number of Bytes</span>
+            </span></dt><dd><p>This parameter defines the length of the output port and thus the number of
+                    bytes to be read from the module's input data area (RX). Refer to the usage
+                    notes to learn how to use this parameter.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

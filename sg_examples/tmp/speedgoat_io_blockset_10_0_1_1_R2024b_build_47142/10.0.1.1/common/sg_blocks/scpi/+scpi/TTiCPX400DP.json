@@ -1,0 +1,132 @@
+{
+    "General": {
+        "brand": "TTi",
+        "deviceName": "CPX400DP",
+        "nChannels": 2,
+        "comInterfaces": ["Serial"],
+        "usMinMsgDelay": 200e3,
+        "msgSendTermination": [10],
+        "msgReceiveTermination": [10, 13],
+        "stdSCPI": false,
+        "mdlStopMsg": ""
+    },
+    "DaisyChain": {
+        "present": false,
+        "devSelection": "",
+        "selectionAck": ""
+    },
+    "ErrorHandling":{
+        "autoError": false
+    },
+    "Msg":{
+        "Set": [
+            {
+                "cmd": "V<ch> <value>",
+                "valueType": "double",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Voltage",
+                "portText": "Volt"
+            },
+            {
+                "cmd": "I<ch> <value>",
+                "valueType": "double",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Current",
+                "portText": "Curr"
+            },
+            {
+                "cmd": "OP<ch> <value>",
+                "valueType": "uint",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Output status",
+                "portText": "Out"
+            },
+            {
+                "cmd": "OPALL <value>",
+                "valueType": "uint",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "All Outputs status",
+                "portText": "OutAll"
+            },
+            {
+                "cmd": "OVP<ch> <value>",
+                "valueType": "double",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Over Voltage Protection",
+                "portText": "OVP"
+            },
+            {
+                "cmd": "OCP<ch> <value>",
+                "valueType": "double",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Over Current Protection",
+                "portText": "OCP"
+            },
+            {
+                "cmd": "RST",
+                "valueType": "none",
+                "expectedResponse": "",
+                "responseType": "none",
+                "dropdownText": "Reset",
+                "portText": "Reset"
+            }
+        ],
+        "Request": [
+            {
+                "cmd": "V<ch>?",
+                "expectedResponse": "V<ch> <value>",
+                "responseType": "double",
+                "dropdownText": "Set Voltage",
+                "portText": "SetVolt"
+            },
+            {
+                "cmd": "V<ch>O?",
+                "expectedResponse": "<value>V",
+                "responseType": "double",
+                "dropdownText": "Measured Voltage",
+                "portText": "MeasVolt"
+            },
+            {
+                "cmd": "I<ch>?",
+                "expectedResponse": "I<ch> <value>",
+                "responseType": "double",
+                "dropdownText": "Set Current",
+                "portText": "SetCurr"
+            },
+            {
+                "cmd": "I<ch>O?",
+                "expectedResponse": "<value>",
+                "responseType": "double",
+                "dropdownText": "Measured Current",
+                "portText": "MeasCurr"
+            },
+            {
+                "cmd": "OP<ch>?",
+                "expectedResponse": "<value>",
+                "responseType": "uint",
+                "dropdownText": "Output status",
+                "portText": "Out"
+            },
+            {
+                "cmd": "OVP<ch>?",
+                "expectedResponse": "VP<ch> <value>",
+                "responseType": "double",
+                "dropdownText": "Over Voltage Protection",
+                "portText": "OVP"
+            },
+            {
+                "cmd": "OCP<ch>?",
+                "expectedResponse": "CP<ch> <value>",
+                "responseType": "double",
+                "dropdownText": "Over Current Protection",
+                "portText": "OCP"
+            }
+        ]
+    }
+}

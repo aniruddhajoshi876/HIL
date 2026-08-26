@@ -1,0 +1,90 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO113-20 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io113_20_pin_mapping.html" title="IO113 and IO113-20 Pin Mapping"><link rel="next" href="refentry_io113_20_analog_output.html" title="IO113-20 - Analog output"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io113_20_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO113-20 - Setup</h2><p>IO113-20 - Setup &#8212; <span class="phrase">Configure the IO113-20
+                    input/output blocks</span></p></div><div class="refsect1"><a name="d5e9220"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io113_20_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e9228"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>The Setup block dialog box allows all the supported I/O types of this module to be
+                configured and therefore impacts on the other driver blocks (Analog output, Digital
+                output, Digital input).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e9235"></a><h2>Parameters</h2><p>All the configuration settings of the IO113-20 module are available in the three
+                tabs of the Setup parameter dialog.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Module Type</span>
+                    </span></dt><dd><p>Select the analog output voltage range according to your module.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Autocalibration</span>
+                    </span></dt><dd><p>Check this box if the module should calibrate itself the next time
+                            this model (target application) is downloaded and initialized. The
+                            autocalibration function compensates for component aging and minimizes
+                            the effects of temperature on accuracy. We recommend keeping this
+                            parameter enabled. The calibration normally takes approximately 2
+                            seconds, so we suggest increasing the host-target communication time-out
+                            in the model configuration parameters to allow for this. The status of
+                            the calibration is displayed on the target screen. The calibration is
+                            not re-executed during normal start/stop operation once the target
+                            application has been downloaded. Check this box every time the <span class="bold"><strong>Output Range</strong></span> in the Analog Outputs tab is
+                            changed, or the <span class="bold"><strong>3rd Order Low-pass
+                                Filter</strong></span> box is modified. Warning: During the calibration
+                            process various signals may be present at the output pins, but they will
+                            stay inside the configured voltage range.</p></dd><dt><span class="term">
+                        <span class="guilabel">3rd Order Low-pass Filter</span>
+                    </span></dt><dd><p>Check this box if a third order low-pass filter should be applied in
+                            each analog output channel. The cut-off frequency is 100 kHz</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Outputs Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels_v2"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Choose the active input/output channels by selecting the corresponding checkboxes.
+                For each active channel, a separate row for the channel settings is displayed.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Select either Single-ended or Differential. For Single-ended channels,
+                            each output signal is referenced between the HI line and the Output
+                            return (GND). For Differential channels, the voltage is referenced
+                            between the HI line and LO line. For more information, refer to the I/O
+                            pin mapping section and the technical reference manual of the I/O
+                            module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Range</span>
+                    </span></dt><dd><p>Select the output voltage range for the output channels: &plusmn;10&nbsp;V or
+                            &plusmn;5&nbsp;V when the Module Type &plusmn;10&nbsp;V and &plusmn;5&nbsp;V is selected or
+                            &plusmn;5&nbsp;V or &plusmn;2.5&nbsp;V when the Module Type &plusmn;5&nbsp;V and &plusmn;2.5&nbsp;V
+                            is selected. One selection for all analog channels.</p></dd><dt><a name="varlistentry_common_analog_initialValues_v2"></a><span class="term">
+            <span class="guilabel">Initial Value</span>
+        </span></dt><dd><p>Define the initial signal level present on the specific output after the
+                application has been downloaded. The values can be set individually by entering the
+                initial value for each channel according to the selected output range.</p></dd><dt><a name="varlistentry_common_analog_resetValues_v2"></a><span class="term">
+            <span class="guilabel">Reset to Initial Value</span>
+        </span></dt><dd><p>Define whether the initial value is also applied once the application has stopped.
+                The behavior can be set individually for each channel using the checkbox.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital I/O Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Channels 1-4</span>
+                    </span></dt><dd><p>Select the Input or Output direction for channels 1 to 4. For output
+                            channels, the options to set initial value and reset to initial value
+                            are displayed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channels 5-8</span>
+                    </span></dt><dd><p>Select the Input or Output direction for channels 5 to 8. For output
+                            channels, the options to set initial value and reset to initial value
+                            are displayed.</p></dd><dt><a name="varlistentry_common_digital_activeInputChannels_v2"></a><span class="term">
+            <span class="guilabel">Initial Value</span>
+        </span></dt><dd><p>Define the initial signal level present on the specific output after the
+                application has been downloaded. The values can be set individually by choosing the
+                initial value for each channel to be either Low (0) or High (1).</p></dd><dt><a name="varlistentry_common_digital_resetValues_v2"></a><span class="term">
+            <span class="guilabel">Reset to Initial Value</span>
+        </span></dt><dd><p>Define whether the initial value is also applied once the application has stopped.
+                The behavior can be set individually for each channel using the checkbox.</p></dd></dl></div></div></div></body></html>

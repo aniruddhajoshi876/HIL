@@ -1,0 +1,26 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO642 - Send v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io642_send.html" title="IO642 - Send"><link rel="next" href="refentry_io642_receive.html" title="IO642 - Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io642_send_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO642 - Send v2</h2><p>IO642 - Send v2 &#8212; <span class="phrase">Transmits cyclic data to the
+                    PROFIBUS master</span></p></div><div class="refsect1"><a name="d5e47355"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io642_send_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e47363"></a><h2>Description</h2><p>This block is used to transmit data to the PROFIBUS master connected with the
+                IO642 module.</p><p lang=""><a name="para_cifx_only_one_send"></a>Your model can contain only one Send block for each I/O
+        module in your target machine.</p></div><div class="refsect1"><a name="d5e47367"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>One vector of data type UINT8 which the block writes to the output
+                            data area of the dual-port memory. This area contains data which is sent
+                            to the PROFIBUS master. Use <span class="bold"><strong>Byte
+                                Packing</strong></span> blocks to assemble the vector from specific data.
+                            The <span class="bold"><strong>Number of Bytes</strong></span> parameter sets the
+                            length of this vector.</p><p><span class="bold"><strong>Type:</strong></span>
+                            <code class="literal">scalar | vector</code></p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any output ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e47389"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bytes</span>
+                    </span></dt><dd><p>This parameter defines the length of the input port and thus the
+                            number of bytes to be written to the module's output data area (TX). The
+                            total amount of data the slave sends to the master is determined by the
+                            number and type of PROFIBUS data modules configured in the master
+                            configuration tool. Refer to the usage notes for examples.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

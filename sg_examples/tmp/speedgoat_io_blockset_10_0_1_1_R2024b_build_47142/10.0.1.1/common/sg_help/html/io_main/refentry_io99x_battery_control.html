@@ -1,0 +1,105 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO99X - Battery simulation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_io99x_usage_notes.html" title="IO99X Usage Notes"><link rel="next" href="refentry_ref_bce.html" title="Battery Management Testing Systems"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io99x_battery_control"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO99X - Battery simulation</h2><p>IO99X - Battery simulation &#8212; <span class="phrase">Controls the IO99X
+                    batteries</span></p></div><div class="refsect1"><a name="d5e270"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pil_battery_sim.png"></span></span></p></div><div class="refsect1"><a name="d5e278"></a><h2>Description</h2><p>The driver block used for configuring the driver is described in the following
+                sections.</p></div><div class="refsect1"><a name="d5e281"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">V n (n is the voltage channel number) </span>
+                    </span></dt><dd><p>The requested output voltage value for channel n (0 to 7V, settable
+                            with 14-bit resolution. Approximately 0.43mV per step)</p></dd><dt><span class="term">
+                        <span class="guilabel">I n (n is the current channel number) </span>
+                    </span></dt><dd><p>The requested current sink value for channel n (settable in 16 steps).
+                            Possible current steps are (mA):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>IO991: [0, 6, 13, 19, 25, 31, 38, 44, 50, 56, 63, 69, 75, 81,
+                                    88, 94, 100]</p></li><li class="listitem"><p>IO992: [0, 18.75, 37.5, 56.25, 75, 93.75, 112.5, 131.25, 150,
+                                    168.75, 187.5, 206.25, 225, 243.75, 262.5, 281.25, 300]</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The driver rounds the input current sink value to the next allowed
+                                step, according to the values specified above.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable n (n is the enable channel number)</span>
+                    </span></dt><dd><p>Controls the state of channel n (enabled / disabled). The enable ports
+                            are only shown when the <span class="bold"><strong>Show enable
+                                ports</strong></span> option is enabled.</p></dd></dl></div><p>The output ports are only shown when the option "Show output ports" is enabled.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">V n (n is the voltage channel number) </span>
+                    </span></dt><dd><p>IO991: The voltage value currently set by the module for channel n.
+                            This corresponds to the value read back from the module. It is not a
+                            measured value.</p><p>IO992: The measured voltage at the outputs for channel n.</p></dd><dt><span class="term">
+                        <span class="guilabel">I n (n is the current channel number) </span>
+                    </span></dt><dd><p>IO991: The current sink value at present set by the module for channel
+                            n. This corresponds to the value read back from the module. It is not a
+                            measured value. Refer to the Inputs section for the current values
+                            permitted.</p><p>IO992: The measured current at the outputs for channel n.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable n </span>
+                    </span></dt><dd><p>The actual state (enabled / disabled) of channel n.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interlock </span>
+                    </span></dt><dd><p>The actual state of the global hardware enable.</p></dd></dl></div></div><div class="refsect1"><a name="d5e334"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">IO99x module ID</span>
+                    </span></dt><dd><p>If your target machine only contains one I/O module, leave the default
+                            value (1). If more than one I/O module of this type is present, select a
+                            unique number (1-255) for each of your modules.</p></dd><dt><span class="term">
+                        <span class="guilabel">IO99x module type</span>
+                    </span></dt><dd><p>Select the specific type of I/O module this driver block is being used
+                            with.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel vector </span>
+                    </span></dt><dd><p>This parameter allows the enabling of individual channels in any
+                            order. The order inside the vector defines the port order of the block,
+                            e.g. "[2 5 1]" or simply "1:6".</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial channel enable values </span>
+                    </span></dt><dd><p>Define the initial channel state after the model is downloaded. The
+                            state can be set individually for each channel by entering a vector. The
+                            value at a certain position in the Initial values vector is applied to
+                            the channel defined at the same position in the Active Channel vector. A
+                            scalar value applies to all channels. Examples: individual values: "[1 0
+                            0 1]", all channels enabled: "1". "0" means channel disabled, "1" means
+                            channel enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset channel enable values </span>
+                    </span></dt><dd><p>Define if the Initial values shall also be applied after the model is
+                            stopped. '1' means "use Initial Value" and '0' means "keep the latest
+                            value". Examples: "[1 0 0 1]" or "0"</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial output voltage values</span>
+                    </span></dt><dd><p>Define the initial voltage levels (in Volt) present on the outputs
+                            after the model is downloaded. The voltages can be set individually for
+                            each channel by entering a vector. The value at a certain position in
+                            the Initial voltage values vector is applied to the channel defined at
+                            the same position in the Active Channels vector. A scalar value applies
+                            to all channels. Examples: individual values: "[1 1.5 0 2.5]", all
+                            channels to 0 V: "0"</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset output voltage values </span>
+                    </span></dt><dd><p>Define if the Initial voltage values shall also be applied after the
+                            model is stopped. '1' means "use Initial Value" and '0' means "keep the
+                            latest value". Examples: "[1 0 0 1]" or "0"</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial current sink values</span>
+                    </span></dt><dd><p>Define the initial current sink levels (in milliampere) present on the
+                            outputs after the model is downloaded. The current can be set
+                            individually for each channel by entering a vector. The value at a
+                            certain position in the Initial current values vector is applied to the
+                            channel defined at the same position in the Active Channels vector. A
+                            scalar value applies to all channels. Examples: individual values: "[
+                            12.5 0 100 ]", all channels to 0 mA: "0"</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset current values </span>
+                    </span></dt><dd><p>Define if the Initial current values shall also be applied after the
+                            model is stopped. '1' means "use Initial Value" and '0' means "keep the
+                            latest value". Examples: "[1 0 0 1]" or "0"</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Samples (IO992 only)</span>
+                    </span></dt><dd><p>Select the number of samples for averaging the measured
+                            values.</p></dd><dt><span class="term">
+                        <span class="guilabel">Conversion Time Voltage (IO992 only)</span>
+                    </span></dt><dd><p>Select the conversion time for each sample for voltage
+                            measurements.</p></dd><dt><span class="term">
+                        <span class="guilabel">Conversion Time Current (IO992 only)</span>
+                    </span></dt><dd><p>Select the conversion time for each sample for current
+                            measurements.</p></dd><dt><span class="term"><span class="guilabel">Show input enable ports </span>
+                    </span></dt><dd><p>Enable or disable the enable ports.</p></dd><dt><span class="term"><span class="guilabel">Show output ports </span>
+                    </span></dt><dd><p>Enable or disable the voltage/current output ports.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd></dl></div></div></div></body></html>

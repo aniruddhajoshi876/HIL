@@ -1,0 +1,105 @@
+%implements sg_trdp_pd_publish_s "C"
+
+%include "sg_trdp.tlc"
+
+%<TrdpCommonIncludes()>
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+        int32_t ret = 0;
+        ns_sg_trdp::cStation* Station = NULL;
+        ns_sg_trdp::cTransceiver *Transceiver = NULL;
+
+        /* Initialize the TRDP API */
+        SgTrdp->init();
+
+        /* Add one station */
+        ret = SgTrdp->addStation(%<StationId>, 0, (ns_sg_trdp::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding TRDP station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one transceiver to the station */
+        ret = Station->addTransceiver((ns_sg_trdp::cTransceiver**)&Transceiver);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding TRDP publish block to station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Buffer)) * LibBlockDWorkWidth(Buffer)
+
+        /* Initialize the transceiver */
+        ret = Transceiver->init(TRDP_BLOCK_TYPE_PD_PUBLISH, %<ComId>, 0, %<DestIpAddr>, 0, (uint8_T*)%<LibBlockDWorkAddr(Buffer,"","",0)>, %<MaxDataLen>, %<Pull>);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing TRDP publish block failed!");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Write the block address to PWork */
+        %<LibBlockPWork(Instance, "", "", 0)> = Transceiver;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %if LibBlockInputSignalConnected(0)
+
+    {
+        ns_sg_trdp::cTransceiver* Transceiver = (ns_sg_trdp::cTransceiver*)%<LibBlockPWork(Instance, "", "", 0)>;          
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Buffer)) * LibBlockDWorkWidth(Buffer)
+        uint32_t DataLen = %<MaxDataLen>;
+
+        %if Extended
+            %if LibBlockInputSignalConnected(2)
+                if (%<LibBlockInputSignal(2, "", "", 0)> <= %<MaxDataLen>)
+                {
+                    DataLen = %<LibBlockInputSignal(2, "", "", 0)>;
+                }        
+            %endif        
+        %endif
+
+        memcpy(%<LibBlockDWorkAddr(Buffer,"","",0)>, \
+                %<LibBlockInputSignalAddr(0, "", "", 0)>, \
+                DataLen);
+        Transceiver->InDataLen = DataLen;
+        Transceiver->HostFlagsTx2++;
+
+        %if Extended
+            %if LibBlockInputSignalConnected(1)
+                if (%<LibBlockInputSignal(1, "", "", 0)> > 0)
+                {
+                    Transceiver->HostFlagsTx++;
+                }
+
+            %endif
+        %else
+            Transceiver->HostFlagsTx++;
+        %endif
+    }
+
+    %endif
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

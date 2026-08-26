@@ -1,0 +1,97 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850 Goose Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_server_usage_notes.html" title="IEC 61850 Usage Notes"><link rel="next" href="refentry_iec61850_sv_usage_notes.html" title="IEC 61850 Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_goose_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850 Goose Usage Notes</h2><p>IEC 61850 Goose Usage Notes &#8212; <span class="phrase">Detailed information about
+                    the IEC 61850 protocol and the native IEC 61850 blockset</span></p></div><div class="refsect1"><a name="refsect_modbus_intro"></a><h2>Introduction to IEC 61850</h2><p>IEC 61850 is a standard about Ethernet communication protocols mostly used for
+                intelligent electronic devices (IEDs) in electrical substations. The three defined
+                protocols are: Manufacturing Message Specification (MMS), Generic Object Oriented
+                Substation Event (GOOSE) and Sampled Values (SV).</p></div><div class="refsect1"><a name="refsect_iec61850_communication"></a><h2>IEC 61850 Communication</h2><p>MMS is a TCP/IP-based communication protocol that allows interoperability between
+                electrical components such as SCADAs or IEDs mainly found in electrical substations.
+                These components are either client or server. One client connects to multiple
+                servers to read and write data in order to: 1). exchange surveillance values and
+                general information about a substation, such as continuous data reports, or; 2).
+                send control commands, for example, to operate protection relays through direct
+                control. This information is managed by the server in a data model, with logical
+                devices, logical nodes, data objects and data attributes:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/iec61850_data_structure.svg" width="648"></span>
+            </p><p>Each logical device can contain multiple logical nodes. Each logical node can
+                contain multiple data objects and for every data object there can be multiple data
+                attributes. A logical node describes a function of a logical device. Each logical
+                node has data objects with predefined data attributes.</p><p>In <span class="bold"><strong>MMS</strong></span> networks, each physical device has a
+                unique IP address. Servers normally listen on the TCP port 102 for incoming
+                connection requests from clients. TCP port numbers on the client side are
+                random.</p><p><span class="bold"><strong>GOOSE</strong></span> is a fast and reliable publisher-subscriber
+                protocol used mainly for IED-to-IED communication at bay level. The standard defines
+                that a GOOSE message must be transmitted within 4 ms. This is achieved by embedding
+                the data directly into Ethernet packets and using VLAN with priority tagging. The
+                GOOSE publisher sends messages at certain intervals and when a value change occurs
+                (meaning an event happened), the publisher will reduce the time interval and send
+                messages more frequently until the interval gradually returns to the standard
+                length. This behavior reduces the loss of data since GOOSE does not use
+                confirmation/acknowledgement messages. Consequently, the publisher will never know
+                if a subscriber has successfully received the data.</p><p><span class="bold"><strong>Sampled Values</strong></span> is a publisher-subscriber protocol
+                used to transmit analog values in digital format at process level between IEDs and
+                merging units. SV also uses VLAN and priority tagging. The SV publisher sends
+                messages at predefined intervals. The intervals are defined by the signal frequency
+                and the samples per period (SPP).</p><p>For further information about IEC 61850, refer to the official online<a class="link" href="https://iec61850.dvl.iec.ch/what-is-61850/" target="_blank"> IEC 61850 documentation</a>.</p></div><div class="refsect1"><a name="refsect_iec61850_scl_configuration"></a><h2>Substation Configuration Language File</h2><p>The IEC 61850 standard defines a specific xml-based configuration language called
+                Substation Configuration Language . There are various supported file types for the
+                SCL standard, two file types are in the product example folder:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>IED Capability Description (ICD)</p><p>The ICD file is always supplied by the manufacturer of an IED. This
+                            file describes the capabilities the IED requires to complete the system
+                            configuration. The file contains a single IED section and can optionally
+                            also provide the communication and substation sections.</p></li><li class="listitem"><p>Configured IED Description (CID)</p><p>The CID file describes the important parts for communicating with the
+                            IED, such as the IP address and TCP port. It contains a mandatory
+                            communication section of the addressed IED.</p></li></ul></div><p>
+            </p><p>To configure the MMS Server, you need to import a CID file. Follow the
+                instructions on the block mask to complete this step.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/iec61850_server_setup_scl_import.png" width="432"></span>
+            </p></div><div class="refsect1"><a name="refsect_iec61850_configuration"></a><h2>Typical Target Machine Configurations</h2><p>For IEC 61850 communication with Speedgoat target machines, you can use onboard
+                Ethernet interfaces and plug-in Ethernet I/O modules.</p><p>Use the Ethernet Configuration Tool to assign IP addresses to these Ethernet
+                interfaces. Enter the following in the MATLAB command window to open the tool:
+                </p><pre class="programlisting">&gt;&gt; speedgoat.configureEthernet</pre><p>
+                <span class="inlinemediaobject"><img src="././graphics/dnp3_configeth.png"></span>
+            </p><p>For IEC 61850, you can use any Ethernet interface when <span class="bold"><strong>Configuration</strong></span> is set to <span class="bold"><strong>IP
+                    Protocols</strong></span>.</p><p>One real-time target machine can simulate multiple IEC 61850 clients and servers.
+                There are four possible configurations:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">One IP Address per Ethernet Interface</span></dt><dd><p>One IP address is assigned to one Ethernet interface. This Ethernet
+                            interface acts as either one IEC 61850 client or one IEC 61850 server in
+                            the network. You can install multiple Ethernet I/O modules (providing up
+                            to 4 interfaces each) or use additional onboard Ethernet interfaces to
+                            set up multiple IEC 61850 clients or servers. As all the Ethernet
+                            interfaces of a target machine must be associated with different
+                            Ethernet subnets, each IEC 61850 station must operate in another
+                            Ethernet network. If an application requires multiple clients to
+                            communicate with different IEC 61850 networks, then this target
+                            configuration is the correct choice. In contrast, if the simulation of a
+                            IEC 61850 network with multiple servers is required, this setup cannot
+                            be used.</p><p>The subnet dedication of an Ethernet interface is defined by IP
+                            address and subnet mask.</p></dd><dt><span class="term">Multiple IP Addresses per Ethernet Interface (IP Aliasing)</span></dt><dd><p>IP aliasing can be used to assign multiple IP addresses to a single
+                            physical interface. This allows multiple IEC 61850 clients and servers
+                            to be operated on the same Ethernet I/O module or the same onboard
+                            Ethernet interface. As the related IP addresses are always associated
+                            with the same Ethernet subnet, this configuration is ideal for
+                            simulating an IEC 61850 network containing multiple servers. Even mixed
+                            operation (client and server) is possible for the purpose of loopback
+                            testing. Alias addresses can be configured in the advanced settings of
+                            the Ethernet Configuration Tool or by functions.</p><p>Enter the following in the MATLAB command window to manage IP
+                            aliasing:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj = speedgoat.IpAliasConfiguration()
+&gt;&gt; ipAliasObj.add('ETH2', {'192.168.10.31','192.168.10.32','192.168.10.33'})
+&gt;&gt; ipAliasObj.remove('ETH2', {'192.168.10.33'})
+&gt;&gt; ipAliasObj.add('Host Link', {'192.168.1.15','192.168.1.19'})</pre><p>
+                            Enter the following in the MATLAB command window to check the available
+                            Ethernet interfaces and configured IP aliases:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj.show()
+Interface Name      IP Address          Subnet Mask
+---------------     ---------------     ---------------
+ETH2                192.168.10.1        255.255.255.0
+                    192.168.10.31       255.255.255.255
+                    192.168.10.32       255.255.255.255
+                    192.168.10.33       255.255.255.255
+Host Link           192.168.1.14        255.255.255.0
+                    192.168.1.15        255.255.255.255
+                    192.168.1.19        255.255.255.255</pre><p>
+                        </p></dd><dt><span class="term">Multiple TCP Ports per IP Address</span></dt><dd><p>This is the normal operation for clients as each connection of the
+                            client to a server requires a separate TCP port.</p><p>For server simulation, you can ignore the default server port 102 and
+                            allow multiple servers to listen on different TCP ports. All these
+                            servers will then act in the same subnet.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_iec61850_license"></a><h2>Runtime License</h2><p>IEC61850 blocks require a runtime license installed on the target machine. Please refer
+                to the <a href="refentry_runtime_license.html" class="olink">Runtime
+                Licensing</a> help.</p></div></div></body></html>

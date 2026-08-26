@@ -1,0 +1,79 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Configuration Files</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="book_code_module.html" title="Code_module I/O"><link rel="next" href="refentry_config_getting_started.html" title="Getting Started"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_configuration_files"></a><div class="titlepage"></div><div class="refnamediv"><h2>Configuration Files</h2><p>Configuration Files</p></div><div class="refsect1"><a name="d5e8"></a><h2>Introduction</h2><p>Speedgoat offers configuration files for all configurable I/O modules. The
+                configuration files comprise a wide range of standard interfaces and protocols (also
+                known as <span class="emphasis"><em>code modules</em></span>). </p><p>There are two ways to obtain a configuration file:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>A customized configuration file, individually created for your
+                            application. You select a configurable I/O module fitting your needs,
+                            and define the functionalities and the number of channels, as well as
+                            the pin-mapping.</p></li><li class="listitem"><p>The I/O configuration package (<a class="link" href="https://www.speedgoat.com/help/slrt/page/io_configuration_package/index" target="_top">web</a> help) is Speedgoat's off-the-shelf solution and is
+                            available for multiple I/O modules. The functionalities are pre-defined
+                            and fixed, but optimized for certain applications. The packages include
+                            a configuration file for rapid control prototyping (RCP),
+                            hardware-in-the-loop (HIL) testing and communication
+                            applications.</p></li></ul></div></div><div class="refsect1"><a name="d5e19"></a><h2>Functionalities</h2><p>The following table lists the interfaces and protocols supported by Speedgoat
+                configuration files. </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="c1"><col width="84%" class="c2"></colgroup><tbody><tr><td><a href="refentry_ref_a2b.html" class="olink">A2B</a></td><td>
+                                <span class="phrase">A2B</span>
+                            </td></tr><tr><td><a href="refentry_ref_analog.html" class="olink">Analog</a></td><td>
+                                <span class="phrase">Analog-to-digital (ADC) and
+                    digital-to-analog (DAC) </span>
+                            </td></tr><tr><td><a href="refentry_ref_biss.html" class="olink">BiSS</a></td><td>
+                                <span class="phrase">BiSS is a digital interface for sensors and
+                    actuators. BiSS is hardware compatible to the industrial standard SSI but offers
+                    additional features and options</span>
+                            </td></tr><tr><td><a href="refentry_ref_cam_and_crank.html" class="olink">Cam and
+                                Crank</a></td><td>
+                                <span class="phrase">The cam and crank driver blocks
+                    provide simulation and decoding of camshaft and
+                crankshaft signals.</span>
+                            </td></tr><tr><td><a href="refentry_ref_cmu.html" class="olink">CMU Emulation</a></td><td>
+                                <span class="phrase">Emulation of real cell measurement
+                    units</span>
+                            </td></tr><tr><td><a href="refentry_ref_digital.html" class="olink">Digital</a></td><td>
+                                <span class="phrase">Digital lines representing a logical state</span>
+                            </td></tr><tr><td><a href="refentry_ref_dma_controller.html" class="olink">Dma
+                                Controller</a></td><td>
+                                <span class="phrase">Measurement of timing with
+                        <span class="bold"><strong>Optimize Data Transfer</strong></span>
+                enabled</span>
+                            </td></tr><tr><td><a href="refentry_ref_dshot.html" class="olink">Dshot</a></td><td>
+                                <span class="phrase">The Dshot driver blocks transmits and
+                    receives Dshot messages.</span>
+                            </td></tr><tr><td><a href="refentry_ref_endat.html" class="olink">EnDat</a></td><td>
+                                <span class="phrase">The EnDat interface is a digital,
+                    bidirectional interface for encoders. It is capable of transmitting position
+                    values from incremental and absolute encoders</span>
+                            </td></tr><tr><td><a href="refentry_ref_i2c.html" class="olink">I2C</a></td><td>
+                                <span class="phrase">I2C master and slave code modules for
+                    configurable I/O modules</span>
+                            </td></tr><tr><td><a href="refentry_ref_interrupt.html" class="olink">Interrupt</a></td><td>
+                                <span class="phrase">The CoS (Change of State) interrupt
+                    driver block allows a change of state on an input of a configurable I/O module
+                    in order to trigger the Simulink model.</span>
+                            </td></tr><tr><td><a href="refentry_ref_pwm.html" class="olink">PWM</a></td><td>
+                                <span class="phrase">Pulse Width Modulation is a modulation
+                    technique used to encode a message into a pulsing signal</span>
+                            </td></tr><tr><td><a href="refentry_ref_pulse_counter.html" class="olink">Pulse
+                                Counter</a></td><td>
+                                <span class="phrase">The pulse counter driver blocks counts the edges of an input
+                    signal.</span>
+                            </td></tr><tr><td><a href="refentry_ref_quadrature.html" class="olink">Quadrature</a></td><td>
+                                <span class="phrase">Quadrature encoding uses two
+                    phase-shifted signals to detect position and direction of
+                rotation</span>
+                            </td></tr><tr><td><a href="refentry_ref_resolver.html" class="olink">Resolver</a></td><td>
+                                <span class="phrase">The Resolver driver blocks are used to
+                    emulate and measure the functionality of a resolver.</span>
+                            </td></tr><tr><td><a href="refentry_ref_sent.html" class="olink">SENT</a></td><td>
+                                <span class="phrase">The SENT driver blocks provides
+                    transmission and reception of SENT SAE J2716 messages.</span>
+                            </td></tr><tr><td><a href="refentry_ref_serial.html" class="olink">Serial</a></td><td>
+                                <span class="phrase">The Serial (UART) driver blocks enable
+                    serial communications on configurable I/O modules</span>
+                            </td></tr><tr><td><a href="refentry_ref_spi.html" class="olink">SPI</a></td><td>
+                                <span class="phrase">SPI master, slave and sniffer code modules
+                    for configurable I/O modules</span>
+                            </td></tr><tr><td><a href="refentry_ref_ssi.html" class="olink">SSI</a></td><td>
+                                <span class="phrase">Synchronous Serial Interface (SSI) is a
+                    widely used serial interface standard for industrial applications between a
+                    master and a slave</span>
+                            </td></tr></tbody></table></div></div></div></body></html>

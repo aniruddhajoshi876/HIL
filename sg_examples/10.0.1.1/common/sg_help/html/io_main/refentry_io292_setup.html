@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO292 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io292_pin_mapping.html" title="IO292 Pin Mapping"><link rel="next" href="refentry_io292_digital_input.html" title="IO292 - digital input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io292_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO292 - Setup</h2><p>IO292 - Setup &#8212; <span class="phrase">Configure the IO292 input/output
+                    blocks</span></p></div><div class="refsect1"><a name="d5e4097"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io292_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e4105"></a><h2>Description</h2><p>
+                </p><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>
+            </p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e4112"></a><h2>Parameters</h2><p>The two tabs of the Setup mask contain all the configuration settings of the IO292
+                I/O module.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital I/O Tab</div><p>There are a total of 24 digital I/O channels. These are organized into three
+                    banks (A, B and C) and can be configured as inputs or outputs in groups of
+                    eight, with the exception of bank C (I/O channels 17-24) which can be split into
+                    two groups of four I/O lines. All the channels are configured as inputs at
+                    power-up or after module reset.</p><dl class="variablelist"><dt><a name="varlistentry_common_digital_activeOutputChannels"></a><span class="term">
+            <span class="guilabel">Active Output Channels</span>
+        </span></dt><dd><p>Select the active output channels in a vector. A defined number of channels can be
+                selected using square brackets, for example, [1 2 3]. A sequence of channels can be
+                selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_digital_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the <span class="bold"><strong>Initial Values</strong></span> vector
+                is applied to the channel as defined in the enabled channels. A scalar value applies
+                to all the channels; for example, for individual values, type "[1 0 0 1]", and to
+                set all channels to zero, type "0".</p></dd><dt><a name="varlistentry_common_digital_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_common_digital_activeInputChannels"></a><span class="term">
+            <span class="guilabel">Active Input Channels</span>
+        </span></dt><dd><p>Select the active input channels in a vector. Check the active output channels to
+                avoid conflicts.</p></dd></dl></div></div></div></body></html>

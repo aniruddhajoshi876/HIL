@@ -1,0 +1,58 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO602/IO603/IO691 - CAN Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_setup.html" title="IO602/IO603/IO691 - CAN and LIN Setup"><link rel="next" href="refentry_ref_can_ofa_read.html" title="IO602/IO603/IO691 - CAN Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO602/IO603/IO691 - CAN Write</h2><p>IO602/IO603/IO691 - CAN Write &#8212; <span class="phrase">Sends CAN (HS) and CAN-FD messages
+                    to one channel</span></p></div><div class="refsect1"><a name="d5e1407"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_can_and_lin_ofa_write.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_can_ofa_write"></a><h2>Description</h2><p>The CAN Write block executes according to the settings in the corresponding CAN
+                Setup block. The execution primarily depends on whether the operation mode is set to
+                CAN (HS) or CAN-FD.</p><p>Each execution of a CAN Write block consists of one or more CAN message(s) being
+                written to the block's software FIFO buffer. Multiple instances of the block can be
+                used to send messages at multiple rates.</p><p>Each Write block has a 16383 messages deep software FIFO buffer in which Tx
+                messages are queued. When selecting the sample time of the Write block, the user
+                must ensure that all messages can be transmitted within a single sample step and
+                that the bus is not overloaded.</p></div><div class="refsect1"><a name="refsect_ports_can_ofa_write"></a><h2>Ports </h2><p>The availability of input ports depends on the <span class="bold"><strong>Channel
+                    Selection</strong></span> setting of the corresponding CAN Setup block and the
+                    <span class="bold"><strong> Message type</strong></span> setting of the respective block: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN (HS): The message type available is CAN_MESSAGE and
+                            CAN_MESSAGE_BUS input. For further information about the CAN_MESSAGE_BUS
+                            data type, refer to the <a href="refentry_can_ofa_usage_notes.html" class="olink"> usage
+                            notes</a>.</p></li><li class="listitem"><p>CAN-FD &amp; CAN: The only message type available is
+                            CAN_FD_MESSAGE_BUS input.</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The CAN message to transmit. Use the "CAN Pack" or
+                            "CAN-FD Pack" block to create this message.</p><p>The data type is CAN_MESSAGE or CAN_MESSAGE_BUS if CAN (HS) is
+                            selected.</p><p>The data type is CAN_FD_MESSAGE_BUS if CAN-FD is selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Tx Control</span>
+                    </span></dt><dd><p>This input port is available whenever the <span class="bold"><strong>Show
+                                Transmission Control Input</strong></span> checkbox in the block mask is
+                            activated. Use this port to control which messages are to be transmitted
+                            during execution. Each message may be controlled individually using an
+                            n-element uint32 vector, where n represents the <span class="bold"><strong>Number of Messages</strong></span>. The indexing of the messages aligns
+                            with the order in which the packed CAN messages are supplied to the
+                                <span class="bold"><strong>CAN Msg</strong></span> port.</p><p>Using the values within the uint32 vector, various options to manage
+                            the transmission of each individual CAN message can be controlled:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>'0' to temporarily disable the CAN message</p></li><li class="listitem"><p>'1' to enable the CAN message and transmit it at every
+                                        sample step of the block</p></li><li class="listitem"><p>Value d (&gt;'1') to enable the CAN message, but only send it
+                                        at every d sample step of the block (e.g., d = '4' sends
+                                        this message at every 4th sample step of the block)</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_can_ofa_write"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number</span>
+                    </span></dt><dd><p>Selects the CAN channel to which this driver block corresponds.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type </span>
+                    </span></dt><dd><p>This field is configured by the corresponding Setup block, and is
+                            therefore not enabled in the block mask.</p><p>Use either a "CAN Pack" or "CAN-FD Pack" block to create a CAN or
+                            CAN-FD message, depending on the setting of the corresponding CAN Setup
+                            block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input as Bus</span>
+                    </span></dt><dd><p>Select this option for the block if the input CAN message is a bus
+                            signal. If the block is configured for CAN-FD protocol, this option is
+                            enabled by default and cannot be changed by the user.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Messages</span>
+                    </span></dt><dd><p>Indicates the number of messages that are sent through this CAN Write
+                            block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Transmission Control Input</span>
+                    </span></dt><dd><p>Select this option for the Tx Control Input Port to be available. With
+                            this port, the message transmission can be controlled through an
+                            input.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

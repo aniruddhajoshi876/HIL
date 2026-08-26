@@ -1,0 +1,102 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA - Server Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_opcua_status_codes.html" title="OPC UA Status Codes"><link rel="next" href="refentry_opcua_server_node.html" title="OPC UA - Server Node"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_server_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA - Server Setup</h2><p>OPC UA - Server Setup &#8212; <span class="phrase">Configures one OPC UA server
+                    station</span></p></div><div class="refsect1"><a name="d5e71695"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_opcua_server_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e71703"></a><h2>Description</h2><p>The Setup block configures one OPC UA server station, opens the TCP port for
+                incoming connection requests and enables the node block to define local OPC UA
+                objects and variables. Every OPC UA Server Setup block in the model requires a
+                runtime license.</p></div><div class="refsect1"><a name="d5e71706"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Connection Status</span>
+                    </span></dt><dd><p>Number of clients connected.</p><p><span class="bold"><strong>Data Type:</strong></span> uint16</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e71724"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>The Station ID is used to assign Setup and Node blocks to a particular
+                            server station. Station IDs range between 0 to 65535 and must be unique
+                            along all OPC UA Client and Server Setup blocks in a model. You can
+                            define multiple servers by placing a Setup block with a unique Station
+                            ID for each server.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the OPC UA server. This step does not assign
+                            the IP address to an Ethernet interface. Instead, it binds the Setup
+                            block to an IP address which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_opcua_usage_notes.html" class="olink">OPC UA usage notes</a>
+                            for further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">TCP Port</span>
+                    </span></dt><dd><p>The TCP port the server listens on for connection requests from the
+                            client. The default port is 4840. For a custom port, select between the
+                            range 0 and 65535. The reserved ports should not be used.</p><p><a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers</a>
+                        </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number Of Additional Namespaces</span>
+                    </span></dt><dd><p>Enter the number of namespaces you want to add to the default
+                            namespaces with index 0 and 1. The number must range between 0 and
+                            254.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Security</div><p>This tab contains parameters for user authentication and secure OPC UA message
+                    transfer. With OPC UA, data transfer as well as the transmission of usernames
+                    and passwords can be encrypted, according to the selected security policy. The
+                    OPC UA server provides endpoints that the client can select for the secure
+                    channel. Each endpoint has a security policy and mode. In order to receive the
+                    list of available endpoints, the client first connects to the <span class="bold"><strong>None</strong></span> endpoint. This endpoint must always be defined
+                    by the server. If the desired secure endpoint is available in the list, the
+                    corresponding security policy and security mode become active for message
+                    signing and encryption. The <span class="bold"><strong>None</strong></span>endpoint is
+                    also a valid endpoint for the secure channel and does not activate any signing
+                    and encryption. All other secure endpoints require a public X509 certificate and
+                    a private key. In addition to the secure message transfer, the server supports
+                    the <span class="bold"><strong>Anonymous</strong></span> and <span class="bold"><strong>Username</strong></span> user token policies for user/client authentication.
+                    Each simulated OPC UA server instance has its own settings for security and
+                    authentication.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Endpoint Definition</span>
+                    </span></dt><dd><p>Select the endpoints the server should create. The <span class="bold"><strong>None</strong></span> endpoint must always be selected.
+                            Furthermore, select the security mode for each endpoint. The <span class="bold"><strong>None</strong></span> security policy always goes with the
+                                <span class="bold"><strong>None</strong></span> security mode. The other
+                            secure endpoints can have the security mode <span class="bold"><strong>Sign</strong></span> or <span class="bold"><strong>Sign and
+                                Encrypt</strong></span>. If <span class="bold"><strong>Sign and
+                                Encrypt</strong></span> is selected, the server creates two endpoints
+                            with the same security policy, one with the security mode <span class="bold"><strong>Sign</strong></span> and one with the security mode <span class="bold"><strong>Sign and Encrypt</strong></span>. If all rows are selected
+                            and show <span class="bold"><strong>Sign and Encrypt</strong></span>, the server
+                            creates nine endpoints in total.</p></dd><dt><span class="term">
+                        <span class="guilabel">User Authentication</span>
+                    </span></dt><dd><p>Select the authentication methods the server should allow.</p><div class="itemizedlist"><div class="itemizedlist-title"></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Anonymous</strong></span> allows any OPC UA
+                                    client to connect to the server.</p></li><li class="listitem"><p>The <span class="bold"><strong>Username</strong></span> user token
+                                    policy prompts the remote client to login with a username and
+                                    password. The server checks if the username/password pair is
+                                    included in the user list, specified by the <span class="bold"><strong>Usernames</strong></span> and <span class="bold"><strong>Passwords</strong></span> parameters. The security policy for
+                                    username/password encryption is the last policy selected in the
+                                    endpoint list. If <span class="bold"><strong>None</strong></span> alone is
+                                    selected, usernames and passwords will not be encrypted and can
+                                    be read on the network.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Certificate</span>
+                    </span></dt><dd><p>Define the location of the public application instance certificate on
+                            the host PC. The file must be an X509 DER file with extension *.cer.
+                            During the build process, the file will be packed into the real-time
+                            application and transferred to the target machine. The certificate is
+                            required for endpoints other than <span class="bold"><strong>None</strong></span>.
+                            The X509v3 Subject Alternative Name property of the certificate file
+                            must match the character array entered in the <span class="bold"><strong>Application URI </strong></span> parameter. You can use the certificates
+                            included in the OPC UA product examples.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Private Key</span>
+                    </span></dt><dd><p>Define the location of the private key file on the host PC. The file
+                            must be a PEM file with extension *.pem and must relate to the
+                            certificate. During the build process, the file will be packed into the
+                            real-time application and transferred to the target machine. The private
+                            key is required for endpoints other than <span class="bold"><strong>None</strong></span>. You can use the private keys included in the OPC
+                            UA product examples.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Trust List</span>
+                    </span></dt><dd><p>Specify the directory on the host PC that contains the certificates of
+                            the clients the server should accept during connection. All the files in
+                            that directory will be packed into the real-time application and
+                            transferred to the target machine. An empty character array will cause
+                            the server to accept all client certificates. You can use the
+                            certificates included in the OPC UA product examples.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Usernames</span>
+                    </span></dt><dd><p>Specify the usernames to which the server should grant access. The
+                            number of usernames must match the number of passwords. The first
+                            username in the list belongs to the first password. The last username
+                            belongs to the last password.</p><p><span class="bold"><strong>Data type:</strong></span> String or string array</p><p><span class="bold"><strong>Default value:</strong></span> ["user1","user2"]</p></dd><dt><span class="term">
+                        <span class="guilabel">Passwords</span>
+                    </span></dt><dd><p>Enter the passwords associated with the usernames.</p><p><span class="bold"><strong>Data type:</strong></span> String or string array</p><p><span class="bold"><strong>Default value:</strong></span> ["password1","password2"]</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Identity</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Application URI</span>
+                    </span></dt><dd><p>The Application URI is a common identity property of all OPC UA
+                            devices. When using certificates, the Application URI must match the
+                            X509v3 Subject Alternative Name property of the certificate.</p></dd></dl></div></div></div></body></html>

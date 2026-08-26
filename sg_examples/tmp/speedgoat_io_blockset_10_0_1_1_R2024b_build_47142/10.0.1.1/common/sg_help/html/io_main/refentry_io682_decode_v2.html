@@ -1,0 +1,216 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO682 - Decode v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io682_encode_v2.html" title="IO682 - Encode v2"><link rel="next" href="refentry_io682_setup_v4.html" title="IO682 - Setup v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io682_decode_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO682 - Decode v2</h2><p>IO682 - Decode v2 &#8212; 
+                <span class="phrase">Decode ARINC 429 words from the Receive block</span>
+            </p></div><div class="refsect1"><a name="d5e53155"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io682_decode_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e53164"></a><h2>Description</h2><p>This block decodes the ARINC 429 protocol depending on the selected data
+                type.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The input port of a Decode block is a signal of type double. The Decode block
+                    input port width automatically adapts to that of the source block.</p><p>As the Decode block interprets the data on this port in a non-standard way,
+                    you send data to this port from the IO682 Receive block.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e53170"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">ARINC 429 Message</span>
+                    </span></dt><dd><p>ARINC 429 encoded message.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Vector with <code class="literal">n</code> decoded values.</p><p>If the same ARINC 429 word is decoded multiple times during one sample
+                            time, the Decode block overwrites these values. Consequently, only the
+                            most recent decoded value is available on the output port.</p></dd><dt><span class="term"><span class="guilabel">Count</span></span></dt><dd><p>Depending on the selected <span class="bold"><strong>Mode</strong></span> the
+                            count indicates the amount of decoded ARINC 429 words as follows:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Standard &#8212; Not avilable in this mode.</p></li><li class="listitem"><p>Message Sequence &#8212; For every completely decoded
+                                        message sequence the count gets increased by one. The Decode
+                                        block buffers its input internally. It updates its output
+                                        port data only during sample times when it has assembled at
+                                        least one complete message sequence of length
+                                            <code class="literal">n</code> without detecting an error.
+                                        Otherwise count is zero. If the count element has a value
+                                        greater than one, the block asserts only the most recent
+                                        valid message sequence on the output port.</p></li><li class="listitem"><p>Bit Oriented &#8212; Count is increased for every
+                                        successfully decoded ARINC 429 word. If syncing is used, the
+                                        Decode block buffers its input internally. It updates its
+                                        output port data only during sample times when syncing has
+                                        completed. Otherwise data is written to the output port at
+                                        the end of each sample step.</p></li><li class="listitem"><p>Custom Data Type &#8212; Not avilable in this
+                                        mode.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Time Tags</span>
+                    </span></dt><dd><p>Vector with the time tags of each decoded data value.</p><p>If the same ARINC 429 word is decoded multiple times during one sample
+                            time, the Decode block overwrites these values. Consequently, only the
+                            most recent decoded value is available on the output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>For every specified label the status output shows, if it was received
+                            during the current sample time.</p></dd><dt><span class="term">
+                        <span class="guilabel">X (Bit Position)</span>
+                    </span></dt><dd><p>If custom data type mode and output data type discrete is selected,
+                            one output per selected bit is avilable.</p></dd></dl></div></div><div class="refsect1"><a name="d5e53220"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Select one of the following operation modes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Standard &#8212; Allows to decode multiple labels. The
+                                        output port width adapts to the number of defined <span class="bold"><strong>Label</strong></span> elements.</p></li><li class="listitem"><p>Message Sequence &#8212; Decode a sequence of ARINC 429
+                                        words with the same label. The output port width adapts to
+                                        the number of defined <span class="bold"><strong>Data
+                                            Type</strong></span> elements. The beginning of a sequence
+                                        can be synced by using <span class="bold"><strong>Sync
+                                            Mask</strong></span> and <span class="bold"><strong>Sync
+                                            Value(s)</strong></span>.</p></li><li class="listitem"><p>Bit Oriented &#8212; Decode multiple ARINC 429 words with
+                                        the same label, data type and resolution. The beginning and
+                                        the end of a data block can be synced by using <span class="bold"><strong>Sync Mask</strong></span> and <span class="bold"><strong>Sync Value(s)</strong></span>. The size of the
+                                        data block is limited to 256 ARINC 429 words.</p></li><li class="listitem"><p>Custom Data Type &#8212; Allows to decode custom data
+                                        types.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Label</span>
+                    </span></dt><dd><p>Enter a three digit octal number or vector. If the label of an input
+                            word does not match this label, the Decode block completely ignores the
+                            ARINC 429 word.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Label</strong></span> bit order is
+                                    reversed automatically by the receive logic after the reception
+                                    of the ARINC 429 word.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>Enter a scalar or vector consisting of values between 0 and 3. These
+                            values specify the data type. If a scalar value is applied in standard
+                            mode, it uses the same value for all defined labels.</p><p>The elements of the vector determine how the input value is converted
+                            to a corresponding double output value as follows:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="50" class="col1"><col width="750" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Interpretation</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>Raw &#8212; Convert the entire (unsigned) 32&#8211;bit
+                                                input word to double.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">1</code></p>
+                                        </td><td>
+                                            <p>BNR &#8212; For each word, convert bits 10&#8211;28
+                                                from signed binary format to a double output in the
+                                                range <code class="literal">[-Scale, Scale]</code> using the
+                                                  <span class="bold"><strong>Resolution (BCD) or Scale
+                                                  (BNR)</strong></span> specified for this value.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">2</code></p>
+                                        </td><td>
+                                            <p>BCD &#8212; For each word, convert bits 10&#8211;28
+                                                from BCD format to double, using the sign data in
+                                                the SSM.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">3</code></p>
+                                        </td><td>
+                                            <p>Discretes &#8212; For each word, extract bits
+                                                10&#8211;28 and return them as a double.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Resolution (BCD) or Scale (BNR)</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the resolution vector. This value
+                            must be a vector of the same length as the <span class="bold"><strong>Data
+                                Type</strong></span>. Otherwise, the scalar value is applied to the
+                            length of the <span class="bold"><strong>Data Type</strong></span>.</p><p>The interpretation of this value depends on the data type. The block
+                            works with the data types as follows:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="90" class="col1"><col width="710" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Effect</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">Raw</code></p>
+                                        </td><td>
+                                            <p>The block ignores the resolution value. However,
+                                                you must still include an associated value in the
+                                                resolution vector.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BNR</code></p>
+                                        </td><td>
+                                            <p>The block uses this value as a scale factor. The
+                                                block converts the binary value in bits 10&#8211;28 back
+                                                to a double in the range <code class="literal">[-1,1]</code>.
+                                                The block then multiplies that value by the scale
+                                                value to recover the original value.</p>
+                                            <p>A 19-bit signed ARINC binary can represent a range
+                                                from -262,144 to 262,143. If the combination of
+                                                input signal and resolution produces a value outside
+                                                this range, the block clamps it to be within the
+                                                range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BCD</code></p>
+                                        </td><td>
+                                            <p>The resolution vector specifies, in the same units
+                                                as the input signal, the value of the least
+                                                significant digit of the BCD data field to be
+                                                encoded and sent. For example, if the associated
+                                                resolution is <code class="literal">0.01</code> and the input
+                                                signal contains the value <code class="literal">3.1415</code>,
+                                                the output ARINC word will contain the number
+                                                  <code class="literal">314</code> in its data field, encoded
+                                                in BCD. Use the same resolution on the receive side
+                                                to reconstruct 3.14. Resolution is typically a power
+                                                of 10, but this is not a restriction.</p>
+                                            <p>The range representable as an ARINC BCD value is
+                                                -79,999 to 79,999. If the combination of input
+                                                signal and resolution produces a value outside this
+                                                range, the block limits it to within the
+                                                range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">Discretes</code></p>
+                                        </td><td>
+                                            <p>The block ignores the resolution value. However,
+                                                you must still include an associated value in the
+                                                resolution vector.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Sync Mask</span>
+                    </span></dt><dd><p>Enter a value, in hexadecimal, to specify which bits of the input
+                            words are the sync bits. The Decode block will examine these bits to
+                            look for the start or end of the next message depending on the selected
+                            mode. A message might be a series of one or more words. For example, a
+                            sync mask value of <code class="literal">0x300</code> equals
+                                <code class="literal">11'0000'0000</code> in binary. This value selects the
+                            SDI bits (bits 9 and 10) as the sync bits. This functionality works with
+                            the <span class="bold"><strong>Sync value</strong></span> parameter.</p><p>If the sync mask is <code class="literal">0</code>, sync logic is not used. The
+                            next word begins a new message.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sync Value(s)</span>
+                    </span></dt><dd><p>The size of this parameter specifies the sync logic for the block. If
+                            Message Sequence mode is used, enter one hex value to specify
+                                <code class="literal">oneSync</code>, two hex values separated by a space for
+                                <code class="literal">twoSync</code> logic. For example, the sync value</p><pre class="programlisting">0x100</pre><p>selects <code class="literal">oneSync</code> logic. The sync value</p><pre class="programlisting">0x100 0x200</pre><p>selects <code class="literal">twoSync</code> logic. You can enter a 32-bit
+                            value.</p><p>The sync value takes into account the value of the sync mask, as
+                            follows:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Assume the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>Sync mask</strong></span> =
+                                                <code class="literal">0x300</code></p></li><li class="listitem"><p><span class="bold"><strong>Sync value(s)</strong></span> =
+                                                <code class="literal">0x100</code></p></li></ul></div><p>When looking for the beginning of a new message, the block
+                                    ANDs each input word with the <span class="bold"><strong>Sync
+                                        mask</strong></span> value <code class="literal">0x300</code>. It compares
+                                    the result with <code class="literal">0x100</code> and
+                                        <code class="literal">0x300</code>. When it finds a match, the block
+                                    stops this search and begins a new search, looking for the next
+                                    message. The block decodes the next <code class="literal">n</code> words
+                                    starting at this point.</p></li><li class="listitem"><p>Assume the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>Sync mask</strong></span> =
+                                                <code class="literal">0x300</code></p></li><li class="listitem"><p><span class="bold"><strong>Sync value(s)</strong></span> =
+                                                <code class="literal">0x100 0x200</code></p></li></ul></div><p>When looking for the beginning of a new message, the block
+                                    ANDs each input word with the <span class="bold"><strong>Sync
+                                        mask</strong></span> value <code class="literal">0x300</code>. It compares
+                                    the result to <code class="literal">0x100</code> and
+                                        <code class="literal">0x300</code>. When the block finds a match, it
+                                    ANDs the next input word with <code class="literal">0x300</code>. If the
+                                    result equals <code class="literal">0x200</code> and
+                                        <code class="literal">0x300</code>, this second word begins a new
+                                    message.</p></li></ul></div><p>Once the block locates the beginning of a message, it uses the next
+                                <code class="literal">n</code> input words and the required label to assemble
+                            the next output message. The block does not use synchronization logic
+                            until it is time to begin the assembly of a new message.</p><p>If Bit Orienteed mode is selected, the first element of the <span class="bold"><strong>Sync Value</strong></span> is used to find the beginning of a
+                            new data block. The second element can be used to find the end of the
+                            data block. After a data block is complete (synced), the data is written
+                            to the output port. If the second <span class="bold"><strong>Sync
+                                Value</strong></span> is not used or <span class="bold"><strong>Sync
+                                Mask</strong></span> is disabled, data is written to the output port at
+                            the end of each sample step.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Data Type</span>
+                    </span></dt><dd><p>Select the type of custom data decoding for the ARINC 429 word.
+                            Available types:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Raw</p></li><li class="listitem"><p>Discrete</p></li><li class="listitem"><p>BNR</p></li><li class="listitem"><p>Float</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data LSB</span>
+                    </span></dt><dd><p>Specifiy the LSB bit of your data within the ARINC 429 word.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data MSB</span>
+                    </span></dt><dd><p>Specifiy the MSB bit of your data within the ARINC 429 word.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bit Position</span>
+                    </span></dt><dd><p>Select which bits of the ARINC 429 word are used as outputs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Scale</span>
+                    </span></dt><dd><p>Specify the scale factor for BNR data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bits Exponent</span>
+                    </span></dt><dd><p>Specify the amount of bits for the exponent of your floating-point
+                            data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bits Mantissa</span>
+                    </span></dt><dd><p>Specify the amount of bits for the mantissa of your floating-point
+                            data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Provide Time Tags</span>
+                    </span></dt><dd><p>Select if time tags should be provied for each decoded ARINC 429 word.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Hold last Value</span>
+                    </span></dt><dd><p>In case no new data is received, the output can hold the last value or
+                            output <code class="literal">0</code>, if checkbox is deselected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Status Output</span>
+                    </span></dt><dd><p>Select if the status should be provied for each specified label.
+                        </p></dd></dl></div></div></div></body></html>

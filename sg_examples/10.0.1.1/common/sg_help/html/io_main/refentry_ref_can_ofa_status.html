@@ -1,0 +1,97 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO602/IO603/IO691 - CAN Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_parsing_examples.html" title="CAN Database Parser Examples"><link rel="next" href="refentry_ref_can_ofa_lin_write.html" title="IO602/IO603/IO691 - LIN Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO602/IO603/IO691 - CAN Status</h2><p>IO602/IO603/IO691 - CAN Status &#8212; <span class="phrase">This block provides CAN or CAN-FD
+                    bus and controller status information for the configured channel of the IO602,
+                    IO603, or IO691 I/O module </span></p></div><div class="refsect1"><a name="d5e2074"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="./graphics/icon_io602_io691_can_status.png"></span></span></p></div><div class="refsect1"><a name="d5e2082"></a><h2>Description</h2><p>This CAN Status driver block is part of the generic block library for the IO602,
+                IO603, and IO691 I/O modules.</p><p>This block provides CAN bus and controller status information for the configured
+                channel. An optional input port makes it possible to disable this channel.</p></div><div class="refsect1"><a name="refsect_ports_can_ofa_status"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Disable CAN Channel</span>
+                    </span></dt><dd><p>This input port is available whenever the <span class="bold"><strong>Show
+                                Input Port to Disable the CAN Channel</strong></span> checkbox in the
+                            block mask is selected. Use this port to check whether the channel is
+                            enabled to interact on the bus or not.</p><p>Providing a logical "1" to this input signal stops the CAN channel
+                            from interacting on the bus. This channel will stop transmission and
+                            reception of new data with the next sample step. The transmit and
+                            receive buffer will be flushed.</p><p>This functionality can be used to simulate a channel disconnecting
+                            from the bus. Among other things, this means that the channel stops
+                            setting ACK bits. However, all the status indicators or counter values
+                            will remain until the channel is enabled again.</p><p>The channel will always start in an enabled state.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block comes with several outputs by default. Enabling the expert mode
+                    will provide further outputs in addition to the default ones. Refer to the
+                        <span class="bold"><strong>Enable Expert Mode</strong></span> parameter below for
+                    additional information.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bus Load</span>
+                    </span></dt><dd><p>CAN bus load in percentage as cyclically reported by the hardware
+                            every 500&nbsp;ms. When starting a new transmission there will be a
+                            timeout of up to two cycles (1 s) to collect sufficient data until the
+                            busload is reported correctly. This will happen on startup or generally
+                            when a channel is being disconnected from or connected to the
+                            bus.</p><p>When the bus is overloaded or a cable is disconnected the signal may
+                            fluctuate between 0% and 100%.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus-Off Status</span>
+                    </span></dt><dd><p>Indicates if the CAN controller is in bus off mode as described within
+                            the CAN specification. This is set if the associated CAN <span class="bold"><strong>Transmit Error Counter</strong></span> reaches the bus off
+                            limit of 255 errors.</p><p>This state will be automatically recovered by the controller as soon
+                            as it is detected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Frames</span>
+                    </span></dt><dd><p>Number of error frames received since simulation start. This counter
+                            will only reset on a model restart.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Buffer Overrun</span>
+                    </span></dt><dd><p>Indicates an overrun on the transmit buffer of this channel. This
+                            shows if there was a potential data loss in the output signal flow. The
+                            buffer may overflow if the traffic on the CAN Write block is too large
+                            for the configured sample rate. The size of this buffer is 16383
+                            messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Buffer Overrun</span>
+                    </span></dt><dd><p>Indicates an overrun on the receive buffer of this channel. This shows
+                            if there was a potential data loss in the output signal flow. The buffer
+                            is only used if the CAN Read block is in FIFO mode. It may overflow if
+                            the bus-load is too high or because the receive buffer is not read out
+                            by a CAN Read block using a fast enough sample rate. The size of this
+                            buffer is 16383 messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus-Warning Limit</span>
+                    </span></dt><dd><p>Indicates if the CAN controller has reached the bus warning limit as
+                            described within the CAN specification. This is set if either the
+                            associated CAN <span class="bold"><strong>Receive Error Counter</strong></span> or
+                            the CAN <span class="bold"><strong>Transmit Error Counter</strong></span> reaches
+                            the warning limit of 96 errors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus-Error Passive</span>
+                    </span></dt><dd><p>Indicates if the CAN controller is in error passive mode as described
+                            within the CAN specification. This is set if either the associated CAN
+                                <span class="bold"><strong>Receive Error Counter</strong></span> or the CAN
+                                <span class="bold"><strong>Transmit Error Counter</strong></span> reaches the
+                            passive limit of 127 errors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>Outputs the timestamp of when the status data was retrieved on the bus
+                            in seconds (s) in relation to the model start.</p></dd><dt><span class="term">
+                        <span class="guilabel">Aborted Frames</span>
+                    </span></dt><dd><p>Number of aborted transmission frames since simulation start. This
+                            counter will only reset at model restart. A transmitting frame will be
+                            aborted if the default timeout of 1 ms is exceeded while the frame is in
+                            the transmit buffer.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Error Counter</span>
+                    </span></dt><dd><p>Number of receive errors currently on this channel since simulation
+                            start. This counter is increased by 1 if an error is detected during
+                            reception. If no other CAN node detected this error, the counter is
+                            increased by 8. Each successful reception decreases this counter by 1.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Error Counter</span>
+                    </span></dt><dd><p>Number of transmit errors currently on this channel since simulation
+                            start. This counter is increased by 8 if an error is detected during
+                            transmission of this channel. Each successful transmission decreases
+                            this counter by 1.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bit Count</span>
+                    </span></dt><dd><p>Number of bits on the CAN bus since simulation start. This counter
+                            will only reset on a model restart.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_can_ofa_status"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Channel Number</span>
+                    </span></dt><dd><p>Selects the CAN channel with which this driver block communicates.
+                        </p></dd><dt><span class="term"><span class="guilabel">Enable Expert Mode</span>
+                    </span></dt><dd><p>If this is enabled, the following output ports are available in
+                            addition to the default ones:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Timestamp</p></li><li class="listitem"><p>Aborted Frames</p></li><li class="listitem"><p>Receive Error Counter</p></li><li class="listitem"><p>Transmit Error Counter</p></li><li class="listitem"><p>Bit Count</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Show Input Port to Disable the CAN Channel</span>
+                    </span></dt><dd><p>Enables an input port that can be used to disable the associated
+                            channel.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

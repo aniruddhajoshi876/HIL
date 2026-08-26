@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Board Setup and Interrupt Check</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="mw_ebefb990-e878-4650-838f-44b82f7f1b6e.html" title="Chapter&nbsp;13.&nbsp;RS232 blocks"><link rel="prev" href="mw_d4d70ed6-2d94-413f-820a-fd5ea36b2b03.html" title="Send/Receive"><link rel="next" href="mw_c5ca66ad-e2e2-42cf-ac6b-0002ce0c14fb.html" title="Modem Control"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="mw_board_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>Board Setup and Interrupt Check</h2><p>Board Setup and Interrupt Check &#8212; Board Setup and Interrupt Check block<b>RS232Blocks</b></p></div><div class="refsect1"><a name="d5e11079"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library for
+                RS-232</p></div><div class="refsect1"><a name="d5e11085"></a><h2>Description</h2><p>The Board Setup and Interrupt Check block checks for instances where the IRQ
+                differs from the software for which it is listening.</p><p>This block compares the software-selected interrupt against the value for which
+                the board (PCI only) is configured. This check prevents IRQ mismatches. For the
+                Commtech Fastcom&reg; board, the corresponding block also sets up the board
+                clock.</p></div><div class="refsect1"><a name="d5e11089"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>PCI slot</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>. To determine the bus number and the PCI
+            slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd><dt><span class="term"><span class="guilabel">Clock Bits</span></span></dt><dd><p>Enter the number of clock bits to control a clock generator common to
+                            both channels. This parameter adjusts the master clock of both
+                            channels.</p></dd><dt><span class="term"><span class="guilabel">IRQ Line Number</span></span></dt><dd><p>From the list, select an IRQ line number from 5 to 15,
+                            inclusive.</p></dd></dl></div></div><div class="refsect1"><a name="d5e11111"></a><h2>Related Links</h2><p><a class="link" href="https://fastcomproducts.com/" target="_top">https://fastcomproducts.com/</a></p><p><a class="link" href="https://www.advantech.com/en" target="_top">https://www.advantech.com/en</a></p></div></div></body></html>

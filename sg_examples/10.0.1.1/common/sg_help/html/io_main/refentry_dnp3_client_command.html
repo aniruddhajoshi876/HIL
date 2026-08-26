@@ -1,0 +1,116 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DNP3 - Client Command</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_dnp3_client_class.html" title="DNP3 - Client Class"><link rel="next" href="refentry_ref_dnp3_server.html" title="DNP3 Server"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dnp3_client_command"></a><div class="titlepage"></div><div class="refnamediv"><h2>DNP3 - Client Command</h2><p>DNP3 - Client Command &#8212; <span class="phrase">Reads, controls and freezes
+                    data points in remote DNP3 servers</span></p></div><div class="refsect1"><a name="d5e5879"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dnp3_client_command.png"></span></span></p></div><div class="refsect1"><a name="d5e5887"></a><h2>Description</h2><p>This block is used to send read, control and freeze requests to remote DNP3
+                servers, and to output the related response. The block also outputs unsolicited
+                messages as well as responses to events and integrity polls whose point definition
+                matches the block parameters. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for an overview
+                of the supported commands.</p></div><div class="refsect1"><a name="d5e5891"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If set to <span class="bold"><strong>1</strong></span>, the block sends the
+                            command selected in <span class="bold"><strong>Command</strong></span>. This
+                            happens at each sample hit according to the block's sample time. It is
+                            strongly recommended to not permanently set the input port to <span class="bold"><strong>1</strong></span> as this significantly increases processing
+                            time and network traffic.</p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Available only with <span class="emphasis"><em>control analog output</em></span>
+                            requests.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that is
+                            written to the point range specified by the <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span>
+                            parameters. The data type depends on the selected command.</p><p><span class="bold"><strong>Data type:</strong></span> int16 | int32 | single |
+                            double</p></dd><dt><a name="refsect_dnp3_controlcode"></a><span class="term">
+                        <span class="guilabel">Control Code</span>
+                    </span></dt><dd><p>Available only with <span class="emphasis"><em>control relay output</em></span>
+                            requests. The <span class="emphasis"><em>control relay output</em></span> request performs
+                            a digital output operation in the remote server (triping a circuit
+                            breaker, closing a valve, running a motor, lowering a
+                            transformator).</p><p>The signal includes several items of information that define the way
+                            the device should be controlled.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="Item"><col width="33%" class="Position"><col width="34%" class="Value"></colgroup><tbody><tr><td><span class="bold"><strong>Item</strong></span></td><td><span class="bold"><strong>Position</strong></span></td><td><span class="bold"><strong>Value</strong></span></td></tr><tr><td>Pulse/Latch (Operation type)</td><td>Bit 0 to 3</td><td>
+                                            <p>0 - NUL</p>
+                                            <p>1 - Pulse on</p>
+                                            <p>2 - Pulse off</p>
+                                            <p>3 - Latch on</p>
+                                            <p>4 - Latch off</p>
+                                        </td></tr><tr><td>Queue/Clear</td><td>Bit 4 to 5</td><td>
+                                            <p>0 - Not set</p>
+                                            <p>1 - Queue</p>
+                                            <p>2 - Clear</p>
+                                        </td></tr><tr><td>Trip/Close</td><td>Bit 6 to 7</td><td>
+                                            <p>0 - NUL</p>
+                                            <p>1 - Close</p>
+                                            <p>2 - Trip</p>
+                                        </td></tr></tbody></table></div><p>Discover the DNP3 product examples and find out how to decode and
+                            encode the control code.</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd><dt><a name="refsect_dnp3_count"></a><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Available only with <span class="emphasis"><em>control relay output</em></span>
+                            requests.</p><p>Defines how often the requested operation should be repeated.</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd><dt><a name="refsect_dnp3_timeon"></a><span class="term">
+                        <span class="guilabel">Time On</span>
+                    </span></dt><dd><p>Available only with <span class="emphasis"><em>control relay output</em></span>
+                            requests.</p><p>Defines the time a pulse is high.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><a name="refsect_dnp3_timeoff"></a><span class="term">
+                        <span class="guilabel">Time Off</span>
+                    </span></dt><dd><p>Available only with <span class="emphasis"><em>control relay output</em></span>
+                            requests.</p><p>Defines the time a pulse is low.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Available only with read requests.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that includes
+                            the actual values of the requested point range specified by the
+                                <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span> parameters. The data type depends on the
+                            selected command.</p><p>The two bits of a double-binary value are encoded as one uint8</p><p><span class="bold"><strong>Data type:</strong></span> boolean | uint8 | int16 |
+                            uint16 | int32 | uint32 | single | double</p></dd><dt><span class="term">
+                        <span class="guilabel">Flag</span>
+                    </span></dt><dd><p>Available only with read requests.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            includes the flags of the data values received. Flags indicate
+                            attributes and conditions of the data values.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="14%" class="Binary value"><col width="14%" class="Binary input"><col width="14%" class="Binary output"><col width="15%" class="Double-binary input"><col width="14%" class="Counter input"><col width="14%" class="Analog input"><col width="15%" class="Analog output"></colgroup><tbody><tr><td><span class="bold"><strong>Binary value</strong></span></td><td><span class="bold"><strong>Binary input</strong></span></td><td><span class="bold"><strong>Binary
+                                            output</strong></span></td><td><span class="bold"><strong>Double-binary
+                                            input</strong></span></td><td><span class="bold"><strong>Counter
+                                            input</strong></span></td><td><span class="bold"><strong>Analog input</strong></span></td><td><span class="bold"><strong>Analog
+                                            output</strong></span></td></tr><tr><td>xxxxxxx1</td><td>Online</td><td>Online</td><td>Online</td><td>Online</td><td>Online</td><td>Online</td></tr><tr><td>xxxxxx1x</td><td>Restart</td><td>Restart</td><td>Restart</td><td>Restart</td><td>Restart</td><td>Restart</td></tr><tr><td>xxxxx1xx</td><td>Communication lost</td><td>Communication lost</td><td>Communication lost</td><td>Communication lost</td><td>Communication lost</td><td>Communication lost</td></tr><tr><td>xxxx1xxx</td><td>Remote force</td><td>Remote force</td><td>Remote force</td><td>Remote force</td><td>Remote force</td><td>Remote force</td></tr><tr><td>xxx1xxxx</td><td>Local force</td><td>Local force</td><td>Local force</td><td>Local force</td><td>Local force</td><td>Local force</td></tr><tr><td>xx1xxxxx</td><td>0</td><td>0</td><td>Chatter filter</td><td>Rollover</td><td>Overrange</td><td>Overrange</td></tr><tr><td>x1xxxxxx</td><td>0</td><td>0</td><td>State</td><td>Discontinuity</td><td>Reference error</td><td>Reference error</td></tr><tr><td>1xxxxxxx</td><td>State</td><td>State</td><td>State</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd><dt><span class="term">
+                        <span class="guilabel">Time</span>
+                    </span></dt><dd><p>Available only with read requests.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            includes the timestamps of the data values received. A timestamp
+                            indicates the time a value was last written and is represented by the
+                            number of milliseconds since 1-Jan-1970 00:00:00 UTC. According to the
+                            DNP3 standard, timestamps have a resolution of 48 bits. The block
+                            outputs the time packed in a 64-bit unsigned integer. Discover the DNP3
+                            product examples and find out how to decode the timestamp.</p><p><span class="bold"><strong>Data type:</strong></span> uint64</p></dd></dl></div></div><div class="refsect1"><a name="d5e6112"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client ID</span>
+                    </span></dt><dd><p>Apply the Client ID of the corresponding Client Setup block. Must
+                            range between 0 and 65519.</p><p>The Client Command block relates to a specific client-server relation
+                            given by <span class="bold"><strong>Client ID</strong></span> and <span class="bold"><strong>Server ID</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Server ID</span>
+                    </span></dt><dd><p>Apply the ID of the remote server as specified in the <span class="bold"><strong>Server Table</strong></span> in the corresponding Client
+                            Setup block mask. Must range between 0 and 65519.</p></dd><dt><span class="term">
+                        <span class="guilabel">Command Input Mode</span>
+                    </span></dt><dd><p>Select the mode how commands are specified, either by drop-down or
+                            edit field.</p></dd><dt><span class="term">
+                        <span class="guilabel">Command</span>
+                    </span></dt><dd><p>Select the request that the client should send to the server. A
+                            request is defined by three numbers: group, variation and function code.
+                            Depending on the <span class="bold"><strong>Command Input Mode</strong></span>
+                            parameter, you select the request with a drop-down menu or by directly
+                            entering the three numbers as an array. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3
+                                usage notes</a> for an overview of the supported
+                            commands.</p><p>Use annotations to display the selected command beneath the block.
+                            Right-click the block. Navigate to <span class="bold"><strong>Properties&gt;Block Annotations</strong></span>. Select the <span class="bold"><strong>CommandDropDown</strong></span> token in the left pane and
+                            move it to the right. Click <span class="bold"><strong>Apply</strong></span> and
+                            close the window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index</span>
+                    </span></dt><dd><p>The first index of the point range you want to read, control or
+                            freeze. Must range between 0 and 999.</p><p>If the selected command is a read request on event groups, the
+                            parameter is ignored, as the reading of events always includes the whole
+                            event group. On the output side, the parameter is generally used as a
+                            filter on the data included in responses from the server: responses on
+                            explicit requests, unsolicited messages and responses on integrity
+                            polls.</p></dd><dt><span class="term">
+                        <span class="guilabel">Quantity</span>
+                    </span></dt><dd><p>The length of the point range you want to read, control or freeze.
+                                <span class="bold"><strong>Index</strong></span> + <span class="bold"><strong>Quantity</strong></span> must not exceed 1000.</p><p>For commands that belong to event groups, this parameter applies the
+                            same rules as the <span class="bold"><strong>Index</strong></span>
+                            parameter.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term"></span></dt><dd><p>Best practice is to set the sample time to a higher rate (like 10 ms)
+                            and the source of the enable port to a lower rate (like 1 s or acyclic
+                            if required). This ensures low network traffic but immediate updates of
+                            the output ports once a response is received. Connect the enable port to
+                            ground if the block is only used to output data that is included in
+                            unsolicited messages and integrity polls.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,102 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Basics</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="prev" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="next" href="f2-6291.html" title="Model Execution Driven by CAN Messages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f2-6145"></a>CAN Basics</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f2-6164"></a><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN
+                Library</h3></div></div></div><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> block
+                library offers support to connect a target computer to a CAN network using the CAN
+                driver blocks provided by the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O CAN block library. This support is for I/O device
+                drivers for the CAN-AC2-ISA and CAN-AC2-PCI boards from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; GmbH (Germany). The CAN
+                driver library allows <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> applications to connect to an arbitrary CAN field bus
+                network for I/O communication or real-time target-to-target communication.</p><p>These drivers support CAN specifications 2.0A and 2.0B and use the dynamic object
+                buffer mode of the CAN-AC2 firmware to achieve real-time
+                performance.</p><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN
+                library intentionally restricts its support to <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; boards with two CAN
+                ports.</p><p>The size of the driver code of the CAN boards supported by the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> block library is
+                significant. Because not all
+                <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> applications
+                use CAN, the CAN library code is not linked by default when building a real-time
+                application. This non-linking makes real-time applications smaller if CAN
+                communication functionality is not required. If the model to be built contains CAN
+                driver blocks, <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> links in the CAN library code required to run the model.</p><p>For each CAN board three driver blocks are provided:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Setup</code> block &#8212; Defines the type of physical
+                        connection (baud, and so forth). Exactly one instance of the
+                            <code class="literal">Setup</code> block must be defined in a model for each
+                        physically installed CAN board.</p></li><li class="listitem"><p><code class="literal">Send</code> block &#8212; Transmits (sends) the data entering
+                        the block input ports to the connected CAN network. One or more instances of
+                        the <code class="literal">Send</code> block can be used in a model.</p></li><li class="listitem"><p><code class="literal">Receive</code> block &#8212; Retrieves (reads) CAN messages
+                        received by the board and outputs the data at the corresponding output
+                        ports. One or more instances of the <code class="literal">Receive</code> block can be
+                        used in a model.</p></li></ul></div><p>Drivers for the supported CAN boards program the boards for the so-called dynamic
+                object buffer mode. Dynamic object buffer mode is one of three modes in which the
+                CAN board firmware from <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; can operate. The other two are FIFO mode and static
+                object mode. For a more detailed discussion of the three modes, see the board user
+                manual.</p><p>Dynamic object buffer mode is best suited for real-time environments where each
+                component of the application must have
+                deterministic time behavior.
+                Because <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                exhibits this behavior, it provides dynamic object buffer mode as basic support. In
+                this mode, you use a separate port for each ID that you are sending or receiving.
+                The blocks for these boards send messages in priority order, from the lowest ID to
+                the highest.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="br8rjk6-1"></a>Data Types</h3></div></div></div><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> CAN
+                blocks support the following message data types.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN_MESSAGE &#8212; Structure that contains an array of eight unsigned
+                        8-bit integers that contains the data. This array also contains the ID, and
+                        the standard and extended ID range. CAN blocks can pass data of this type
+                        without having to manipulate it, enabling you to create simpler models. Use
+                        messages of this data type for new CAN application models and consider
+                        updating existing CAN application models to use them.</p><p>Use <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> blocks to
+                        pack individual signals into a CAN message for sending. Use <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a> blocks to unpack
+                        individual signals from CAN messages.</p><p>You can construct a CAN_MESSAGE by using the <code class="literal">CAN Pack</code>
+                        block. You can use this block to pass raw data packed elsewhere, by packing
+                        a data pattern manually. You can also use a CANDB file and use a predefined
+                        data pattern.</p></li><li class="listitem"><p>Double &#8212; Double that represents 8 bytes of message in a signal. CAN
+                        blocks manipulate data of this type before passing it. Do not use this data
+                        type to create new CAN application models. The maximum size of the data
+                        frame of a CAN message is 8 bytes. This size is the same as the C data type
+                        double uses on PC-compatible systems. At the same time, the double data type
+                        is the default data type for <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signals. Represent the CAN data frame within a
+                            <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+                        model with a scalar <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signal. You can represent the data frame even
+                        if the data frame has nothing in common with a double floating-point value.
+                        The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                        CAN library provides a Utility sublibrary that offers bit-packing and
+                        bit-unpacking blocks. Use these blocks to pack data types other than doubles
+                        into 64 bits (8 bytes or a double) and for the opposite operation.
+                            <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+                        signals of data type double represent CAN data frames.</p></li></ul></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="br8rjk6-2"></a>Updating Existing Models to Use CAN_MESSAGE Data Types</h4></div></div></div><p>If you have <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; PCI and PC/104 CAN boards, you can update existing models to use CAN_MESSAGE
+                    data types. As a rule:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If your existing models contain <a class="link" href="matlab: doc Can Bit-Packing;" target="_top">CAN Bit-Packing</a> and
+                                <a class="link" href="matlab: doc Can Bit-Unpacking;" target="_top">CAN
+                                Bit-Unpacking</a> blocks, replace them with the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> and <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a>
+                            blocks.</p></li><li class="listitem"><p>Open and reconfigure the CAN <code class="literal">Send</code> and
+                                <code class="literal">Receive</code> blocks for using CAN_MESSAGE data
+                            types.</p></li><li class="listitem"><p>Remove object mode <code class="literal">CAN Message</code> and <code class="literal">CANDBC
+                                Translator</code> blocks. Updated models do not require the
+                            conversions that these blocks perform.</p></li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="bs59c36-1"></a>Sending and Receiving Remote Frames</h3></div></div></div><p>Ordinarily, a subsystem sends its value over the CAN bus according to its own
+                schedule. Another subsystem stores that value for use whenever downstream processing
+                requires it. Sometimes, a subsystem explicitly requests the current value from
+                another subsystem. This process is called sending a remote frame.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>To prepare a remote frame, use the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> block with the
+                            <span class="guibutton">Remote frame</span> check box selected. To request the
+                        current value, send the remote frame to the responding subsystem.</p></li><li class="listitem"><p>To process a remote frame, use the <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a> block with the
+                            <span class="guibutton">Output remote</span> check box selected to enable the
+                            <code class="literal">Remote</code> port. When the Remote port becomes
+                            <code class="literal">true</code>, send the current value to the requesting
+                        subsystem.</p></li></ul></div></div></div></body></html>

@@ -1,0 +1,38 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#define S_FUNCTION_LEVEL (0x1f38+1980-0x26f2)
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME sg_e2e_p2_check_s
+#ifdef MATLAB_MEX_FILE
+#include "mex.h"
+#else
+#include "sg_common.h"
+#endif
+typedef struct{double z9c5e0830ca;double z4c36db9643;double z6eed039b09;double zc1f7f91c7d[];}z124097ef88;
+#include "E2E_P02.h"
+#include "simstruc.h"
+#include <algorithm>
+#include <exception>
+#define zefdd6d55b2     (0x1a35+197-0x1af9)
+#define z5b80517fba (0x958+1957-0x10fd)
+#define z15202ccf01 (0x1bd+385-0x33e) 
+#define za859b74f53 (0x537+5800-0x1bdd) 
+#define zab82456318 ssGetSFcnParam(S, (0xf0c+813-0x1239))
+#define z34ae2503e2 (0x107d+321-0x10be)  
+static void mdlInitializeSizes(SimStruct*S){ssSetNumSFcnParams(S,zefdd6d55b2);z124097ef88*zecdc28d7e9=(z124097ef88*)mxGetPr(zab82456318);int z9c5e0830ca=(int)zecdc28d7e9->z9c5e0830ca;if(!ssSetNumInputPorts(S,(0x2221+313-0x2359)+z9c5e0830ca))return;if(!ssSetNumOutputPorts(S,(0x479+5717-0x1acd)))return;if(zecdc28d7e9->z4c36db9643==zca4756ea92){ssSetInputPortDataType(S,(0x14fc+1239-0x19d3),SS_UINT8);ssSetInputPortWidth(S,(0x10e0+786-0x13f2),DYNAMICALLY_SIZED);ssSetInputPortRequiredContiguous(S,(0x1df7+426-0x1fa1),(0x13d+8018-0x208e));ssSetInputPortDirectFeedThrough(S,(0x1e21+1349-0x2366),(0x33d+2007-0xb13));}else{char z80bcff1348[(0x4d9+6805-0x1f5a)];if(zecdc28d7e9->z4c36db9643==z490119e7a1){sprintf(z80bcff1348,"\x43\x41\x4e\x5f\x4d\x45\x53\x53\x41\x47\x45\x5f\x42\x55\x53");}else if(zecdc28d7e9->z4c36db9643==z3678c2e0c4){sprintf(z80bcff1348,"\x43\x41\x4e\x5f\x46\x44\x5f\x4d\x45\x53\x53\x41\x47\x45\x5f\x42\x55\x53");}DTypeId z52931a15c6=(0x144+4303-0x1213);ssRegisterTypeFromNamedObject(S,z80bcff1348,&z52931a15c6);ssSetBusInputAsStruct(S,(0x8dc+5967-0x202b),(0x1da3+103-0x1e09));ssSetInputPortWidth(S,(0x9fb+5003-0x1d86),(0xaea+2420-0x145d));ssSetInputPortDataType(S,(0x1ed1+140-0x1f5d),z52931a15c6);ssSetInputPortRequiredContiguous(S,(0x141c+2499-0x1ddf),(0xa76+1009-0xe66));ssSetInputPortDirectFeedThrough(S,(0x138d+1614-0x19db),(0xa64+4670-0x1ca1));}if(z9c5e0830ca){ssSetInputPortDataType(S,(0x3a2+6926-0x1eaf),SS_UINT8);ssSetInputPortWidth(S,(0x192+298-0x2bb),(0x98+8697-0x2281));ssSetInputPortRequiredContiguous(S,(0x730+3039-0x130e),(0x11bd+2104-0x19f4));ssSetInputPortDirectFeedThrough(S,(0x152+2006-0x927),(0x12ab+842-0x15f4));}if(z9c5e0830ca){ssSetInputPortDataType(S,(0x41a+4235-0x14a4),SS_UINT8);ssSetInputPortWidth(S,(0x3a3+4390-0x14c8),(0xbe7+2327-0x14ee));ssSetInputPortRequiredContiguous(S,(0x178+9003-0x24a2),(0xf0d+1028-0x1310));ssSetInputPortDirectFeedThrough(S,(0x18f6+2285-0x21e2),(0xa06+943-0xdb4));}ssSetOutputPortDataType(S,(0x1049+3252-0x1cfd),SS_UINT8);ssSetOutputPortWidth(S,(0x305+4672-0x1545),(0x246+7121-0x1e16));ssSetNumRWork(S,z5b80517fba);ssSetNumIWork(S,z15202ccf01);ssSetNumPWork(S,za859b74f53);ssSetNumContStates(S,(0x1233+3359-0x1f52));ssSetNumDiscStates(S,(0xef+4592-0x12df));ssSetNumSampleTimes(S,(0x205a+405-0x21ee));ssSetNumModes(S,(0x273+7456-0x1f93));ssSetNumNonsampledZCs(S,(0x12e4+697-0x159d));}
+#ifdef MATLAB_MEX_FILE
+#define MDL_SET_INPUT_PORT_DIMENSION_INFO
+static void mdlSetInputPortDimensionInfo(SimStruct*S,int_T zaaf66dafad,const DimsInfo_T*zde3f224951){if(!ssGetInputPortConnected(S,zaaf66dafad)){return;}if(zde3f224951->width>z34ae2503e2){ssSetErrorStatus(S,"\x49\x6e\x70\x75\x74\x20\x73\x69\x7a\x65\x20\x65\x78\x63\x65\x65\x64\x73\x20\x74\x68\x65\x20\x6d\x61\x78\x69\x6d\x75\x6d\x20\x61\x6c\x6c\x6f\x77\x65\x64\x20\x28\x32\x35\x36\x20\x65\x6c\x65\x6d\x65\x6e\x74\x73\x29\x2e");return;}if(!ssSetInputPortDimensionInfo(S,zaaf66dafad,zde3f224951)){return;}}
+#define MDL_SET_OUTPUT_PORT_DIMENSION_INFO
+static void mdlSetOutputPortDimensionInfo(SimStruct*S,int_T zaaf66dafad,const DimsInfo_T*zde3f224951){if(!ssSetOutputPortDimensionInfo(S,zaaf66dafad,zde3f224951)){return;}}
+#define z4fd520fcfe
+static void mdlSetDefaultPortDimensionInfo(SimStruct*S){static int_T dims[(0xc8d+1469-0x1249)]={(0x262+653-0x4ee)};DimsInfo_T z17f556eb1b;z17f556eb1b.width=(0xc79+2455-0x160f);z17f556eb1b.numDims=(0x1df5+125-0x1e71);z17f556eb1b.dims=dims;if(!ssGetInputPortConnected(S,(0x843+5818-0x1efd))&&ssGetInputPortWidth(S,(0xb13+2895-0x1662))==DYNAMICALLY_SIZED){ssSetInputPortDimensionInfo(S,(0x4a6+8440-0x259e),&z17f556eb1b);}if(!ssGetOutputPortConnected(S,(0x368+8097-0x2309))&&ssGetOutputPortWidth(S,(0x22c7+871-0x262e))==DYNAMICALLY_SIZED){ssSetOutputPortDimensionInfo(S,(0x6fc+2111-0xf3b),&z17f556eb1b);}}
+#define z3381248f8a
+static void mdlSetInputPortSampleTime(SimStruct*S,int_T z0add1d1c25,real_T sampleTime,real_T z73acaf9d88){ssSetInputPortSampleTime(S,z0add1d1c25,sampleTime);ssSetInputPortOffsetTime(S,z0add1d1c25,z73acaf9d88);if(z0add1d1c25==(0x12b9+3654-0x20ff)){ssSetSampleTime(S,(0x643+1025-0xa44),sampleTime);ssSetOffsetTime(S,(0xc6f+2293-0x1564),z73acaf9d88);}}
+#endif
+#define z37dc2032fe
+static void mdlInitializeSampleTimes(SimStruct*S){ssSetSampleTime(S,(0x1429+2637-0x1e76),INHERITED_SAMPLE_TIME);ssSetOffsetTime(S,(0x750+3666-0x15a2),0.0);}
+#define MDL_START
+static void mdlStart(SimStruct*S){z124097ef88*zecdc28d7e9=(z124097ef88*)mxGetPr(zab82456318);int z9c5e0830ca=(int)zecdc28d7e9->z9c5e0830ca;z75b337c8aa*zce53976edc;zce53976edc=(z75b337c8aa*)malloc(sizeof(z75b337c8aa));memset(zce53976edc,(0x19e4+1448-0x1f8c),sizeof(*zce53976edc));if(!z9c5e0830ca){for(int i=(0x11+1821-0x72e);i<(0x1011+2772-0x1ad5);i++){zce53976edc->zfe6addc1bc[i]=(uint8_t)zecdc28d7e9->zc1f7f91c7d[i];}}zbb6b507a39*z2d8aae307c=(zbb6b507a39*)malloc(sizeof(zbb6b507a39));memset(z2d8aae307c,(0xd4f+5476-0x22b3),sizeof(*z2d8aae307c));zce53976edc->z6cc57fec07=(0x11fd+2781-0x1cd7);z2d8aae307c->zf5a23e77a9=true;ssSetPWorkValue(S,(0xeaf+3137-0x1af0),(void*)zce53976edc);ssSetPWorkValue(S,(0x1024+347-0x117e),(void*)z2d8aae307c);}static void mdlOutputs(SimStruct*S,int_T z27c0327a06){z75b337c8aa*zce53976edc=(z75b337c8aa*)ssGetPWorkValue(S,(0x12cd+182-0x1383));zbb6b507a39*z2d8aae307c=(zbb6b507a39*)ssGetPWorkValue(S,(0x5db+4505-0x1773));z124097ef88*zecdc28d7e9=(z124097ef88*)mxGetPr(zab82456318);int z52cc5fa6f2=(0xa9+7247-0x1cf8);uint8_t*ze1464394c1=NULL;if(zecdc28d7e9->z9c5e0830ca){uint8_t*z4f122f8943=(uint8_t*)ssGetInputPortSignal(S,(0x8f+6694-0x1ab4));memcpy(zce53976edc->zfe6addc1bc,z4f122f8943,(0x437+5621-0x1a1c)*sizeof(uint8_t));}if(zecdc28d7e9->z4c36db9643==z490119e7a1){const CANMsg*zaf1616afc8=static_cast<const CANMsg*>ssGetInputPortSignal(S,(0x5f8+4811-0x18c3));ze1464394c1=(uint8_t*)zaf1616afc8->Data;z52cc5fa6f2=zaf1616afc8->Length;}else if(zecdc28d7e9->z4c36db9643==z3678c2e0c4){const CanFdMessage*zaf1616afc8=static_cast<const CanFdMessage*>ssGetInputPortSignal(S,(0xac6+407-0xc5d));ze1464394c1=(uint8_t*)zaf1616afc8->Data;z52cc5fa6f2=zaac3790bd9[zaf1616afc8->DLC];}else if(zecdc28d7e9->z4c36db9643==zca4756ea92){z52cc5fa6f2=ssGetInputPortWidth(S,(0xa8+644-0x32c));if(z52cc5fa6f2>z34ae2503e2){ssSetErrorStatus(S,"\x52\x75\x6e\x74\x69\x6d\x65\x20\x65\x72\x72\x6f\x72\x3a\x20\x49\x6e\x70\x75\x74\x20\x73\x69\x7a\x65\x20\x65\x78\x63\x65\x65\x64\x73\x20\x32\x35\x36\x20\x65\x6c\x65\x6d\x65\x6e\x74\x73\x2e");return;}ze1464394c1=(uint8_t*)ssGetInputPortSignal(S,(0x95b+5113-0x1d54));}zce53976edc->DataLength=z52cc5fa6f2*(0x1f34+1580-0x2558);z2d8aae307c->z6869c48bb4=(*ze1464394c1!=(0x14e2+3485-0x227f))?true:false;z83b74b8525(zce53976edc,z2d8aae307c,ze1464394c1);uint8_t*zd4dea5f443=(uint8_t*)ssGetOutputPortSignal(S,(0x283+2935-0xdfa));*zd4dea5f443=z2d8aae307c->Status;}static void mdlTerminate(SimStruct*S){z75b337c8aa*zce53976edc=(z75b337c8aa*)ssGetPWorkValue(S,(0x179c+1617-0x1ded));free(zce53976edc);zbb6b507a39*z2d8aae307c=(zbb6b507a39*)ssGetPWorkValue(S,(0x1267+2424-0x1bde));free(z2d8aae307c);}
+#include "../common/libsg/sg_sfcn_glue.h"
+

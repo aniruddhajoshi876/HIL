@@ -1,0 +1,33 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">GE Fanuc 5565 broadcast</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="f70-16376.html" title="GE Fanuc PCI-5565"><link rel="next" href="f70-15706.html" title="GE Fanuc 5565 init"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f70-17367"></a><div class="titlepage"></div><div class="refnamediv"><h2>GE Fanuc 5565 broadcast<a name="VMIC_5565_Broadcast"></a></h2><p>GE Fanuc 5565 broadcast<a name="VMIC_5565_Broadcast"></a> &#8212; <span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc
+                PCI-5565 broadcast interrupt block (not recommended)<b>obsolete_ge</b></p></div><div class="refsect1"><a name="d5e6966"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="f70-16376.html" class="olink">GE&reg; Fanuc
+                            PCI-5565</a></p></li></ul></div></div><div class="refsect1"><a name="f70-17372"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library of
+                Drivers No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcgefanuclib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f70-17374"></a><h2>Note</h2><p>The 5565 broadcast block generates a network interrupt that other boards in the
+                shared memory network can detect.</p><p>The 5565 broadcast block has two inputs:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">En</code> &#8212; This input port is a Boolean input that can
+                        enable or disable the transmission of a network interrupt. For continuous
+                        interrupts. connect this input port to a Constant block with a Boolean value
+                        of true (1). If you want to enable interrupts only part of the time, you can
+                        use another kind of input, such as a pulse generator.</p></li><li class="listitem"><p><code class="literal">Data</code> &#8212; This input port allows you to transmit a
+                        data value (<code class="literal">uint32</code>) with the interrupt.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> software does not support receiving this
+                            data value.</p></td></tr></table></div></li></ul></div></div><div class="refsect1"><a name="f70-17379"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Target Node</strong></span></span></dt><dd><p>Enter the node ID of the node to which to broadcast the interrupt.
+                            Enter -1 to broadcast the interrupt to the nodes in the shared memory
+                            network. You cannot broadcast the interrupt to another subset of
+                            nodes.</p></dd><dt><span class="term"><span class="bold"><strong>Interrupt Number</strong></span></span></dt><dd><p>Enter the shared IRQ number. This value is the special interrupt
+                            number that two boards use between each other for synchronization (see
+                            the LIER register bit descriptions in the PCI-5565 product
+                            documentation). This value must match the value of <code class="literal">X</code>
+                            in a line like the following, which you specify for the receiving end of
+                            the shared memory network (see <a href="f69-6213.html#f69-6303" class="olink">Board Interrupts</a>).</p><pre class="programlisting">node.Interface.Interrupts.PendingIntX</pre></dd><dt><span class="term"><span class="bold"><strong>Sampletime</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited)</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e7029"></a><h2>Related Links</h2><p><a class="link" href="http://www.abaco.com" target="_top">www.abaco.com</a></p></div></div></body></html>

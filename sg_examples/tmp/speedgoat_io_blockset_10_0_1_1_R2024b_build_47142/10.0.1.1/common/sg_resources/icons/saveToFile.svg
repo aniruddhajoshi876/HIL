@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="27.116655"
+   height="23.501102"
+   viewBox="0 0 27.116655 23.501102"
+   fill="none"
+   version="1.1"
+   id="svg22"
+   sodipodi:docname="saveToFile.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs26" />
+  <sodipodi:namedview
+     id="namedview24"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="25.90625"
+     inkscape:cx="13.992762"
+     inkscape:cy="11.696019"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg22" />
+  <path
+     d="m 19.058328,4.2505512 h -8 V 15.250551 h 8 z"
+     fill="var(--mw-icon-background-default-white, #FFFFFF)"
+     stroke="var(--mw-icon-border-default-gray, #616161)"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path2"
+     style="display:none" />
+  <path
+     d="M 17.058328,3.2505512 H 9.0583283 V 14.250551 h 7.9999997 z"
+     fill="#ffffff"
+     stroke="var(--mw-icon-border-default-gray, #616161)"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path4"
+     style="display:none" />
+  <path
+     d="M 14.401454,0.78992119 H 0.91144772 V 19.338679 H 14.401454 Z"
+     fill="#ffffff"
+     stroke="var(--mw-icon-border-default-gray, #616161)"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path6"
+     style="stroke-width:1.68625" />
+  <path
+     d="M 4.2845057,4.1624227 H 7.6570071 M 4.2839492,7.5349242 H 7.6564506 M 4.2839492,10.907426 h 3.3725014 m -3.3725014,3.372501 h 3.3725014"
+     stroke="var(--mw-icon-glyph-content-gray, #616162)"
+     stroke-linecap="square"
+     stroke-linejoin="round"
+     id="path8"
+     style="stroke-width:1.68625" />
+  <path
+     d="m 9.3427014,6.6917989 c 0,-0.4656414 0.3774841,-0.8431255 0.8431256,-0.8431255 h 15.176257 c 0.465573,0 0.843124,0.3774841 0.843124,0.8431255 V 21.868055 c 0,0.465574 -0.377551,0.843126 -0.843124,0.843126 H 12.556358 c -0.182435,0 -0.35993,-0.05919 -0.505875,-0.168625 L 9.6799516,20.764742 C 9.4676526,20.605391 9.3427014,20.355489 9.3427014,20.090241 Z"
+     fill="var(--mw-icon-background-default-selection, #B4DEFF)"
+     stroke="var(--mw-icon-border-default-blue, #1656A7)"
+     stroke-linejoin="round"
+     id="path10"
+     style="stroke-width:1.68625" />
+  <path
+     d="m 12.715203,17.652429 h 10.117504 v 5.058752 H 12.715203 Z"
+     fill="#ffffff"
+     stroke="var(--mw-icon-border-default-blue, #1656A7)"
+     stroke-linejoin="round"
+     id="path12"
+     style="stroke-width:1.68625" />
+  <path
+     d="m 15.244578,20.181805 h 1.686251 v 1.68625 h -1.686251 z"
+     fill="var(--mw-icon-border-default-blue, #1656A7)"
+     id="path14"
+     style="stroke-width:1.68625" />
+  <path
+     d="M 12.715203,5.8486734 H 22.832707 V 14.279927 H 12.715203 Z"
+     fill="#ffffff"
+     id="path16"
+     style="stroke-width:1.68625" />
+  <path
+     d="M 12.715203,5.8486734 V 5.0055481 h -0.843125 v 0.8431253 z m 10.117504,0 h 0.843125 V 5.0055481 h -0.843125 z m 0,8.4312536 v 0.843125 c 0.465573,0 0.843125,-0.377551 0.843125,-0.843125 z m -10.117504,0 h -0.843125 c 0,0.465574 0.377484,0.843125 0.843125,0.843125 z m 0,-7.5881281 H 22.832707 V 5.0055481 H 12.715203 Z m 9.274379,-0.8431255 v 8.4312536 h 1.68625 V 5.8486734 Z m 0.843125,7.5881276 H 12.715203 v 1.686251 h 10.117504 z m -9.274379,0.843126 V 5.8486734 h -1.68625 v 8.4312536 z"
+     fill="var(--mw-icon-border-default-blue, #1656A7)"
+     id="path18"
+     style="stroke-width:1.68625" />
+  <use
+     href="#save_all"
+     id="use20"
+     transform="matrix(1.8077771,0,0,1.8077771,-0.9038885,-4.519443)" />
+</svg>

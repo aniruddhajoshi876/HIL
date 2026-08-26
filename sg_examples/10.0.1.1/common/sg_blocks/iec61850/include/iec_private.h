@@ -1,0 +1,16 @@
+#ifndef __IEC6180_PRIVATE_H
+#define __IEC6180_PRIVATE_H
+
+namespace iec61850
+{
+#define IEC61850_STATE_UNKNOWN     0
+#define IEC61850_STATE_INITIALIZED 1
+#define IEC61850_STATE_LAUNCHED    2
+#define IEC61850_STATE_STARTED     3
+#define IEC61850_STATE_STOPPED     4
+#define IEC61850_STATE_TERMINATED  5
+
+#define IEC61850_IDLE_TIME 100  // microseconds
+}
+
+#endif

@@ -1,0 +1,28 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MIL-STD-1553 Support</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="prev" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="next" href="btq9ck7.html" title="MIL-STD-1553 Initialization"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bs52vej"></a>MIL-STD-1553 Support</h2></div></div></div><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> supports the
+            MIL-STD-1553 bus via the PCI-1553, QPCI-1553, QPCX-1553, and Q104 series boards. The
+            manufacturer of these boards is Abaco, formerly <span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Intelligent Platforms, formerly
+                <span class="trademark"><a name="tp_condorengineering"></a>Condor
+            Engineering</span>&reg;, see
+            the manufacturer documentation (<code class="literal"><a class="link" href="http://www.abaco.com" target="_top">www.abaco.com</a></code>). <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> uses the MIL-STD-1553 blocks provided by the MIL-STD-1553
+            sublibrary of the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+            I/O block library. The sublibrary consists of the following groupings:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1553 Utilities &#8212; Use these general utility blocks to:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Set up Bus Monitor and Bus Controller messages.</p></li><li class="listitem"><p>Create Bus Controller message lists.</p></li><li class="listitem"><p>Encode and decode bus controller messages and status.</p></li></ul></div></li><li class="listitem"><p>PCI-1553, QPCI-1553, QPCX-1553 &#8212; Use these blocks to communicate with
+                    the PCI-1553, QPCI-1553, and QPCX-1553 boards, respectively. These blocks enable
+                    you to:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Initialize a board for Remote Terminal, Bus Controller, and/or Bus
+                            Monitor operation.</p></li><li class="listitem"><p>Configure a board for Remote Terminal operation, including Remote
+                            Terminal initialization and sending/receiving messages.</p></li><li class="listitem"><p>Configure a board to send Bus Controller messages.</p></li></ul></div><p>In basic functionality, these board types are the same. The QPC*-1553 boards
+                    have additional functionality, such as internal loopback connections and voltage
+                    settings.</p></li><li class="listitem"><p>Q104-1553 &#8212; Use these blocks to communicate with the Q104-1553 boards.
+                    These blocks enable you to:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Initialize a board for Remote Terminal, Bus Controller, and/or Bus
+                            Monitor operation.</p></li><li class="listitem"><p>Configure a board for Remote Terminal operation, including Remote
+                            Terminal initialization and sending/receiving messages.</p></li><li class="listitem"><p>Configure a board to send Bus Controller messages.</p></li></ul></div><p>The QPC* and Q104 boards have almost the same functionality. The Q104 does not
+                    support loopback connections, and you address it by PC104 base address instead
+                    of by PCI slot.</p></li></ul></div><p>Regardless of the operation, initialize your board with the Initialize block for the
+            board type you are using&#8212;PCI, QPCI, QPCX, or Q104.</p></div></body></html>

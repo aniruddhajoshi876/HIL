@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO61X - LIN Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_2_status.html" title="IO61X - CAN Status"><link rel="next" href="refentry_ref_can_ofa_2_lin_read.html" title="IO61X - LIN Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_2_lin_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO61X - LIN Write </h2><p>IO61X - LIN Write  &#8212; <span class="phrase">Send messages over
+                    LIN</span></p></div><div class="refsect1"><a name="d5e3435"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_can_ofa_2_write.png"></span></span></p></div><div class="refsect1"><a name="d5e3443"></a><h2>Description</h2><p>This LIN Write driver block is part of the generic block library for the IO611,
+                IO612, IO613 and IO614 I/O modules. This block allows LIN messages to be
+                transmitted. The message information (LIN version, ID, DLC) can be set in the block
+                mask.</p><p>The buffer size is 20 messages per channel, so depending on the selected baud rate
+                and the "LIN Write" block sample times, it is important to not let the input
+                buffer overflow.</p><p>For each LIN message a single write block is required.</p></div><div class="refsect1"><a name="d5e3448"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The number of bytes is defined in the block mask with the parameter
+                            DLC. <span class="bold"><strong>Data Type:
+                                </strong></span><code class="literal">uint8</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e3459"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term"><span class="guilabel">Channel Number</span></span></dt><dd><p>Choose the LIN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Mode</span>
+                    </span></dt><dd><p>Displays the channel mode (Disabled, Slave, Master) that has been
+                        set in the CAN and LIN Setup block for the selected Channel Number.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type</span>
+                    </span></dt><dd><p>Currently only the message type RAW is supported.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Response Input</span>
+                    </span></dt><dd><p>If this option is checked, an additional input port is created, which allows
+                            response messages to be enabled/disabled for the selected ID during
+                            untime. This option is only available when the Channel Mode is set to Slave.</p></dd><dt><span class="term">
+                        <span class="guilabel">DLC</span>
+                    </span></dt><dd><p>Identifies the length of the LIN message data array (Data Length
+                            Code). The value can be chosen in the range of 1 through 8. When using
+                            the LIN Pack block, the parameter DLC must always be set to 8. For more
+                            information on using the LIN Pack block, refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink">usage notes</a> of
+                            this I/O module.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>LIN version 1.1 defines the DLC as a function of the ID (0-31: 2;
+                                32-47: 4; 48-63: 8).</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">LIN version </span>
+                    </span></dt><dd><p>Select the LIN version:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>LIN 1.X representing versions 1.1, 1.2 and 1.3 uses Classic
+                                    Checksum.</p></li><li class="listitem"><p>LIN 2.X representing versions 2.0, 2.1 and 2.2 uses Enhanced
+                                    Checksum except for IDs 60 and 61.</p></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,174 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Configurable I/O</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_fpga_io_module.html" title="FPGA I/O Modules"><link rel="up" href="book_fpga_io_module.html" title="FPGA I/O Modules"><link rel="prev" href="book_fpga_io_module.html" title="FPGA I/O Modules"><link rel="next" href="refentry_configurable_iomodule.html" title="Configurable I/O Modules"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_configurable_io"></a><div class="titlepage"></div><div class="refnamediv"><h2>Configurable I/O</h2><p>Configurable I/O</p></div><div class="refsect1"><a name="d5e8"></a><h2>Introduction</h2><p>Pulse I/O (see <a class="link" href="refentry_configurable_io.html#config_io_matlab_r2025a_note" title="Pulse I/O (MATLAB R2025a and later)">Note</a>) and
+                configurable I/O modules are suitable for high-frequency I/O connectivity and
+                industrial protocols, but with closed-loop sample rates below 20 kHz.</p><p>Speedgoat offers <a href="refentry_configuration_files.html" class="olink">configuration files</a> for all
+                configurable I/O. The configuration files comprise a wide range of standard
+                interfaces and protocols (also known as <span class="emphasis"><em>code modules</em></span>).</p><div class="refsect2"><a name="d5e15"></a><h3>Getting Started</h3><p>If you are new to configuration files or configurable I/O modules, refer to
+                    the <a href="refentry_config_getting_started.html" class="olink">Getting Started</a>
+                    section.</p></div></div><div class="refsect1"><a name="d5e19"></a><h2>Configurable I/O Modules</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="14%" class="c1"><col width="71%" class="c2"><col width="15%" class="newCol3"></colgroup><thead><tr><th>Module</th><th>Description</th><th>Simulink<sup>&reg;</sup>-Programmable
+                                I/O Module and Configurable I/O Module</th></tr></thead><tbody><tr><td><a href="refentry_ref_io306_25k.html" class="olink">IO306-25k</a></td><td>
+                                <span class="phrase">The IO306-25k is a configurable I/O module containing an FPGA with
+                    25k of logic cells and 64 ESD protected TTL I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io307_25k.html" class="olink">IO307-25k</a></td><td>
+                                <span class="phrase">The IO307-25k is a configurable I/O module containing an FPGA with
+                    25k of logic cells, 32 x TTL I/O lines and 16 x ESD protected RS422/RS485 I/O
+                    lines.</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io308_25k.html" class="olink">IO308-25k</a></td><td>
+                                <span class="phrase">The IO308-25k is a configurable I/O module containing an FPGA with
+                    25k of logic cells and 32 x ESD protected RS422/RS485 I/O
+                lines.</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io309a_100k.html" class="olink">IO309-A-100k</a></td><td>
+                                <span class="phrase">The IO309-A-100k is a configurable I/O
+                    module containing an FPGA with 100k of logic cells and 64 x TTL I/O
+                    lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io309b_100k.html" class="olink">IO309-B-100k</a></td><td>
+                                <span class="phrase">The IO309-B-100k is a configurable I/O
+                    module containing an FPGA with 100k of logic cells, 32 x TTL I/O lines and 16 x RS422/RS485 I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io309c_100k.html" class="olink">IO309-C-100k</a></td><td>
+                                <span class="phrase">The IO309-C-100k is a configurable I/O
+                    module containing an FPGA with 100k of logic cells and 32 x RS422/RS485 I/O
+                    lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io316.html" class="olink">IO316</a></td><td>
+                                <span class="phrase">The IO316 is a configurable I/O module containing an FPGA with 45k of
+                    logic cells and 64 ESD protected TTL I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io316-100k.html" class="olink">IO316-100k</a></td><td>
+                                <span class="phrase">The IO316-100k is a FPGA I/O module
+                    with 100k of logic cells and 64 ESD protected TTL I/O
+                lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io317.html" class="olink">IO317</a></td><td>
+                                <span class="phrase">The IO317 is a configurable I/O module containing an FPGA with 45k of
+                    logic cells, 32 x TTL I/O lines and 16 x ESD protected RS422/RS485 I/O
+                    lines.</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io317-100k.html" class="olink">IO317-100k</a></td><td>
+                                <span class="phrase">The IO317-100k is a FPGA I/O module
+                    with 100k of logic cells, 32 x TTL I/O lines and 16 x ESD protected RS422/RS485
+                    I/O lines.</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io318.html" class="olink">IO318</a></td><td>
+                                <span class="phrase">The IO318 is a configurable I/O module containing an FPGA with 45k of
+                    logic cells and 32 x RS422 differential I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io318-100k.html" class="olink">IO318-100k</a></td><td>
+                                <span class="phrase">The IO318-100k is a FPGA I/O module
+                    with 100k of logic cells and 32 x RS422 differential I/O
+                lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io322.html" class="olink">IO322</a></td><td>
+                                <span class="phrase">The IO322 is a configurable I/O module containing an FPGA with 45k of
+                    logic cells, 42 TTL I/O lines, 32/16 x 16-bit single-ended/differential analog
+                    inputs and 8 x 16-bit analog outputs</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io323.html" class="olink">IO323</a></td><td>
+                                <span class="phrase">The IO323 is a configurable I/O module containing an FPGA with 100k
+                    of logic cells, 42 TTL I/O lines, 32/16 x 16-bit single-ended/differential
+                    analog inputs and 8 x 16-bit analog outputs</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io324_200k.html" class="olink">IO324-200k</a></td><td>
+                                <span class="phrase">The IO324-200k is a FPGA I/O module
+                    with 200k of logic cells, 32 TTL I/O lines (of which up to 16 lines can be
+                    configured as RS422/RS485), 32/16 x 16-bit single-ended/differential analog
+                    inputs and 8 x 16-bit analog outputs</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io325_160k.html" class="olink">IO325-160k</a></td><td>
+                                <span class="phrase">The IO325-160k is a FPGA I/O module
+                    with 160k logic cells, 32 TTL I/O lines (of which up to 16 lines can be
+                    configured as RS422/RS485), 8 x 16-bit differential analog inputs and 4 x 16-bit
+                    analog outputs</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io331.html" class="olink">IO331</a></td><td>
+                                <span class="phrase">The IO331 is a configurable I/O module containing an FPGA with 150k
+                    of logic cells. Optional I/O interfaces allow a variety of digital (TTL, LVDS,
+                    CMOS), RS485/RS422, and analog functionality to be added. Optional I/O interface
+                    extensions allow to extend the number of digital lines from the front of the
+                    enclosure</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io332-200k.html" class="olink">IO332-200k</a></td><td>
+                                <span class="phrase">The IO332-200k is a FPGA I/O module
+                    with 200k of logic cells. Optional I/O interfaces allow a variety of digital
+                    (TTL, LVDS, CMOS), RS485/RS422, and analog functionality to be added. Optional
+                    I/O interface extensions allow to extend the number of digital lines from the
+                    front of the enclosure</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io333-325k.html" class="olink">IO333-325k</a></td><td>
+                                <span class="phrase">The IO333-325k is a FPGA I/O module
+                    with 325k of logic cells. Optional I/O interfaces allow a variety of digital
+                    (TTL, LVDS, CMOS), RS485/RS422, and analog functionality to be added. Optional
+                    I/O interface extensions allow to extend the number of digital lines from the
+                    front of the enclosure</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io333-410k.html" class="olink">IO333-410k</a></td><td>
+                                <span class="phrase">The IO333-410k is a FPGA I/O module
+                    with 410k of logic cells. Optional I/O interfaces allow a variety of digital
+                    (TTL, LVDS, CMOS), RS485/RS422, and analog functionality to be added. Optional
+                    I/O interface extensions allow to extend the number of digital lines from the
+                    front of the enclosure</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io334_325k.html" class="olink">IO334-325k</a></td><td>
+                                <span class="phrase">The IO334-325k is a FPGA I/O module
+                    with 325k logic cells, 16 x 16-bit differential analog inputs and 16 x 16-bit
+                    analog outputs</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io336_325k.html" class="olink">IO336-325k</a></td><td>
+                                <span class="phrase">The IO336-325k is a FPGA I/O module
+                    with 325k logic cells, 32 TTL I/O lines (of which up to 16 lines can be
+                    configured as RS422/RS485), 16 x 16-bit differential analog inputs and 8 x
+                    16-bit analog outputs</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io337_650k.html" class="olink">IO337-650k</a></td><td>
+                                <span class="phrase">The IO337-650k is a configurable I/O
+                    module containing 650k logic cells, 8 x 16-bit differential analog inputs, 32 x
+                    16-bit analog outputs, and 4 x LVDS digital I/O channels</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io360a_190k.html" class="olink">IO360-A-190k</a></td><td>
+                                <span class="phrase">The IO360-A-190k is a configurable I/O
+                    module containing an FPGA with 190k of logic cells and 64 x TTL I/O
+                    lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io360b_190k.html" class="olink">IO360-B-190k</a></td><td>
+                                <span class="phrase">The IO360-B-190k is a configurable I/O
+                    module containing an FPGA with 190k of logic cells, 32 x TTL I/O lines and 16 x
+                    RS422/RS485 I/O lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io360c_190k.html" class="olink">IO360-C-190k</a></td><td>
+                                <span class="phrase">The IO360-C-190k is a configurable I/O
+                    module containing an FPGA with 190k of logic cells and 32 x RS422/RS485 I/O
+                    lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io361a_469k.html" class="olink">IO361-A-469k</a></td><td>
+                                <span class="phrase">The IO361-A-469k is a configurable I/O
+                    module containing an FPGA with 469k of logic cells and 40 x TTL I/O
+                    lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io361b_469k.html" class="olink">IO361-B-469k</a></td><td>
+                                <span class="phrase">The IO361-B-469k is a configurable I/O
+                    module containing an FPGA with 469k of logic cells, 24 x TTL I/O lines and 8 x
+                    RS422/RS485 I/O lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io361c_469k.html" class="olink">IO361-C-469k</a></td><td>
+                                <span class="phrase">The IO361-C-469k is a configurable I/O
+                    module containing an FPGA with 469k of logic cells and 20 x RS422/RS485 I/O
+                    lines</span>
+                            </td><td align="center">X</td></tr><tr><td><a href="refentry_ref_io391_50k.html" class="olink">IO391-50k</a></td><td>
+                                <span class="phrase">The IO391-50k is a configurable I/O module containing an FPGA with
+                    50k of logic cells and 26 x ESD protected TTL I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io392_50k.html" class="olink">IO392-50k</a></td><td>
+                                <span class="phrase">The IO392-50k is a configurable I/O module containing an FPGA with
+                    50k of logic cells and 13 x RS422/485 differential I/O
+                lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io393_50k.html" class="olink">IO393-50k</a></td><td>
+                                <span class="phrase">The IO393-50k is a configurable I/O module containing an FPGA with
+                    50k of logic cells, 6x differential digital I/O lines and 14 x ESD protected TTL
+                    I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io394_50k.html" class="olink">IO394-50k</a></td><td>
+                                <span class="phrase">The IO394-50k is a configurable I/O module containing an FPGA with
+                    50k of logic cells and 13 x LVDS differential I/O lines</span>
+                            </td><td>&nbsp;</td></tr><tr><td><a href="refentry_ref_io397_50k.html" class="olink">IO397-50k</a></td><td>
+                                <span class="phrase">The IO397-50k is a configurable I/O module containing an FPGA with
+                    50k of logic cells, 14 x ESD protected TTL I/O lines, 4 x 16-bit analog inputs
+                    and 4 x 16-bit analog outputs</span>
+                            </td><td align="center">X</td></tr></tbody></table></div><div class="refsect2"><a name="config_io_matlab_r2025a_note"></a><h3>Pulse I/O (MATLAB R2025a and later)</h3><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="14%" class="c1"><col width="69%" class="c2"><col width="17%" class="newCol3"></colgroup><thead><tr><th>Hardware</th><th>Description</th><th>Simulink<sup>&reg;</sup>-Programmable I/O and
+                                    Configurable I/O </th></tr></thead><tbody><tr><td><a href="refentry_ref_pulse_io.html" class="olink">Pulse I/O</a></td><td>
+                                    <span class="phrase">The Pulse I/O provides configurable I/O
+                    functionality in combination with I/O interface extensions</span>
+                                </td><td align="center">X</td></tr></tbody></table></div></div></div><div class="refsect1"><a name="d5e257"></a><h2>I/O Interfaces</h2><p>The <span class="phrase">IO331, IO332 and IO333 configurable I/O modules</span> do not have fixed I/O but can
+                be equipped with an I/O interface that supports different digital I/O standards or
+                analog functionality.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="c1"><col width="84%" class="c2"></colgroup><thead><tr><th>Module</th><th>Description</th></tr></thead><tbody><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-1-LV</a>
+                            </td><td>64 x digital LVTTL (3.3 V) front I/O lines</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-2</a></td><td>30 x RS485 (RS422-compliant) front I/O lines</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-3</a></td><td>16 x CMOS (5 V) and 22 RS485 (RS422-compliant) front I/O
+                                lines</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-4</a></td><td>30 x LVDS I/O lines</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-5</a></td><td>2 x 16-bit 105 MHz differential simultaneous analog
+                                inputs</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-6</a></td><td>16 x 16-bit 500 kHz ADCs, 8 x 16-bit DACs with 10 &#956;s settling
+                                time, 16 x digital TTL I/O lines</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-7</a></td><td>16 x 16-bit analog outputs with 2 &#956;s settling time, &plusmn;10 V (R2020a
+                                only)</td></tr><tr><td><a href="refentry_ref_io_interfaces.html" class="olink">IO33X-8</a></td><td>8 x 16-bit analog outputs with 2 &#956;s settling time, &plusmn;10 V (R2020a
+                                only)</td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e302"></a><h2>I/O Interface Extensions</h2><p>For most configurable I/O modules, the number of I/O available can be extended by
+                using one or two I/O interface extensions. Users can choose from various I/O
+                interface extensions that support different I/O standards, as well as analog and
+                other functionalities.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="c1"><col width="84%" class="c2"></colgroup><thead><tr><th>Module</th><th>Description</th></tr></thead><tbody><tr><td><a href="refentry_ref_io_interface_extensions.html" class="olink">-21</a></td><td>Converts the rear I/O lines from LVCMOS to 3.3 V/5 V TTL and
+                                makes them accessible from the front of the enclosure</td></tr><tr><td><a href="refentry_ref_io_interface_extensions.html" class="olink">-22</a></td><td>Converts the rear I/O lines from LVCMOS to RS422, RS485 and 3.3
+                                V/5 V TTL and makes them accessible from the front of the
+                                enclosure</td></tr><tr><td><a href="refentry_ref_io_interface_extensions.html" class="olink">-24</a></td><td>Makes use of the LVCMOS rear I/O lines to interface with two
+                                resolver-to-digital converters. Converts some of the rear I/O lines
+                                from LVCMOS to RS422, RS485 and 3.3 V/5 V TTL and makes them
+                                accessible from the front of the enclosure</td></tr><tr><td><a href="refentry_ref_io_interface_extensions.html" class="olink">-120</a></td><td>Provides the following analog functionality: 16 x 16-bit, 1.5
+                                Gbps analog inputs, 16 x 16-bit analog outputs with &lt;1 &#956;s
+                                settling time</td></tr></tbody></table></div></div></div></body></html>

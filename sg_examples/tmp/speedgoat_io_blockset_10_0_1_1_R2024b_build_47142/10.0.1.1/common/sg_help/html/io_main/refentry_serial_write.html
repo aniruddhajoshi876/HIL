@@ -1,0 +1,51 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial - Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_serial_setup.html" title="Serial - Setup"><link rel="next" href="refentry_serial_read.html" title="Serial - Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial - Write</h2><p>Serial - Write &#8212; <span class="phrase">Writes to the serial
+                ports</span></p></div><div class="refsect1"><a name="d5e1123"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io50x_write.png"></span></span></p></div><div class="refsect1"><a name="d5e1131"></a><h2>Description</h2><p>This block is part of the Speedgoat Serial driver block set for the Speedgoat
+                Serial modules IO50X and IO581. The Serial Write block writes the data from the
+                input port (labeled D) to the FIFO in the I/O module UART for this port.</p></div><div class="refsect1"><a name="d5e1134"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Amount of bytes to be transmitted.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data input signal.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1148"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Module Type</span></span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>This parameter specifies the channel to which this block writes the
+                            data.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term"><span class="guilabel">Enable Legacy Mode</span></span></dt><dd><p>This checkbox can be used to enable/disable the legacy mode of the
+                            Serial Write block. If this mode is enabled, the Data input must contain
+                            a vector where the first element of the vector specifies the number of
+                            data elements in the remainder of the vector.</p></dd><dt><span class="term"><span class="guilabel">Enable ModelStop Message</span></span></dt><dd><p>When this checkbox is enabled, at ModelStop the character array or
+                            string specified in the "ModelStop Message" will be sent.</p></dd><dt><span class="term"><span class="guilabel">ModelStop Message</span></span></dt><dd><p>This is the string or character array sent at ModelStop. Only one
+                            message is permitted (use one string, not a cell array). The message
+                            size has two limitations: it must be equal to or smaller than the TX
+                            FIFO size, and not larger than the maximum message size of 255 Bytes. If
+                            a "delay" is required between the last message and the ModelStop
+                            message, some padding could be used (a series of 0x0A or 0x00 before the
+                            actual message).</p></dd><dt><span class="term"><span class="guilabel">TX FIFO ModelStop</span></span></dt><dd><p>This option determines the behavior of the real-time target machine
+                            (RTTM) transmit buffer during ModelStop. <span class="bold"><strong>Write to
+                                TX FIFO directly</strong></span> is the default and often the best
+                            option. However, when the FIFO size is considerably large, and/or the
+                            transmission baudrate is low, other options might be more
+                            appropriate.</p><p>The following options are available:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Write to TX FIFO directly</strong></span>:
+                                    This copies the ModelStop message directly into the RTTM FIFO
+                                    without delay. The risk is that the TX FIFO may not have
+                                    sufficient space available for the entire ModelStop message,
+                                    meaning only a part of it will be copied and sent.</p></li><li class="listitem"><p><span class="bold"><strong>Wait for the TX FIFO to
+                                    empty</strong></span>: This option waits for the transmit buffer of
+                                    the RTTM to be empty before copying the ModelStop message to it.
+                                    This approach is the slowest of the three, but also the safest,
+                                    since it ensures that all the messages before the ModelStop
+                                    message are sent, and that the entirety of the ModelStop message
+                                    is also sent.</p></li><li class="listitem"><p><span class="bold"><strong>Flush TX FIFO</strong></span>: By selecting
+                                    this option, when the ModelStop is triggered, the TX FIFO of the
+                                    RTTM is emptied (flushed) and the entirety of the ModelStop
+                                    message is immediately copied. This method is the fastest way of
+                                    sending the ModelStop message, but there is a risk of the
+                                    previous incomplete message preventing the current ModelStop
+                                    message from being correctly received.</p></li></ul></div></dd></dl></div></div></div></body></html>

@@ -1,0 +1,107 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 - Synchro/Resolver Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_synchroresolver_read.html" title="IO421 - Synchro/Resolver Read"><link rel="next" href="refentry_io421_reference.html" title="IO421 - AC Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_synchroresolver_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 - Synchro/Resolver Write</h2><p>IO421 - Synchro/Resolver Write &#8212; <span class="phrase">Writes the
+                    IO421 Synchro/Resolver outputs</span></p></div><div class="refsect1"><a name="d5e1526"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io421_synchroresolver_write.png"></span></span></p></div><div class="refsect1"><a name="d5e1534"></a><h2>Description</h2><p>The IO421-4 sub-module simulates up to three Synchro or Resolver. Each simulated
+                device consists of a primary coil, which requires a reference alternating
+                current.The Synchro contains three and the Resolver two secondary coils. The output
+                voltages of the secondary coils depend on the position of the primary coil. You can
+                define the position in the Simulink model, using the S/R write driver block.</p><p>The characteristics of the sub-module depend on the factory configuration selected
+                at the time of the order. This information is available in a separate documentation
+                shipped with the device.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="11%" class="col1"><col width="11%" class="col2"><col width="22%" class="col3"><col width="22%" class="col4"><col width="22%" class="col5"><col width="12%" class="col6"></colgroup><thead><tr><th>sub-module code</th><th>Format</th><th>Output
+                                    (V<sub>LL</sub>)[V<sub>RMS</sub>]</th><th>Ref
+                                (V<sub>REF</sub>)[V<sub>RMS</sub>]</th><th>Frequency [Hz]</th><th>Max Load [VA]</th></tr></thead><tbody><tr><td>60</td><td>SYN</td><td>2 - 11.8</td><td>2 - 28</td><td>360 - 1k</td><td>0.25</td></tr><tr><td>61</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>360 - 1k</td><td>0.25</td></tr><tr><td>63</td><td>SYN</td><td>90</td><td>10 - 115</td><td>360 - 1k</td><td>0.25</td></tr><tr><td>64</td><td>RSL</td><td>90</td><td>10 - 115</td><td>360 - 1k</td><td>0.25</td></tr><tr><td>65</td><td>SYN</td><td>11.8</td><td>2 - 28</td><td>47 - 400</td><td>0.25</td></tr><tr><td>66</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>47 - 400</td><td>0.25</td></tr><tr><td>68</td><td>SYN</td><td>90</td><td>10 - 115</td><td>47 - 400</td><td>0.25</td></tr><tr><td>69</td><td>RSL</td><td>90</td><td>10 - 115</td><td>47 - 400</td><td>0.25</td></tr><tr><td>6A</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>1k - 3k</td><td>0.25</td></tr><tr><td>6B</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>3k - 5k</td><td>0.25</td></tr><tr><td>6C</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>5k - 7k</td><td>0.25</td></tr><tr><td>6D</td><td>RSL</td><td>2 - 11.8</td><td>2 - 28</td><td>7k - 10k</td><td>0.25</td></tr><tr><td>6J</td><td>SYN</td><td>2 - 11.8</td><td>2 - 28</td><td>1k - 3k</td><td>0.25</td></tr><tr><td>6K</td><td>SYN</td><td>2 - 11.8</td><td>2 - 28</td><td>3k - 5k</td><td>0.25</td></tr><tr><td>6L</td><td>SYN</td><td>2 - 11.8</td><td>2 - 28</td><td>5k - 7k</td><td>0.25</td></tr><tr><td>6M</td><td>SYN</td><td>2 - 11.8</td><td>2 - 28</td><td>7k - 10k</td><td>0.25</td></tr><tr><td>6T</td><td>SYN</td><td>2 - 11.8</td><td>10 - 115</td><td>47 - 400</td><td>0.25</td></tr><tr><td>6U</td><td>SYN</td><td>2 - 11.8</td><td>10 - 115</td><td>360 - 1k</td><td>0.25</td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e1685"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">rotation rate </span>
+                    </span></dt><dd><p>The required rotation velocity of the shaft. This port is only enabled
+                            when the Rotation mode parameter is set to either 'Speed driven' or
+                            'Start and stop'. [RPS] (revolutions per second)</p></dd><dt><span class="term">
+                        <span class="guilabel">start angle </span>
+                    </span></dt><dd><p>The required shaft angle at the beginning of the sequence. This port
+                            is only enabled when the Rotation mode parameter is set to 'Start and
+                            stop'. [Radians]</p></dd><dt><span class="term">
+                        <span class="guilabel">stop angle </span>
+                    </span></dt><dd><p>The required shaft angle at the end of the sequence. This port is only
+                            enabled when the Rotation mode parameter is set to 'Start and stop'.
+                            [Radians]</p></dd><dt><span class="term">
+                        <span class="guilabel">angle </span>
+                    </span></dt><dd><p>The required shaft angle to be simulated. This port is only enabled
+                            when the Rotation mode parameter is set to 'Angle driven'.
+                            [Radians]</p></dd></dl></div><p>All ports are vectors combining all used channels. The vector's width and the
+                channel number sequence are defined by the Channel vector parameter.</p></div><div class="refsect1"><a name="d5e1710"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Slot </span>
+                    </span></dt><dd><p>The carrier board can contain up to three modules. This parameter
+                            indicates where your IO421-4 sub-module is located on the IO421
+                            motherboard.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channels vector </span>
+                    </span></dt><dd><p>Enter the channels to be enabled. A correct value is a scalar (if only
+                            one channel is used) or a vector with the channel numbers 1 to 3 in any
+                            order.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expected excitation voltage VREF vector (RMS) </span>
+                    </span></dt><dd><p>In ratio-metric mode this parameter and VLL output level vector define
+                            the gain for the maximum VLL output level: Gain = VLL output level /
+                            Expected excitation voltage In fixed mode, this is the assumed constant
+                            excitation voltage level, so the output doesn't depend on the amplitude
+                            of the applied excitation voltage. Still, the frequency of the output
+                            signals is taken from the applied excitation. Units are V RMS.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The phase lock between the excitation and the signal output can
+                                take up to 1 second after connecting a valid excitation signal or
+                                starting the model. Consequently, no signals are immediately present
+                                at the output.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">VLL output voltage vector (RMS) </span>
+                    </span></dt><dd><p>This parameter defines the output amplitude of the synchro or resolver
+                            simulation output depending on the Output mode. Units are V RMS.</p></dd><dt><span class="term">
+                        <span class="guilabel">Two-speed mode </span>
+                    </span></dt><dd><p>The channels 1 and 2 can be configured to work together in a two-speed
+                            mode. Setting an integer greater than '1', channel 2 will output the
+                            signal of channel 1 divided by that integer. See Synchro/Resolver
+                            connections for an example. configuration The maximum divider value is
+                            255. Set '1' to deactivate this function and use channel 2
+                            independently.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output mode </span>
+                    </span></dt><dd><p>The representation of the output value. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Ratio-metric: The output amplitudes are based on the
+                                        amplitude of the reference voltage input divided by the
+                                        ratio VLL output voltage / Expected excitation voltage.
+                                            V<sub>OUT</sub> = V<sub>REF
+                                            IN</sub> * (VLL output voltage / Expected
+                                        excitation voltage)</p></li><li class="listitem"><p>Fixed: The output amplitudes are based on the VLL output
+                                        level vector parameter.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Rotation mode </span>
+                    </span></dt><dd><p>The simulation method. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Velocity driven: the output is continuously updated
+                                        depending on the value of the 'rotation rate' input
+                                        port.</p></li><li class="listitem"><p>Start and stop: the output is first set to the angle in
+                                        the 'start angle' input port, then changes at the speed
+                                        applied to the 'rotation rate' input port to the angle in
+                                        the 'stop angle' input port.</p></li><li class="listitem"><p>Angle driven: the output is continuously updated depending
+                                        on the value of the 'angle' input port.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output format </span>
+                    </span></dt><dd><p>Output format </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Synchro</p></li><li class="listitem"><p>Resolver</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Phase offset vector [&deg;] </span>
+                    </span></dt><dd><p>The phase of each individual channel's outputs may be offset from
+                            reference input. The phase may be adjusted between -90&deg; and 90&deg; with a
+                            resolution of 0.1&deg;.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

@@ -1,0 +1,101 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Database Parser Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_parsing_read.html" title="CAN Database Parser Read"><link rel="next" href="refentry_ref_can_ofa_parsing_examples.html" title="CAN Database Parser Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_can_ofa_parsing_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Database Parser Usage Notes</h2><p>CAN Database Parser Usage Notes &#8212; <span class="phrase">Usage information
+                    for parsing *.dbc files for CAN and CAN FD messaging</span></p></div><div class="refsect1"><a name="d5e1924"></a><h2>CAN Database Manager</h2><p>The <span class="bold"><strong>CAN Database Manager</strong></span> can be accessed from the
+                CAN DB Parser Read and Write block masks. Its purpose is to create and maintain a
+                list of *.dbc files and to generate Simulink libraries from these files. The
+                generated libraries contain a set of preconfigured CAN/CAN FD Pack/Unpack blocks
+                that the CAN DB Parser Read and Write blocks require to generate the subsystems. If
+                the libraries have not been generated, the subsystem generation will fail.</p><p>As an alternative to configuring the CAN Database Manager using the application,
+                the <a href="refentry_sgapi_can_db_manager_config.html" class="olink">DB Manager Config</a> class can be
+                used to perform the management process programmatically.</p><p><span class="inlinemediaobject"><img src="./graphics/db_manager.png"></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Add</strong></span>: Add a *.dbc database file to the
+                        list</p></li><li class="listitem"><p><span class="bold"><strong>Remove</strong></span>: Remove the *.dbc database file
+                        from the list and delete the corresponding generated library</p></li><li class="listitem"><p><span class="bold"><strong>Set Path</strong></span>: Update the path of an existing
+                        *.dbc database file on the list</p></li><li class="listitem"><p><span class="bold"><strong>Generate</strong></span>: Generate the Simulink library
+                        of the currently selected *.dbc file in the list. The Simulink library will
+                        be generated in the current directory</p></li><li class="listitem"><p><span class="bold"><strong>Update All Libraries</strong></span>: Update and create
+                        Simulink libraries for all the list entries. If a Simulink library already
+                        exists anywhere on the MATLAB path and is up to date, the generation is
+                        skipped</p><p>The <span class="bold"><strong>Simulink Library</strong></span> column in the file
+                        list indicates whether the generated library is up to date, does not exist
+                        anywhere on the MATLAB path or does not match the corresponding *.dbc file.
+                        Whenever the *.dbc file is not found in the specified path, the file list
+                        entry is highlighted red accordingly. The generated Simulink libraries must
+                        remain on the MATLAB path or, ideally, in the current directory for the
+                        following mapping process.</p></li></ul></div></div><div class="refsect1"><a name="d5e1952"></a><h2>Messages Tab in the CAN DB Parser Write and Read Blocks</h2><p>All messages defined in the selected *.dbc file are displayed in the <span class="bold"><strong>Messages</strong></span> tab. Detailed information about the various
+                signals is displayed when a specific message is selected.</p><p>The <span class="bold"><strong>CycleTime</strong></span> message property is supported,
+                provided that all cycle times are a multiple of the <span class="bold"><strong>Sample
+                    Time</strong></span> parameter. To use this feature, check the <span class="bold"><strong>Use Cycle Times from Database</strong></span> checkbox. If no cycle time has been
+                defined for a message, it will default to the configured <span class="bold"><strong>Sample Time</strong></span>.</p></div><div class="refsect1"><a name="d5e1961"></a><h2>Message Protection Tab in the CAN DB Parser Write and Read Blocks</h2><p>The <span class="bold"><strong>Message Protection</strong></span> tab allows you to create
+                message protection profiles that can be mapped to signals defined in the selected
+                database file. On the <span class="bold"><strong>Messages</strong></span> tab, first select
+                which messages will be transmitted or received, and then move to the <span class="bold"><strong>Message Protection</strong></span> tab.</p><p><span class="inlinemediaobject"><img src="././graphics/messageprotectiontool.png"></span></p><p>The <span class="bold"><strong>Message Protection</strong></span> tab shows a tree view of
+                custom-defined message protection profiles on the left and the mapping table on the
+                right. The mapping table contains the list of signals that were previously selected
+                in the <span class="bold"><strong>Messages</strong></span> tab and a <span class="bold"><strong>Profile</strong></span> column that shows how a message protection profile maps to a
+                corresponding database-defined signal. To map profiles, you must select the desired
+                message protection profile in the left-hand tree view, the corresponding row in the
+                right-hand table, and click the arrow button to complete the mapping. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Note that database-defined signals already mapped in the <span class="bold"><strong>Mapping</strong></span> tab are not available when mapping a new
+                        message protection profile.</p></td></tr></table></div><p>Mapping is completed only if the bit length of the message protection profile
+                matches the <span class="bold"><strong>Bit Length</strong></span> value of the signal. For
+                    <span class="bold"><strong>Counter</strong></span> message protection profiles, the bit
+                length is given by the <span class="bold"><strong>Counter Length (Bits)</strong></span>
+                parameter value when editing the <span class="bold"><strong>Counter</strong></span> profile.
+                For provided <span class="bold"><strong>CRC</strong></span> message protection profiles, the
+                bit length value is defined by the standard (e.g., CRC8 - SAEJ1850 the bit length is
+                8). For custom <span class="bold"><strong>CRC</strong></span> message protection profiles, the
+                bit length value is defined by the <span class="bold"><strong>Custom CRC
+                    Function</strong></span> owned by the user. A runtime error occurs if the bit length
+                input parameter value used by the <span class="bold"><strong>Custom CRC
+                    Function</strong></span> does not match the signal <span class="bold"><strong>Bit
+                    Length</strong></span> value. For more detailed information on using a custom CRC
+                algorithm, please refer to the<a href="refentry_custom_crc_usage_notes.html" class="olink"> usage notes</a>.</p><p>The following options are available in the <span class="bold"><strong>Message
+                    Protection</strong></span> tab:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Clear Selected</strong></span>: The message
+                            protection profile currently selected in the mapping table is set to the
+                            default value <span class="bold"><strong>None</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Clear All</strong></span>: All message protection
+                            profiles in the mapping table are set to the default value <span class="bold"><strong>None</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>IDs in Hex</strong></span>: Toggle the ID display
+                            format between the decimal and hexadecimal numbering systems</p></li><li class="listitem"><p><span class="bold"><strong>Map Button (arrow icon)</strong></span>: Maps a
+                            message protection profile to a database-defined signal. To enable the
+                            button, both a profile from the tree view and a row from the table on
+                            the right must be selected</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e2006"></a><h2>Mapping Tab in the CAN DB Parser Write Block</h2><p>The <span class="bold"><strong>Mapping</strong></span> tab is enabled when the <span class="bold"><strong>Input Type</strong></span> parameter is set to <span class="bold"><strong>Bus
+                    (Mapping)</strong></span>. The mapping functionality allows you to map the elements
+                of an input bus signal to the signals defined in the selected database file. On the
+                    <span class="bold"><strong>Messages</strong></span> tab, first select which messages will
+                be transmitted, and then move to the <span class="bold"><strong>Mapping</strong></span> tab.
+                At this point, it is important to ensure that there is an input Simulink bus signal
+                on the input port of the block.</p><p><span class="inlinemediaobject"><img src="././graphics/mappingtool.png"></span></p><p>The <span class="bold"><strong>Mapping</strong></span> tab shows a tree view of the
+                structure of the input Simulink bus signal on the left and the mapping table on the
+                right. The mapping table contains the list of signals that were previously selected
+                in the <span class="bold"><strong>Messages</strong></span> tab and an <span class="bold"><strong>Input Signal</strong></span> column that shows how an element of the input Simulink
+                bus signal maps to a corresponding database-defined signal. When no mapping is
+                selected, the input signal in the mapping table takes the default value <span class="bold"><strong>Ground (0)</strong></span>. To map signals, you must select the desired
+                input signal elements in the left-hand tree view, the corresponding row in the
+                right-hand table, and click the arrow button to complete the mapping. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Note that database-defined signals already mapped in the <span class="bold"><strong>Message Protection</strong></span> tab are not available when
+                        mapping an input Simulink bus signal element.</p></td></tr></table></div><p>
+            </p><p>The following options are available in the <span class="bold"><strong>Mapping</strong></span> tab:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Refresh button</strong></span>: If the input Simulink
+                            bus signal is modified, click this button to refresh the tree
+                            view</p></li><li class="listitem"><p><span class="bold"><strong>Clear Selected</strong></span>: The signal currently
+                            selected in the mapping table is set to the default value <span class="bold"><strong>Ground (0)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Clear All</strong></span>: All signals in the mapping
+                            table are set to the default value <span class="bold"><strong>Ground
+                                (0)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>IDs in Hex</strong></span>: Toggle the ID display
+                            format between the decimal and hexadecimal numbering systems</p></li><li class="listitem"><p><span class="bold"><strong>Map Button (arrow icon)</strong></span>: Maps an
+                            input signal element to a database-defined signal. To enable the button,
+                            both a signal from the tree view and a row from the table on the right
+                            must be selected. Once a signal is mapped, the signal's icon in the tree
+                            view will change to a link</p></li><li class="listitem"><p><span class="bold"><strong>Save to File</strong></span>: Saves the mapping table
+                            to a file, where the filename and the file type are selectable in a
+                            dialog box. The file types currently supported are <span class="bold"><strong>.csv</strong></span> and <span class="bold"><strong>.mat</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Load from File</strong></span>: Invokes a file
+                            selection dialog to load the mapping table from a file. The file types
+                            currently supported are <span class="bold"><strong>.csv</strong></span> and
+                                <span class="bold"><strong>.mat</strong></span>. The table layout of the
+                            loaded file must match the layout of the file created when you click the
+                                <span class="bold"><strong>Save to File</strong></span> button. To ensure that
+                            the mapping table is valid, all the mapped messages must be enabled and
+                            all the input signals must be available in the connected input Simulink
+                            bus signal. Disabled messages will not be loaded into the mapping table
+                            (indicated by a warning message). Unavailable input signals are
+                            displayed as invalid in the mapping table</p></li></ul></div><p>
+            </p></div></div></body></html>

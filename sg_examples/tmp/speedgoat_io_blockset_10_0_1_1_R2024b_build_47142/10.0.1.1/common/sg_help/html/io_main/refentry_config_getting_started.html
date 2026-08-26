@@ -1,0 +1,76 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Getting Started</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_configuration_files.html" title="Configuration Files"><link rel="next" href="refentry_ref_config_examples.html" title="Configurable I/O - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_config_getting_started"></a><div class="titlepage"></div><div class="refnamediv"><h2>Getting Started</h2><p>Getting Started &#8212; <span class="phrase">Working with configuration files</span></p></div><div class="refsect1"><a name="d5e128"></a><h2>Introduction</h2><p>This section provides guidelines on installing and using configuration files for
+                configurable I/O modules. If you are interested in purchasing a customized
+                configuration file with the functionality you require, then please contact <a class="link" href="https://www.speedgoat.com/company/contact-us" target="_top">Speedgoat</a>. </p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>If your configuration file .zip contains a .pdf, then refer to this document
+                    for additional information about your specific configuration file.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e134"></a><h2>Installation</h2><p>Install the configuration file after installing the
+                    MathWorks<sup>&reg;</sup> tool chain and the <a href="../refentry_getting_started.html" class="olink">Speedgoat
+                    I/O Blockset</a>. The steps are as follows: </p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Download the configuration file archive from the <a class="link" href="https://www.speedgoat.com/extranet#/Login" target="_top">Speedgoat
+                                Customer Portal</a>. You can find the file under <span class="bold"><strong>Downloads</strong></span>, in the <span class="bold"><strong>Software</strong></span> section</p></li><li class="listitem"><p>Start MATLAB<sup>&reg;</sup> and navigate to the
+                            previously downloaded archive file. Double-click the archive file in
+                            MATLAB to unzip it. The archive contains a test model, the installer and
+                            the configuration file (*.mat)</p></li><li class="listitem"><p>Install/use the configuration file</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Preferred option: Enter the following command in the MATLAB
+                                    command window: </p><pre class="programlisting">configuration_file_installer</pre><p>This will install your configuration file in the Speedgoat
+                                    installation structure, and allow you to use it in every model
+                                    without having to manually search for the file</p></li><li class="listitem"><p>Copy the file to a location of your choice. In this case, you
+                                    must search for the configuration file in the Setup block mask
+                                    using the <span class="bold"><strong>Browse</strong></span> button</p></li><li class="listitem"><p>Place the file in the current working directory of your MATLAB
+                                    session next to your model. The configuration file will
+                                    automatically appear in the drop-down list of the Setup block
+                                    mask, however, it will not be available if you change the
+                                    directory</p></li></ul></div></li><li class="listitem"><p>If you start a new model, select the configuration file in the IO3xx
+                            Setup v3 driver block. Otherwise, use the test model provided as a
+                            starting point, which includes the corresponding configuration file
+                            preconfigured</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e163"></a><h2>Test Model</h2><p>A dedicated test model is provided with every configuration file to test the
+                custom set of functionalities. The model contains a preconfigured setup block and at
+                least one block for every implemented functionality. Note that this test model only
+                tests I/O channels for which a loopback test can be performed. Functions that cannot
+                be tested in a loopback setup are commented out.</p><p>To run the model on your target machine, the terminal board provided must be wired
+                as indicated in the documented test wiring within the Simulink model.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The test wiring for older test models is documented in the PDF file
+                        provided.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e169"></a><h2>Setup a Model</h2><p>When setting up a new model, the test model provided is a good starting point. It
+                contains a preconfigured setup block that already uses the configuration file. In
+                addition, all compatible blocks are included in the model with a default setup. You
+                can then modify the model for your needs and specific application use cases.</p><p>By default, the Module ID of the blocks is set to <span class="bold"><strong>1</strong></span>. You must configure the Module IDs of all the blocks depending on
+                your target machine. Please refer to the <a href="refentry_fpga_setup_io3xx.html" class="olink">Setup block</a> documentation on how
+                to distribute Module IDs if your target machine contains multiple configurable I/O
+                modules.</p><p>Update the model (Ctrl + D) to ensure everything is set up correctly. Any
+                conflicts or misconfigured blocks will trigger an error.</p></div><div class="refsect1"><a name="d5e176"></a><h2>Implemented Functionality</h2><p> You can check the implemented functionality of your configuration files in
+                multiple ways:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>In any Simulink model, the <span class="bold"><strong>Pin
+                                Mapping</strong></span> button in the Setup block mask will open a window
+                            showing the pin mapping table and other details (see below) such as the
+                            version history or the individual versions of the
+                            functionalities.</p></li><li class="listitem"><p>Enter the following command in the MATLAB command window to obtain a
+                            list of all the installed configuration files: </p><pre class="programlisting">speedgoat.version</pre><p>You can then click the hyperlink to open a window containing the pin
+                            mapping table and other information as shown below.</p></li></ul></div><div class="refsect2"><a name="d5e187"></a><h3>Pin Mapping</h3><p>The <span class="bold"><strong>Pin Mapping</strong></span> window illustrates the
+                    placement of the implemented functionality on your terminal board. The following
+                    is an example of an IO336-325k with a custom pin mapping including PWM
+                    Generation, PWM Capture, Quadrature Encoder and Quadrature Decoder
+                    functionality.</p><div class="mediaobject"><img src="././graphics/setup_block_pin_mapping.png"></div></div><div class="refsect2"><a name="d5e194"></a><h3>Details</h3><p>The <span class="bold"><strong>Details</strong></span> tab shows additional information
+                    about your configuration file. The first table shows the <span class="bold"><strong>Version History</strong></span> of the currently selected configuration file,
+                    including updates, bug fixes and other historical changes.</p><p>The second table shows more information about the implemented functionalities
+                    (code modules), such as the number of implemented channels, the version for
+                    reference, and the implemented data transfer acceleration.</p><div class="mediaobject"><img src="././graphics/setup_block_pin_mapping_details.png"></div><p>Data Transfer Acceleration</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>N/A: The code module does not support any acceleration and all the
+                            transfers are done over PCIe.</p></li><li class="listitem"><p>Multi-Channel Acceleration: Data transfers from the same block are
+                            combined into accelerated DMA data transfers. To optimize the
+                            performance, all the channels used in the model should be placed into
+                            the same block.</p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>Only blocks running with the fastest rate of the model (base rate)
+                                will be able to use the acceleration.</p></td></tr></table></div></li><li class="listitem"><p>Frame-Based Acceleration: The code module (e.g. Analog Input or
+                            Output) can be configured to use frame mode. In this setup, the data for
+                            multiple samples is combined into a frame and transferred as a
+                            continuous DMA stream between the CPU and the configurable I/O module.
+                            When combined with the corresponding interrupt, the Simulink model can
+                            be triggered once all the data is ready: the DMA transfers take place in
+                            the background. </p></li><li class="listitem"><p>Optimized Data Transfer: When <span class="bold"><strong>Optimize Data
+                                Transfer</strong></span> is enabled in the setup block, all the data
+                            transfers of these code modules between the configurable I/O module and
+                            the CPU are combined into a single transfer. Instead of using the CPU
+                            timer, the model will be triggered by the configurable I/O module as
+                            soon all the read data is completely transferred to the CPU. When the
+                            model executes, all data for computation will already be present, which
+                            reduces the TET. After model execution, the write data is also written
+                            to the configurable I/O module in the background.</p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>Only blocks running with the fastest rate of the model (base rate)
+                                will be used for the optimized data transfer</p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When <span class="bold"><strong>Optimize Data Transfer</strong></span> is
+                                disabled, the code modules supporting optimize data transfer still
+                                use Multi-Channel Acceleration</p></td></tr></table></div></li></ul></div></div></div></div></body></html>

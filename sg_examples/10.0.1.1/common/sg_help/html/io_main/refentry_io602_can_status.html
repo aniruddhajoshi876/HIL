@@ -1,0 +1,104 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO602 - Controller Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io602_can_read.html" title="IO602 - CAN Read"><link rel="next" href="refentry_io610_pin_mapping.html" title="IO610 Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io602_can_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO602 - Controller Status</h2><p>IO602 - Controller Status &#8212; <span class="phrase">This block provides CAN bus and
+                    controller status information for the configured channels of the IO602 I/O
+                    module </span></p></div><div class="refsect1"><a name="d5e10765"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io602_can_status.png"></span></span></p></div><div class="refsect1"><a name="d5e10773"></a><h2>Description</h2><p>This block provides CAN bus and controller status information for the configured
+                channels of the IO602 I/O module.</p></div><div class="refsect1"><a name="d5e10776"></a><h2>Ports</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Inputs</span>
+                    </span></dt><dd><p>The block comes without inputs by default. One input can nonetheless
+                            be configured using the <span class="bold"><strong>Bus off
+                                recovery</strong></span> parameter. Refer to this parameter below for
+                            additional information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Outputs</span>
+                    </span></dt><dd><p>The block comes without outputs by default. Outputs can nonetheless be
+                            configured by the mask parameters. Refer to the relevant parameters for
+                            additional information.</p></dd></dl></div></div><div class="refsect1"><a name="d5e10790"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Get Status for Channel</span>
+                    </span></dt><dd><p>Select the channel of the chosen module for which to get status
+                            information. The IO602 Status block supports channels 1 and 2
+                            only.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Off Recovery</span>
+                    </span></dt><dd><p><span class="bold"><strong>Off</strong></span> means no bus recovery before the
+                            next model start. <span class="bold"><strong>Auto</strong></span> means that the
+                            Status block triggers bus recovery immediately as soon as the bus-off
+                            state is detected. <span class="bold"><strong>Manual</strong></span> means the
+                            user is provided an input port for bus recovery triggering.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output as Array</span>
+                    </span></dt><dd><p>If this is enabled, all the selected status outputs are collected into
+                            a single array. The signal ordering in the array is the same as is
+                            visible in the S-Function parameter dialog, going left-to-right and
+                            top-to-bottom</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Module</div><p>This tab collects channel-independent module status signals.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Live count </span>
+                    </span></dt><dd><p>A counter that is incremented with each execution of the Status block,
+                            providing the module is active.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initializing </span>
+                    </span></dt><dd><p>Indicates that the firmware of the module is currently initializing.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Channel</div><p>This tab collects status signals which are calculated on a per channel
+                    basis.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Average Bus Load Percent </span>
+                    </span></dt><dd><p>CAN bus load, as reported by the hardware every 250&nbsp;ms. The
+                            average is calculated from the time elapsed since the last execution of
+                            the Status block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receiving </span>
+                    </span></dt><dd><p>Indicates that the channel is currently receiving a message.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Queue Empty </span>
+                    </span></dt><dd><p>This is not zero if both the receive buffer of the driver and the
+                            message buffer inside the controller are empty.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Queue Overruns </span>
+                    </span></dt><dd><p>This counts the number of overruns that occurred for the receive
+                            queue, i.e. the number of discarded CAN messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">DMA Receive Buffer Percent </span>
+                    </span></dt><dd><p>0-100&nbsp;% of the receive buffer on the driver side. The IO602 I/O
+                            module uses a buffer for up to 256 CAN messages.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The RX Buffer Level might be greater than 0% when no CAN messages
+                                are on the Bus. This is because the RX buffer is also used for internal messaging.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Pending </span>
+                    </span></dt><dd><p>The transmit queue is not empty.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Queue Overruns </span>
+                    </span></dt><dd><p>Counts the number of discarded CAN messages which could not be put
+                            into the transmit queue because it was full.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Buffer Percent </span>
+                    </span></dt><dd><p>0-100&nbsp;% of the transmit buffer on the hardware module. The IO602
+                            I/O module has a hardware transmit FIFO for 16 CAN messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Warning Limit Exceeded </span>
+                    </span></dt><dd><p>This is set if either the CAN receive error counter or the CAN
+                            transmit error counter reaches the warning limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Passive Limit Exceeded </span>
+                    </span></dt><dd><p>The CAN controller is in error passive mode. This is set if either the
+                            CAN receive error counter or the CAN transmit error counter reaches the
+                            passive limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Off Status </span>
+                    </span></dt><dd><p>The CAN controller is in bus off mode. This is set if the internal
+                            transmit error counter reaches the bus off limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Coupling Error </span>
+                    </span></dt><dd><p>Indicates a bus coupling or wiring error. Not available for the IO602
+                            I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transceiver Error </span>
+                    </span></dt><dd><p>Indicates a transceiver error. Not available for the IO602 I/O
+                            module.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: CAN Parameters</div><p>This tab collects feedback signals for the parameter settings currently in
+                    use.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Operating Mode </span>
+                    </span></dt><dd><p>Current controller mode. 0 &#8211; Off, 1 &#8211; CAN low speed, 2 &#8211; CAN high
+                            speed, 3 &#8211; CAN FD. Note that the IO602 I/O module does not support CAN
+                            low speed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Prescaler (BRP) </span>
+                    </span></dt><dd><p>Outputs the current value set in the controller. Note that the IO602
+                            I/O module uses the same BRP values for the arbitration and data phases.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Time Segment 1 (TSEG1) </span>
+                    </span></dt><dd><p>Outputs the current value set in the controller.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Segment 2 (TSEG2) </span>
+                    </span></dt><dd><p>Outputs the current value set in the controller.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchronisation Jump Width (SJW) </span>
+                    </span></dt><dd><p>Outputs the current value set in the controller.</p></dd><dt><span class="term">
+                        <span class="guilabel">Outputs Current Value Set in Controller </span>
+                    </span></dt><dd><p>Data time segment 1 (TSEG1).</p></dd><dt><span class="term">
+                        <span class="guilabel">Outputs Current Value Set in Controller </span>
+                    </span></dt><dd><p>Data time segment 2 (TSEG2).</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Synchronisation Jump Width (SJW) </span>
+                    </span></dt><dd><p>Outputs the current value set in the controller.</p></dd></dl></div></div></div></body></html>

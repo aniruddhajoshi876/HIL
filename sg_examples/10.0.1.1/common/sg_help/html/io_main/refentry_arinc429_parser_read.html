@@ -1,0 +1,57 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC 429 Parser Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_arinc429_unpack.html" title="ARINC429 - Unpack"><link rel="next" href="refentry_arinc429_parser_write.html" title="ARINC 429 Parser Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc429_parser_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC 429 Parser Read</h2><p>ARINC 429 Parser Read &#8212; <span class="phrase">Reads ARINC 429 words from
+                    one channel</span></p></div><div class="refsect1"><a name="d5e54424"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc429_parser_read.png"></span></span></p></div><div class="refsect1"><a name="d5e54433"></a><h2>Description</h2><p>The ARINC 429 Parser Read block consists of a masked subsystem, which adds an
+                additional functionality layer to the existing IO682 Receive block. The subsystem is
+                dynamically populated with a set of preconfigured ARINC 429 Unpack blocks, the
+                corresponding IO682 Receive blocks, preconfigured output ports, and the
+                interconnecting lines. The ARINC 429 Parser Read block mask allows users to select
+                which configuration file messages should be received.</p><p>The ARINC 429 Parser Read block cannot be edited when linked to a custom
+                library because the block contains instance-specific data that cannot be shared across links.
+                The block remains editable within the library itself; changes made there are
+                reflected in all linked instances. Additionally, the block cannot be used within
+                subsystem models as these are not supported.</p></div><div class="refsect1"><a name="d5e54437"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Rx</span>
+                    </span></dt><dd><p>Outputs a single bus containing all enabled messages. Each message
+                            contains the signals defined in the database, the timestamp of the
+                            message received, a status flag indicating if the message was received,
+                            and the raw ARINC 429 word.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54446"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">I/O Module Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Selects the IO682 I/O module with which this driver block
+                            communicates. The list is populated according to the IO682 Setup blocks
+                            in the model. </p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Select the IO682 channel with which this driver block communicates.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Database</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Browse</span>
+                    </span></dt><dd><p>Select a configuration file from your folders by clicking the browse
+                            button.</p><p>Refer to the <a href="refentry_io682_usage_notes.html" class="olink">Usage Notes</a> for more
+                            information about the configuration file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Update</span>
+                    </span></dt><dd><p>Use this button if the configuration file changes.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Read Message Buffer</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Buffer Size</span>
+                    </span></dt><dd><p>Select the buffer size of the IO682 receive block which this driver
+                            block communicates.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Sample Time</div><dl class="variablelist"><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54489"></a><h2>Hierarchy Tab</h2><p>All messages defined in the selected configuration file are displayed in the
+                    <span class="bold"><strong>Hierarchy</strong></span> tab. Detailed information about the
+                various signals is displayed when a specific message is selected.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/arinc429_parser_hierarchy.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Hierarchy Tree</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Hierarchy</strong></span> tree has a <span class="bold"><strong>Search</strong></span> field available, which highlights
+                            nodes found in this tree. You can cycle through highlighted nodes using
+                            the up and down arrow buttons next to the <span class="bold"><strong>Search</strong></span> button. Clear the <span class="bold"><strong>Search</strong></span> field to clear the node highlighting.</p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>This button refreshes the <span class="bold"><strong>Hierarchy</strong></span> tree and the <span class="bold"><strong>Details Table</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand</span>
+                    </span></dt><dd><p>This button expands or collapses all nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable all</span>
+                    </span></dt><dd><p>Allows users to enable or disable all available messages in one
+                            click.</p></dd><dt><span class="term">
+                        <span class="guilabel">Group by</span>
+                    </span></dt><dd><p>Allows users to sort the messages either by <span class="bold"><strong>None</strong></span>, <span class="bold"><strong>Equipment</strong></span>, or
+                                <span class="bold"><strong>Channel</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Details Table</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Details Table</strong></span> shows all the information
+                            available in the configuration file for the selected node. Depending on
+                            the hierarchy level, different types of information are displayed. No
+                            actions are available for this table.</p></dd></dl></div></div></div></body></html>

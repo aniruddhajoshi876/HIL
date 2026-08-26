@@ -1,0 +1,58 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus - Client Connection</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mbtcp_client_setup.html" title="Modbus TCP - Client Setup"><link rel="next" href="refentry_mbtcp_client_transceiver.html" title="Modbus - Client Transceiver"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbtcp_client_connection"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus - Client Connection</h2><p>Modbus - Client Connection &#8212; <span class="phrase">Establishes a unique
+                    connection to a remote Modbus TCP Server.</span></p></div><div class="refsect1"><a name="d5e69388"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mbtcp_client_connection.png"></span></span></p></div><div class="refsect1"><a name="d5e69396"></a><h2>Description</h2><p>The Connection block connects the local Modbus TCP Client to one remote Modbus TCP
+                Server. Each server connection requires a Connection block in the model. Your model
+                can contain multiple Connection blocks for each Modbus TCP Client station in your
+                target machine.</p></div><div class="refsect1"><a name="d5e69399"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Connect</span>
+                    </span></dt><dd><p>Boolean input to allow the user to request a connection to the defined
+                            Modbus server. This input is deactivated if the <span class="bold"><strong>Auto Connect</strong></span> checkbox is enabled.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Boolean output to inform the user when a connection with the defined
+                            Modbus server is established.</p></dd></dl></div></div><div class="refsect1"><a name="d5e69416"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client Station ID</span>
+                    </span></dt><dd><p>Apply the Client Station ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The Connection ID is used to assign Connection and Transceiver blocks
+                            to a particular client connection. Connection IDs range between 0 to
+                            65535 and must be unique for each Client (Station ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Server IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the Modbus server to which you want to
+                            connect.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Server TCP Port</span>
+                    </span></dt><dd><p>Enter the TCP Port of the Modbus server; the default port for Modbus
+                            is 502. The reserved ports should not be used. Refer to the following
+                            online documentation: <a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">List of TCP and UDP Port Numbers</a></p></dd><dt><span class="term">
+                        <span class="guilabel">Swap Register Bytes</span>
+                    </span></dt><dd><p>The bytes of a register must be swapped if the sender and the receiver
+                            interpret the byte order in different ways (endianness). The Speedgoat
+                            real-time target machine uses little-endian, while some servers use big-endian.
+                            If the swap option is enabled, all register values from the
+                            application context will be swapped before they are sent to the network.
+                            All register values received from the network will be swapped before
+                            they are submitted to the application context. The swap option only
+                            affects input registers and holding registers (transmitted by function
+                            codes FC3, FC4, FC5, FC6, FC16). Discrete inputs and coils are not
+                            affected. Use Byte Reversal blocks instead of enabling the global byte
+                            swapping if only single registers need to be swapped.</p></dd><dt><span class="term">
+                        <span class="guilabel">Concurrent Transmission</span>
+                    </span></dt><dd><p>If selected, the Transceiver blocks associated with the Connection
+                            block send Modbus request messages to the remote Modbus server device
+                            simultaneously. The transmission is never delayed and the Transceiver
+                            blocks do not impact each other.</p><p>If not selected, the Transceiver blocks send Modbus messages one after
+                            the other. A Transceiver may only send its request message after the
+                            previous Transceiver has received a response. This option allows the
+                            client to communicate with server devices which only process the first
+                            request message in the Ethernet input buffer and discard the remaining
+                            ones. </p></dd><dt><span class="term">
+                        <span class="guilabel">Auto Connect</span>
+                    </span></dt><dd><p>To facilitate the connection handling, the Auto Connect function tells
+                            the Connection block to establish a connection with the Modbus server as
+                            soon as possible. If the connection is closed, the Connection block will
+                            try to reopen a connection automatically.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

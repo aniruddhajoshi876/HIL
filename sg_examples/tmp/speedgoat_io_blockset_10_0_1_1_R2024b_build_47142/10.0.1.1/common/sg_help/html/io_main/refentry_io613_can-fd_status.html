@@ -1,0 +1,82 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO613 - CAN-FD Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io613_can-fd_write.html" title="IO613 - CAN-FD Write"><link rel="next" href="refentry_ref_io614.html" title="IO614"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io613_can-fd_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO613 - CAN-FD Status</h2><p>IO613 - CAN-FD Status &#8212; <span class="phrase">This block provides CAN bus
+                    and controller status information for the ports configured to use
+                    CAN-FD</span></p></div><div class="refsect1"><a name="d5e15530"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io613_can-fd_status.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_can_fd_status"></a><h2>Description</h2><p>This block provides CAN-FD bus and controller status information.</p></div><div lang="" class="refsect1"><a name="refsect_ports_can_fd_status"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">All</span>
+                    </span></dt><dd><p>Status information of the CAN channel and the controller. The
+                            individual signals can be enabled or disabled in the driver mask. See
+                            the "Parameters" section.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bus Reco</span>
+                    </span></dt><dd><p>With "1" impulse, the Status block will attempt to recover from a BUS
+                            OFF state. After bus restart, the value should be set to zero.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_can_fd_status"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Block Setup</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Get Status for channel</span>
+                    </span></dt><dd><p>Choose the CAN-FD channel to which this driver block should give
+                            Status information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status Selection</span>
+                    </span></dt><dd><p>Choose which types of status information to access with this driver
+                            block. The selectable status outputs for this block in the Status-Tab
+                            will change accordingly.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Port: Status information about the CAN-FD channel to which
+                                    this driver block is mapped. The term Port is used for Channel
+                                    with this parameter in order to maintain backwards
+                                    compatibility.</p></li><li class="listitem"><p>Controller: Configuration information about the CAN controller
+                                    of the channel to which this driver block is mapped.</p></li><li class="listitem"><p>All: Both of the above.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Bus OFF</span>
+                    </span></dt><dd><p>Defines if and when the CAN controller will try to recover from a "BUS
+                            OFF" status. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Off: The bus will stay OFF, no recovery is
+                                        attempted.</p></li><li class="listitem"><p>Auto: The Status block will restart the CAN stack for both
+                                        channels to recover from the BUS OFF state.</p></li><li class="listitem"><p>Manual: The "Bus Reco" Input is added. Set to "1" for a
+                                        Manual bus restart.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Status-Tab</div><p>Here, the user can select the required status signals. The selected signals
+                    appear as block outputs.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Average Bus Load (0 &#8211; 100%)</span>
+                    </span></dt><dd><p>Average bus load in percent. The CAN controller computes the bus load
+                            every 4096 bits. In most cases, it is sufficient to request the bus load
+                            once per second. Example for 500 kBaud: 500kBaud = 500bit/ms =&gt;
+                            2&micro;s/bit * 4096bit = 8.2ms update time for the bus load.</p></dd><dt><span class="term">
+                        <span class="guilabel">Prescaler (BRP)</span>
+                    </span></dt><dd><p>This value corresponds to the BRP value of the selected baud rate in
+                            the corresponding setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Segment 1 (TSG1)</span>
+                    </span></dt><dd><p>This value corresponds to the TSEG1 value of the selected baud rate in
+                            the corresponding setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Segment 2 (TSG2)</span>
+                    </span></dt><dd><p>This value corresponds to the TSEG2 value of the selected baud rate in
+                            the corresponding setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchronization Jump Width (SJW)</span>
+                    </span></dt><dd><p>This value corresponds to the SJW value of the selected baud rate in
+                            the corresponding setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transceiver Delay Compensation Offset in Quantas</span>
+                    </span></dt><dd><p>Transceiver configuration: Delay between the assertion of the bus and
+                            the verification on the receiver.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmitting</span>
+                    </span></dt><dd><p>The CAN controller is currently transmitting a message.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Overrun Occurred</span>
+                    </span></dt><dd><p>This flag will be set if the receive queue is full and the CAN
+                            controller cannot write the next received message to the queue. To reset
+                            the flag, the controller must be stopped and started again.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Warning Limit Exceeded</span>
+                    </span></dt><dd><p>Each CAN controller has an internal error counter which counts
+                            physical bus problems. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Error counter value is lower than the error warning
+                                        level (&lt;96).</p></li><li class="listitem"><p>1: Error counter has reached the error warning level limit
+                                        (&#8805; 96).</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Bus Off Status</span>
+                    </span></dt><dd><p>Uses the same internal error counter as the warning output above: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Error counter value is lower than the max. error level
+                                        (&lt; 255).</p></li><li class="listitem"><p>1: Error counter has reached the max. error level limit (=
+                                        255). Bus will be shut down.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Init Mode Active</span>
+                    </span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The CAN controller is in the initialization phase and
+                                        is currently not started.</p></li><li class="listitem"><p>1: The CAN controller is started.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Coupling Error</span>
+                    </span></dt><dd><p>Indicates a bus coupling error. Only works with CAN LS.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Recovery Counter</span>
+                    </span></dt><dd><p>This uint32 counter is incremented each time the bus-recovery process
+                            of the CAN channel is finished.</p></dd></dl></div></div></div></body></html>

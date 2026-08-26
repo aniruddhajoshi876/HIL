@@ -1,0 +1,155 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f4-6069.html" title="Chapter&nbsp;4.&nbsp;CAN I/O FIFO Blocks No Longer Recommended for Use"><link rel="prev" href="f5-16990.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Write"><link rel="next" href="f5-17094.html" title="Softing CAN FIFO Read Filter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f5-17055"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read"></a></h2><p>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with Philips SJA1000 FIFO Read block (not recommended)<b>CANFIFOBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e1521"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="f5-18022"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f5-17076"></a><h2>Description</h2><p>The <code class="literal">FIFO Read</code> driver block reads CAN messages from the receive
+                FIFO. The firmware running in FIFO mode puts received events (CAN messages) into the
+                receive FIFO from which the FIFO Read driver reads it.</p><p>If you select CAN_MESSAGE data type as the output, use <a class="link" href="matlab: doc CAN Unpack;" target="_top">CAN Unpack</a> blocks to unpack
+                individual signals from a CAN message.</p><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>To process a remote frame, use the <code class="literal">CAN Unpack</code> block with
+                    the <span class="guibutton">Output remote</span> check box selected to enable the Remote
+                    port. When the Remote port becomes <code class="literal">true</code>, send the current
+                    value to the requesting subsystem.</p></td></tr></table></div><p>If you specify matrix as the output data type, the <code class="literal">FIFO Read</code>
+                driver block has one output port of type double. The signal of this port is a matrix
+                of size <code class="literal">m*6</code>, where <code class="literal">m</code> is the <code class="literal">FIFO
+                    Read</code> depth defined in the block parameters. For example, if the FIFO
+                read depth is <code class="literal">5</code>, then the matrix signal of port 1 has size
+                    <code class="literal">5*6</code>. Therefore, one row for each event is read out of the
+                receive FIFO (no new message is considered an
+                event as well).</p><p>If you select double values in a matrix as the output, each row with its six
+                elements contains the information defining a CAN message:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">Port</code></span></dt><dd><p>The value can be either 1 (port 1) or 2 (port 2) and reports the port
+                            at which the CAN message was received.</p></dd><dt><span class="term"><code class="literal">Identifier</code></span></dt><dd><p>Identifier of the CAN message being received. If it is a standard CAN
+                            message the range is 0 to 2047. It is an extended CAN message, the range
+                            is 0 to 2<sup>29</sup>-1.</p></dd><dt><span class="term"><code class="literal">Event type</code></span></dt><dd><p>This value defines the type of event read from the receive FIFO. The
+                            following values are defined in the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user
+                            manual.</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="17%" class="col1"><col width="83%" class="col2"></colgroup><thead><tr><th valign="top">Events</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>No new
+                                                event.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">1</code></p>
+                                        </td><td>
+                                            <p>Standard data frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">2</code></p>
+                                        </td><td>
+                                            <p>Standard remote frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">3</code></p>
+                                        </td><td>
+                                            <p>Transmission of a standard data frame is
+                                                confirmed.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">4</code></p>
+                                        </td><td>&nbsp;</td></tr><tr><td>
+                                            <p><code class="literal">5</code></p>
+                                        </td><td>
+                                            <p>Change of bus state.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">6</code></p>
+                                        </td><td>&nbsp;</td></tr><tr><td>
+                                            <p><code class="literal">7</code></p>
+                                        </td><td>&nbsp;</td></tr><tr><td>
+                                            <p><code class="literal">8</code></p>
+                                        </td><td>
+                                            <p>Transmission of a standard remote frame is
+                                                confirmed.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">9</code></p>
+                                        </td><td>
+                                            <p>Extended data frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">10</code></p>
+                                        </td><td>
+                                            <p>Transmission of an extended data frame is
+                                                confirmed.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">11</code></p>
+                                        </td><td>
+                                            <p>Transmission of an extended remote frame is
+                                                confirmed.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">12</code></p>
+                                        </td><td>
+                                            <p>Extended remote frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">13</code></p>
+                                        </td><td>&nbsp;</td></tr><tr><td>
+                                            <p><code class="literal">14</code></p>
+                                        </td><td>&nbsp;</td></tr><tr><td>
+                                            <p><code class="literal">15</code></p>
+                                        </td><td>
+                                            <p>Error frame detected.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><code class="literal">Data frame size</code></span></dt><dd><p>If a data frame has been received, the length of the data in bytes is
+                            reported by this element. Possible values are 0 to 8.</p></dd><dt><span class="term"><code class="literal">Timestamp</code></span></dt><dd><p>Time at which the event was received. The resolution of the timestamp
+                            counter is 1 &#956;s.</p></dd><dt><span class="term"><code class="literal">Data</code></span></dt><dd><p>Data of the data frame itself returned as a CAN_MESSAGE or double
+                            value (8 bytes) depending on which data type you are using for your
+                            messages. Use the <code class="literal">CAN Unpack</code> block to extract the
+                            data from the CAN_MESSAGE data value. Use the <a class="link" href="matlab: doc CAN Bit-Unpacking;" target="_top">CAN
+                            Bit-Unpacking</a> block to extract the data from the double
+                            value.</p></dd></dl></div></div><div class="refsect1"><a name="f5-17082"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Defines the board used to send the CAN messages defined by this block
+                            instance. For more information about the meaning of the board number,
+                            see the <code class="literal">Setup</code> driver block. If one board is present
+                            in the target system, select board number 1.</p></dd><dt><span class="term"><span class="bold"><strong>Output format</strong></span></span></dt><dd><p>From the list, select:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Matrix of doubles (legacy)</code></p><p>Formats messages as double values in a matrix. See <a href="f5-17055.html#f5-17076" class="olink">Description</a> for details on this message format.
+                                </p></li><li class="listitem"><p><code class="literal">Vector of CAN_MESSAGE plus count</code></p><p>Formats messages as vectors of CAN_MESSAGE structures.</p><p>Selecting this option enables the <span class="bold"><strong>Port</strong></span> parameter. It also creates an
+                                        <code class="varname">N</code> output port that contains the number of
+                                    valid entries in the CAN_MESSAGE data vector. The block
+                                    interprets the <span class="bold"><strong>FIFO read depth</strong></span>
+                                    value as the size of the vector. The block outputs up to
+                                        <span class="bold"><strong>FIFO read depth</strong></span> number of
+                                    messages. For example, if you enter a read depth of
+                                        <code class="literal">3</code>, but the receive FIFO has only two
+                                    messages, the output vector has only two messages.</p></li><li class="listitem"><p><code class="literal">Function call for each CAN_MESSAGE</code></p><p>Formats messages as vectors of CAN_MESSAGE structures.</p><p>Selecting this option enables the <span class="bold"><strong>Port</strong></span> parameter. It also creates a function-call
+                                    output (f()) output port. This port contains a function-call for
+                                    a single CAN_MESSAGE data element. The block repeats the
+                                    function-call for each message from the FIFO, up to the value of
+                                        <span class="bold"><strong>FIFO read depth</strong></span>. You input
+                                    this function-call output into a function-call subsystem.</p></li></ul></div></dd><dt><span class="term"><span class="bold"><strong>Port</strong></span></span></dt><dd><p>CAN_MESSAGE only. From the list, select <code class="literal">1</code> or
+                                <code class="literal">2</code> for the input port. The block reads the message
+                            from that FIFO (1 or 2). Its output is a vector of CAN_MESSAGE messages.
+                            If you want to read from both ports, use two <code class="literal">FIFO
+                                Read</code> blocks, one for each port. <code class="literal">Selecting Vector
+                                of CAN_MESSAGE plus count</code> for <span class="bold"><strong>Output
+                                format</strong></span> enables this parameter.</p><p>Selecting <code class="literal">Matrix of doubles (legacy)</code> or
+                                <code class="literal">Function call for each CAN_MESSAGE</code> for the
+                                <span class="bold"><strong>Output format</strong></span> parameter disables
+                            this parameter. The block ignores the port. In this case, the block
+                            reads from both ports and records the port for each message in the
+                            output matrix.</p></dd><dt><span class="term"><span class="bold"><strong>FIFO read depth</strong></span></span></dt><dd><p>Defines the number of receive FIFO read attempts. Each time the block
+                            is executed it reads this fixed number of events (CAN messages), which
+                            leads to a
+                            deterministic time
+                            behavior regardless of the number of events currently stored in the
+                            receive FIFO. The Read depth (m) also defines the size of the matrix
+                            signal (m*6) leaving the first output port. If an event is not currently
+                            stored in the receive FIFO, the FIFO is read anyway, but the event type
+                            is reported as 0 (no new
+                            event).</p></dd><dt><span class="term"><span class="bold"><strong>Show status output port</strong></span></span></dt><dd><p>Select this to enable the status output port (S). If the box is
+                            cleared (disabled), the block has one output port for the events (D). If
+                            enabled, a second port is shown. The signal leaving that port is a
+                            vector of doubles, with two elements:</p><pre class="programlisting">[Number of lost messages (events), Bus state]</pre><p>The first element returns the current value of the lost messages
+                            counter. The receive FIFO can store up to 127 events. If the receive
+                            FIFO is not regularly accessed for reading events, the FIFO is filled
+                            and the lost messages counter starts to count up. This is an indicator
+                            that events (messages) will be unavoidably lost. The second element
+                            returns the current bus state. Possible values are</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="13%" class="col1"><col width="87%" class="col2"></colgroup><thead><tr><th valign="top">Code</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>Error active.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">1</code></p>
+                                        </td><td>
+                                            <p>Error passive.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">2</code></p>
+                                        </td><td>
+                                            <p>Bus off.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span>
+                    </span></dt><dd><p>Defines the sample time at which the <code class="literal">FIFO Read</code>
+                            block is executed during a real-time application run.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Use only one instance of this block per physical CAN board in your model.
+                    Otherwise, one instance can read events that are intended for blocks connected
+                    to another instance.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e1787"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></li><li class="listitem"><p><a class="link" href="https://company.softing.com" target="_top">https://www.company.softing.com</a></p></li></ul></div></div></div></body></html>

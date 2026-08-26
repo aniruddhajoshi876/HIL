@@ -1,0 +1,31 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO642 - Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io642_send_v2.html" title="IO642 - Send v2"><link rel="next" href="refentry_io642_receive_v2.html" title="IO642 - Receive v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io642_receive"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO642 - Receive</h2><p>IO642 - Receive &#8212; <span class="phrase">Receives cyclic data sent from the
+                    PROFIBUS DP master to the IO642</span></p></div><div class="refsect1"><a name="d5e47418"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io642_receive_cyclic_data.png"></span></span></p></div><div class="refsect1"><a name="d5e47426"></a><h2>Description</h2><p>This block is used to receive cyclic data sent from the PROFIBUS DP master to the
+                IO642. You can only use one "PBS Receive" block for each physical module installed.
+            </p></div><div class="refsect1"><a name="d5e47429"></a><h2>Ports</h2><p>Depending on the value of 'Port type' parameter this block will have either: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>n output ports of type uint8, where n is defined by the 'Master-Output
+                            Data Bytes' parameter.</p></li><li class="listitem"><p>or 1 output port which is a vector with n elements, where n is defined
+                            by the 'Master-Output Data Bytes' parameter.</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Outputs (n ports of type uint8)</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">1 </span>
+                    </span></dt><dd><p>Data byte to received. Type uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">X (X is the port number, between 1 and the value in 'Output Data
+                            Bytes' parameter) </span>
+                    </span></dt><dd><p>Data byte to received. Type uint8.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs (1 port with n element vector)</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">data </span>
+                    </span></dt><dd><p>A vector of data bytes to receive. The number of elements in the
+                            vector is defined by the 'Master-Output Data Bytes' parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e47456"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_comms_ip_porttype"></a><span class="term">
+            <span class="guilabel">Port Type</span>
+        </span></dt><dd><p>The type of the input/output ports. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>n ports of type uint8 to have an input/output port for each
+                            signal</p></li><li class="listitem"><p>1 port with n element vector of type uint8 to have a single vector
+                            with an element for each signal</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Master-Output Data Bytes </span>
+                    </span></dt><dd><p>The number of bytes to be received from the Master. This parameter in
+                            SYCON.net is named "Output Data Bytes" because it refers to the Master
+                            side.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

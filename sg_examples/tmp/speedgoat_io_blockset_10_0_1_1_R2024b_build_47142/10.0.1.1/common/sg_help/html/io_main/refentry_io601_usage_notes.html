@@ -1,0 +1,63 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO601 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io601_pin_mapping.html" title="IO601 Pin Mapping"><link rel="next" href="refentry_io601_can_setup.html" title="IO601 - CAN Setup v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io601_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO601 Usage Notes</h2><p>IO601 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div lang="" class="refsect1"><a name="refsect1_can_usagenotes"></a><h2>CAN Read Strategy</h2><p>The "CAN Read" block reads one message from one channel of the module input queue.
+                The "Data present" output port shows if there are more messages available in the
+                queue.</p><p>The CAN receiver requires a do-while construction to ensure that all messages in
+                the buffer are read at a given sample step. It is important to estimate the number
+                of messages expected so that the correct sample time of the do-while subsystem is
+                selected. The sample time of the subsystem is defined by Simulink inheritance rules:
+                if the subsystem does not have input ports, it will inherit the fundamental sample
+                time of the model. Alternatively, the sample time of the subsystem can be controlled
+                by adding an input port. The sample time of the block connected to the input port is
+                inherited by the subsystem.</p><p>The do-while construction iterates the CAN Read operation until the receiver
+                buffer is empty (this information is provided by the Data present port). In the same
+                subsystem, we can filter the messages required by the application.</p><p>The sample time must be chosen in order to avoid buffer overflow during a sample
+                step. Furthermore, if multiple messages with the same Message ID are received, only
+                the most recent messages will appear in the do-while subsystem output. To read all
+                messages with a certain ID, the do-while subsystem must be run faster than the
+                frequency of the message(s) in question.</p><p>For example, if Message ID 100 is expected with a frequency of 10 ms, and all
+                these messages must be read, the do-while subsystem sample time must be faster than
+                10 ms, for example, 5 ms.</p><p>If there are other messages in the line, a check must be carried out to ensure
+                that there is no message overflow; for example, with a buffer size of 501 messages
+                (IO612), if 500 messages are expected within 500 ms, a sample time of 500 ms or
+                slower may lead to the messages in the buffer being overwritten.</p></div><div class="refsect1"><a name="d5e8507"></a><h2>Top level view: </h2><p><span class="inlinemediaobject"><img src="././graphics/IO601_Read_v4_block_whileIteratorSS.png"></span></p></div><div class="refsect1"><a name="d5e8513"></a><h2>Inside the While Iterator Subsystem </h2><p><span class="inlinemediaobject"><img src="././graphics/IO601_Read_v4_block_whileIterator.png"></span></p><p>The "Sample Time" input port defines the rate at which the subsystem is executed.
+                Otherwise it will run on the base rate.</p></div><div class="refsect1"><a name="d5e8520"></a><h2>CAN Message Filtering </h2><p>The IO601 has some limited message identifier filtering capabilities. The filters
+                are handled on the module level, so rejected messages do not add to the model
+                execution latency.</p><p>Here are two examples of how to configure CAN message ID filtering. Both of these
+                work with the Acceptance parameter for extended CAN IDs ('Acceptance [ExtMask1,
+                ExtCode1, ExtMask2, ExtCode2]:'). The Acceptance parameter for standard IDs works in
+                the same way.</p><p>These parameters are configured in the Setup driver block.</p></div><div class="refsect1"><a name="d5e8525"></a><h2>To filter specific IDs: </h2><p>ExtMask1 = double(hex2dec('1FFFFFFF')) - masks all 29 bits of the ID</p><p>ExtCode1 = double(hex2dec('7DO')) - first ID to filter is 0x7D0</p><p>ExtMask2 = double(hex2dec('1FFFFFFF')) - masks all 29 bits of the ID</p><p>ExtCode2 = double(hex2dec('FFFFF')) - second ID to filter is 0xFFFFF</p><p>In this case, only the message IDs 0x7D0 and 0xFFFFF are accepted.</p></div><div class="refsect1"><a name="d5e8532"></a><h2>To filter a group of IDs smaller than a certain value: </h2><p>ExtMask1 = double(hex2dec('1FFFFF00'))</p><p>ExtCode1 = double(hex2dec('00000000'))</p><p>ExtMask2 = double(hex2dec('1FFFFF00'))</p><p>ExtCode2 = double(hex2dec('00000000'))</p><p>In this case, only IDs below 0xFF (255) are accepted.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The Acceptance parameter takes decimal values. As it is often easier to work
+                    with hex for CAN IDs, we use MATLAB conversion functions here for simplicity.
+                </p></td></tr></table></div></div><div class="refsect1"><a name="d5e8541"></a><h2>LIN Power Supply and Firmware Requirements</h2><p>To enable LIN communication, firmware v4.27 or newer must be loaded by Speedgoat,
+                and 12V must be supplied to pin 9 of connector 1 of the module.</p><p>If a previous firmware version is installed, an error message will appear on the
+                target screen before model execution. In this case, please contact Speedgoat to
+                receive updated firmware.</p></div><div class="refsect1"><a name="refsect1_io601_init_term_can"></a><h2>Initialization and Termination CAN Messages</h2><p>The CAN Setup driver blocks for the supported CAN boards allow you to define CAN
+                messages to be sent during initialization and termination of the real-time
+                application. The driver blocks send these messages once at the beginning of each
+                application run and once before an application run is stopped. The main purpose for
+                sending these messages is to initialize or terminate other CAN nodes on the network,
+                such as CANopen or DeviceNet nodes. Even if the CAN layers are not directly
+                supported, the model can usually communicate with these nodes with standard CAN
+                messages, provided the nodes are initialized. The initialization and termination
+                fields of the Setup blocks are intended for this purpose.</p><p>You define the initialization and termination CAN messages by using MATLAB&reg;
+                structure arrays with CAN-specific field names. This approach was also used for the
+                RS-232 and general counter driver blocks found in the Simulink&reg; Real-Time&#8482; I/O
+                library. Refer to these driver blocks and their help for additional information
+                about this basic concept.</p><div class="itemizedlist"><p>The CAN Setup block-specific field names are:</p><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>port: Selects the CAN channel over which the message is sent. Valid values
+                        are either 1 or 2 (double).</p></li><li class="listitem"><p>type: Defines whether the message to be sent is of a standard or extended
+                        type. Valid values are either "Standard" or "Extended" (character
+                        vectors).</p></li><li class="listitem"><p>identifier: Defines the identifier of the message. The value (scalar)
+                        itself must be in the corresponding identifier range (standard or
+                        extended).</p></li><li class="listitem"><p>data: Defines the data frame to be sent out along with the CAN message.
+                        The length of the row vector defines the data frame size.</p><p>If the CAN message data type is a double, this field defines the data
+                        frame to be sent out along with the CAN message. The value must be a row
+                        vector of type double with a maximum length of 8. Each element of the vector
+                        defines 1 byte. In this case, the first element defines the data for byte 0
+                        and the eighth element the data for byte 7. Each element can have a value
+                        from 0 through 255 (decimal).</p></li><li class="listitem"><p>pause: Defines the amount of time, in seconds, that the Setup block waits
+                        after this message has been sent before sending the next message. Valid
+                        values are 0&#8211;0.05 seconds. Some CAN nodes need time to settle before they
+                        can accept the next message. For example, the node must settle when the
+                        previous message puts it in a new operational mode. Use this field to
+                        specify the idle times.</p></li></ul></div></div></div></body></html>

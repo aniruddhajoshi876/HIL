@@ -1,0 +1,98 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with SJA1000 Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f2-6069.html" title="Chapter&nbsp;3.&nbsp;CAN I/O Blocks No Longer Recommended for Use"><link rel="prev" href="bu3bjli-4.html" title="Softing CAN-AC2-PCI with SJA1000 Setup"><link rel="next" href="bu3bjli-14.html" title="Softing CAN-AC2-PCI with SJA1000 Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bu3bjli-9"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with SJA1000 Send<a name="Softing_CAN-AC2-PCI-SJA-1000_Send"></a></h2><p>Softing CAN-AC2-PCI with SJA1000 Send<a name="Softing_CAN-AC2-PCI-SJA-1000_Send"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with SJA1000 Send block (not recommended)<b>CANBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e840"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="bu3bjli-11"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bu3bjli-12"></a><h2>Description</h2><p>The <code class="literal">Send</code> driver block transmits data to a CAN network from
+                within a block model.</p><p>To use CAN_MESSAGE data types to transmit messages, first use the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> block to create CAN messages
+                for transmission.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Do not mix message data types with each <code class="literal">Send</code> block.
+                        Either transmit only CAN_MESSAGE data types, or transmit only 8 bytes in
+                        double data types.</p></li><li class="listitem"><p>To prepare a remote frame, use the <code class="literal">CAN Pack</code> block with
+                        the <span class="guibutton">Remote frame</span> check box selected. To request the
+                        current value, send the remote frame to the responding subsystem.</p></li></ul></div></div><div class="refsect1"><a name="bu3bjli-13"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Defines the board used to send out the CAN messages defined by this
+                            block instance. For more information about the meaning of the board
+                            number see the <code class="literal">Setup</code> driver block described above. If
+                            just one board is present in the target system, select board number
+                            1.</p></dd><dt><span class="term"><span class="bold"><strong>CAN port</strong></span></span></dt><dd><p>Selects the CAN port to which the CAN message is sent.</p></dd><dt><span class="term"><span class="bold"><strong>CAN identifier range</strong></span></span></dt><dd><p>Selects the identifier range of the CAN messages sent by this block
+                            instance. If an application makes use of mixed standard and extended
+                            identifier ranges, you must use at least two instances of this block,
+                            each defining the corresponding identifier range.</p><p>If the CAN message data type is a CAN_MESSAGE data type, this range
+                            must match the range packed in the message parameter (for example, the
+                            message from the <code class="literal">CAN Pack</code> block).</p></dd><dt><span class="term"><span class="bold"><strong>Identifiers</strong></span></span></dt><dd><p>Defines the identifiers of the CAN messages sent by this block. It
+                            must be a row vector in which the elements define a set of either
+                            standard or extended identifiers. Each element must be in the range
+                            between 0 and 2047 for standard identifiers or 0 and <span class="mathphrase">2<sup>29</sup>&nbsp;-&nbsp;1</span> for extended identifiers. The number of identifiers
+                            for each CAN port in a model per physical CAN board cannot exceed 200
+                            (limitation of the firmware's dynamic object buffer mode). The number of
+                            elements defined here also defines the number of input ports of the
+                            block. The block icon displays the selected identifier at each input
+                            port.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the CAN message data type is CAN_MESSAGE, connect each
+                                    input port to one <code class="literal">CAN Pack</code> block. Verify that
+                                    the <span class="bold"><strong>Identifier</strong></span> parameter for
+                                    each <code class="literal">CAN Pack</code> block matches the send block
+                                    input port. Do not connect a vector of messages to an input
+                                    port. Each input port number also indicates sending priority,
+                                    with the lowest number having the highest priority.</p><p>If the CAN message data type is a CAN_MESSAGE data type, these
+                                    identifiers must match those packed in the message parameter
+                                    (for example, the message from the <code class="literal">CAN Pack</code>
+                                    block).</p></li><li class="listitem"><p>If the CAN message data type is not CAN_MESSAGE data type,
+                                    each input port accepts the data frame to be sent along with the
+                                    CAN message. The signal entering each input port must be a
+                                    scalar of type double representing the maximum size of 8 bytes
+                                    of a CAN message data frame.</p></li></ul></div></dd><dt><span class="term"><span class="bold"><strong>Data frame sizes</strong></span></span></dt><dd><p>Defines the data frame size, in bytes, for each CAN message
+                            represented by an identifier in the <span class="bold"><strong>Identifiers</strong></span> list. It must be a row vector in which the
+                            elements define a set of data frame sizes. Each element must be in the
+                            range between 1 and 8. If the data frame sizes for the identifiers must
+                            be the same, you can provide the size as a scalar, and scalar expansion
+                            applies. If the sizes are different for at least two identifiers, you
+                            must provide one element for each identifier. Therefore the length of
+                            the two vectors must be the same.</p><p>If the CAN message data type is a CAN_MESSAGE data type, these
+                            identifiers must match those packed in the message parameter (for
+                            example, the message from the <code class="literal">CAN Pack</code> block).
+                        </p></dd><dt><span class="term"><span class="bold"><strong>Show status output ports</strong></span></span></dt><dd><p>Enables status output ports for each CAN message represented by an
+                            identifier in the <span class="bold"><strong>Identifiers</strong></span> list. If
+                            the check box is selected, the block shows as many output ports as input
+                            ports. The data type of each output port is a double, given in the
+                            table. Refer to the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; manual for more information. The function
+                            return codes are:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="11%" class="col1"><col width="89%" class="col2"></colgroup><thead><tr><th valign="top">Code</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>Function executed without detecting an
+                                                error.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-1</code></p>
+                                        </td><td>
+                                            <p>Request overrun.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-2</code></p>
+                                        </td><td>
+                                            <p>CAN_MESSAGE data type only. Input port message
+                                                from <code class="literal">CAN Pack</code> block has incorrect
+                                                  <span class="bold"><strong>Identifiers</strong></span> or
+                                                  <span class="bold"><strong>CAN identifier
+                                                  range</strong></span> value.</p>
+                                            <p>This is not a <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; standard.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-3</code></p>
+                                        </td><td>
+                                            <p>CAN_MESSAGE data type only. Input port message
+                                                from <code class="literal">CAN Pack</code> block has incorrect
+                                                  <span class="bold"><strong>Data frame sizes</strong></span>
+                                                value.</p>
+                                            <p>This is not a <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; standard.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-4</code></p>
+                                        </td><td>
+                                            <p>Timed out firmware communication.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-99</code></p>
+                                        </td><td>
+                                            <p>Board not initialized.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Defines the sample time at which the <code class="literal">Send</code> block is
+                            executed during a real-time application run.</p></dd></dl></div><p>You can use as many instances of the <code class="literal">Send</code> block in the model as
+                required. For example, by using two instances of the block, you can send CAN
+                messages at different sample times. Or you can use multiple instances to structure
+                your model more efficiently.</p></div><div class="refsect1"><a name="d5e984"></a><h2>Related Links</h2><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></div></div></body></html>

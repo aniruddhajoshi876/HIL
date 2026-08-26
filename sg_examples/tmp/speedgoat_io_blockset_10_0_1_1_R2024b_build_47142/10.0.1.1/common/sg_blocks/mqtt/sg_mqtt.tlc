@@ -1,0 +1,22 @@
+%function MqttTerminate(block) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+        mqtt::Root.Run = false;
+    }
+
+    %endwith
+
+%endfunction
+
+%function MqttCommonIncludes() Output
+
+    %<LibAddToCommonIncludes("sg_common.h")>
+    %<LibAddToCommonIncludes("mqtt_def.h")>
+    %<LibAddToCommonIncludes("mqtt.h")>
+    %<LibAddToCommonIncludes("mqtt_client_station.h")>
+    %<LibAddToCommonIncludes("mqtt_client_connection.h")>
+    %<LibAddToCommonIncludes("mqtt_client_transceiver.h")>
+    
+%endfunction

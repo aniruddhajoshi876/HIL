@@ -1,0 +1,114 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">GE Fanuc Shared Node Initialization Structure</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="prev" href="f69-6165.html" title="GE Fanuc Shared Partition Structure"><link rel="next" href="btq8x2a-1.html" title="Create Curtiss-Wright Shared Partitions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f69-6213"></a><span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc Shared Node
+            Initialization Structure</h2></div></div></div><p>A node initialization structure has the following fields:</p><pre class="programlisting">     Interface: [1x1 struct]
+    Partitions: [1x1 struct]
+</pre><p>where</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="24%" class="col1"><col width="76%" class="col2"></colgroup><thead><tr><th><p>Node Structure Fields</p></th><th><p>Description</p></th></tr></thead><tbody><tr><td><p><code class="literal">Interface</code></p></td><td><p>Specifies how the board is configured. The Interface structure
+                                has the following fields, three of which are structures:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Mode</code> &#8212; Configures board
+                                        registers (see <a href="f69-6213.html#f69-6249" class="olink">Board Mode</a>)</p></li><li class="listitem"><p><code class="literal">Interrupts</code> &#8212; Enables the board
+                                        to generate PCI interrupts from network events that have
+                                        been broadcast from other nodes, or in response to error
+                                        conditions (see <a href="f69-6213.html#f69-6303" class="olink">Board Interrupts</a>)</p></li><li class="listitem"><p><code class="literal">NodeID</code> &#8212; Specifies the node ID
+                                        for the board (see <a href="f69-6213.html#f69-6354" class="olink">Board Node ID</a>)</p></li><li class="listitem"><p><code class="literal">Internal</code> &#8212; Reserved for internal
+                                        use</p></li></ul></div></td></tr><tr><td><p><code class="literal">Partitions</code></p></td><td><p>Stores the shared memory segments (see <a href="f69-6091.html" class="olink">Create
+                                    Shared Memory Partitions</a>)</p></td></tr></tbody></table></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f69-6249"></a>Board Mode</h3></div></div></div><p>The PCI-5565 board has several registers that you can set through the
+                    <code class="literal">Interface.Mode</code> field. To display the board mode fields,
+                type:</p><pre class="programlisting">&gt;&gt; node.Interface.Mode
+
+ans =
+          StatusLEDOff: 'off'
+    TransmitterDisable: 'off'
+      DarkOnDarkEnable: 'off'
+        LoopbackEnable: 'off'
+     LocalParityEnable: 'off'
+          MemoryOffset: '0'
+            MemorySize: '64MByte'</pre><p>The mode values interact with the PCI-5565 board setting of the LSR1 (Local
+                Control and Status Register 1) and LIER (Local Interrupt Enable Register) registers.
+                Refer to the PCI-5565 product documentation for further details on these two
+                registers. To monitor the status of these modes, select the <span class="guilabel">Error Status
+                    Port</span> check box of the <a href="f70-16490.html" class="olink">GE Fanuc 5565 read</a> or <a href="f70-16515.html" class="olink">GE Fanuc 5565 write</a>
+                block.</p><p>Of particular note are the following modes:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="24%" class="col1"><col width="76%" class="col2"></colgroup><thead><tr><th><p>Board Modes</p></th><th><p>Description</p></th></tr></thead><tbody><tr><td><p><span class="property">StatusLEDOff</span></p></td><td><p>Turns the PCI-5565 board status LED on and off. Setting
+                                    this value to 'off' turns off the LED when the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                                    model runs, setting this value to 'on' turns on the LED when the
+                                        <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> model runs. When the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                                    software terminates, the LED status reverses in both cases. The
+                                    default value is <code class="literal">'off'</code>.</p></td></tr><tr><td><p><span class="property">MemoryOffset</span></p></td><td><p>Applies a global offset to the network data transfers
+                                    coming from the PCI-5565 board. The following table lists offset
+                                    values and the resulting offset. The default value is
+                                        <code class="literal">'0'</code>.</p></td></tr><tr><td><p><span class="property">MemorySize</span></p></td><td><p>Specifies the minimum memory size required,
+                                    in the format
+                                        <code class="literal">'<em class="replaceable"><code>size</code></em>MByte'</code>.
+                                    The PCI-5565 driver checks this value against the memory size of
+                                    the PCI-5565 board. If you enter a size in this field that is
+                                    larger than the actual PCI-5565 board memory size, the driver
+                                    returns an error.</p></td></tr></tbody></table></div><p>This table lists the values for <span class="property">MemoryOffset</span>:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="49%" class="col1"><col width="51%" class="col2"></colgroup><thead><tr><th><p>Value</p></th><th><p>Offset Produced</p></th></tr></thead><tbody><tr><td><p><code class="literal">'0'</code></p></td><td><p>0</p></td></tr><tr><td><p><code class="literal">'1'</code></p></td><td><p>0x4000000</p></td></tr><tr><td><p><code class="literal">'2'</code></p></td><td><p>0x8000000</p></td></tr><tr><td><p><code class="literal">'3'</code></p></td><td><p>0xC000000</p></td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f69-6303"></a>Board Interrupts</h3></div></div></div><p>The PCI-5565 board can generate PCI interrupts in response to network events that
+                have been broadcast from other nodes, or in response to error conditions. For
+                example, you can configure two <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; models, one as
+                master, and one as a slave of the broadcast node in the master <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> model. In such a
+                configuration, the broadcast node interrupt triggers the model time steps.</p><p>To display the interrupt mode fields, type:</p><pre class="programlisting">node.Interface.Interrupts</pre><pre class="programlisting">ans =
+       LocalMemoryParity: 'off'
+    MemoryWriteInhibited: 'off'
+         LatchedSyncLoss: 'off'
+              RXFifoFull: 'off'
+        RXFifoAlmostFull: 'off'
+                 BadData: 'off'
+             PendingInit: 'off'
+             RoguePacket: 'off'
+        ResetNodeRequest: 'off'
+             PendingInt3: 'off'
+             PendingInt2: 'off'
+             PendingInt1: 'off'</pre><p>Each field corresponds to a bit in the LIER register of the PCI-5565 board. Each
+                bit enables the specified interrupt source on the PCI-5565 board. Refer to the
+                PCI-5565 product documentation for further details on this register.</p><p>To enable a node to generate a network interrupt source, add the 5565 broadcast
+                block to a model (the master model). This block issues network interrupts at the
+                model sample rate. To enable other nodes of the network (the slave models) to accept
+                broadcast interrupts, configure the slave models to expect the broadcast
+                interrupt.</p><p>The following procedure describes how to configure an entire <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> model to accept a
+                broadcast interrupt from a PCI-5565 board. See <a href="f70-17367.html" class="olink">GE Fanuc 5565 broadcast</a> for a description of the
+                    <span class="guilabel">Interrupt parameter</span> value that the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> model expects.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><a name="f69-6326"></a>From the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window, type</p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre><p>This command lists board information for the installed PCI devices that
+                        the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+                        software knows about.</p></li><li class="listitem"><p><a name="f69-6330"></a>Find the IRQ specified for the PCI-5565 board.</p><p>To specify in the <span class="guilabel">Real-Time interrupt source</span> field of
+                        the <span class="guilabel">Simulink Real-Time Options</span> pane, use this interrupt
+                        source number.</p></li><li class="listitem"><p><a name="f69-6335"></a>Edit your script and add a line like the
+                        following.</p><pre class="programlisting">node.Interface.Interrupts.PendingInt1='on'
+</pre><p>This line directs the model to expect an interrupt. It assumes that the
+                        value of the 5565 broadcast block <span class="guilabel">Interrupt parameter</span>
+                        is 1.</p></li><li class="listitem"><p><a name="f69-6338"></a>From the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window, type the name of your <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model.</p><p>The <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+                        model appears.</p></li><li class="listitem"><p><a name="f69-6340"></a>Select <span class="guimenuitem">Simulation</span> &#8594; <span class="guimenuitem">Model Configuration Parameters</span>
+                    </p></li><li class="listitem"><p><a name="f69-6341"></a>Select node <span class="guilabel">Code
+                            Generation</span>.</p></li><li class="listitem"><p><a name="f69-6342"></a>Select node <span class="guilabel">Simulink Real-Time
+                            Options</span>.</p></li><li class="listitem"><p><a name="f69-6343"></a>Set the <span class="guilabel">Execution mode</span> field to
+                            <code class="literal">Real-Time</code>.</p></li><li class="listitem"><p><a name="f69-6344"></a>Click the <span class="guimenuitem">Real-Time interrupt
+                            source</span> list.</p></li><li class="listitem"><p><a name="f69-6349"></a>Select the interrupt source number to which the board is
+                        set.</p></li><li class="listitem"><p><a name="f69-6350"></a>Click the <span class="guilabel">I/O board generating the
+                            interrupt</span> list and select
+                            <code class="literal">GE_Fanuc(VMIC)_PCI-5565</code> from the list.</p></li><li class="listitem"><p><a name="f69-6351"></a>Click <span class="guibutton">OK</span>.</p></li></ol></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If you have a larger model, to localize control of the interrupt within that
+                    model, use the IRQ Source block from the Asynchronous Event sublibrary.</p></td></tr></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="f69-6354"></a>Board Node ID</h3></div></div></div><p>The jumpers of the PCI-5565 board specify the board node ID. Correspondingly, you
+                can also configure the PCI-5565 block with the board node ID using the
+                    <code class="literal">Interface.NodeID</code> field. Enter values according to the
+                following:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="30%" class="col1"><col width="70%" class="col2"></colgroup><thead><tr><th><p>NodeID Value</p></th><th><p>Description</p></th></tr></thead><tbody><tr><td><p><code class="literal">'any'</code></p></td><td><p>Allows the PCI-5565 driver to work with a PCI-5565 node
+                                    regardless of the PCI-5565 board node ID jumper
+                                setting</p></td></tr><tr><td><p>value from <code class="literal">'0'</code> to
+                                        <code class="literal">'255'</code></p></td><td><p>Specifies the particular PCI-5565 node that the driver must
+                                    look for. If this value does not match the jumpered value on the
+                                    PCI-5565 board, the driver returns an error.</p></td></tr></tbody></table></div><p>The default value of 'any' meets requirements
+                in most instances. If you have multiple PCI-5565 boards in your system, to identify
+                the driver for a particular node, specify a particular NodeID value.</p></div></div></body></html>

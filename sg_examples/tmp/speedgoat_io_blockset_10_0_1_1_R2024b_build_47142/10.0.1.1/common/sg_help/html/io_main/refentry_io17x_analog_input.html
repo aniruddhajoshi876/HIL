@@ -1,0 +1,43 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO17x - Analog Input</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io17x_setup.html" title="IO17x - Setup"><link rel="next" href="refentry_ref_io17x_examples.html" title="IO17x - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io17x_analog_input"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO17x - Analog Input</h2><p>IO17x - Analog Input &#8212; <span class="phrase">Read the IO17x analog
+                    inputs</span></p></div><div class="refsect1"><a name="d5e21080"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io171_analog_input.png"></span></span></p></div><div class="refsect1"><a name="d5e21088"></a><h2>Description</h2><p>Your model can contain only one Analog Input block for each I/O module in your
+                target machine.</p></div><div class="refsect1"><a name="d5e21091"></a><h2>Ports</h2><p>This driver block has up to 16 sensor output ports for the IO171, or up to 6
+                sensor output ports for the IO172, and additional status output ports.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sensor X</span>
+                    </span></dt><dd><p>Outputs the translated data from channel X. The scale and unit depend
+                            on the sensor type selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Onboard Temp</span>
+                    </span></dt><dd><p>Outputs the value of the onboard temperature sensor in degrees
+                            Celsius.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ext Temp</span>
+                    </span></dt><dd><p>Outputs the value of the external temperature sensor in degrees
+                            Celsius.</p></dd><dt><span class="term">
+                        <span class="guilabel">Conv Status</span>
+                    </span></dt><dd><p>For every enabled channel, the conversion status output shows if new
+                            data is available:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: A conversion is in progress. The previous measurement value
+                                    is held at the Sensor X output</p></li><li class="listitem"><p>1: The conversion has finished and new data is
+                                    available</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Error</span>
+                    </span></dt><dd><p>For every enabled channel, the error output shows if an error occurred
+                            during the measurement:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: No error</p></li><li class="listitem"><p>1: Measured value does not correspond with table
+                                    definitions</p></li><li class="listitem"><p>2: Timeout during measurement or SPI communication
+                                    problem</p></li><li class="listitem"><p>3: Measured value does not correspond with table definitions
+                                    and timeout during measurement or SPI communication
+                                    problem</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e21135"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Module Type</span></span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Ports</span>
+                    </span></dt><dd><p>Select which of the following output ports should be enabled:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Onboard Temp</strong></span></p></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>External Temp</strong></span></p></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Conv Status</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Error</strong></span></p></li></ul></div></dd></dl></div></div></div></body></html>

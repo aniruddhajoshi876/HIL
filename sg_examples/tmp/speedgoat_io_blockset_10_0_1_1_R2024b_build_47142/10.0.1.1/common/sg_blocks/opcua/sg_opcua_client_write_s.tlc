@@ -1,0 +1,218 @@
+%implements sg_opcua_client_write_s "C"
+
+%include "sg_opcua.tlc"
+
+%<LibAddToCommonIncludes("%<LibGetModelName()>_opcua.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void    
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+%realformat "CONCISE"
+
+    %<createUniqueBlockId(block)>
+    %<opcuaFileCreation(block)>
+
+    %with block.SFcnParamSettings[0]
+
+    %foreach i = NumItems
+    
+        %assign DataProps = getClientDataProps(block, 0, i)
+        %assign NodeIdProps = getNodeIdProps(block, i)
+        
+        %openfile tmpBuf
+        /* Node properties of block %<block.Name> signal %<i> */
+        %<deployValSpecifier(block, DataProps, i)>
+        %<deployNodeSpecifier(block, NodeIdProps, DataProps, i)>
+        %closefile tmpBuf
+        %<LibSetSourceFileSection(cFileOpcUa, "Definitions", tmpBuf)>
+
+        %openfile tmpBuf
+        extern OPCUA_NODE_PROPS_T %<LibGetModelName()>_var_%<block.UBID>_%<i>;
+        %closefile tmpBuf
+        %<LibSetSourceFileSection(hFileOpcUa, "Definitions", tmpBuf)>
+
+    %endforeach
+
+    %openfile tmpBuf
+    /* Transceiver properties of block %<block.Name> */
+    %<deployTransceiverSpecifier(block)>
+    %closefile tmpBuf
+	%<LibSetSourceFileSection(cFileOpcUa, "Definitions", tmpBuf)>
+
+    %openfile tmpBuf
+    extern OPCUA_TRANSCEIVER_PROPS_T %<LibGetModelName()>_transceiver_%<block.UBID>;
+    %closefile tmpBuf
+    %<LibSetSourceFileSection(hFileOpcUa, "Definitions", tmpBuf)>
+
+    %endwith
+        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %foreach i = NumItems
+    
+        %<opcuaCreateRemanentItem(block, "cClientItem", i)>
+
+    %endforeach
+
+    {
+        using namespace opcua;
+
+        int32_t ret = 0;
+        opcua::cClientStation* Station = NULL;
+        opcua::cClientConnection *Connection = NULL;
+        opcua::cClientTransceiver *Transceiver = NULL;
+        opcua::cClientItem *Item = NULL;
+
+        /* Add one server station */
+        ret = opcua::Root.addStation(%<ClientID>, OPCUA_STATION_TYPE_CLIENT, (opcua::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA client station %i failed", %<ClientID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one connection to the station */
+        ret = Station->addConnection(%<ConnectionID>, (opcua::cClientConnection**)&Connection);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA connection %i to client %i failed", %<ClientID>, %<ConnectionID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one transceiver to the connection */
+        ret = Connection->addTransceiver((opcua::cClientTransceiver**)&Transceiver);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA write block to client %i connection %i failed", %<ClientID>, %<ConnectionID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the transceiver */
+        ret = Transceiver->init(OPCUA_BLOCK_TYPE_CLIENT_WRITE, (OPCUA_TRANSCEIVER_PROPS_T*)&%<LibGetModelName()>_transceiver_%<block.UBID>);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing OPC UA client transceiver failed");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        %foreach i = NumItems
+          
+            /* Add item %<i> to the transceiver */
+            ret = Transceiver->addItem((cClientItem**)&Item);
+            if (ret != 0)
+            {
+                sprintf(pSgErrorStr, "Adding OPC UA data item to client %i connection %i failed", %<ClientID>, %<ConnectionID>);
+                %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+                return;
+            }
+
+            /* Initialize the item */
+            ret = Item->init(OPCUA_BLOCK_TYPE_CLIENT_WRITE, &%<LibGetModelName()>_var_%<block.UBID>_%<i>);
+            if (ret != 0)
+            {
+                sprintf(pSgErrorStr, "Initializing OPC UA client write item failed!");
+                %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+                return;
+            }
+
+            /* Remember the item instance */
+            %<opcuaSetRemanentItem(block, "Item", i)>
+
+        %endforeach
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %if LibBlockInputSignalConnected(0)
+
+    {
+        opcua::cClientItem *Item = NULL;
+
+        %if DataPortType == 1 %% Bus
+            %assign DataTypeName = LibBlockInputSignalDataTypeName(1,"")
+            struct %<DataTypeName> *DataPortAddr = %<LibBlockInputSignalAddr(1, "", "", 0)>;
+        %endif
+
+        %foreach i = NumItems
+
+            /* Item %<i> */
+            Item = %<opcuaRemanentItem(block, i)>;
+
+            if (%<LibBlockInputSignal(0, "", "", 0)> > 0)
+            {
+
+            %assign DataProps = getClientDataProps(block, 0, i)
+            %assign SignalLen = DataProps.DataTypeSize * DataProps.NumElements
+            %if DataPortType == 0 %% Vector
+
+                memcpy(Item->Data, \
+                        %<LibBlockInputSignalAddr(1, "", "", i)>, \
+                        %<SignalLen>);
+   
+            %else
+
+                %assign NamespaceNumber = CAST("Number", Namespaces[i])
+                %if IdentifierTypes[i] != 2
+                    %assign BusElementName = "n" + STRING(Identifiers[i])
+                %else
+                    %assign BusElementName = FEVAL("opcua.replaceSpecialChars", STRING(Identifiers[i]))
+                %endif
+ 
+                memcpy(Item->Data, \
+                        &DataPortAddr->%<BusElementName>, \
+                        %<SignalLen>);
+
+            %endif
+
+            %% Tell the background task to send out requests
+            Item->HostFlagsTx++;
+
+            }
+
+            %if AddOutput
+            {
+                uint32_t DevFlagsRx = Item->DevFlagsRx;
+
+                if (DevFlagsRx != Item->HostFlagsRx)
+                {
+                    %% Background task received new data
+                    %<LibBlockOutputSignal(0, "", "", i)> = Item->MsgStatus;
+                    %<LibBlockOutputSignal(1, "", "", i)> = Item->TimeStamp;
+                    Item->HostFlagsRx = DevFlagsRx;
+                }
+            }
+            %endif
+        
+        %endforeach
+    }
+
+    %endif
+
+    %<opcuaFileCompletion(block)>
+
+    %endwith
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

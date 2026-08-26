@@ -1,0 +1,70 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MQTT - Client Publish</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mqtt_client_subscribe.html" title="MQTT - Client Subscribe"><link rel="next" href="refentry_opcua_landing.html" title="OPC UA"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mqtt_client_publish"></a><div class="titlepage"></div><div class="refnamediv"><h2>MQTT - Client Publish</h2><p>MQTT - Client Publish &#8212; <span class="phrase">Publishes an MQTT
+                    topic.</span></p></div><div class="refsect1"><a name="d5e70648"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mqtt_client_publish.png"></span></span></p></div><div class="refsect1"><a name="d5e70656"></a><h2>Description</h2><p>The Publish block publishes a topic to the remote broker and updates the topic's
+                data. The broker passes data to the subscribers each time the Publisher has send new
+                data.</p></div><div class="refsect1"><a name="d5e70659"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The value that should be written to the topic in the remote broker.
+                            The port inherits the data type and the dimensions from the connected
+                            sink block. The data type and dimensions do not both need to match the
+                            data type and dimensions of the record in the remote slave device, but
+                            the overall number of bytes must be equal to or less than the size of
+                            the record.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from Boolean to double are supported as well as dimensions from scalar
+                            values to vectors</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter, the block sends out publish messages as long as the input
+                            port is TRUE.</p><p>If disabled, the block sends out publish messages on each sample hit,
+                            according to the <span class="bold"><strong>Sample Time</strong></span> parameter,
+                            and without checking data changes.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            the model's base sample time) and trigger the <span class="bold"><strong>Enable</strong></span> input port at a lower rate. You could also
+                            connect this port with the output port of a <span class="bold"><strong>Detect
+                                Change</strong></span> block and connect the input port with your data to
+                            be sent. This ensures low network traffic as the block will send publish
+                            messages only on data changes.</p><p><span class="bold"><strong>Data type:</strong></span> Boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>The actual size of the data that should be written to the topic,
+                            specified in number of bytes.</p><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter, the port limits the size of the data to be written to the
+                            topic. The publish message will contain a subset of the signal connected
+                            with the <span class="bold"><strong>Data</strong></span> input port.</p><p>If disabled, the entire signal connected with the <span class="bold"><strong>Data</strong></span> input port will be written to the topic.
+                            This is also the case, if you ground the Length input port or do not
+                            connect it at all.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e70702"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Topic </span>
+                    </span></dt><dd><p>The topic whose data you want to publish. Topic is a character array.</p><p>Use the / character to build paths and address specific topic levels.
+                            Examples:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>Publish topic 'attribute7' of parent topic
+                                        'group0/port3':</p><pre class="programlisting">'group0/port3/attribute7'</pre><p>Publish topic 'port3' of parent topic 'group0':</p><pre class="programlisting">'group0/port3'</pre></dd></dl></div></dd><dt><span class="term">
+                        <span class="guilabel">Quality of Service</span>
+                    </span></dt><dd><p>The Quality of Service is a flag in the publish message and tells the
+                            broker on how to quarantee the delivery of messages.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - at most once: The broker does not confirm the receipt of a
+                                    data message and the message is not retransmitted by the
+                                    Publisher. This level allows the broker to immediately procees
+                                    the message received and allows the Publisher not to have to
+                                    preserve messages for retransmission.</p></li><li class="listitem"><p>1 - at least once: The broker confirms the receipt of a data
+                                    message by sending an acknowledge to the Publisher. If the
+                                    Publisher does not receive a confirmation in a specific amount
+                                    of time, the same data message is transmitted again.</p></li><li class="listitem"><p>2 - exactly once: The broker confirms the receipt of a data
+                                    message twice using a 4-way handshake. If the Publisher does not
+                                    receive the confirmation in a specific amount of time, the same
+                                    data message is transmitted again. This level increases the
+                                    overall time for processing data messages but ensures that the
+                                    same data is not processed multiple times.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Retain</span>
+                    </span></dt><dd><p>The Retain flag in the publish message tells the remote broker to save
+                            the last data received. This allows newly subscribed clients to receive
+                            an immediate topic update.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> and the <span class="bold"><strong>Length</strong></span>
+                            input ports. Otherwise, the ports are hidden.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

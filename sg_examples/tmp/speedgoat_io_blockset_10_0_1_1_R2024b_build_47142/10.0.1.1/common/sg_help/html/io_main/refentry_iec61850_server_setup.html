@@ -1,0 +1,36 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850 - Server Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_sv_usage_notes.html" title="IEC 61850 Usage Notes"><link rel="next" href="refentry_iec61850_server_read_write.html" title="IEC61850 - Server Read/Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_server_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850 - Server Setup</h2><p>IEC 61850 - Server Setup &#8212; <span class="phrase">Configures one IEC 61850
+                    server node</span></p></div><div class="refsect1"><a name="d5e7534"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_server_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e7542"></a><h2>Description</h2><p>The Setup block configures one MMS server node, opens the TCP port for incoming
+                connection requests and enables the read and write blocks to exchange data with the
+                local server data model. Every MMS Server block in the model requires a runtime
+                license.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e7548"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Send Config File to Target Machine</span>
+                    </span></dt><dd><p>By clicking this button, the user can select a .cid file which then is
+                            converted into a .cfg file and sent to the chosen target machine. This
+                            .cfg file is needed to configure the Intelligent Electronic Device (IED)
+                            data model. The same procedure can be done from the server block
+                            mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>The Station ID is used to assign Setup, Read, and Write blocks to a
+                            particular server node. Station IDs range between 0 to 65535 and must be
+                            unique in a model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the MMS server. This step does not assign the
+                            IP address to an Ethernet interface. Instead, it binds the Setup block
+                            to an IP address which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_iec61850_server_usage_notes.html" class="olink"> IEC 61850 usage
+                                notes</a> for further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local TCP Port</span>
+                    </span></dt><dd><p>The TCP port the server listens on for connection requests from the
+                            client. The default port is 102. For a custom port address, select
+                            between the range 0 and 65535. The reserved ports should not be used.
+                            Refer to the following online documentation:</p><p><a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">List of TCP and UDP Port Numbers</a>
+                        </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Function Constraint Policy</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Function Constraints</span>
+                    </span></dt><dd><p>By selecting a function constraint, the server will allow clients to
+                            write to these function constraints.</p></dd></dl></div></div></div></body></html>

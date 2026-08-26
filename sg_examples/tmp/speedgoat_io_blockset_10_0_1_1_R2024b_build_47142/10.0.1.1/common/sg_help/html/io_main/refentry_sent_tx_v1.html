@@ -1,0 +1,135 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SENT - SENT Tx v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_sent_usage_notes.html" title="SENT Usage Notes"><link rel="next" href="refentry_sent_rx_v1.html" title="SENT - SENT Rx v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_sent_tx_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>SENT - SENT Tx v1</h2><p>SENT - SENT Tx v1 &#8212; <span class="phrase">The SENT Tx transmits data according
+                    to SAE J2716 protocol..</span></p></div><div class="refsect1"><a name="d5e3087"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_sent_tx_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e3095"></a><h2>Description</h2><p>The SENT Tx block transmits fast and enhanced serial messages over the SAE J2716
+                protocol.</p></div><div class="refsect1"><a name="d5e3098"></a><h2>Ports</h2><p>The Simulink block has up to 6 input ports:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">fast msg status</span></span></dt><dd><p>This port controls bit 0 and 1 of the SENT status nibble.</p></dd><dt><span class="term">
+                        <span class="guilabel">fast msg 1</span></span></dt><dd><p>This port is the first fast message of the SAE J2716 protocol. The
+                            data type is uint16 and data is aligned on the LSB (bit 0).</p></dd><dt><span class="term">
+                        <span class="guilabel">fast msg 2</span></span></dt><dd><p>This port is only displayed when the current data format parameter
+                            enables the second fast message. This input is the second fast message
+                            of the SAE J2716 protocol. The data type is uint16 and data is aligned
+                            on the LSB (bit 0).</p></dd><dt><span class="term">
+                        <span class="guilabel">serial msg Config</span></span></dt><dd><p>This port is only visible when <span class="bold"><strong>Enable Enhanced
+                                Serial Message</strong></span> is set.</p><p>This port is the configuration bit of the enhanced serial data
+                            message. When this port is equal to 0, the ID is coded on 8-bit and the
+                            data is coded on 12-bit. When this port is not equal to 0, the ID is
+                            coded on 4-bit and the data is coded on 16-bit.</p></dd><dt><span class="term">
+                        <span class="guilabel">serial msg ID</span></span></dt><dd><p>This port is only visible when <span class="bold"><strong>Enable Enhanced
+                                Serial Message</strong></span> is set.</p><p>This port is the ID of the enhanced serial data message. The port is a
+                            uint16 and the relevant ID data must be written on bits 7 to 0 when
+                                <span class="bold"><strong>serial msg Config</strong></span> is set to 0
+                            (respectively on bits 3 to 0 when <span class="bold"><strong>serial msg
+                                Config</strong></span> is not set to 0).</p></dd><dt><span class="term">
+                        <span class="guilabel">serial msg data</span></span></dt><dd><p>This port is only visible when <span class="bold"><strong>Enable Enhanced
+                                Serial Message</strong></span> is set.</p><p>This port is the data of the enhanced serial data message. The port is
+                            a uint16 and the data must be written on bits 11 to 0 when the <span class="bold"><strong>serial msg Config</strong></span> is set to 0 (respectively
+                            on bits 15 to 0 when the <span class="bold"><strong>serial msg
+                                Config</strong></span> is not set to 0).</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">serial msg buffered</span></span></dt><dd><p>This port is only visible when <span class="bold"><strong>Enable Enhanced
+                                Serial Message</strong></span> is set.</p><p>The port is boolean. The SENT TX driver uses a buffer for the enhanced
+                            serial message. In case a new enhanced serial message is buffered and
+                            being sent with the next following 18 SENT frames, this port is set high
+                            in the present simulation step of the real-time application. That means
+                            whenever this port is high, the inputs <span class="bold"><strong>serial msg
+                                Config</strong></span>, <span class="bold"><strong>serial msg ID</strong></span>
+                            and <span class="bold"><strong>serial msg data</strong></span> can be set to the
+                            values of the next message.</p></dd></dl></div></div><div class="refsect1"><a name="d5e3155"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SENT</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Tick Length Vector</span></span></dt><dd><p>Defines the transmitter-specific unit time (time of one SENT tick)
+                            between 1 microsecond and 90 microseconds. The units are in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">SPC Mode</span></span></dt><dd><p>Defines whether SENT SPC is disabled or which SPC mode is used.
+                            Following settings are available (See SAE J2716 protocol for
+                            details):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled</p></li><li class="listitem"><p>Synchronous</p></li><li class="listitem"><p>Synchronous with range selection (range = 200 mT)</p></li><li class="listitem"><p>Synchronous with range selection (range = 100 mT)</p></li><li class="listitem"><p>Synchronous with range selection (range = 50 mT)</p></li><li class="listitem"><p>Synchronous for ID 1</p></li><li class="listitem"><p>Synchronous for ID 2</p></li><li class="listitem"><p>Synchronous for ID 3</p></li><li class="listitem"><p>Synchronous for ID 4</p></li></ul></div></dd><dt><span class="term"><span class="guilabel">SENT Data Format</span></span></dt><dd><p>Defines the Data format of the messages to encode.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Two 12-bit fast channels, fast message 1 and fast message 2
+                                    (H.1)</p></li><li class="listitem"><p>One 12-bit fast channel, fast message 1 only (H.2)</p></li><li class="listitem"><p>High-speed with one 12-bit fast channel, fast message 1 only
+                                    (H.3)</p></li><li class="listitem"><p>Secure sensor with one 12-bit fast channel, fast message 1 and
+                                    secure sensor information on fast message 2 (H.4)</p></li><li class="listitem"><p>Single sensor with one 12-bit fast channel, fast message 1 and
+                                    zero value on fast message 2 (H.5)</p></li><li class="listitem"><p>One 14-bit channel, fast message 1 and one 10-bit channel,
+                                    fast message 2 (H.6)</p></li><li class="listitem"><p>One 16-bit channel, fast message 1 and one 8-bit fast channel,
+                                    fast message 2 (H.7)</p></li><li class="listitem"><p>Custom Protocol, one fast message, selectable data width using
+                                    the parameter <span class="bold"><strong>Number of Data
+                                        Nibbles</strong></span></p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Number of Data Nibbles</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>SENT Data
+                                Format</strong></span> is set to <span class="emphasis"><em>Custom
+                            Protocol</em></span>.</p><p>This parameter defines the amount of data nibbles being transferred
+                            with the SENT frame and can be set to a number between 2 and 8. Each
+                            nibble transports 4 bits, therefore the user data can be set with
+                            between 8 and 32 bits in step of 4 bits.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sync Mode</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>SPC
+                                Mode</strong></span> is set to <span class="emphasis"><em>Disabled</em></span>.</p><p>When set, the SENT TX frame is triggered once at each step of the real
+                            time application. In case the real-time application step triggers the
+                            SENT TX frame but the previous frame was not yet finished, the ongoing
+                            SENT TX frame is not interrupted and the present real-time application
+                            step does not trigger a new frame. Once the SENT TX frame is finished,
+                            an additional pause pulse is inserted until the next frame trigger is
+                            commanded.</p><p>When not set, the SENT TX frame is continuously transferring
+                            data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Variable LOW Time</span></span></dt><dd><p>Regarding the SAE J2716 protocol, each pulse starts with a falling
+                            edge and must remain low for least 4 ticks. The point of time for the
+                            rising edge is not defined. The standard implementation of the SENT TX
+                            module is always generating 5 ticks low and for the rest of the pulse,
+                            the signal is high.</p><p>When this parameter is set, the SENT TX signal will be low until the
+                            last 5 ticks of each pulse where the signal then is set high. More
+                            details can be seen in the usage notes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Pause Pulse</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>SPC
+                                Mode</strong></span> is set to <span class="emphasis"><em>Disabled</em></span> and
+                                <span class="bold"><strong>Sync Mode</strong></span> is not set.</p><p>When set, an optional pause nibble will be generated at the end of
+                            each SENT transmission.</p></dd><dt><span class="term">
+                        <span class="guilabel">Variable Pause Length</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Enable Pause
+                                Pulse</strong></span> is set.</p><p>When set, the pause nibble length is adjusted so that the total frame
+                            length (inclusive sync, status, data, CRC and pause nibble) equals the
+                            below defined <span class="bold"><strong>Pause Length</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Pause Length Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Enable Pause
+                                Pulse</strong></span> is set. The effect of this parameter depends
+                            upon:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Variable Pause Length</strong></span> is
+                                    set:</p><p>The length of the pause nibble is adjusted so that the total
+                                    frame length (in number of SENT ticks) equals this parameter. In
+                                    case this parameter is set to less than the frame length, the
+                                    pause nibble length of the SENT message is set to the lowest
+                                    possible value (12 ticks).</p></li><li class="listitem"><p><span class="bold"><strong>Variable Pause Length</strong></span> is not
+                                    set:</p><p>The length of the pause nibble is fixed to the value of this
+                                    parameter (in number of SENT ticks).</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Enable Enhanced Serial Messages (Slow Message)</span></span></dt><dd><p>When set, bits 2 and 3 of the SENT status nibble are used to transmit
+                            the enhanced serial message (also called slow message). The enhanced
+                            serial message is multiplexed with 18 consecutive SENT messages as
+                            described in the SAE J2716 protocol.</p></dd><dt><span class="term"><span class="guilabel">CRC Calculation Type</span></span></dt><dd><p>Defines the calculation type of the checksum of the fast
+                            message</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Recommended CRC:</p><p>All data nibble values are passed through the CRC calculation
+                                    to generate the CRC checksum.</p></li><li class="listitem"><p>Legacy CRC:</p><p>All but the last data nibble values are passed through the CRC
+                                    calculation. This temporary checksum is binary XOR processed
+                                    with the last data nibble which then is the final CRC checksum
+                                    result.</p></li></ul></div></dd><dt><span class="term"><span class="guilabel">Include Status Nibble</span></span></dt><dd><p>When set, the status nibble value will be included in the CRC
+                            calculation. When not set, the CRC calculation is only based on the fast
+                            messages data values.</p></dd><dt><span class="term"><span class="guilabel">Use Default CRC Configuration</span></span></dt><dd><p>When set, the value of the CRC polynomial is set to the default value
+                                x<sup>4</sup> + x<sup>3</sup> +
+                                x<sup>2</sup> + 1 and the CRC initial value is set
+                            to 0b0011 as defined by the SAE J2716 protocol. When not set, the
+                                <span class="bold"><strong>Polynomial Vector</strong></span> and the <span class="bold"><strong>Init Vector</strong></span> can be used to set a
+                            user-specific CRC calculation</p></dd><dt><span class="term"><span class="guilabel">Polynomial Vector</span></span></dt><dd><p>This parameter can only be set to a specific value when <span class="bold"><strong>Use Default CRC Configuration</strong></span> is not
+                            set.</p><p>The SENT protocol uses a 4-bit CRC calculation. This parameter
+                            therefore is a 4-bit value that builds the CRC polynomial as following:
+                                x<sup>4</sup> + Bit3*x<sup>3</sup> +
+                                Bit2*x<sup>2</sup> +
+                                Bit1*x<sup>1</sup>+ Bit0</p></dd><dt><span class="term"><span class="guilabel">Init Vector</span></span></dt><dd><p>This parameter can only be set to a specific value when <span class="bold"><strong>Use Default CRC Configuration</strong></span> is not
+                            set.</p><p>This parameter defines the initial value of the CRC
+                            calculation.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The SAE J2716 protocol defines a <span class="emphasis"><em>seed</em></span> value
+                                that is not the same. The <span class="emphasis"><em>initial</em></span> value is the
+                                CRC checksum of the <span class="emphasis"><em>seed</em></span> value only.</p><p>For example, using the standard SAE J2716 CRC Polynomial
+                                    x<sup>4</sup> + x<sup>3</sup> +
+                                    x<sup>2</sup> + 1, the seed value 0b0101 will
+                                generate a CRC checksum of 0b0011, therefore 0b0011 is the
+                                corresponding initial value.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

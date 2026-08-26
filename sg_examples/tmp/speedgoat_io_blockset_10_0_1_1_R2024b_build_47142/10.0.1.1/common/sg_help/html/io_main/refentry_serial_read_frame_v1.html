@@ -1,0 +1,38 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial - Read Frame v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_serial_read_hw_fifo_v1.html" title="Serial - Read HW FIFO v1"><link rel="next" href="refentry_serial_write_hw_fifo_v1.html" title="Serial - Write HW FIFO v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_read_frame_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial - Read Frame v1</h2><p>Serial - Read Frame v1 &#8212; <span class="phrase">The Serial Read HW FIFO
+                    driver block allows a complete Frame to be read from an Serial
+                    Transceiver</span></p></div><div class="refsect1"><a name="d5e13895"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_serial_read_frame_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e13903"></a><h2>Description</h2><p>The Serial Read Frame v1 driver block allows to buffer incoming bytes and then
+                outputs data when a frame has been detected.</p></div><div class="refsect1"><a name="d5e13906"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">enable </span>
+                    </span></dt><dd><p>A global switch which enables (1) or disables (0) the read operation.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">data </span>
+                    </span></dt><dd><p>A vector of 129 elements which represents the Serial HW FIFO. First
+                            element of this vector indicates how many bytes have been read from the
+                            FIFO. Subsequent elements form the data.</p></dd><dt><span class="term">
+                        <span class="guilabel">online </span>
+                    </span></dt><dd><p>A boolean which indicates if the read block detected a header byte.
+                            Its value returns to false in case the header detection fails during
+                            runtime.</p></dd></dl></div></div><div class="refsect1"><a name="d5e13927"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Header byte value </span>
+                    </span></dt><dd><p>A scalar defines the header this driver block entity will track in the
+                            bytes stream.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame size </span>
+                    </span></dt><dd><p>Defines the expected frame size. The block checks if the header is
+                            present at the beginning of every frame.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

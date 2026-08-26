@@ -1,0 +1,70 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus TCP - Server Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_mbtcp_client_server_examples.html" title="Modbus TCP Client &amp; Server - Examples"><link rel="next" href="refentry_mbtcp_server_read.html" title="Modbus - Server Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbtcp_server_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus TCP - Server Setup</h2><p>Modbus TCP - Server Setup &#8212; <span class="phrase">Configures one Modbus TCP
+                    server node</span></p></div><div class="refsect1"><a name="d5e68880"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mbtcp_server_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e68888"></a><h2>Description</h2><p>The Setup block configures one Modbus TCP server node, opens the TCP port for
+                incoming connection requests and enables the read and write blocks to exchange data
+                with the local Modbus data tables. Every Modbus TCP Server block in the model
+                requires a runtime license.</p></div><div class="refsect1"><a name="refsect_ports_snippet_receive"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Connection Status</span>
+                    </span></dt><dd><p>Number of clients connected.</p><p><span class="bold"><strong>Data Type:</strong></span> uint16</p></dd></dl></div></div><div class="refsect1"><a name="d5e68909"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>The Station ID is used to assign Setup, Read and Write blocks to a
+                            particular server node. Station IDs range between 0 to 65535 and must be
+                            unique in a model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the Modbus server. This step does not assign
+                            the IP address to an Ethernet interface. Instead, it binds the Setup
+                            block to an IP address which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_mbtcp_usage_notes.html" class="olink">Modbus usage notes</a>
+                            for further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local TCP Port</span>
+                    </span></dt><dd><p>The TCP port the server listens on for connection requests from the
+                            client. The default port is 502. For a custom port address, select
+                            between the range 0 and 65535. The reserved ports should not be used.
+                            Refer to the following online documentation:</p><p><a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">List of TCP and UDP Port Numbers</a>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Units</span>
+                    </span></dt><dd><p>Defines the IDs of the units the server node should manage in the
+                            range of 0 to 255. Each unit has its own data tables for coils, discrete
+                            inputs, holding registers and input registers. Modbus clients can
+                            address a certain unit with the unit identifier in the Modbus request
+                            frame. Typical Modbus servers that do not act as a Modbus RTU gateway
+                            have only one unit.</p><p>According to the Modbus standard, unit ID 255 means NON-SIGNIFICANT.
+                            If the unit identifier received is 255 but unit 255 is not configured in
+                            the server, the requested command is performed on the first unit
+                            specified in the Units parameter.</p><p>Default: [0] creates one unit with ID 0. Modbus requests with unit
+                            identifier 0 or 255 are passed to unit 0.</p><p>Example: [0,255] creates two units with ID 0 and 255. Modbus requests
+                            with unit identifier 0 are passed to unit 0. Modbus requests with unit
+                            identifier 255 are passed to unit 255.</p><p>Example: [0,1,2,254] creates four units with ID 0, 1, 2 and 254.
+                            Modbus requests with unit identifier 0 are passed to unit 0. Modbus
+                            requests with unit identifier 1 are passed to unit 1. Modbus requests
+                            with unit identifier 255 are passed to unit 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Table Dimensions</span>
+                    </span></dt><dd><p>Defines the number of coils, discrete inputs, holding registers and
+                            input registers of each Modbus unit. The value must be an n-by-4 matrix
+                            where n is the number of Modbus units. One row represents one unit, the
+                            four columns represent the four Modbus data tables. The number of items
+                            per data table must range between 1 and 65535.</p><p>Example: [1,2,3,4;5,6,7,8] The first unit has 1 coil, 2 discrete
+                            inputs, 3 holding registers and 4 input registers. The second unit has 5
+                            coils, 6 discrete inputs, 7 holding registers and 8 input
+                            registers.</p></dd><dt><span class="term">
+                        <span class="guilabel">Response Delay</span>
+                    </span></dt><dd><p>Defines the number of milliseconds the server should delay a Modbus
+                            response after having received a request. The number must range between
+                            0 (no delay) and 60000.</p></dd><dt><span class="term">
+                        <span class="guilabel">Swap Register Bytes</span>
+                    </span></dt><dd><p>The bytes of a register must be swapped if the sender and the receiver
+                            interpret the byte order in different ways (endianness). The Speedgoat
+                            real-time target machine uses little-endian, while some clients use big-endian.
+                            If the swap option is enabled, all register values from the
+                            application context will be swapped before they are sent to the network.
+                            All register values received from the network will be swapped before
+                            they are submitted to the application context. The swap option only
+                            affects input registers and holding registers (transmitted by function
+                            codes FC3, FC4, FC5, FC6, FC16). Discrete inputs and coils are not
+                            affected. Use Byte Reversal blocks instead of enabling the global byte
+                            swapping if only single registers need to be swapped.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

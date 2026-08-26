@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO752 - Record Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io752_record.html" title="IO752 - Record"><link rel="next" href="refentry_io752_record_read.html" title="IO752 - Record Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io752_record_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO752 - Record Write</h2><p>IO752 - Record Write &#8212; 
+                <span class="phrase">Writes data to local PROFINET records </span>
+            </p></div><div class="refsect1"><a name="d5e62435"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io752_record_write.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e62443"></a><h2>Description</h2><p>This block is used to write the records of the PROFINET device. Use the IO752
+                Setup block to define these records. On the network side, the records can be read
+                and written by the PROFINET controller.</p><p>Your model can contain only one Record Write block for each I/O module in your
+                target machine. This single block handles all write access to the records of the
+                related module.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is obsolete. Use the IO752 Record block instead.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e62449"></a><h2>Ports</h2><div class="refsect2"><a name="d5e62451"></a><h3>Inputs</h3><p>This block has one input port for each record defined in the <span class="bold"><strong>Record/Parameter Configuration </strong></span> parameter of the
+                    related Setup block where the <span class="bold"><strong>Access Mode</strong></span> is
+                    "write" or "read-write". The port is an array of uint8. The length depends on
+                    the <span class="bold"><strong>Default Value</strong></span> property. The name of the
+                    port is composed of the <span class="bold"><strong>Slot</strong></span>, <span class="bold"><strong>Sub-Slot</strong></span> and <span class="bold"><strong>Index</strong></span>
+                    properties.</p><p>If no records have the "write" or "read-write" <span class="bold"><strong>Access
+                        Mode</strong></span>, then the block will have no input ports.</p></div><div class="refsect2"><a name="d5e62462"></a><h3>Outputs</h3><p>This block does not have any output ports.</p></div></div><div class="refsect1"><a name="d5e62465"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Retrieve Record Configuration</span>
+                    </span></dt><dd><p>Retrieves the record configuration from the related Setup block and
+                            updates the input ports.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EV - Charging Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_ev_precharge_write.html" title="EV - Pre-Charge Write"><link rel="next" href="refentry_ref_ev_charging_write.html" title="EV - Charging Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_ev_charging_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>EV - Charging Read</h2><p>EV - Charging Read &#8212; <span class="phrase">Reads data from the EV board
+                    during the Charging state of the charge cycle.</span></p></div><div class="refsect1"><a name="d5e75921"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ev_charging_read.png"></span></span></p></div><div class="refsect1"><a name="d5e75929"></a><h2>Description</h2><p>The EV Charging Read block reads data from the EV charging board during the
+                Charging state of the charge cycle.</p></div><div class="refsect1"><a name="d5e75932"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">EVSE Present Voltage</span>
+                    </span></dt><dd><p>The charger's present voltage communicated to the EV.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Present Current</span>
+                    </span></dt><dd><p>The charger's present current communicated to the EV.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Current Limit Achieved</span>
+                    </span></dt><dd><p>A flag indicating that the charger has reached its maximum current
+                            limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Voltage Limit Achieved</span>
+                    </span></dt><dd><p>A flag indicating that the charger has reached its maximum voltage
+                            limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Power Limit Achieved</span>
+                    </span></dt><dd><p>A flag indicating that the charger has reached its maximum power
+                            limit.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Max Voltage Limit</span>
+                    </span></dt><dd><p>The maximum voltage limit of the EVSE in volts.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Max Current Limit</span>
+                    </span></dt><dd><p>The maximum current limit of the EVSE in amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">EVSE Max Power Limit</span>
+                    </span></dt><dd><p>The maximum power limit of the EVSE in watts.</p></dd></dl></div></div><div class="refsect1"><a name="d5e75976"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Defines the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Defines the Connection ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd></dl></div></div></div></body></html>

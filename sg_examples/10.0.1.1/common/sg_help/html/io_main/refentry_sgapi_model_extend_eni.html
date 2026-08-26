@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.model.extendEni</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_model_create_from_eni.html" title="speedgoat.model.createFromEni"><link rel="next" href="refentry_sgapi_model_create_from_sycon.html" title="speedgoat.model.createFromSycon"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_model_extend_eni"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.model.extendEni</h2><p>speedgoat.model.extendEni &#8212; 
+            <span class="phrase">Extend ENI files with object dictionary information</span>
+         </p></div><div class="refsect1"><a name="d5e832"></a><h2>Description</h2><p>This Speedgoat API function copies object dictionary information from EtherCAT subordinate
+information (ESI) files to the initial EtherCAT network information (ENI) file, and creates the
+extended EtherCAT network information (EXI) file for use with the EtherCAT Emulator Setup block.</p><p>The function saves a copy of the initial ENI file in EXI format. For each subordinate device
+defined in the ENI file, the function searches the ESI folder for the corresponding ESI file,
+adds a new entry to the ExtendedConfig section and copies the object dictionary to that
+section.</p></div><div class="refsect1"><a name="d5e836"></a><h2>Examples</h2><p>Extend an ENI file with information from ESI files:</p><pre class="programlisting">speedgoat.model.extendEni('EniFile', 'old.xml', 'ExiFile', 'new.xml', 'EsiDir', 'C:\esi')</pre></div><div class="refsect1"><a name="d5e840"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'EniFile' - Name of the initial ENI file including the file extension
+[character vector]. Pass the file name if the corresponding directory is the current
+working directory or is included in the MATLAB path. Otherwise, pass the full or
+relative path of the file.</p><p>'ExiFile' - Name of the EXI file to be created including the file extension
+[character vector]. Pass the file name if the corresponding directory is the current
+working directory or is included in the MATLAB path. Otherwise, pass the full or
+relative path of the file.</p><p>'EsiDir' - Path to the ESI files
+[character vector]. Pass the full or relative path of the folder that contains the ESI
+files. Sub-folders will not be taken into account.</p></div></div></body></html>

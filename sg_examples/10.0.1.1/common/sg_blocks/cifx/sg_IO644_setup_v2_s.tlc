@@ -1,0 +1,172 @@
+%implements sg_IO644_setup_v2_s "C"
+
+%include "cifx.tlc"
+%include "sg_IO644.tlc"
+
+%<cosAddCommonIncludes()>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void    
+    %<cosAddBlock(block)>
+    %<cosAddModule(block)>
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]   
+
+    %% Assemble the module ID string
+    %assign ModuleIdStr = createModuleIdStr(ModuleId, NodeId)
+
+    %openfile tmpBuf
+    {
+        CIFX_MODULE_T* Module = NULL;
+        CIFX_NODE_T* Node = NULL;
+        CIFX_CHANNEL_T* Channel = NULL;
+
+        if (0 != Cifx_AddModule(%<ModuleId>, %<Bus>, %<Slot>, &Module))
+        {
+            %<outputError(block, ModuleId, NodeId, "CifxMsg")>
+            return;
+        }
+        if (0 != Cifx_AddNode(%<NodeId>, Module, &Node))
+        {
+            %<outputError(block, ModuleId, NodeId, "CifxMsg")>
+            return;
+        }
+
+        if (0 != Cifx_AddChannel(sizeof(COS_PARAM_T), Node, &Channel))
+        {
+            %<outputError(block, ModuleId, NodeId, "CifxMsg")>
+            return;
+        }
+
+        /* Set module parameters */
+        snprintf(Module->Name, sizeof(Module->Name), "IO644");
+        Module->Type = CIFX_MODULE_TYPE_GEN;
+
+        /* Set node parameters */
+        Node->IrqEnabled = false;
+        Node->DmaEnabled = true;
+        snprintf(Node->FwFileName, sizeof(Node->FwFileName), "cifxcos2.nxf");
+        snprintf(Node->FwVersionStr, sizeof(Node->FwVersionStr), "3.9.0.1");
+        snprintf(Node->BtldName, sizeof(Node->BtldName), "NETX100.bin");
+        Node->BlockVersion = 2;
+        sg_initModelRun();
+        Node->IsReInit = !sg_isFirstModelLoad();
+        snprintf(Node->FwName, sizeof(Node->FwName), "CANopen Slave");
+        snprintf(Node->ModuleIdStr, sizeof(Node->ModuleIdStr), "%<ModuleIdStr>");
+
+        /* Set channel parameters */
+        snprintf(Channel->ProtocolStr, sizeof(Channel->ProtocolStr), "CANopen");
+        snprintf(Channel->StationTypeStr, sizeof(Channel->StationTypeStr), "Slave");
+        Channel->StationType = CIFX_STATION_TYPE_S;
+        Channel->ProtocolType = CIFX_PROTOCOL_CANOPEN;
+        Channel->CfgMode = CIFX_CFG_MODE_WARM;
+
+        /* Set warmstart parameters */
+        {
+            COS_PARAM_T* Param = (COS_PARAM_T*)(Channel->Param);
+
+            Param->CoNodeId = %<CoNodeId>;
+            Param->BaudRate = %<BaudRate>;
+            Param->DeviceType = %<DeviceType>;
+            Param->VendorId = %<VendorId>;
+            Param->ProductCode = %<ProductCode>;
+            Param->RevNum = %<RevNum>;
+            Param->HbProducer = %<HbProducer>;
+            %if EXISTS(HBC_P)
+                %assign HbcDim = %<LibBlockParameterDimensions(HBC_P)>
+            %else
+                %assign HbcDim = [0, 0]
+            %endif
+            Param->NumHbConsumer = %<HbcDim[0]>;
+            %foreach r = HbcDim[0]
+                %assign u = CAST("Unsigned", %<LibBlockParameterValue(HBC_P, r)>)
+                Param->HbConsumer[%<r>].CanNodeId = %<u>;
+                %assign u = CAST("Unsigned", %<LibBlockParameterValue(HBC_P, r+HbcDim[0])>)
+                Param->HbConsumer[%<r>].Time = %<u>;
+            %endforeach
+            Param->GuardTime = %<GuardTime>;
+            Param->LifeTimeFactor = %<LifeTimeFactor>;
+            Param->NumObjects = %<CosRoot.Modules[CosModuleIdx].NumObjects>;
+            Param->NumRxPdos = %<CosRoot.Modules[CosModuleIdx].PdoTypes[0].NumPdos>;
+            Param->NumTxPdos = %<CosRoot.Modules[CosModuleIdx].PdoTypes[1].NumPdos>;
+            Param->NumRxMessages = %<CosRoot.Modules[CosModuleIdx].MessageTypes[0].NumMessages>;
+            Param->NumTxMessages = %<CosRoot.Modules[CosModuleIdx].MessageTypes[1].NumMessages>;
+            Param->Objects = CosObjs_%<CosModuleIdx>;
+            Param->RxPdos = CosPdos_%<CosModuleIdx>_0;
+            Param->TxPdos = CosPdos_%<CosModuleIdx>_1;
+            Param->RxMessages = CosMessages_%<CosModuleIdx>_0;
+            Param->TxMessages = CosMessages_%<CosModuleIdx>_1;
+        
+            /* Sort objects and PDOs */
+            COS_SortObjects(Param);
+        
+            /* Link objects and PDOs */
+            if (0 != COS_MapObjects(Param, &Param->RxLen, Param->RxPdos, Param->NumRxPdos))
+            {
+                return;
+            }
+            if (0 != COS_MapObjects(Param, &Param->TxLen, Param->TxPdos, Param->NumTxPdos))
+            {
+                return;
+            }
+        }
+
+        /* Initialize the hardware */
+        if (0 != Cifx_InitNode(Node))
+        {
+            %<outputError(block, ModuleId, NodeId, "CifxMsg")>
+            return;
+        }
+    }
+    %closefile tmpBuf
+    %<sgAddInitCode(tmpBuf, "execution")>
+
+    %endwith
+
+    %<doLastBlockStuff(block)>
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+{
+    Cifx_StartBackground();
+}
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+  
+%with block.SFcnParamSettings[0]
+
+    {
+        CIFX_NODE_T *Node = NULL;
+        CIFX_CHANNEL_T *Channel = NULL;
+    
+        if (0 != Cifx_FindNode(%<ModuleId>, %<NodeId>, &Node))
+        {           
+            sprintf(pSgErrorStr, "Cannot attach to Speedgaot IO module!");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+    
+        Channel = Node->Channels[0];
+    
+        if (Cifx_CheckChannel(Channel) == 0)
+        {
+            COS_Shutdown(Channel);
+            Cifx_FreeChannel(Channel);
+        }
+    }
+
+%endwith
+
+%endfunction

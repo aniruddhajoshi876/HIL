@@ -1,0 +1,74 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Create GE Fanuc Shared Partitions</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="prev" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="next" href="f69-6131.html" title="Initialize GE Fanuc Shared Nodes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f69-6091"></a>Create <span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc Shared
+            Partitions</h2></div></div></div><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> software
+            uses a model for reflective (shared) memory that includes <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; blocks for shared memory
+            driver functions. To define node initialization and shared memory partitions, the driver
+            functions use <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg;
+            structures. This topic describes the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> support of the <span class="phrase"><a name="tp_gefanucembeddedsystems"></a><span class="trademark">GE</span>&reg; Fanuc Embedded Systems</span> VMIPCI-5565
+            (formerly from VMIC) and PCI-5565PIORC boards. Both the VMIPCI-5565 and PCI-5565PIORC
+            boards are fully supported and are collectively referenced as PCI-5565 in the
+            documentation. <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span>
+            supports these boards with the same set of blocks.</p><p>To use the PCI-5565 shared memory blocks, you must define shared memory partition
+            structures. A partition structure describes how you want to allocate (partition) the
+            shared memory. The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> software allocates shared memory as segments of data that are packed into memory
+            regions or partitions. Along with the <a class="link" href="matlab: doc Shared Memory Pack;" target="_top">Shared Memory Pack</a> and <a class="link" href="matlab: doc Shared Memory Unpack;" target="_top">Shared Memory Unpack</a> blocks, the following PCI-5565 blocks use shared memory
+            partition structures:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                    <a href="f70-16490.html" class="olink">GE Fanuc 5565
+                        read</a>
+                </p></li><li class="listitem"><p>
+                    <a href="f70-16515.html" class="olink">GE Fanuc 5565
+                        write</a>
+                </p></li></ul></div><p>After defining the shared memory partitions, you can add PCI-5565 shared memory driver
+            blocks to your <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+            model. See <a href="f69-6165.html" class="olink">Shared Memory
+                Partition Structure</a> for the complete list of fields in a partition.</p><p>The following description refers to the <code class="literal">completepartitionstruct</code>
+            command. Type</p><pre class="programlisting">help completepartitionstruct
+</pre><p>for more information.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Create a partition structure in one of the following ways. Using the
+                        <code class="literal">completepartitionstruct</code> command at the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window,
+                    create a default partition structure. For example, type</p><pre class="programlisting">Partition = completepartitionstruct([],'5565')
+
+Partition =
+
+      Address: '0x0'
+         Type: 'uint32'
+         Size: '1'
+    Alignment: '4'
+     Internal: [1x1 struct]
+</pre></li><li class="listitem"><p>At the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg;
+                    Command Window, create a user-defined partition structure. Partially define a
+                    structure in a script file, run that script in the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; workspace, and fill
+                    in the resulting structure with the <code class="literal">completepartitionstruct</code>
+                    function. For example:</p><pre class="programlisting">Partition(1).Address='0x5000';
+Partition(1).Type='int8';
+Partition(1).Size='10';
+Partition(2).Type='uint16';
+Partition(2).Size='5';
+Partition(3).Type='uint8';
+Partition(3).Size='1';
+Partition(3).Alignment='8';
+Partition(4).Type='double';
+Partition(4).Size='3';
+</pre><p>This example defines a partition with four segments.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>The <code class="literal">Address</code> field is optional. Only specify this
+                            field for the first segment of a partition. The elements of a partition
+                            are defined as a continuous memory block from the first address. The
+                            function extrapolates segment addresses from the first segment
+                            definition. If you have or require fragmented memory, use multiple
+                            partitions.</p></li><li class="listitem"><p>The <code class="literal">Type</code> and <code class="literal">Size</code> fields are
+                            required for all segments in the
+                            partition structure.</p></li><li class="listitem"><p>The <code class="literal">Alignment</code> value is optional. It is
+                                <code class="literal">'4'</code> by default, which forces segments that do not
+                            have alignment specifications to start on 4 byte (32 bit) boundaries. In
+                            the preceding partition definition, the third segment
+                                (<code class="literal">Partition(3)</code>) has an alignment of
+                                <code class="literal">'8'</code>.</p></li><li class="listitem"><p>The data type, size, and alignment of the preceding segment define the
+                            base addresses of subsequent segments.</p></li><li class="listitem"><p>To populate the partition structure, call the
+                                <code class="literal">completepartitionstruct()</code> command.</p><pre class="programlisting">Partition = completepartitionstruct(Partition,'5565');</pre></li></ul></div></li></ul></div></div></body></html>

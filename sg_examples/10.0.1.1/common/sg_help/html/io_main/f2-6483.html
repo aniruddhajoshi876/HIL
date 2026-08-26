@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Data Frames</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="prev" href="f2-6329.html" title="Initialization and Termination CAN Messages"><link rel="next" href="f2-6492.html" title="Timeouts When Receiving CAN Messages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f2-6483"></a>CAN Data Frames</h2></div></div></div><p>CAN data frames have a maximum size of 8 bytes (64 bits). The CAN driver blocks in the
+                <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O block
+            library use <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+            signals of data type CAN_MESSAGE or double to propagate data frames as an entity. In
+            most applications, the data frame content does not consist of 64-bit floating point
+            values. Instead, they are constructed from one or more smaller data type entities such
+            as signed and unsigned integers of various sizes.</p><p>To simplify the construction and extraction of data frames, the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O library contains two
+            sets of utility blocks, found in subgroup CAN/Utilities. Each set supports bit-packing
+            (construction) and bit-unpacking (extraction) of data frames in a flexible way.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>To construct and extract data frames that use the double data type, use the
+                        <a class="link" href="matlab: doc Can Bit-Packing;" target="_top">CAN Bit-Packing</a> and
+                        <a class="link" href="matlab: doc Can Bit-Unpacking;" target="_top">CAN Bit-Unpacking</a>
+                    blocks. These blocks support legacy models.</p></li><li class="listitem"><p>To construct and extract data frames that use the CAN_MESSAGE data type, use
+                    the <a class="link" href="matlab: doc Can Pack;" target="_top">CAN Pack</a> and <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a> blocks.</p></li></ul></div><p>The main purpose of these blocks is to be used with CAN <code class="literal">Send</code> and
+                <code class="literal">Receive</code> driver blocks. You can use the <code class="literal">CAN Bit
+                Packing</code> and <code class="literal">CAN Bit Unpacking</code> blocks for other types of
+            double type data manipulation. Their functionality is independent of the CAN driver
+            blocks or CAN library.</p><p>You can use the <code class="literal">CAN Pack</code> and <code class="literal">CAN Unpack</code> blocks
+            to prepare a remote frame. For more information, see <a href="f2-6145.html#bs59c36-1" class="olink">Sending and Receiving Remote
+                Frames</a>.</p></div></body></html>

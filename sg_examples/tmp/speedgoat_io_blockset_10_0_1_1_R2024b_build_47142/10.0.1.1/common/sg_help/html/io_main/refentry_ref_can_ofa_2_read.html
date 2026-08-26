@@ -1,0 +1,97 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO61X - CAN Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_2_write.html" title="IO61X - CAN Write"><link rel="next" href="refentry_ref_can_ofa_2_status.html" title="IO61X - CAN Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_2_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO61X - CAN Read</h2><p>IO61X - CAN Read &#8212; <span class="phrase">Reads CAN (HS) and CAN-FD
+                    messages from one channel</span></p></div><div class="refsect1"><a name="d5e3188"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_canlin_ofa2_io61x_read.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_can_ofa_2_read"></a><h2>Description</h2><p>The CAN Read block reads messages from one channel of the selected I/O module's
+                input queue. Multiple instances of the block can be used to receive messages at
+                multiple rates or in multiple places of the Simulink model.</p><p>Refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage notes</a> to learn how
+                this block can be used for the different read modes: "Single Read from Buffer
+                (FIFO)" and "Specify by IDs".</p></div><div class="refsect1"><a name="refsect_ports_can_ofa_2_read"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><p>Which outputs are available depends on the <span class="bold"><strong>Channel
+                        Operation Mode Selection</strong></span> setting of the corresponding CAN Setup
+                    block and the <span class="bold"><strong>Message Type</strong></span> setting of the
+                    respective block: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN (HS) : The message type available is CAN_MESSAGE and
+                                CAN_MESSAGE_BUS output. For further information about the
+                                CAN_MESSAGE_BUS data type, refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage
+                                notes</a>.</p></li><li class="listitem"><p>CAN-FD : The only message type available is CAN_FD_MESSAGE_BUS
+                                output</p></li></ul></div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data present</span>
+                    </span></dt><dd><p>If <span class="bold"><strong>Single Read from Buffer (FIFO)</strong></span> is
+                            selected in the <span class="bold"><strong>Read Mode</strong></span> parameter,
+                            the Data present signal is "1" if new data is available and "0"
+                            otherwise. The data type is boolean.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>If <span class="bold"><strong>Specify by IDs</strong></span> is selected in the
+                                <span class="bold"><strong>Read Mode</strong></span> parameter, the Status
+                            signal is "1" if new valid data has been read during one time step and
+                            "0" otherwise. In the latter case, the last valid data read is always
+                            output. The data type is an array of booleans equal to the size of the
+                            specified Message IDs.</p></dd><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The CAN message received. Please use the "CAN Unpack" or "CAN-FD
+                            Unpack" block to resolve the data, depending on which setting applies to
+                            the channel.
+                            </p><p>The data type is CAN_MESSAGE or CAN_MESSAGE_BUS if CAN (HS) is
+                            selected.</p><p>The data type is CAN_FD_MESSAGE_BUS if CAN-FD is selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">ID_&lt;ID&gt;</span>
+                    </span></dt><dd><p>If <span class="bold"><strong>Specify by IDs</strong></span> is selected in the
+                                <span class="bold"><strong>Read Mode</strong></span> parameter, an individual
+                            output port is provided for each Message ID as specified in the
+                                <span class="bold"><strong>Message ID List</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Input</span>
+                    </span></dt><dd><p>This input port is available whenever the <span class="bold"><strong>Show
+                                Enable Input</strong></span> checkbox in the block mask is activated. Use
+                            this port to control whether the block should execute or not.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_can_ofa_2_read"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number </span>
+                    </span></dt><dd><p>Select the CAN channel to which this CAN read block
+                            corresponds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type </span>
+                    </span></dt><dd><p>Defines how the CAN message is represented at the block outputs. This
+                            parameter also depends on the <span class="bold"><strong>Channel Mode
+                                CAN</strong></span> setting of the corresponding CAN Setup block.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN with CAN (HS): Only one CAN Msg output
+                                    port is available. The port will always be connected to one or
+                                    more CAN Unpack blocks.</p></li><li class="listitem"><p>CAN with CAN-FD: Only one CAN Msg output port is available.
+                                    The port will always be connected to one or more CAN-FD Unpack
+                                    blocks.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output as Bus</span>
+                    </span></dt><dd><p>Select this option for the block to output CAN messages as a bus
+                            signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read Mode</span>
+                    </span></dt><dd><p>Defines the working mode of the block.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Single Read from Buffer
+                                        (FIFO)</strong></span></p><p>At every block execution, one message is
+                                    read from the RX FIFO and provided on the CAN Msg port. When
+                                    this mode is used, the status port outputs how many messages are
+                                    still available in the block RX FIFO.</p></li><li class="listitem"><p><span class="bold"><strong>Specify by
+                                        IDs</strong></span>
+                                </p><p>When selecting this mode, the block receives
+                                    the last message for each ID specified in <span class="bold"><strong>Message ID List</strong></span> parameter. The messages received
+                                    are provided on the corresponding output port (labeled according
+                                    to the ID). When this mode is used, the status port outputs an
+                                    array with the same length of the <span class="bold"><strong>Message
+                                        ID List</strong></span>. The value is set to 1 if a new message
+                                    has been received for the corresponding ID, and to 0 if the
+                                    message has not been updated.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Message ID List</span>
+                    </span></dt><dd><p>If the read mode is set to <span class="bold"><strong>Specify by
+                                IDs</strong></span>, the <span class="bold"><strong>Message ID List</strong></span>
+                            indicates which Messages are read with this specific CAN read block.
+                            Refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage notes</a> for
+                            more information on Message ID handling.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Frames</span>
+                    </span></dt><dd><p>When selecting this option, the block will receive messages with the
+                            29-bit extended frame format, otherwise it will receive standard 11-bit
+                            frames. This setting applies only when read mode is set to <span class="bold"><strong>Specify by IDs</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Label in hex</span>
+                    </span></dt><dd><p>When read mode is set to <span class="bold"><strong>Specify by
+                                IDs</strong></span>, the label of each output port can be configured to
+                            display the corresponding ID in decimal or hexadecimal format. The
+                            setting applies to all message
+                            ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Input</span>
+                    </span></dt><dd><p>Select this option for the Enable Input Port to be available. With
+                            this port, the block execution can be controlled through an
+                            input.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

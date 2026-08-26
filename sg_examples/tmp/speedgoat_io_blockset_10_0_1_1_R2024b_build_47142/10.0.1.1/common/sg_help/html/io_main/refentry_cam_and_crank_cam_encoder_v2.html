@@ -1,0 +1,58 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Cam Encoder v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_cam_encoder_v1.html" title="Cam and Crank - Cam Encoder v1"><link rel="next" href="refentry_cam_and_crank_crank_decoder_v1.html" title="Cam and Crank - Crank Decoder v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_cam_encoder_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Cam Encoder v2</h2><p>Cam and Crank - Cam Encoder v2 &#8212; <span class="phrase">The cam encoder
+                    generates a camshaft signal depending on the specified start and stop position
+                    of the cam teeth. Up to 10 teeth are supported by the cam
+                encoder.</span></p></div><div class="refsect1"><a name="d5e12210"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_cam_encoder_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e12219"></a><h2>Description</h2><p>The cam encoder generates a camshaft signal depending on the specified start and
+                stop position of the cam teeth. Up to 10 teeth are supported by the cam encoder. To
+                disable o tooth, the start and stop angle of the tooth have to be '-1'. The current
+                implementation of the corresponding crank decoder supports cam profiles which meet
+                the following conditions:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Only one cam tooth</p></li><li class="listitem"><p>Start and stop angles of the cam tooth coincide with the start angle
+                            of a crank tooth. e.g., for a crank profile with 18 teeth and 2 missing
+                            teeth, possible cam start and stop angles are multiples of 20
+                            degrees.</p></li></ul></div></div><div class="refsect1"><a name="d5e12228"></a><h2>Ports</h2><p>The Simulink block has one input port, two additional input ports per channel and
+                no output ports:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed </span>
+                    </span></dt><dd><p>Speed in rpm. The value has to match with the Speed value of the
+                            corresponding crank encoder.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cam start CH&lt;x&gt; </span>
+                    </span></dt><dd><p>Start angles vector of the up to 10 cam teeth of channel &lt;x&gt; in
+                            degrees [0, 720). The size of this vector must always be 10. If an
+                            element of the vector is '-1', the corresponding tooth is disabled. An
+                            example of a Cam start vector is [20, 60, 125, 550, -1, -1, -1, -1, -1,
+                            -1]. In this case, the 4 configured teeth start at 20&deg;, 60&deg;, 125&deg; and
+                            550&deg; respectively. The other teeth are disabled. The corresponding stop
+                            angles of the teeth are specified in the cam stop port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cam stop CH&lt;x&gt; </span>
+                    </span></dt><dd><p>Stop angles vector of the up to 10 cam teeth of channel &lt;x&gt; in
+                            degrees [0, 720). The size of this vector must always be 10. If an
+                            element of the vector is '-1', the corresponding tooth is disabled. An
+                            example of a Cam start vector is [40, 90, 180, 665, -1, -1, -1, -1, -1,
+                            -1]. In this case, the 4 configured teeth stop at 40&deg;, 90&deg;, 180&deg; and
+                            665&deg; respectively. The other teeth are disabled. The corresponding start
+                            angles of the teeth are specified in the cam start port.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12248"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Cam Encoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Crank master vector (read only) </span>
+                    </span></dt><dd><p>The corresponding crank encoder master. This parameter is read-only,
+                            and therefor only for information purpose. The crank encoder master is
+                            predefined during the pin layout.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of teeth vector (read only) </span>
+                    </span></dt><dd><p>This parameter defines the number of teeth defined in the crank
+                            encoder master. This parameter is read-only, and therefor only for
+                            information purpose. The number of teeth vector is defined in the crank
+                            encoder mask.</p></dd></dl></div></div></div></body></html>

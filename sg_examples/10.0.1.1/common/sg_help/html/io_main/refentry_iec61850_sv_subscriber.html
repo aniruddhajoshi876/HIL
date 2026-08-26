@@ -1,0 +1,33 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850 - Sampled Values Subscriber</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_sv_publisher.html" title="IEC 61850 - Sampled Values Publisher"><link rel="next" href="refentry_ref_io601.html" title="IO601"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_sv_subscriber"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850 - Sampled Values Subscriber</h2><p>IEC 61850 - Sampled Values Subscriber &#8212; 
+                <span class="phrase">Reads broadcast SV data through MAC addressing.</span></p></div><div class="refsect1"><a name="d5e8257"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_sv_subscriber.png"></span></span></p></div><div class="refsect1"><a name="d5e8265"></a><h2>Description</h2><p>This block is used to read data that has been broadcast to the network using a
+                destination MAC address. Your model can contain multiple IEC 61850 SV subscriber
+                blocks and requires at least one IEC 61850 Client or Server license.</p></div><div class="refsect1"><a name="d5e8268"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Output</span>
+                    </span></dt><dd><p>The subscriber will read messages from the defined
+                                <span class="bold"><strong>Destination MAC Address</strong></span> and output
+                            them with the type selected in <span class="bold"><strong>Message Data
+                                Type</strong></span>. The array length is defined by the <span class="bold"><strong>Width of Output Port</strong></span> parameter.</p><p>Use Byte Unpack blocks to convert to signed values or floating-point
+                            numbers. You can unpack a vector of type int8 and length 8 to one double
+                            value.</p></dd></dl></div></div><div class="refsect1"><a name="d5e8288"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Ethernet Port</span>
+                    </span></dt><dd><p>Define from which local Ethernet port SV messages should be read. The
+                            internal Ethernet interfaces of Speedgoat target machines have for
+                            example 'ETH1' as an available port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Data Type</span>
+                    </span></dt><dd><p>Select one of the data types listed in the dropdown list:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Int8</p><p>1-byte signed integer.</p></li><li class="listitem"><p>Double</p><p>8-byte floating point.</p></li><li class="listitem"><p>Quality</p><p>4-byte unsigned integer.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output Port Width</span>
+                    </span></dt><dd><p>Set the length of the output port vector.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Get Local Interface MAC Address</span>
+                    </span></dt><dd><p>By clicking this button the MAC address of the defined Ethernet interface will be put into the edit field below.</p></dd><dt><span class="term">
+                        <span class="guilabel">Destination MAC Address</span>
+                    </span></dt><dd><p>Define the multicast/broadcast MAC address of the SV message. For the
+                            purpose of broadcasting use ff:ff:ff:ff:ff:ff.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sampled Values App ID</span>
+                    </span></dt><dd><p>The SV app ID will be used to filter the messages from the given MAC
+                            address.</p></dd></dl></div></div></div></body></html>

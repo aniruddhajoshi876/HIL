@@ -1,0 +1,15 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.showPtpInterfaces</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_show_bitstream_content.html" title="speedgoat.showBitstreamContent"><link rel="next" href="refentry_sgapi_uninstall.html" title="speedgoat.uninstall"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_show_ptp_interfaces"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.showPtpInterfaces</h2><p>speedgoat.showPtpInterfaces &#8212; 
+            <span class="phrase">Show all ethernet controllers of Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e1496"></a><h2>Description</h2><p>This Speedgoat API function shows a list of all Ethernet interfaces available on your
+Speedgoat real-time target machine. This list includes the Speedgoat label, the index number,
+whether or not PTP is supported and the current IP configuration.</p></div><div class="refsect1"><a name="d5e1499"></a><h2>Examples</h2><p>Show the PTP-capable interfaces of the default target machine:</p><pre class="programlisting">speedgoat.showPtpInterfaces</pre><p>Show the interfaces of a specific target machine using the target name (e.g. 'TargetPC1'):</p><pre class="programlisting">speedgoat.showPtpInterfaces('TargetName', 'TargetPC1')</pre><p>Show the interfaces of a specific target machine using the target object (e.g. tg):</p><pre class="programlisting">speedgoat.showPtpInterfaces('TargetObject', tg)</pre></div><div class="refsect1"><a name="d5e1507"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e1511"></a><h2>Notes</h2><p>This function requires an ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p></div></div></body></html>

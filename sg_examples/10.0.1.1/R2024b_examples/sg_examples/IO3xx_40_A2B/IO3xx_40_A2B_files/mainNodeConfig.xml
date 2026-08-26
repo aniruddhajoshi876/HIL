@@ -1,0 +1,254 @@
+<?xml version="1.0" standalone="no"?>
+<Node_Configuration>
+  <Version_Info>
+    <A2BDLL_Version Version="19.11.0.0" />
+    <A2BStackDLL_Version Version="19.11.0.0" />
+    <SigmaStudio_Version Version="4.07.000.1831" />
+  </Version_Info>
+  <Node Version="" Type="Master" ID="0x0" Source_ID="0xFF" Part_number="ADI_A2B_AD2433" Local_power="True" HighPwrSw_config="0" NodeName="AD243x Master Node0">
+    <Authentication_Settings>
+      <Register_Field Vendor="0xAD" />
+      <Register_Field Version="0x20" />
+      <Register_Field Product="0x33" />
+      <Register_Field Capability="0x3" />
+      <Transceiver_Authentication_Field Transceiver_Authentication="A2B_DISABLED" />
+    </Authentication_Settings>
+    <Custom_Node_Id_Settings>
+      <Custom_Node_Id_Field Custom_Node_Id_Authentication="A2B_DISABLED" />
+    </Custom_Node_Id_Settings>
+    <Pin_Assignment_Settings>
+      <Register_Field SIO0_Func="Rx0" SIO0_IoMapping="NA" />
+      <Register_Field SIO1_Func="Rx1" SIO1_IoMapping="NA" />
+      <Register_Field SIO2_Func="GPIO" SIO2_IoMapping="GPIO2" />
+      <Register_Field SIO3_Func="Tx1" SIO3_IoMapping="NA" />
+      <Register_Field SIO4_Func="Tx0" SIO4_IoMapping="NA" />
+      <Register_Field GPIO7_Func="GPIO" GPIO7_IoMapping="GPIO7" />
+      <Register_Field SDA_Func="I2C" SDA_IoMapping="NA" />
+      <Register_Field SCL_Func="I2C" SCL_IoMapping="NA" />
+      <Register_Field MISO_Func="SPI(S)" MISO_IoMapping="NA" />
+      <Register_Field MOSI_Func="SPI(S)" MOSI_IoMapping="NA" />
+      <Register_Field SCK_Func="SPI(S)" SCK_IoMapping="NA" />
+      <Register_Field ADR1_Func="SSEL0" ADR1_IoMapping="NA" />
+      <Register_Field ADR2_Func="GPIO" ADR2_IoMapping="NA" />
+      <Register_Field GPIO_MODE="GPIO on SPI" />
+    </Pin_Assignment_Settings>
+    <I2S_Settings>
+      <Register_Field TDM_mode="TDM16" />
+      <Register_Field TDM_channel_size="32-bit" />
+      <Register_Field Sync_Mode="Pulse" />
+      <Register_Field Sync_polarity="Rising Edge" />
+      <Register_Field Early_frame_sync_status="Enabled" />
+      <Register_Field Transmit_Bit_clock_polarity="Rising Edge" />
+      <Register_Field Receive_Bit_clock_polarity="Rising Edge" />
+      <Register_Field TX_interleave_slots="Enabled" />
+      <Register_Field RX_interleave_slots="Enabled" />
+      <Register_Field Transmit_data_offset_in_TDM="0x0" />
+      <Register_Field Receive_data_offset_in_TDM="0x0" />
+      <Register_Field TxPin_TriState_before_driving_TDM_slots="Disabled" />
+      <Register_Field TxPin_TriState_after_driving_TDM_slots="Disabled" />
+      <Register_Field Sync="Enabled" />
+      <Rate_Settings>
+        <Reduced_Rate_Valid_Bits>
+          <Register_Field LSB="DISABLED" />
+          <Register_Field Extra_Bit="DISABLED" />
+          <Register_Field Extra_Channel="DISABLED" />
+        </Reduced_Rate_Valid_Bits>
+        <Register_Field Strobe_in_IO1="DISABLED" />
+        <Register_Field Strobe_Direction="DISABLED" />
+      </Rate_Settings>
+    </I2S_Settings>
+    <Basic_Configuration_and_Control>
+      <Register_Field Response_cycles="0x7D" />
+      <Register_Field Slot_Fmt="0x44" />
+      <Register_Field Pass_Up_Slots="0x10" />
+      <Register_Field Pass_Down_Slots="0x10" />
+      <Register_Field Early_acknowledge_for_I2C="Enabled" />
+      <Register_Field Data_control="0x23" />
+      <Register_Field Dis_I2C_Interface="Disabled" />
+    </Basic_Configuration_and_Control>
+    <GPIO_Settings>
+      <Register_Field GPIO_1_Pin_multiplexing="Rx1" />
+      <Register_Field GPIO_2_Pin_multiplexing="DISABLE" />
+      <Register_Field GPIO_3_Pin_multiplexing="Tx1" />
+      <Register_Field GPIO_4_Pin_multiplexing="SSEL0" />
+      <Register_Field GPIO_5_Pin_multiplexing="SPI(S)" />
+      <Register_Field GPIO_6_Pin_multiplexing="SPI(S)" />
+      <Register_Field GPIO_7_Pin_multiplexing="DISABLE" />
+      <Register_Field Digital_Pin_Drive_Strength="High" />
+      <Register_Field IRQ_Edge="Rising Edge" />
+      <Register_Field IRQ_Tristate="DISABLE" />
+    </GPIO_Settings>
+    <Interrupt_Configuration>
+      <Register_Field Header_count_error="Do Not Report" />
+      <Register_Field Data_decoding_error="Do Not Report" />
+      <Register_Field Data_CRC_error="Do Not Report" />
+      <Register_Field Data_parity_error="Do Not Report" />
+      <Register_Field Data_bus_power_error="Report" />
+      <Register_Field Bit_error_count_overflow_error="Do Not Report" />
+      <Register_Field SRF_miss_error="Do Not Report" />
+      <Register_Field GPIO_1_Interrupt="Do Not Report" />
+      <Register_Field GPIO_2_Interrupt="Do Not Report" />
+      <Register_Field GPIO_3_Interrupt="Do Not Report" />
+      <Register_Field GPIO_4_Interrupt="Do Not Report" />
+      <Register_Field GPIO_5_Interrupt="Do Not Report" />
+      <Register_Field GPIO_6_Interrupt="Do Not Report" />
+      <Register_Field GPIO_7_Interrupt="Do Not Report" />
+      <Register_Field I2C_failure_error="Do Not Report" />
+      <Register_Field Discovery_completion="Report" />
+      <Register_Field Interrupt_frame_error="Do Not Report" />
+      <Register_Field Slave_Interrupt_Request="Report" />
+    </Interrupt_Configuration>
+    <GPIO_Over_Distance_Settings>
+      <GPIOD_1_Config>
+        <Register_Field GPIOD_1="DISABLE" />
+        <Register_Field GPIOD_1_Signal_Invert="DISABLE" />
+        <GPIOD1_MASK>
+          <Register_Field GPIO1_Flag0="Mask" GPIO1_Flag1="Mask" GPIO1_Flag2="Mask" GPIO1_Flag3="Mask" GPIO1_Flag4="Mask" GPIO1_Flag5="Mask" GPIO1_Flag6="Mask" GPIO1_Flag7="Mask" />
+        </GPIOD1_MASK>
+      </GPIOD_1_Config>
+      <GPIOD_2_Config>
+        <Register_Field GPIOD_2="DISABLE" />
+        <Register_Field GPIOD_2_Signal_Invert="DISABLE" />
+        <GPIOD2_MASK>
+          <Register_Field GPIO2_Flag0="Mask" GPIO2_Flag1="Mask" GPIO2_Flag2="Mask" GPIO2_Flag3="Mask" GPIO2_Flag4="Mask" GPIO2_Flag5="Mask" GPIO2_Flag6="Mask" GPIO2_Flag7="Mask" />
+        </GPIOD2_MASK>
+      </GPIOD_2_Config>
+      <GPIOD_3_Config>
+        <Register_Field GPIOD_3="DISABLE" />
+        <Register_Field GPIOD_3_Signal_Invert="DISABLE" />
+        <GPIOD3_MASK>
+          <Register_Field GPIO3_Flag0="Mask" GPIO3_Flag1="Mask" GPIO3_Flag2="Mask" GPIO3_Flag3="Mask" GPIO3_Flag4="Mask" GPIO3_Flag5="Mask" GPIO3_Flag6="Mask" GPIO3_Flag7="Mask" />
+        </GPIOD3_MASK>
+      </GPIOD_3_Config>
+      <GPIOD_4_Config>
+        <Register_Field GPIOD_4="DISABLE" />
+        <Register_Field GPIOD_4_Signal_Invert="DISABLE" />
+        <GPIOD4_MASK>
+          <Register_Field GPIO4_Flag0="Mask" GPIO4_Flag1="Mask" GPIO4_Flag2="Mask" GPIO4_Flag3="Mask" GPIO4_Flag4="Mask" GPIO4_Flag5="Mask" GPIO4_Flag6="Mask" GPIO4_Flag7="Mask" />
+        </GPIOD4_MASK>
+      </GPIOD_4_Config>
+      <GPIOD_5_Config>
+        <Register_Field GPIOD_5="DISABLE" />
+        <Register_Field GPIOD_5_Signal_Invert="DISABLE" />
+        <GPIOD5_MASK>
+          <Register_Field GPIO5_Flag0="Mask" GPIO5_Flag1="Mask" GPIO5_Flag2="Mask" GPIO5_Flag3="Mask" GPIO5_Flag4="Mask" GPIO5_Flag5="Mask" GPIO5_Flag6="Mask" GPIO5_Flag7="Mask" />
+        </GPIOD5_MASK>
+      </GPIOD_5_Config>
+      <GPIOD_6_Config>
+        <Register_Field GPIOD_6="DISABLE" />
+        <Register_Field GPIOD_6_Signal_Invert="DISABLE" />
+        <GPIOD6_MASK>
+          <Register_Field GPIO6_Flag0="Mask" GPIO6_Flag1="Mask" GPIO6_Flag2="Mask" GPIO6_Flag3="Mask" GPIO6_Flag4="Mask" GPIO6_Flag5="Mask" GPIO6_Flag6="Mask" GPIO6_Flag7="Mask" />
+        </GPIOD6_MASK>
+      </GPIOD_6_Config>
+      <GPIOD_7_Config>
+        <Register_Field GPIOD_7="DISABLE" />
+        <Register_Field GPIOD_7_Signal_Invert="DISABLE" />
+        <GPIOD7_MASK>
+          <Register_Field GPIO7_Flag0="Mask" GPIO7_Flag1="Mask" GPIO7_Flag2="Mask" GPIO7_Flag3="Mask" GPIO7_Flag4="Mask" GPIO7_Flag5="Mask" GPIO7_Flag6="Mask" GPIO7_Flag7="Mask" />
+        </GPIOD7_MASK>
+      </GPIOD_7_Config>
+    </GPIO_Over_Distance_Settings>
+    <Clock_Output_Settings>
+      <Register_Field Pre_Div_Factor1="2" />
+      <Register_Field Post_Div_Factor1="2" />
+      <Register_Field Clk1_Invert="Disabled" />
+      <Register_Field Pre_Div_Factor2="2" />
+      <Register_Field Post_Div_Factor2="2" />
+      <Register_Field Clk2_Invert="Disabled" />
+    </Clock_Output_Settings>
+    <Register_Settings>
+      <Register_Field SWCTL_Register="0x1" />
+      <Register_Field PDMCTL_Register="0x0" />
+      <Register_Field PDMCTL2_Register="0x0" />
+      <Register_Field PLLCTL_Register="0x0" />
+      <Register_Field CONTROL_Register="0x0" />
+      <Register_Field TESTMODE_Register="0x0" />
+      <Register_Field BECCTL_Register="0xE6" />
+      <Register_Field ERRMGMT_Register="0x0" />
+      <Register_Field I2STEST_Register="0x0" />
+      <Register_Field GENERR_Register="0x0" />
+      <Register_Field RAISE_Register="0x0" />
+      <Register_Field BMMCFG_Register="0x0" />
+      <Register_Field SWCTL2="0x0" />
+      <Register_Field SWCTL5="0x0" />
+      <Register_Field TXCTL_Register="0x0" />
+    </Register_Settings>
+    <SPI_Settings>
+      <Register_Field SPI_Mode="Slave" />
+      <Register_Field SPI_CPOL="Rising Edge" />
+      <Register_Field SPI_CPHA="Leading Edge" />
+      <Register_Field SPI_ClkDivFactor="0x3F" />
+      <Register_Field SPI_Mstr_SlaveSelect_Enable_2="0x0" />
+      <Register_Field SPI_Mstr_SlaveSelect_Enable_1="0x0" />
+      <Register_Field SPI_Mstr_SlaveSelect_Enable_0="0x0" />
+      <Register_Field SPI_Gpio_Enable="0x0" />
+      <Register_Field SPI_Gpio_Select="0x0" />
+      <Register_Field SPI_FD_Slave_Select="0x0" />
+      <Register_Field SPI_FD_Size="0x0" />
+      <Register_Field SPI_FD_TargetNode="0x0" />
+      <Register_Field SPI_Target_SlaveSelect="0x0" />
+      <Register_Field SPI_FD_ClkStretch_Enable="Disabled" />
+      <Register_Field SPI_INTMASK_FIFO_Underflow="Disabled" />
+      <Register_Field SPI_INTMASK_FIFO_Overflow="Disabled" />
+      <Register_Field SPI_INTMASK_Bad_Command="Disabled" />
+      <Register_Field SPI_INTMASK_Data_Tunnel="Disabled" />
+      <Register_Field SPI_INTMASK_Remote_I2C="Disabled" />
+      <Register_Field SPI_INTMASK_Remote_Reg="Disabled" />
+      <Register_Field SPI_INTMASK_Spi_Done="Disabled" />
+      <Register_Field SPI_DT_Enable="Disabled" />
+      <Register_Field SPI_DT_Ownership="Tunnel Responder" />
+      <Register_Field SPI_DT_Position="Middle" />
+      <Register_Field SPI_DT_Downstream_Slots="0x0" />
+      <Register_Field SPI_DT_Upstream_Slots="0x0" />
+      <Register_Field SPI_DT_Downstream_Offset="0x0" />
+      <Register_Field SPI_DT_Upstream_Offset="0x0" />
+    </SPI_Settings>
+    <TXXBAR_Settings>
+      <Register_Field TXXBAR0="0x0" TXXBAR1="0x1" TXXBAR2="0x2" TXXBAR3="0x3" TXXBAR4="0x4" TXXBAR5="0x5" TXXBAR6="0x6" TXXBAR7="0x7" TXXBAR8="0x8" TXXBAR9="0x9" TXXBAR10="0xA" TXXBAR11="0xB" TXXBAR12="0xC" TXXBAR13="0xD" TXXBAR14="0xE" TXXBAR15="0xF" TXXBAR16="0x10" TXXBAR17="0x11" TXXBAR18="0x12" TXXBAR19="0x13" TXXBAR20="0x14" TXXBAR21="0x15" TXXBAR22="0x16" TXXBAR23="0x17" TXXBAR24="0x18" TXXBAR25="0x19" TXXBAR26="0x1A" TXXBAR27="0x1B" TXXBAR28="0x1C" TXXBAR29="0x1D" TXXBAR30="0x1E" TXXBAR31="0x1F" />
+    </TXXBAR_Settings>
+    <RXXBAR_Settings>
+      <Register_Field RXMASK0="0xFF" RXMASK1="0xFF" RXMASK2="0xFF" RXMASK3="0xFF" RXMASK4="0xFF" RXMASK5="0xFF" RXMASK6="0xFF" RXMASK7="0xFF" />
+    </RXXBAR_Settings>
+    <VMTR_Settings>
+      <Register_Field VMTR_VEN="0x0" />
+      <Register_Field VMTR_IntEN="0x0" />
+      <Register_Field VMTR_MaxStat="0x0" />
+      <Register_Field VMTR_MinStat="0x0" />
+      <Register_Field VMTR_Vtg0_Max="0xFF" VMTR_Vtg0_Min="0x0" />
+      <Register_Field VMTR_Vtg1_Max="0xFF" VMTR_Vtg1_Min="0x0" />
+      <Register_Field VMTR_Vtg2_Max="0xFF" VMTR_Vtg2_Min="0x0" />
+      <Register_Field VMTR_Vtg3_Max="0xFF" VMTR_Vtg3_Min="0x0" />
+      <Register_Field VMTR_Vtg4_Max="0xFF" VMTR_Vtg4_Min="0x0" />
+      <Register_Field VMTR_Vtg5_Max="0xFF" VMTR_Vtg5_Min="0x0" />
+      <Register_Field VMTR_Vtg6_Max="0xFF" VMTR_Vtg6_Min="0x0" />
+    </VMTR_Settings>
+    <PWM_Settings>
+      <Register_Field PWM_PwmCfg="0x0" />
+      <Register_Field PWM_PwmFreq="0x0" />
+      <Register_Field PWM_PwmBlink1="0x0" />
+      <Register_Field PWM_PwmBlink2="0x0" />
+      <Register_Field PWM_Pwm1ValH="0x0" PWM_Pwm1ValL="0x0" />
+      <Register_Field PWM_Pwm2ValH="0x0" PWM_Pwm2ValL="0x0" />
+      <Register_Field PWM_Pwm3ValH="0x0" PWM_Pwm3ValL="0x0" />
+      <Register_Field PWM_PwmOEValH="0x0" PWM_PwmOEValL="0x0" />
+    </PWM_Settings>
+  </Node>
+  <TimeStamp>
+    <Time_Stamp Project_Name="Example_1.dspproj" Date-Time="8/20/2025 9:16:18 PM" />
+  </TimeStamp>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <DigestValue>IiLVPkGVH2R7eniV6lkl0cmVZSU=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>QdjNQ7Om+BWW9yhPVcElKMt1F7O7JJS/sjiX91UUOcyFP1m0quun4afzfOYHtfQF4AOmrkb9fF5E9//PTz589B36+78sS46MqHLiJI2TcZ7C4DUm95zDuZZohGolYuhegxuAm0wGwXCD8E0tKX/pFc17mpEuOAS7/NXEz8YoUdU=</SignatureValue>
+  </Signature>
+</Node_Configuration>

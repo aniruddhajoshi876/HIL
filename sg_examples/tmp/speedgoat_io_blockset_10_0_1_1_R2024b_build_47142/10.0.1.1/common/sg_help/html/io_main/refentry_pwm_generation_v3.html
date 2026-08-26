@@ -1,0 +1,93 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">PWM - Generation v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_pwm_usage_notes.html" title="PWM Usage Notes"><link rel="next" href="refentry_pwm_generation_v5.html" title="PWM - Generation v5"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_pwm_generation_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>PWM - Generation v3</h2><p>PWM - Generation v3 &#8212; <span class="phrase">Pulse width modulation is a
+                    modulation technique used to encode a message into a pulsing
+                signal</span></p></div><div class="refsect1"><a name="d5e1243"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pwm_generation_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e1251"></a><h2>Description</h2><p>The PWM (Pulse Width Modulation) code module provides the following functionality:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Symmetric, asymmetric, single-phase, and multi-phase PWM
+                            generation</p></li><li class="listitem"><p>Frequency-modulated pulse trains</p></li></ul></div><p>To synchronize more than one PWM generation channel (e.g., for multi-phase
+                (H-bridge) applications), the same driver block must be used to access all of the
+                PWM channels. This is the only way to ensure that the PWM cycles run exactly in
+                parallel (phase-locked).</p></div><div class="refsect1"><a name="d5e1261"></a><h2>Ports</h2><p>Depending on which input ports are enabled in the dialog fields of the PWM generation driver block, this driver block has up to 6 input ports and contains no
+                output ports. The possible input ports are:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">A </span>
+                    </span></dt><dd><p>The A On compare value. This port is only active when the PWM pattern
+                            is symmetric (centered on half the period). A Off will be computed by
+                            the driver to ensure the symmetric PWM generation.</p></dd><dt><span class="term">
+                        <span class="guilabel">B </span>
+                    </span></dt><dd><p>The B On compare value. This port is only active when the PWM pattern
+                            is symmetric (centered on half the period). B Off will be computed by
+                            the driver to ensure the symmetric PWM generation.</p></dd><dt><span class="term">
+                        <span class="guilabel">A On </span>
+                    </span></dt><dd><p>The A On compare value. This port is only active when the PWM pattern
+                            is asymmetric.</p></dd><dt><span class="term">
+                        <span class="guilabel">A Off </span>
+                    </span></dt><dd><p>The A Off compare value. This port is only active when the PWM pattern
+                            is asymmetric.</p></dd><dt><span class="term">
+                        <span class="guilabel">B On </span>
+                    </span></dt><dd><p>The B On compare value. This port is only active when the PWM pattern
+                            is asymmetric.</p></dd><dt><span class="term">
+                        <span class="guilabel">B Off </span>
+                    </span></dt><dd><p>The B Off compare value. This port is only active when the PWM pattern
+                            is asymmetric.</p></dd></dl></div><p>All input ports are of data type double. The widths of the input ports have to be
+                equal to the number of PWM channels as defined in dialog field parameter "channel
+                vector" of this driver block. Each element can be in the range from 1 to 2^32-1.</p><p>Note: It is the responsibility of the user of the block to make sure that the
+                A-compare, B-compare, and Period-compare values are in proper relation to each
+                other.</p></div><div class="refsect1"><a name="d5e1298"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: PWM generation </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">PWM pattern </span>
+                    </span></dt><dd><p>The type of PWM signal. There are two possibilities: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>PWM is symmetric and centered on half the period</p></li></ul></div><p> In this case only A On and B On are configurable. The
+                            driver will calculate A Off and B Off to keep the generation symmetric. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>PWM is asymmetric</p></li></ul></div><p> In this case A On and B On, and A Off and B Off are
+                            freely configurable.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM period vector </span>
+                    </span></dt><dd><p>A vector of PWM period values in FPGA ticks. The width of this vector
+                            must be equal to the width of the Channel vector parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Polarity of PWM A output </span>
+                    </span></dt><dd><p>The PWM A output behavior between A On and A Off. By default: PWM A is
+                            high between A On and A Off, but PWM A can be configured to be low
+                            between A On and A Off. This parameter is useful when A and B must be
+                            complementary.</p></dd><dt><span class="term">
+                        <span class="guilabel">Polarity of PWM B output </span>
+                    </span></dt><dd><p>The PWM B output behavior between B On and B Off. By default: PWM B is
+                            high between B On and B Off, but PWM B can be configured to be low
+                            between B On and B Off. This parameter is useful when A and B must be
+                            complementary.</p></dd><dt><span class="term">
+                        <span class="guilabel">Polarity of PWM Trigger output </span>
+                    </span></dt><dd><p>Defines if a trigger is high (default) or low during trigger
+                            generation. This parameter may be required if external hardware such as
+                            analog inputs of the IO106 have a different (low) polarity.</p></dd><dt><span class="term">
+                        <span class="guilabel">Trigger source </span>
+                    </span></dt><dd><p>Defines the condition when a trigger signal is emitted. Possible
+                            conditions are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>PWM A On</p></li><li class="listitem"><p>PWM A Off</p></li><li class="listitem"><p>PWM A On and PWM A Off</p></li><li class="listitem"><p>PWM B On</p></li><li class="listitem"><p>PWM B Off</p></li><li class="listitem"><p>PWM B On and PWM B Off</p></li><li class="listitem"><p>Period starts</p></li><li class="listitem"><p>Half the period</p></li><li class="listitem"><p>Period starts and half the period</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Trigger pulse length vector </span>
+                    </span></dt><dd><p>The duration of a trigger pulse. Possible values are between 1 and
+                            255. The width of this vector must be equal to the width of the channel
+                            vector parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">AB-output protection </span>
+                    </span></dt><dd><p>This protection is used to prevent A and B being active at the same
+                            time. Protection can be configured to be: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled: A and B can be high at the same moment</p></li><li class="listitem"><p>A is forced off when B is on</p></li><li class="listitem"><p>B is forced off when A is on</p></li><li class="listitem"><p>Both A and B are disabled when A and B should be high at
+                                        the same moment.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">PWM update </span>
+                    </span></dt><dd><p>By default, PWM parameters are updated with the given value each time a period starts. If required, PWM update can also be configured to update at the start of the period and/or at halfway through the period.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Offline state </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">PWM output A is </span>
+                    </span></dt><dd><p>Defines the PWM A output parameter value loaded before the model
+                            starts or when it's stopped.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM output B is </span>
+                    </span></dt><dd><p>Defines the PWM B output parameter value loaded before the model
+                            starts or when it's stopped.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div></div></body></html>

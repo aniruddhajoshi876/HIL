@@ -1,0 +1,31 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#define S_FUNCTION_LEVEL    (0x1529+2379-0x1e72)
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME     sg_io292_setup_s
+#include "sg_io292.h"
+#include "simstruc.h"
+#ifndef MATLAB_MEX_FILE
+#include "sg_printf.h"
+#include "sg_common.h"
+#include "sg_module_registry.h"
+#include "sg_module_types.h"
+static const int z0e14cce82f=zf310f30693;
+#else
+#include "mex.h"
+#endif
+#define SG_HAS_MDL_EXIT 
+#define SG_EARLY_INIT   
+#include "sg_callback.h"
+#include "sg_mask_init.h"
+enum zfb6915538d{zc7d8502b91,za7bf7122c6,z1d5dbed3ce,z2041d72f5c};enum zbb1f615c1d{z32297f1282};enum z93bcf30780{z81b97a1b0d};enum zb06a9f15ae{zbeb0b06c22};
+#ifndef MATLAB_MEX_FILE
+static zfb6915538d*zd60fa56936(SimStruct*S);static void zd7faeeff36(zfb6915538d*params);static int z83ea4cc108(SimStruct*S,zadfbbde166*zae10e3f17f);static void z6c0b75a72b(SimStruct*S,zadfbbde166*zae10e3f17f);static void zab0e504554(const zfb6915538d*params);static void z43c209d6e2(const zadfbbde166*zae10e3f17f);
+#endif
+static void mdlInitializeSizes(SimStruct*S){SgMaskInit_SetupSettingsArgs args;args.numberOfParams=z2041d72f5c;args.integerWorkVecLength=z32297f1282;args.realWorkVecLength=z81b97a1b0d;args.pointerWorkVecLength=zbeb0b06c22;if(sgMaskInit_initSizesForSetupBlock(S,&args)){static char z658c413ec2[(0x1c9+7692-0x1f55)];sprintf(z658c413ec2,"\x49\x6e\x20\x49\x4f\x32\x39\x32\x2c\x20\x53\x65\x74\x75\x70\x20\x62\x6c\x6f\x63\x6b\x2c\x20\x49\x44\x20\x25\x64\x3a\x20\x57\x72\x6f\x6e\x67\x20\x6e\x75\x6d\x62\x65\x72\x20\x6f\x66\x20\x69\x6e\x70\x75\x74\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x70\x61\x73\x73\x65\x64\x2e" "\n""\x25\x64\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x61\x72\x65\x20\x65\x78\x70\x65\x63\x74\x65\x64\x2e" "\n",(int)mxGetScalar(ssGetSFcnParam(S,zc7d8502b91)),z2041d72f5c);ssSetErrorStatus(S,z658c413ec2);return;}}static void mdlInitializeSampleTimes(SimStruct*S){sgMaskInit_initSampleTimesForSetupBlock(S);}
+#ifndef MATLAB_MEX_FILE
+static void sg_ModelLoad(SimStruct*S){zfb6915538d*params=zd60fa56936(S);zadfbbde166*zae10e3f17f=NULL;sg_mod_info*mod_info=NULL;zab0e504554(params);if(sg_module_get_single(z0e14cce82f,params->moduleId)){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x53\x65\x74\x75\x70\x3a\x20\x4d\x6f\x64\x75\x6c\x65\x20\x61\x6c\x72\x65\x61\x64\x79\x20\x72\x65\x67\x69\x73\x74\x65\x72\x65\x64\x21" "\n",DEVNAME,params->moduleId);return;}SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x53\x65\x74\x75\x70\x3a\x20\x52\x65\x67\x69\x73\x74\x65\x72\x69\x6e\x67\x20\x6d\x6f\x64\x75\x6c\x65" "\n",DEVNAME,params->moduleId);mod_info=sg_module_register(z0e14cce82f,params->moduleId);zae10e3f17f=z5f6de481f8();if(z9fb44d7dd0(zae10e3f17f,params->moduleId,params->zfba97307b4)){z6c0b75a72b(S,zae10e3f17f);return;}mod_info->custom_data=(void*)zae10e3f17f;SG_PRINTF(INFO,"\x25\x73\x2c\x20\x49\x44\x3a\x20\x25\x64" "\n",DEVNAME,zae10e3f17f->moduleId);SG_PRINTF(DEBUG,"\x53\x65\x74\x75\x70\x20\x62\x6c\x6f\x63\x6b" "\n");zae10e3f17f->z7a48f1e12c=params;z43c209d6e2(zae10e3f17f);if(z83ea4cc108(S,zae10e3f17f)){z6c0b75a72b(S,zae10e3f17f);return;}SG_PRINTF(INFO,"\x49\x6e\x69\x74\x69\x61\x6c\x69\x7a\x61\x74\x69\x6f\x6e\x20\x4f\x4b" "\n");}static void sg_ModelStart(SimStruct*S){}static void sg_ModelStep(SimStruct*S){}static void sg_ModelStop(SimStruct*S){}static void sg_ModelExit(SimStruct*S){int za0d38ae598=(int)mxGetPr(ssGetSFcnParam(S,zc7d8502b91))[(0xd72+2160-0x15e2)];SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x53\x65\x74\x75\x70\x3a\x20\x73\x67\x5f\x4d\x6f\x64\x65\x6c\x45\x78\x69\x74" "\n",DEVNAME,za0d38ae598);zadfbbde166*zae10e3f17f=(zadfbbde166*)sg_module_get_custom_data(z0e14cce82f,za0d38ae598);if(zae10e3f17f){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x53\x65\x74\x75\x70\x3a\x20\x46\x72\x65\x65\x20\x64\x65\x76\x69\x63\x65\x20\x73\x74\x72\x75\x63\x74" "\n",DEVNAME,za0d38ae598);if(zae10e3f17f->z7a48f1e12c)zd7faeeff36(zae10e3f17f->z7a48f1e12c);if(zae10e3f17f->zf6ddd4bc72)z9b79520fe6(zae10e3f17f->zf6ddd4bc72);if(zae10e3f17f->z0e01bf936e)z0c0138305c(zae10e3f17f->z0e01bf936e);if(zae10e3f17f->zb9829526a6)free(zae10e3f17f->zb9829526a6);if(zae10e3f17f->zad61968036)free(zae10e3f17f->zad61968036);z4f0cf82f52(zae10e3f17f);SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x53\x65\x74\x75\x70\x3a\x20\x55\x6e\x72\x65\x67\x69\x73\x74\x65\x72\x20\x6d\x6f\x64\x75\x6c\x65" "\n",DEVNAME,za0d38ae598);sg_module_unregister(z0e14cce82f,za0d38ae598);}}static int z83ea4cc108(SimStruct*S,zadfbbde166*zae10e3f17f){int i;int z7399e1b528[zb132c62ca4];const SgParam_IntVec*z0ad295ad94=zae10e3f17f->z7a48f1e12c->z0ad295ad94;for(i=(0x44c+4054-0x1422);i<zb132c62ca4;i++){bool z92451f73b7=false;if(z8789bd4203(zae10e3f17f,i,z0ad295ad94,&z92451f73b7)){return-(0x1a87+2867-0x25b9);}z7399e1b528[i]=z92451f73b7?z72ca354072:z8dbb1209fb;}zedbe4cced1(zae10e3f17f,z7399e1b528);return(0x20d+2885-0xd52);}static void z6c0b75a72b(SimStruct*S,zadfbbde166*zae10e3f17f){sgError_setPreamble(zae10e3f17f->error,DEVNAME,"\x53\x65\x74\x75\x70",zae10e3f17f->moduleId);ssSetErrorStatus(S,sgError_getMsg(zae10e3f17f->error));return;}static zfb6915538d*zd60fa56936(SimStruct*S){zfb6915538d*params=malloc(sizeof(zfb6915538d));params->moduleId=sgParam_getInt(S,zc7d8502b91);params->zfba97307b4=sgParam_newIntVec(S,za7bf7122c6);params->z0ad295ad94=sgParam_newIntVec(S,z1d5dbed3ce);return params;}static void zd7faeeff36(zfb6915538d*params){sgParam_deleteIntVec(params->zfba97307b4);sgParam_deleteIntVec(params->z0ad295ad94);free(params);}static void zab0e504554(const zfb6915538d*params){SG_PARAM_PRINT_INT(params,moduleId);SG_PARAM_PRINT_INT_VEC(params,zfba97307b4);SG_PARAM_PRINT_INT_VEC(params,z0ad295ad94);}static void z43c209d6e2(const zadfbbde166*zae10e3f17f){if(zae10e3f17f->z1167769581==(0xa9a+1067-0xec4)){SG_PRINTF(DEBUG,"\x42\x61\x73\x65\x20\x61\x64\x64\x72\x65\x73\x73\x20\x6f\x66\x20\x72\x65\x67\x69\x73\x74\x65\x72\x20\x6d\x61\x70\x3a\x20\x30\x78\x25\x58" "\n",zae10e3f17f->z3226fecad4);}else{SG_PRINTF(DEBUG,
+"\x42\x61\x73\x65\x20\x61\x64\x64\x72\x65\x73\x73\x20\x6f\x66\x20\x72\x65\x67\x69\x73\x74\x65\x72\x20\x6d\x61\x70\x3a\x20\x30\x78\x25\x58" "\n",zae10e3f17f->z27fd94ac66);}}
+#endif  
+#include "sg_sfcn_glue.h"   
+

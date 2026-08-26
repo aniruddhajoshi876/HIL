@@ -1,0 +1,31 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">PWM Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_pwm_examples.html" title="IO3xx PWM - Examples"><link rel="next" href="refentry_pwm_generation_v3.html" title="PWM - Generation v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_pwm_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>PWM Usage Notes</h2><p>PWM Usage Notes &#8212; <span class="phrase">Usage information about the I/O
+                    module</span></p></div><div class="refsect1"><a name="refsect_pwm_signal_types"></a><h2>How to Configure Typical Signal Types</h2><p>This section shows how to configure the PWM code module in order to achieve the
+                following PWM signals:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Center-aligned (symmetric) e.g., for DC motor control, solar
+                        inverter</p></li><li class="listitem"><p>Left-aligned modulation e.g., servo motor (change actions)</p></li><li class="listitem"><p>Right-aligned</p></li><li class="listitem"><p>Inverted</p></li></ul></div><div class="refsect2"><a name="d5e1184"></a><h3>Center-Aligned</h3><p>Here is a timing diagram for a center-aligned (symmetrical) signal:</p><p><span class="inlinemediaobject"><img src="././graphics/pwm_center_aligned.png"></span></p><p>Here the <span class="bold"><strong>PWM Pattern is</strong></span> parameter is set to
+                        <span class="bold"><strong>Symmetric</strong></span> and centered on half the period
+                    (see the <span class="bold"><strong>PWM Generation</strong></span> tab in the module
+                    dialog). In this configuration, only the duty cycle value is required. A-On and
+                    A-Off are automatically calculated by the driver so that the PWM output is
+                    symmetrical about the midpoint (half the period).</p></div><div class="refsect2"><a name="d5e1195"></a><h3>Left-Aligned</h3><p>Here is a timing diagram for a left-aligned (asymmetrical) signal:</p><p><span class="inlinemediaobject"><img src="././graphics/pwm_left_aligned.png"></span></p><p>Here the <span class="bold"><strong>PWM Pattern is</strong></span> parameter is set to
+                        <span class="bold"><strong>Asymmetric</strong></span> (see the <span class="bold"><strong>PWM Generation</strong></span> tab in the module dialog). In this example, A-On
+                    is fixed to 0. A-Off is then set to give the desired pulse width.</p></div><div class="refsect2"><a name="d5e1206"></a><h3>Right-Aligned</h3><p>Here is a timing diagram for a right-aligned (asymmetrical) signal:</p><p><span class="inlinemediaobject"><img src="././graphics/pwm_right_aligned.png"></span></p><p>Here the <span class="bold"><strong>PWM Pattern is</strong></span> parameter is set to
+                        <span class="bold"><strong>Asymmetric</strong></span> (see the <span class="bold"><strong>PWM Generation</strong></span> tab in the module dialog). In this example, A-Off
+                    is fixed to the same value as the Period. A-On is then set to give the desired
+                    pulse width.</p></div><div class="refsect2"><a name="d5e1217"></a><h3>Inverted</h3><p>Here is a timing diagram for an inverted asymmetrical signal:</p><p><span class="inlinemediaobject"><img src="././graphics/pwm_center_aligned_inverted.png"></span></p><p>Here the <span class="bold"><strong>PWM Pattern is</strong></span> parameter is set to
+                        <span class="bold"><strong>Asymmetric</strong></span> (see the <span class="bold"><strong>PWM Generation</strong></span> tab in the module dialog). In this example A-On
+                    is set to a value greater than A-Off. This causes an automatic inversion of the
+                    polarity.</p></div></div><div class="refsect1"><a name="refsect_pwm_trigger_output"></a><h2>Trigger Output/PWM C Usage</h2><p>In addition to the A Output and B Output signals, the PWM generation module
+                provides a Trigger output which can be used to trigger/control other I/O components
+                e.g., A/D converters. The Trigger Output signal outputs a high pulse for a duration
+                defined by the <span class="bold"><strong>Trigger Pulse Length Vector</strong></span>
+                parameter. The output is triggered depending on the conditions specified by the
+                    <span class="bold"><strong>Trigger Source</strong></span> parameter. This trigger line is
+                shared with PWM C Output to make PWM C/Trigger output.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if the FPGA base clock is equal to 75&nbsp;MHz, then the resolution is
+                    13.33&nbsp;ns. The <span class="bold"><strong>Trigger Output Pulse Length</strong></span>
+                    parameter on the FPGA has a range from 0 to 65 535 which results in a maximum
+                    pulse duration of 873.8 microseconds (when the FPGA frequency is 75&nbsp;MHz).</p><p>To use the trigger, the PWM C-On and C-Off parameters must be set to zero.
+                    When PWM C is used, ensure that none of the trigger generation options in the
+                        <span class="bold"><strong>Triggering</strong></span> tab are enabled.</p></td></tr></table></div></div></div></body></html>

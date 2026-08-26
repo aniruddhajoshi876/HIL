@@ -1,0 +1,98 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO425 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io425_usage_notes.html" title="IO425 Usage Notes"><link rel="next" href="refentry_io425_write.html" title="IO425 - Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io425_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO425 - Setup</h2><p>IO425 - Setup &#8212; <span class="phrase">Configure the IO425
+                    LVDT/RVDT/Resolver emulation block</span></p></div><div class="refsect1"><a name="d5e3582"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io425_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e3590"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e3596"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Channel Setup</span>
+                    </span></dt><dd><p>Select the operation mode for each channel. The IO425 supports up to 4
+                            channels. Available options: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled</p></li><li class="listitem"><p>2-Wire LVDT/RVDT (only output A is used)</p></li><li class="listitem"><p>4-Wire LVDT/RVDT</p></li><li class="listitem"><p>Resolver</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">General Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Output Voltage</span>
+                    </span></dt><dd><p>Select the maximum output voltage for each channel.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The minimum and maximum output voltage depends on the
+                                    installed I/O interfaces. The output voltage follows the applied
+                                    excitation input signal and therefore reflects all the glitches
+                                    and noise. Note that the output will always be exactly one cycle
+                                    behind the input signal.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Phase Offset A</span>
+                    </span></dt><dd><p>Specify the phase offset (0&deg; to 360&deg;) between the input signal and
+                            output A.</p></dd><dt><span class="term">
+                        <span class="guilabel">Phase Offset B</span>
+                    </span></dt><dd><p>Specify the phase offset (0&deg; to 360&deg;) between the input signal and
+                            output B.</p></dd><dt><span class="term">
+                        <span class="guilabel">Invert Output A</span>
+                    </span></dt><dd><p>Select if the output A signal should be inverted (phase shift of
+                            180&deg;).</p></dd><dt><span class="term">
+                        <span class="guilabel">Invert Output B</span>
+                    </span></dt><dd><p>Select if the output B signal should be inverted (phase shift of
+                            180&deg;).</p></dd><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Select if an internal or an external excitation signal should be used.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Connect the external excitation signal before loading the
+                                    model on the real-time target machine. This is important because
+                                    the I/O module automatically calibrates itself to the signal
+                                    applied during model load in order to achieve maximum sampling
+                                    resolution without clipping.</p><p>If no input signal is applied during model load, select the
+                                        <span class="bold"><strong>Enable Manual Input
+                                        Calibration</strong></span>
+                                    checkbox.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Frequency</span>
+                    </span></dt><dd><p>Specify the excitation frequency if an internal excitation is
+                            used.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Buffer Size</span>
+                    </span></dt><dd><p>Specify the sample buffer size if an external excitation is used. The
+                            module averages the input signal measured over the specified number of
+                            samples to calculate the input frequency. A higher number will give a
+                            more stable frequency measurement but changes in the input will be
+                            reflected at the output with a higher delay. The buffer size is a
+                            trade-off between speed and stability.</p><p>As a guide, increase or decrease the number of samples until the
+                            measured frequency remains stable, then use the lowest number of
+                            samples.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Manual Input Calibration</span>
+                    </span></dt><dd><p>This setting can be used if the external excitation signal is not
+                            present at the input when loading the model on the real-time target
+                            machine.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Gain</span>
+                    </span></dt><dd><p>Specify the gain (0 to 255) for the excitation input signal. The
+                            optimal value can be determined by reading the system log when the
+                            manual input calibration is disabled and the excitation signal is
+                            present at the input.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">LVDT/RVDT Tab</div><dl class="variablelist"><dt><span class="term">Initial Position</span></dt><dd><p>Define the initial position (-100 to 100) present on the outputs after
+                            the application has been downloaded. The values can be set individually
+                            by entering a vector: the value at a certain position in the Initial
+                            Values vector is applied to the channel as defined in the Channel
+                            Setup.</p></dd><dt><span class="term">Reset to Initial Values</span></dt><dd><p>Define whether the initial values are also applied once the
+                            application has stopped. The behavior can be set individually for each
+                            channel using a vector. "1" means use the <span class="bold"><strong>Initial
+                                Position</strong></span> vector and "0" means keep the latest
+                            value.</p></dd><dt><span class="term">Null Offset</span></dt><dd><p>At the extremes (-100 % or +100 %), an offset can be added to define
+                            the minimum output voltage instead of zero. This does not change the
+                            maximum output voltage, it just applies a positive offset to the lower
+                            voltage. The null offset is only available for the 4-wire mode.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Resolver Tab</div><dl class="variablelist"><dt><span class="term">Initial Position</span></dt><dd><p>Define the initial position (0&deg; to 360&deg;) present on the outputs after
+                            the application has been downloaded. The values can be set individually
+                            by entering a vector: the value at a certain position in the <span class="bold"><strong>Initial Position</strong></span> vector is applied to the
+                            channel as defined in the Channel Setup.</p></dd><dt><span class="term">Reset to Initial Values</span></dt><dd><p>Define whether the initial values are also applied once the
+                            application has stopped. The behavior can be set individually for each
+                            channel using a vector. "1" means use the <span class="bold"><strong>Initial
+                                Position</strong></span> vector and "0" means keep the latest
+                            value.</p></dd></dl></div></div></div></body></html>

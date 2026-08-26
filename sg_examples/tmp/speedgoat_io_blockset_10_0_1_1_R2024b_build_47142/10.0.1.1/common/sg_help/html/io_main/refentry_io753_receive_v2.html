@@ -1,0 +1,22 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO753 - Receive v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io753_receive.html" title="IO753 - Receive"><link rel="next" href="refentry_io753_network_status.html" title="IO753 - Network Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io753_receive_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO753 - Receive v2</h2><p>IO753 - Receive v2 &#8212; <span class="phrase">Receives data from Modbus TCP
+                    servers</span></p></div><div class="refsect1"><a name="d5e63504"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io753_receive_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e63512"></a><h2>Description</h2><p>This block is used to receive data from Modbus TCP servers.</p><p lang=""><a name="para_cifx_only_one_receive"></a>Your model can contain only one Receive block for each
+        I/O module in your target machine.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is only supported by MATLAB from <span class="bold"><strong>R2019b</strong></span>.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e63519"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><p>There is one port for each read command defined in the command table in the
+                    related Setup block. The command name is used as the port label. Depending on
+                    the function code, the data type is either boolean or uint16. The quantity
+                    defines the width of the port. Use Byte Unpack blocks to convert to signed
+                    values or floating-point numbers. You can unpack a vector of type uint16 and
+                    length 4 to one double value.</p><p><span class="bold"><strong>Type: </strong></span><code class="literal">scalar |
+                    vector</code></p><p><span class="bold"><strong>Data Type: </strong></span><code class="literal">boolean |
+                        uint16</code></p><dl class="variablelist"></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"></dl></div></div><div class="refsect1"><a name="d5e63533"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Retrieve Command Configuration</span>
+                    </span></dt><dd><p>Retrieves the command configuration from the related Setup block and
+                            updates the output ports.</p></dd></dl></div></div></div></body></html>

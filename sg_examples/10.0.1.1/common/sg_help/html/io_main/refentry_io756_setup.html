@@ -1,0 +1,103 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO756 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io756_usage_notes.html" title="IO756 Usage Notes"><link rel="next" href="refentry_io756_setup_v2.html" title="IO756 - Setup v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io756_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO756 - Setup</h2><p>IO756 - Setup &#8212; <span class="phrase">Configure the IO756 IO
+                    module</span></p></div><div class="refsect1"><a name="d5e65832"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io756_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e65840"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e65846"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Configuration-Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Configuration Mode</span>
+                    </span></dt><dd><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is obsolete and will be removed. Please always
+                                select Warmstart.</p></td></tr></table></div></dd><dt><a name="varlistentry_comms_pciSlot_autoSearch_hilscher_slave"></a><span class="term">
+                            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+                        </span></dt><dd><p>There are two approaches for mapping the block to a specific I/O
+                                module installed in your target machine. All modules of the same
+                                family (see Module ID above) must be configured using the same
+                                method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be
+                                        automatically located in the target machine. If you have
+                                        multiple modules of the same family, the Module ID (first
+                                        vector element for a multi-node module) defines which module
+                                        is associated with this block. To see how each I/O module
+                                        maps to a Module ID, use this Speedgoat API:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li><li class="listitem">Explicit Addressing: to explicitly define the logical
+                                        address of the I/O module in the target machine, you can
+                                        provide the PCI bus and slot numbers as a vector: [bus,
+                                        slot]. To determine these numbers, run the following command
+                                        in the MATLAB command window:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre>Note
+                                        that the PCI address can change whenever an I/O module is
+                                        added or removed. Usually, auto-search is the best option.
+                                    </li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Warmstart-Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input Instance-ID </span>
+                    </span></dt><dd><p>Instance-ID of the communication point for input data (Target to
+                            Originator direction)</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Data Length </span>
+                    </span></dt><dd><p>Data length in byte should be in the range 0&#8230;504</p></dd><dt><span class="term">
+                        <span class="guilabel">RT transfer format (Input) </span>
+                    </span></dt><dd><p>Available settings are: "Connection is pure data and modeless" or
+                            "32-bit run/idle header" and should correspond to the settings of
+                            Ethernet/IP Scanner.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Instance-ID </span>
+                    </span></dt><dd><p>Instance-ID of the communication point for output data (Originator to
+                            Target direction)</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Data Length </span>
+                    </span></dt><dd><p>Data length in byte should be in the range 0&#8230;504</p></dd><dt><span class="term">
+                        <span class="guilabel">RT Transfer Format (Output) </span>
+                    </span></dt><dd><p>Available settings are: "Connection is pure data and modeless" or
+                            "32-bit run/idle header" and should correspond to the settings of
+                            Ethernet/IP Scanner.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable BOOTP </span>
+                    </span></dt><dd><p>If enabled, the device tries to obtain its IP configuration from a
+                            BOOTP server.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable DHCP </span>
+                    </span></dt><dd><p>If enabled, the device tries to obtain its IP configuration from a
+                            DHCP server.</p></dd><dt><span class="term">
+                        <span class="guilabel">IP Address </span>
+                    </span></dt><dd><p>IP Address (if neither BOOTP nor DHCP is selected)</p></dd><dt><span class="term">
+                        <span class="guilabel">Network Mask </span>
+                    </span></dt><dd><p>Network mask (if neither BOOTP nor DHCP is selected)</p></dd><dt><span class="term">
+                        <span class="guilabel">Gateway</span>
+                    </span></dt><dd><p>Gateway Address (if neither BOOTP nor DHCP is selected)</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Warmstart Device Info-Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Vendor ID </span>
+                    </span></dt><dd><p>Vendor identification: This is an identification number for the
+                            manufacturer of an EtherNet/IP device. The value 0 is not valid.</p></dd><dt><span class="term">
+                        <span class="guilabel">CIP Device Type (Product Type) </span>
+                    </span></dt><dd><p>CIP Device Type. It is used to identify the device profile that a
+                            particular product is using. Device profiles define minimum requirements
+                            a device must implement as well as common options.</p></dd><dt><span class="term">
+                        <span class="guilabel">Product Code </span>
+                    </span></dt><dd><p>The vendor assigned Product Code identifies a particular product
+                            within a device type. Each vendor assigns this code to each of its
+                            products.</p></dd><dt><span class="term">
+                        <span class="guilabel">Serial Number </span>
+                    </span></dt><dd><p>This parameter is a number used in conjunction with the Vendor ID to
+                            form a unique identifier for each device on any CIP network.</p></dd><dt><span class="term">
+                        <span class="guilabel">Minor Revision </span>
+                    </span></dt><dd><p>Minor revision number of the simulated device</p></dd><dt><span class="term">
+                        <span class="guilabel">Major Revision </span>
+                    </span></dt><dd><p>Major revision number of the simulated device</p></dd><dt><span class="term">
+                        <span class="guilabel">Device Name </span>
+                    </span></dt><dd><p>This text string should represent a short description of the
+                            product/product family represented by the product code.</p></dd></dl></div><p>The parameters Vendor ID, Product Type, Product Code, Minor revision and Major
+                revision can be used from Ethernet/IP Scanner for "electronic keying". If
+                "electronic keying" was configured for exact match, then all this parameters of the
+                adapter match with the configuration of the scanner. It is also possible, that
+                scanner checks some of this parameters before establishing the communication.
+            </p></div></div></body></html>

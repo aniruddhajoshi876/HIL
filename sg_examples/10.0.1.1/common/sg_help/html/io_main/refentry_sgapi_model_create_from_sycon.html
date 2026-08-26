@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.model.createFromSycon</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_model_extend_eni.html" title="speedgoat.model.extendEni"><link rel="next" href="refentry_sgapi_can_db_manager_config.html" title="speedgoat.can.DbManagerConfig"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_model_create_from_sycon"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.model.createFromSycon</h2><p>speedgoat.model.createFromSycon &#8212; 
+            <span class="phrase">Autogenerate Simulink models from SYCON.net configuration files</span>
+         </p></div><div class="refsect1"><a name="d5e850"></a><h2>Description</h2><p>This Speedgoat API function reads configuration files exported from SYCON.net and autogenerates
+a communication interface in Simulink ready for use with the following I/O modules:</p><p>- IO641 PROFIBUS Master</p><p>- IO643 CANopen Master</p><p>- IO751 PROFINET Controller</p><p>- IO755 EtherNet/IP Scanner</p><p>According to the process data items and their addresses defined in the configuration file, the
+function puts Byte Packing, Byte Unpacking, and the respective Send and Receive blocks into the
+model and automatically connects them.</p><p>The function creates one subsystem for sending and one for receiving, where input and output
+ports represent the process data items. This allows for easy data exchange with devices
+connected to the I/O modules mentioned above.</p><p>To export a configuration file from SYCON.net, right-click the Master node in the network view
+and select Additional Functions --&gt; Export --&gt; XML</p></div><div class="refsect1"><a name="d5e860"></a><h2>Examples</h2><p>Autogenerate the Simulink model by selecting the configuration file using the file dialog:</p><pre class="programlisting">speedgoat.model.createFromSycon</pre><p>Autogenerate the Simulink model by specifing the configuration file as an argument:</p><pre class="programlisting">speedgoat.model.createFromSycon('MyProfinetConfig.xml')</pre><p>Create additional input and output ports allowing access to status information related to the
+process data items:</p><pre class="programlisting">speedgoat.model.createFromSycon(___, 'ShowStatusSignals', true)</pre></div><div class="refsect1"><a name="d5e868"></a><h2>Input Arguments</h2><p>fileName - Name of the configuration file including the file extension
+[character vector].
+Pass the file name if the corresponding directory is the current working directory or
+included in the MATLAB Path. Otherwise, pass the full or relative path of the file.</p><p>Name-Value Pair Arguments:
+'ShowStatusSignals' - Show status signals
+[boolean].
+If true, the function creates additional ports to access the status information related
+to the process data objects. If false, the status signals remain hidden.
+This argument has impact only on PROFINET configuration files where so-called sub-slots
+provide producer (IOPS) and consumer status information (IOCS).</p></div></div></body></html>

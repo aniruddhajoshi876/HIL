@@ -1,0 +1,139 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC429 - Decode v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_arinc429_encode_v4.html" title="ARINC429 - Encode v4"><link rel="next" href="refentry_arinc429_pack.html" title="ARINC429 - Pack"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc429_decode_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC429 - Decode v4</h2><p>ARINC429 - Decode v4 &#8212; 
+                <span class="phrase">Decode ARINC 429 words from the Receive block</span>
+            </p></div><div class="refsect1"><a name="d5e53994"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc429_decode_v4.png"></span></span></p></div><div class="refsect1"><a name="d5e54003"></a><h2>Description</h2><p>This block decodes the ARINC 429 protocol depending on the data type
+                selected.</p></div><div class="refsect1"><a name="d5e54006"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Cnt</span>
+                    </span></dt><dd><p>The number of messages to process. The Decode block reads data from
+                            the input message vector until the n-th element.</p></dd><dt><span class="term">
+                        <span class="guilabel">Msg</span>
+                    </span></dt><dd><p>ARINC 429-encoded messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time</span>
+                    </span></dt><dd><p>Timestamps from the ARINC 429-encoded messages.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Vector with <code class="literal">n</code> decoded values.</p><p>If the same ARINC 429 word is decoded multiple times during one sample
+                            time, the Decode block overwrites these values. Consequently, only the
+                            most recent decoded value is available on the output port.</p></dd><dt><span class="term"><span class="guilabel">Label</span></span></dt><dd><p>A vector containing labels that can be used for post processing to
+                            identify which element in the data output corresponds to which
+                            label.</p></dd><dt><span class="term"><span class="guilabel">SSM</span></span></dt><dd><p> A vector containing the sign/status matrix (SSM) data for each
+                            decoded ARINC429 word.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time</span>
+                    </span></dt><dd><p>A vector containing the timestamps of each decoded data value.</p><p>If the same ARINC 429 word is decoded multiple times during one sample
+                            time, the Decode block overwrites these values. Consequently, only the
+                            most recent decoded value is available on the output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>For every specified label, the status output shows if the label was
+                            received during the current sample time.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54055"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Label</span>
+                    </span></dt><dd><p>Enter a three-digit octal number or vector. If the label of an input
+                            word does not match this label, the Decode block completely ignores the
+                            ARINC 429 word.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Label</strong></span> bit order is
+                                    reversed automatically by the receive logic after receipt of the
+                                    ARINC 429 word.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>Select the decoding style for the labels defined. The data type
+                            determines how the input value is converted to a corresponding output
+                            value:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="16%" class="col1"><col width="84%" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Interpretation</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p>RAW</p>
+                                        </td><td>
+                                            <p>For each word, extract bits 9&#8211;32 and return them
+                                                as a uint32.</p>
+                                        </td></tr><tr><td>
+                                            <p>BNR (Two's-complement binary notation)</p>
+                                        </td><td>
+                                            <p>For each word, convert bits 11&#8211;29 from a signed
+                                                binary format to a double output in the range
+                                                  <code class="literal">[-Scale, Scale]</code> using the
+                                                  <span class="bold"><strong>Scale</strong></span> specified
+                                                for this value. </p>
+                                            <p>
+                                                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If SDI bits are not used, two more bits are
+                                                  available for the data section. Select the
+                                                  <span class="bold"><strong>Use SDI Bits for
+                                                  Data</strong></span> checkbox as required.</p></td></tr></table></div><p>
+                                            </p>
+                                        </td></tr><tr><td>
+                                            <p>BCD (Binary-coded decimal)</p>
+                                        </td><td>
+                                            <p>For each word, convert bits 11&#8211;29 from BCD format
+                                                to double using the sign data in the SSM
+                                                field.</p>
+                                        </td></tr><tr><td>
+                                            <p>Discretes</p>
+                                        </td><td>
+                                            <p>For each word, extract bits 11&#8211;29 (or 9-29 if SDI
+                                                is not used) and return them as a uint32.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Resolution (BCD) or Scale (BNR)</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the resolution/scale vector. If a
+                            vector is entered, then it must be the same length as the <span class="bold"><strong>Label</strong></span>; otherwise, the scalar value is applied
+                            to the length of the <span class="bold"><strong>Label</strong></span>
+                            vector.</p><p>The interpretation of this value depends on the data type:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="90" class="col1"><col width="710" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Effect</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">BNR</code></p>
+                                        </td><td>
+                                            <p>The block uses this value as a scale factor. The
+                                                block converts the binary value in bits 10&#8211;28 back
+                                                to a double in the range <code class="literal">[-1,1]</code>.
+                                                The block then multiplies this value by the scale
+                                                value to recover the original value.</p>
+                                            <p>A 19-bit signed ARINC binary can represent a range
+                                                from -262,144 to 262,143. If the combination of the
+                                                input signal and resolution produces a value outside
+                                                this range, then the block returns the result to the
+                                                minimum/maximum value of the stated range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BCD</code></p>
+                                        </td><td>
+                                            <p>The resolution vector specifies (in the same units
+                                                as the input signal) the value of the
+                                                least-significant digit of the BCD data field to be
+                                                encoded and sent. For example, if the associated
+                                                resolution is <code class="literal">0.01</code> and the input
+                                                signal contains the value <code class="literal">3.1415</code>,
+                                                the ARINC word output contains the number
+                                                  <code class="literal">314</code> in its data field, encoded
+                                                in BCD. Use the same resolution on the receive side
+                                                to reconstruct 3.14. The resolution is typically a
+                                                power of 10, but this is not a strict
+                                                requirement.</p>
+                                            <p>The range representable as an ARINC BCD value is
+                                                -79,999 to 79,999. If the combination of the input
+                                                signal and resolution produces a value outside this
+                                                range, the block returns the result to the
+                                                minimum/maximum value of the stated range.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">SDI</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the <span class="bold"><strong>SDI</strong></span> data. If a vector is entered, then it must be the
+                            same length as the <span class="bold"><strong>Label</strong></span>; otherwise,
+                            the scalar value is applied to the length of the <span class="bold"><strong>Label</strong></span> vector.</p><p>If the SDI element is in the range <code class="literal">0</code> to
+                                <code class="literal">3</code>, the block checks the SDI field of the
+                            corresponding output word. If an SDI element has a value of
+                                <code class="literal">-1</code>, the block does not perform SDI processing on
+                            the corresponding output word. If the SDI data does not match the
+                            specified value, the ARINC 429 word is ignored.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use SDI Bits for Data</span>
+                    </span></dt><dd><p>Select whether the <span class="bold"><strong>SDI</strong></span> field should
+                            be used for data (the data field can be extended by two bits).</p></dd><dt><span class="term">
+                        <span class="guilabel">Hold Last Value</span>
+                    </span></dt><dd><p>Select to output the last received value if no new data is received or
+                            deselect to output <span class="bold"><strong>0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Label Output</span>
+                    </span></dt><dd><p>Select if the specified <span class="bold"><strong>Label</strong></span> should
+                            be available on the output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable SSM Output</span>
+                    </span></dt><dd><p>Select if the SSM should be provided for each specified label.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Timestamp Output</span>
+                    </span></dt><dd><p>Select if timestamps should be provided for each decoded ARINC 429
+                            word. </p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Status Output</span>
+                    </span></dt><dd><p>Select if the status should be provided for each specified label.
+                        </p></dd></dl></div></div></div></body></html>

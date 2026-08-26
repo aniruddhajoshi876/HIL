@@ -1,0 +1,24 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">GE Fanuc 5565 write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="f70-16490.html" title="GE Fanuc 5565 read"><link rel="next" href="f44-6069.html" title="Chapter&nbsp;6.&nbsp;General Standards Blocks No Longer Recommended for Use"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f70-16515"></a><div class="titlepage"></div><div class="refnamediv"><h2>GE Fanuc 5565 write<a name="VMIC_5565_Write"></a></h2><p>GE Fanuc 5565 write<a name="VMIC_5565_Write"></a> &#8212; <span class="trademark"><a name="tp_ge"></a>GE</span>&reg; Fanuc
+                PCI-5565 write block (not recommended)<b>obsolete_ge</b></p></div><div class="refsect1"><a name="d5e7153"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="f70-16376.html" class="olink">GE&reg; Fanuc
+                            PCI-5565</a></p></li></ul></div></div><div class="refsect1"><a name="f70-16679"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library of
+                Drivers No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcgefanuclib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f70-15738"></a><h2>Note</h2><p>Before you begin to configure this block, be sure that you have a predefined
+                shared memory partition structure. The 5565 write block requires this structure to
+                specify how <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg;
+                signal values are mapped in the shared memory. It also uses this structure to
+                determine the total size and address of the shared memory. See <a href="f69-6091.html" class="olink">Create Shared Memory
+                    Partitions</a>.</p></div><div class="refsect1"><a name="f70-16569"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Partition struct</strong></span></span></dt><dd><p>Enter the name of the predefined shared memory partition structure.
+                            The block uses this structure to specify how <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; signal
+                            values map into shared memory.</p></dd><dt><span class="term"><span class="bold"><strong>Sampletime</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited)</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd><dt><span class="term"><span class="bold"><strong>Error Status Port</strong></span></span></dt><dd><p>Select this check box to monitor the status of the PCI-5565 board LISR
+                            register modes.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7202"></a><h2>Related Links</h2><p><a class="link" href="http://www.abaco.com" target="_top">www.abaco.com</a></p></div></div></body></html>

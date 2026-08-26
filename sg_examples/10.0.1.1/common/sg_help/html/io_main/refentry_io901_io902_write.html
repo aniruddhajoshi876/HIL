@@ -1,0 +1,45 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO901/IO902 - Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_io901_io902_read.html" title="IO901/IO902 - Read"><link rel="next" href="refentry_io901_io902_get_state.html" title="IO901/IO902 - Get State"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io901_io902_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO901/IO902 - Write</h2><p>IO901/IO902 - Write &#8212; <span class="phrase">Writes the shared
+                    memory</span></p></div><div class="refsect1"><a name="d5e559"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io901_io902_write.png"></span></span></p></div><div class="refsect1"><a name="d5e567"></a><h2>Description</h2><p>Writes blocks of data to shared memory. The size and address of the blocks is
+                determined by the partition paramater. Use with the shared memory pack function to
+                initialize the individual data members defined in the partition structure.</p><p>Before you begin to configure this block, ensure that you have a predefined shared
+                memory partition structure (refer to the <a href="refentry_io901_io902_usage_notes.html" class="olink">Usage Notes</a>). The Write
+                block requires this structure to define how Simulink signal values are mapped in the
+                shared memory. It also uses this structure to determine the total size and address
+                of the shared memory.</p></div><div class="refsect1"><a name="d5e572"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data to write to the IO901/IO902 according to the partition
+                            structure.</p></dd></dl></div></div><div class="refsect1"><a name="d5e581"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Partition Struct </span>
+                    </span></dt><dd><p>Enter the name of the predefined shared memory partition structure.
+                            The block uses this structure to specify how Simulink signal values are
+                            mapped in the shared memory.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

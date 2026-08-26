@@ -1,0 +1,107 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO623 - Unpack</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io623_send.html" title="IO623 - Send"><link rel="next" href="refentry_ref_io624.html" title="IO624"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io623_unpack"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO623 - Unpack</h2><p>IO623 - Unpack &#8212; 
+                <span class="phrase">Unpacks the selected FlexRay frame from the Receive block</span>
+            </p></div><div class="refsect1"><a name="d5e19188"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io623_unpack.png"></span></span></p></div><div class="refsect1"><a name="d5e19196"></a><h2>Description</h2><p>This block provides access to the various fields of a FlexRay frame received.
+                Connect as many Unpack blocks as required to the IO623 Receive block in your
+                model.</p></div><div class="refsect1"><a name="d5e19199"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">In</span>
+                    </span></dt><dd><p>FlexRay frames read from the IO623 Receive block.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">Io623_FlexrayFrame</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Payload Preamble</span>
+                    </span></dt><dd><p>Contains the payload preamble indicator bit of the unpacked FlexRay
+                            frame. The output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Null Frame</span>
+                    </span></dt><dd><p>Contains the null frame indicator bit of the unpacked FlexRay frame.
+                            The output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Sync</span>
+                    </span></dt><dd><p>Contains the sync frame indicator bit of the unpacked FlexRay frame.
+                            The output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Startup</span>
+                    </span></dt><dd><p>Contains the startup frame indicator bit of the unpacked FlexRay
+                            frame. The output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Payload Length</span>
+                    </span></dt><dd><p>Contains the payload length of the unpacked FlexRay frame. The output
+                            is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Header CRC</span>
+                    </span></dt><dd><p>Contains the header CRC of the unpacked FlexRay frame. The output is
+                            only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint16</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Cycle Count</span>
+                    </span></dt><dd><p>Contains the cycle count of the unpacked FlexRay frame. The output is
+                            only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Contains the payload of the unpacked FlexRay frame. The output is only
+                            shown if enabled in the mask. This is a vector with 127 elements.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint16</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Contains the channel (A or B) of the unpacked FlexRay frame. The
+                            output is only shown if enabled in the mask. Channel A is represented by
+                            the value 1 and channel B by the value 2.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Valid Frame</span>
+                    </span></dt><dd><p>Contains the value 1 if the unpacked FlexRay frame is valid. The
+                            output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Syntax Error</span>
+                    </span></dt><dd><p>Contains the value 1 if a syntax error was observed. The output is
+                            only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Content Error</span>
+                    </span></dt><dd><p>Contains the value 1 if a content error was observed. The output is
+                            only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Slot Boundary Violation</span>
+                    </span></dt><dd><p>Contains the value 1 if a slot boundary violation was observed. The
+                            output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>Contains the timestamp of the unpacked FlexRay frame in 1&nbsp;&micro;s
+                            resolution. The output is only shown if enabled in the mask.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e19325"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Filter Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Frame ID</span>
+                    </span></dt><dd><p>Set this field to the frame ID or slot number of the FlexRay frame you
+                            want to unpack. The block will then filter the input buffer for this
+                            frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Set this field to <span class="bold"><strong>A</strong></span>, <span class="bold"><strong>B</strong></span> or <span class="bold"><strong>A+B</strong></span> to
+                            unpack FlexRay frames from the respective channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ignore Null Frames</span>
+                    </span></dt><dd><p>If this option is enabled, then null frames will be ignored when read
+                            out from the input buffer.</p><p>This is useful for example when a FlexRay frame is only sent every
+                            even cycle. In the odd cycles you will get null frames if no frames are
+                            sent by the ECU.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Output Ports Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Payload Preamble Indicator</span>
+                    </span></dt><dd><p>Enables the "Payload Preamble" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Null Frame Indicator</span>
+                    </span></dt><dd><p>Enables the "Null Frame" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sync Frame Indicator</span>
+                    </span></dt><dd><p>Enables the "Sync" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Startup Frame Indicator</span>
+                    </span></dt><dd><p>Enables the "Startup" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Payload Length</span>
+                    </span></dt><dd><p>Enables the "Payload Length" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Header CRC</span>
+                    </span></dt><dd><p>Enables the "Header CRC" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cycle Count</span>
+                    </span></dt><dd><p>Enables the "Cycle Count" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Enables the "Data" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Enables the "Channel" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Valid Frame</span>
+                    </span></dt><dd><p>Enables the "Valid Frame" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Syntax Error</span>
+                    </span></dt><dd><p>Enables the "Syntax Error" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Content Error</span>
+                    </span></dt><dd><p>Enables the "Content Error" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Slot Boundary Violation</span>
+                    </span></dt><dd><p>Enables the "Slot Boundary Violation" output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>Enables the "Timestamp" output port.</p></dd></dl></div></div></div></body></html>

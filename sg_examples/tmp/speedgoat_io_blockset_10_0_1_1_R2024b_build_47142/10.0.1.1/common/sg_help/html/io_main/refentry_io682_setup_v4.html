@@ -1,0 +1,82 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO682 - Setup v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io682_decode_v2.html" title="IO682 - Decode v2"><link rel="next" href="refentry_io682_send_v4.html" title="IO682 - Send v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io682_setup_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO682 - Setup v4</h2><p>IO682 - Setup v4 &#8212; 
+                <span class="phrase">Configure the IO682 I/O module</span>
+            </p></div><div class="refsect1"><a name="d5e53475"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io682_setup_v4.png"></span></span></p></div><div class="refsect1"><a name="d5e53484"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Send, Receive, Update Scheduled Messages).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e53491"></a><h2>Parameters</h2><p>The three tabs of the setup parameter dialog box contain the IO682 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">IO682 Variant</span>
+                    </span></dt><dd><p>The IO682 I/O module is available in different variants which differ
+                            in terms of the number of receive and transmit channels. Select the
+                            variant that has been installed in your target machine.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channel Configuration Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Mode</span></span></dt><dd><p>Select whether the channels should be configured manually or by a
+                            configuration file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bit Rate</span>
+                    </span></dt><dd><p>Specify the receive bus speed in Hertz. Typical ARINC 429 rates are
+                            12.5&nbsp;kHz and 100&nbsp;kHz. The valid range is from 200&nbsp;Hz to
+                            150&nbsp;kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Buffer Mode</span>
+                    </span></dt><dd><p>Select the receive buffer mode, which can be individual or merged. In
+                            the individual mode, each receiver can store up to 2,048 messages in its
+                            circular buffer. Multiple channels can be configured to use the merged
+                            mode, where the received messages are buffered in a single circular
+                            buffer. This buffer can store up to 16,384 messages, which can be
+                            accessed through channel 1.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Check this box to enable the receiver.</p></dd><dt><span class="term">
+                        <span class="guilabel">Parity Check</span>
+                    </span></dt><dd><p>Check this box to enable the parity check when receiving messages.
+                            When enabled, bit 31 in the ARINC 429 message will indicate whether the
+                            parity check was successful (0) or failed (1).</p></dd><dt><span class="term">
+                        <span class="guilabel">Internal Wrap</span>
+                    </span></dt><dd><p>Check this box to enable the internal wrap of the receive buffer. When
+                            enabled, the transmitter is internally connected to the respective
+                            receive channel (internal loopback).</p></dd><dt><span class="term">
+                        <span class="guilabel">Bit Rate</span>
+                    </span></dt><dd><p>Specify the transmit bus speed in Hertz. Typical ARINC 429 rates are
+                            12.5&nbsp;kHz and 100&nbsp;kHz. The valid range is from 200&nbsp;Hz to
+                            150&nbsp;kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Parity</span>
+                    </span></dt><dd><p>Select the type of parity which will be assigned to each transmitted
+                            ARINC 429 message. The available values are <span class="bold"><strong>Odd</strong></span>, <span class="bold"><strong>Even</strong></span> and <span class="bold"><strong>None</strong></span>. If <span class="bold"><strong>None</strong></span> is selected, the parity bit can be manually
+                            controlled by using the RAW data type in the Encode block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Protocol Error</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>None</strong></span>, <span class="bold"><strong>Bit Count High</strong></span>, <span class="bold"><strong>Bit Count
+                                Low</strong></span> or <span class="bold"><strong>Short Gap</strong></span> for the
+                            type of error injection transmitted on this channel.</p><p><span class="bold"><strong>None</strong></span> will transmit the messages
+                            normally, <span class="bold"><strong>Bit Count High</strong></span> will result in
+                            messages with a bit count of 33 bits, <span class="bold"><strong>Bit Count
+                                Low</strong></span> will result in messages with a bit count of 31 bits
+                            and <span class="bold"><strong>Short Gap</strong></span> will result in the
+                            insertion of only 3 bits between subsequent messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Check this box to enable the transmitter.</p></dd><dt><span class="term"><span class="guilabel">Channels Configuration File</span></span></dt><dd><p>Specify the name of the configuration file. Click the <span class="bold"><strong>Browse</strong></span> button to easily find your file or
+                            enter it manually. By clicking the <span class="bold"><strong>Refresh
+                                Data</strong></span> button, the whole configuration file is parsed
+                            again. The channel configuration can be saved by clicking the <span class="bold"><strong>Save Configuration</strong></span> button when using the
+                            manual configuration mode. The generated file can be used as well to
+                            configure other modules.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Scheduled Messages Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Mode</span></span></dt><dd><p>Select whether the scheduled messages should be configured manually or
+                            by a configuration file.</p></dd><dt><span class="term"><span class="guilabel">Scheduled Messages Configuration File</span></span></dt><dd><p>Specify the name of the configuration file. Click the <span class="bold"><strong>Browse</strong></span> button to easily find your file or
+                            enter it manually. By clicking the <span class="bold"><strong>Refresh
+                                Data</strong></span> button, the whole configuration file is parsed
+                            again. The scheduled message list can be saved by clicking the <span class="bold"><strong>Save Configuration</strong></span> button when using the
+                            manual configuration mode. The generated file can be used as well to
+                            configure other modules. To manually create a scheduled message list
+                            click the <span class="bold"><strong>Create Message List</strong></span> button. </p><p>Refer to the <a href="refentry_io682_usage_notes.html" class="olink">Usage Notes</a> for more
+                            information about the configuration file.</p></dd></dl></div></div></div></body></html>

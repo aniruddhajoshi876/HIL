@@ -1,0 +1,110 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO811 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_video.html" title="Video I/O"><link rel="up" href="book_video.html" title="Video I/O"><link rel="prev" href="refentry_io811_setup.html" title="IO811 - Setup"><link rel="next" href="refentry_ref_io811_examples.html" title="IO811 - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io811_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO811 Usage Notes</h2><p>IO811 Usage Notes &#8212; 
+                <span class="phrase">Usage information about the I/O module</span>
+            </p></div><div class="refsect1"><a name="d5e261"></a><h2>Display Video Images with BitFlow&#8482;</h2><p>Acquire and display video frames with a Camera Link<sup>&reg;</sup>
+                camera connected to the IO811 BitFlow&#8482; Neon-CLB port using a camera that is
+                compliant with the Camera Link standard.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><a href="refentry_io811_usage_notes.html#btt14g4" class="olink">Install BitFlow&#8482;
+                            Neon-CLB Support</a>.</p></li><li class="listitem"><p>Acquire a monochrome digital camera that is compliant with Camera Link.
+                        The camera must have a configuration file in the BitFlow SDK folder that
+                        specifies a free-running or triggered mode.</p><p>If the SDK folder does not contain the required file, contact your
+                        BitFlow&#8482; representative. You cannot proceed without this file.</p></li><li class="listitem"><p>Attach the camera to the IO811 BitFlow&#8482; Neon-CLB port in the target
+                        machine.</p></li><li class="listitem"><p>Add the Speedgoat IO811 block, available in the Speedgoat I/O Blockset.
+                        Configure the block as required.</p><p>Display captured frames on the development computer.</p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Add the Enable File Log block and File log block from the
+                                Speedgoat I/O Blockset/Displays Logging.</p></li><li class="listitem"><p>Build and download the model to the target machine.</p></li><li class="listitem"><p>Execute the model on the target machine.</p></li><li class="listitem"><p>Display the captured frames on the development computer (for
+                                example, using the Video From Workspace block and Video Viewer block
+                                from the Computer Vision Toolbox&#8482;).</p></li></ol></div></li></ol></div></div><div class="refsect1"><a name="bsu0fnc"></a><h2>BitFlow Camera Triggering</h2><p><span class="bold"><strong>Interaction between the IO811 Setup Block, Frame Grabber,
+                    and Camera</strong></span></p><p>The <a href="refentry_io811_setup.html" class="olink">IO811 BitFlow
+                    Neon-CLB - Setup</a> block interacts with the frame grabber and camera using
+                five trigger modes set in the camera configuration file:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Free Running. The camera and frame grabber run continuously. When the
+                        camera finishes an exposure, the frame grabber board copies the image to the
+                        target computer memory using DMA and signals a frame completion interrupt.
+                        Upon receiving the interrupt, the model runs and performs image
+                        processing.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/video_freerunning_acq.png"></div></div><p>Before the next DMA completion interrupt, the model must complete image
+                        processing, otherwise, the CPU becomes overloaded.</p><p>If the model requires heavy image processing, create a multi-rate,
+                        multi-tasking model that samples every Nth image. Place the image input
+                        block at the top level with a sample time of
+                                <code class="varname">T<sub>s</sub></code>. Construct an atomic
+                        subsystem for image processing. Assign it a sample time of
+                                <code class="varname">T<sub>s</sub>*&nbsp;2 (or whatever factor N
+                            allows the subsystem to sample every Nth image)</code>. Connect the
+                        output of the image input block to the input port of the subsystem through a
+                        rate transition block.</p></li><li class="listitem"><p>Timer Triggered. The target computer system timer starts the model. When
+                        the model runs, it simultaneously starts a camera exposure and begins to
+                        process the image captured during the previous time step. When the camera
+                        finishes the exposure, the frame grabber copies the image to the target
+                        computer memory using DMA for processing in the next time step.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/video_timer_triggered_acq.png"></div></div></li><li class="listitem"><p>Differential Trigger. A rising edge on the differential trigger input
+                        triggers the camera. When the camera finishes the exposure, the frame
+                        grabber copies the image to the target computer memory using DMA and signals
+                        a frame completion interrupt. Upon receiving the interrupt, the model runs
+                        and performs image processing.</p><p>BitFlow cameras are designed to respond to one of four camera control
+                        lines (<code class="literal">CC1</code> to <code class="literal">CC4</code>) coming from the
+                        frame grabber. The required control line is in the triggered-mode
+                        configuration file for the camera. Connect the external trigger to the frame
+                        grabber trigger input.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/video_hardware_triggered_acq.png"></div></div></li><li class="listitem"><p>TTL Trigger. A rising edge on the <code class="literal">TTL</code> trigger input
+                        triggers the camera. The model runs from the frame completion
+                        interrupt.</p></li><li class="listitem"><p>Opto Trigger. A rising edge on the <code class="literal">Opto</code> trigger input
+                        triggers the camera. The model runs from the frame completion
+                        interrupt.</p></li></ul></div><p>The camera configuration file puts the frame grabber into triggered mode but does
+                not put the camera into that mode. To set the camera to triggered mode, send a
+                command to the camera. See <a href="refentry_io811_usage_notes.html#bs4y1s4" class="olink">Serial
+                    Camera Configuration</a>.</p><p>The camera configuration file determines whether you can use the block mask to
+                switch the trigger mode to another mode, such as Free Running. You may need to
+                contact BitFlow for a camera configuration file for the mode you require.</p></div><div class="refsect1"><a name="bs4y1s4"></a><h2>Serial Camera Configuration</h2><p><span class="bold"><strong>Sending Serial Commands to a Serial Camera</strong></span></p><p>To enter a serial command for the camera, enter the command without quotation
+                marks in the <span class="guilabel">Camera Configuration Serial Command</span> text box.</p><p>Enter multiple commands as one line without white spaces.</p><p>Each camera manufacturer has a serial command set documented in the manual for
+                each camera or family of cameras. Each command set is different from any other. For
+                example, suppose that you want to put a camera from the given series into a
+                triggered mode and to set the shutter time to 1 [ms]. Use these settings and serial
+                setup commands.</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="33%" class="col1"><col width="33%" class="COLSPEC1"><col width="34%" class="col3"></colgroup><thead><tr><th valign="top">Camera Series</th><th valign="top">Mask Settings</th><th valign="top">Serial Setup</th></tr></thead><tbody><tr><td>
+                                <p>CIS VCC G21</p>
+                            </td><td>
+                                <p>9600 baud</p>
+                                <p>8 bits</p>
+                                <p>No parity</p>
+                            </td><td>
+                                <p><code class="literal">000000W004001\r</code></p>
+                                <p><code class="literal">000000W002005\r</code></p>
+                            </td></tr><tr><td>
+                                <p>Pulnix TM1400</p>
+                            </td><td>
+                                <p>9600 baud</p>
+                                <p>8 bits</p>
+                                <p>No parity</p>
+                            </td><td>
+                                <p><code class="literal">:SA5\r</code></p>
+                            </td></tr><tr><td>
+                                <p>Sony XCL</p>
+                            </td><td>
+                                <p>38,400 baud</p>
+                                <p>8 bits</p>
+                                <p>No parity</p>
+                            </td><td>
+                                <p><code class="literal">SHUTTER 7\r</code></p>
+                                <p><code class="literal">TRG_MODE 1\r</code></p>
+                            </td></tr><tr><td>
+                                <p>Cohu 7800</p>
+                            </td><td>
+                                <p>9600 baud</p>
+                                <p>8 bits</p>
+                                <p>No parity</p>
+                            </td><td>
+                                <p><code class="literal">\002\0377cE2,10</code><span class="emphasis"><em><code class="literal">chk</code></em></span><code class="literal">\003</code></p>
+                                <p><code class="literal">\002\0377cM2</code><span class="emphasis"><em><code class="literal">chk</code></em></span><code class="literal">\003</code></p>
+                                <p><code class="literal">\002\0377T0,1</code><span class="emphasis"><em><code class="literal">chk</code></em></span><code class="literal">\003</code></p>
+                                <p><span class="emphasis"><em><code class="literal">chk</code></em></span> is a checksum for
+                                    the given portion of the message.</p>
+                            </td></tr></tbody></table></div><p>For your camera, find the required command codes in the manufacturer documentation
+                for that specific camera. If those codes are not in the manual, contact the camera
+                manufacturer.</p><p>Some cameras return a success return value or failure value in response to the
+                serial command. The image input block dialog box includes a check box to allow the
+                software to display such values. Some responses include non-printable control
+                characters, displayed as C escape sequences.</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col class="col1" width="33%"><col class="COLSPEC0" width="33%"><col class="col2" width="34%"></colgroup><thead><tr><th valign="top">Escape Sequence</th><th valign="top">Control Character</th><th valign="top">Definition</th></tr></thead><tbody><tr><td><code class="literal">\r</code></td><td><code class="literal">CR</code></td><td>Carriage Return</td></tr><tr><td><code class="literal">\002</code></td><td><code class="literal">STX</code></td><td>Start of Text</td></tr><tr><td><code class="literal">\003</code></td><td><code class="literal">ETX</code></td><td>End of Text</td></tr><tr><td><code class="literal">\006</code></td><td><code class="literal">ACK</code></td><td>Acknowledge</td></tr><tr><td><code class="literal">\025</code></td><td><code class="literal">NACK</code></td><td>Negative Acknowledge</td></tr></tbody></table></div><p>Some camera manufacturers offer Windows<sup>&reg;</sup> utilities to
+                send configuration commands to their cameras. Using such a utility, you can
+                configure the camera on Windows and save the settings on the camera. You can then
+                connect the camera to the target machine and use it.</p><p>Other camera manufacturers require a special serial cable that connects the serial
+                communication line of the camera to a separate serial connection. In this case, you
+                cannot initialize the camera using settings in the <span class="guilabel">Camera Configuration
+                    Serial Command</span> section. Instead, you connect the DB9 to a serial port
+                on the development computer and use manufacturer software to configure the camera
+                before use.</p></div><div class="refsect1"><a name="btt14g4"></a><h2>Install BitFlow Neon-CLB Support</h2><p>To add support for the IO811 block, complete the following steps:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>From the BitFlow website (<a class="link" href="http://www.bitflow.com" target="_top">www.bitflow.com</a>), install the BitFlow SDK.</p></li><li class="listitem"><p>After installing the BitFlow SDK, test the installation by building and
+                        downloading a video example.</p></li></ol></div></div></div></body></html>

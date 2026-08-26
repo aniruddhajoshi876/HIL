@@ -1,0 +1,69 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO644 - Transceiver</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io644_pdo.html" title="IO644 - PDO"><link rel="next" href="refentry_io644_network_status.html" title="IO644 - Network Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io644_transceiver"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO644 - Transceiver</h2><p>IO644 - Transceiver &#8212; <span class="phrase">Sends and receive CAN
+                    frames</span></p></div><div class="refsect1"><a name="d5e50535"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io644_transceiver.png"></span></span></p></div><div class="refsect1"><a name="d5e50543"></a><h2>Description</h2><p>The Transceiver block enables direct transmission and reception of CAN frames,
+                bypassing the standard CANopen configuration of the I/O module. </p><p>Typical CANopen communication relies on EDS files, object dictionaries, and PDO
+                mappings. The IO644 PDO and Object blocks enable data exchange using this standard
+                approach. However, certain scenarios&#8212;such as dynamically sized PDOs&#8212;require
+                communication at the raw CAN frame level. </p><p>To send or receive a CAN message on the network, place one IO644 Transceiver block
+                per message. The block just requires the existence of the Setup block and can make
+                the IO644 module to act as an exclusive CAN module. Alternatively, it can be used
+                alongside the PDO and Object blocks to transmit and receive specific CAN messages in
+                parallel with standard CANopen PDO and SDO communication. </p></div><div class="refsect1"><a name="d5e50548"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The data that should be sent. The port inherits the data type and the
+                            dimensions from the connected source. This port is just a buffer. The
+                            length to be sent can be less than the port size and can be defined by
+                            the <span class="bold"><strong>Length</strong></span> input port. The maximum
+                            length is 8 bytes.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter, the block transmits the message as long as this input port is
+                            TRUE.</p><p>If disabled, the message is sent each time the block gets a sample
+                            hit.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>The size of the data that should be sent with the message, specified
+                            in number of bytes.</p><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter and connected to a block other than the Ground block, the port
+                            limits the size of the data to be sent. In this case, the block sends a
+                            subset of the signal connected with the <span class="bold"><strong>Data</strong></span> input port which results in a shorter CAN
+                            message.</p><p>If disabled, the entire signal connected with the <span class="bold"><strong>Data</strong></span> input port will be written to the
+                            object.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the data received. The port inherits the data type and
+                            dimensions from the <span class="bold"><strong>Init Value</strong></span>
+                            parameter. This port is just a buffer. Depending on the size of the data
+                            that was last received, the port fills up the buffer with zeros. The
+                                <span class="bold"><strong>Length</strong></span> output port outputs the
+                            actual size. The maximum length is 8 bytes.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates a message receipt.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>The size of the data that was last received. Defined in number of
+                            bytes. The size can be less than the size of the <span class="bold"><strong>Data</strong></span> output port.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div></div><div class="refsect1"><a name="d5e50607"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Message ID</span>
+                    </span></dt><dd><p>The ID of the CAN frame that should be sent or received. The ID must
+                            be in the range 0 to 2047.</p><p>Multiple blocks can have the same message ID but different data port
+                            dimensions or length information. This allows the user to handle dynamic
+                            PDO lengths in Simulink.</p><p>The I/O module can receive only eight different message IDs. Only
+                            sixteen CAN frames can be sent simultaneously in one time step of the
+                            real-time application.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Operation</span>
+                    </span></dt><dd><p>This parameter defines whether to send or receive the CAN message.
+                                <span class="bold"><strong>Send </strong></span> enables the input ports.
+                                <span class="bold"><strong>Receive </strong></span> enables the output
+                            ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> input port, the <span class="bold"><strong>Status</strong></span> output port and the <span class="bold"><strong>Length</strong></span> input and output ports. Otherwise, the ports are
+                            hidden. </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

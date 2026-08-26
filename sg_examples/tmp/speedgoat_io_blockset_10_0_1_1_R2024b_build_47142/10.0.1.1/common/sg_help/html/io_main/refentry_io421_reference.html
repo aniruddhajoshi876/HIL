@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 - AC Reference</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_synchroresolver_write.html" title="IO421 - Synchro/Resolver Write"><link rel="next" href="refentry_ref_io423.html" title="IO423"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_reference"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 - AC Reference</h2><p>IO421 - AC Reference &#8212; 
+                <span class="phrase">Configure the IO421 AC reference</span>
+            </p></div><div class="refsect1"><a name="d5e1815"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io421_ref.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e1823"></a><h2>Description</h2><p>This section describes the driver block used with the IO421-5 sub-module.</p><p>The characteristics of the sub-module depend on the factory configuration selected
+                at the time of the order. This information is available in a separate documentation
+                shipped with the device.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="33%" class="col2"><col width="34%" class="col3"></colgroup><thead><tr><th>sub-module code</th><th>Output (V<sub>LL</sub>)[V<sub>
+                                    RMS</sub>]</th><th>Frequency [Hz]</th></tr></thead><tbody><tr><td>W1</td><td>2 - 115</td><td>47 - 20k</td></tr><tr><td>W2</td><td>2 - 28</td><td>47 - 20k</td></tr><tr><td>W3</td><td>28 - 115</td><td>47 - 2.5k</td></tr></tbody></table></div><p>Output power: max. 6VA</p></div><div class="refsect1"><a name="d5e1853"></a><h2>Ports</h2><p>This block has no input or output ports.</p></div><div class="refsect1"><a name="d5e1856"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>A unique module ID must be used for each type of IO421 module block in
+                            your model.</p><p>The module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to link the I/O module
+                                    driver blocks with each other</p></li><li class="listitem"><p>It also has an impact on the PCI slot auto-search feature: if
+                                    only one I/O module is installed, the module ID must be set to
+                                        <span class="bold"><strong>1</strong></span>. If multiple modules are
+                                    installed, it must be in the range 1:n. Not all the I/O modules
+                                    installed in the target machine need to be used</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Slot </span>
+                    </span></dt><dd><p>The carrier board can contain up to three modules. This parameter
+                            indicates where your IO421-5 sub-module is located.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reference Frequency </span>
+                    </span></dt><dd><p>The output frequency (excitation frequency) Units: Hz</p></dd><dt><span class="term">
+                        <span class="guilabel">Reference Voltage </span>
+                    </span></dt><dd><p>The output voltage (excitation voltage) Units: Vrms</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

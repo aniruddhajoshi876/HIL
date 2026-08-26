@@ -1,0 +1,285 @@
+<html><head><title>SCGT Read :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: SCGT GetState -->
+<!-- CHAPNAME:  Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt10.html"><img src="b_prev.gif" alt="Previous page" border=0></a>
+&nbsp;&nbsp;&nbsp;<a href="scgt12.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>SCGT Get State</b></font><br class="hdr">
+
+<p>This function returns the current state of the driver resource identified by the value of StateId. 
+
+<p><font color="#990000"><b>Driver Block Parameters</b></font><br class="hdr">
+
+<p><strong>State Id</strong> -- State identifier. Enter a Value from table below identifing the resource you want to read.</p>
+
+<p><strong>Sampletime</strong> -- Enter the base sample time or a multiple of the base sample time.</p>
+
+<p><strong>PCI Slot (-1:autosearch)</strong> --  If only one board of this type is physically present in the target PC, enter -1. </p>
+
+<p>If two or more boards of this type are physically present in the target PC, enter the bus number and the PCI slot number of the board associated with this driver block. Use the format [BusNumber, SlotNumber]. To determine the bus number and the PCI slot number, type</p>
+
+<ul class=continued><li class=continued><pre>getxpcpci</pre></li></ul>
+
+<br>
+
+<p><table border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>State Id</b><br></td>
+<td>Id #<br></td>
+<td><b>Setable</b><br></td>
+<td><b>Description</b><br></td>
+
+<tr valign=top>
+<td><strong>SCGT_NODE_ID</strong><br></td>
+<td>  0<br></td>
+<td>yes<br></td>
+<td>Node Id Of unit.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_ACTIVE_LINK</strong><br></td>
+<td>  1<br></td>
+<td>yes<br></td>
+<td>Units Active Link. For Boards with multiple links (link 0<br>
+and 1), you may get/set the active link.<td>
+
+<tr valign=top>
+<td><strong>SCGT_NUM_LINK_ERRS</strong><br></td>
+<td>  2<br></td>
+<td>yes<br></td>
+<td>Number of Link errors.</td>
+
+<tr valign=top>
+<td><strong>SCGT_EWRAP</strong><br></td>
+<td>  3<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable electronic wrp and bypass the<br>
+link. Set to '0' to disable.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_WRITE_ME_LAST</strong><br></td>
+<td>  4<br></td>
+<td>yes<br></td>
+<td>Set to '1' to specify that writes to shared memory will<br>
+ occur only after coresponding native packets traverse <br>
+ the ring. Set to '0' to specify normal operation, where<br>
+ Writes to shared memory will not rely on the reception <br>
+ of native packets.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_UNICAST_INT_MASK</strong><br></td>
+<td>  5<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable receives of Unicast Interrupts. Set<br>
+to '0' to disable.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_BROADCAST_INT_MASK</strong><br></td>
+<td>  6<br></td>
+<td>yes<br></td>
+<td>Bit vestor describing which of the 32 Broadcast<br>
+Interupts to receive. Bit 0 coresponds to broadcast<br>
+Interrupt 0, and bit 31-corresponds to broadcast<br>
+interrupt31. Set the coresponding bit to '1' to receive<br>
+the broadcast interrupt, set to '0' otherwise. For <br>
+example, to receive interrupt 16 set the mask as <br>
+follows: mask = Mask | (1<<16);<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_INT_SELF_ENABLE</strong><br></td>
+<td>  7<br></td>
+<td>yes<br></td>
+<td>Se tto '1' to enable reception of network interrupts sent<br>
+by this node. Set to '0' to disable.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_RING_SIZE</strong><br></td>
+<td>  8<br></td>
+<td> <br></td>
+<td>The Number of nodes on the ring.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_UPSTREAM_NODE_ID</strong><br></td>
+<td>  9<br></td>
+<td><br></td>
+<td>Node ID ot the ring upstream to this node.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_NET_TIMER_VAL</strong><br></td>
+<td> 10<br></td>
+<td><br></td>
+<td>Timer that is incremented on every network transmit<br>
+clock period. For 2.5Gbps configurations, the network<br>
+transmit clock period is 8ns. See the hardware<br>
+manaual for addtional information.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_LATENCY_TIMER_VAL</strong><br></td>
+<td> 11<br></td>
+<td><br></td>
+<td>Timer that measures transmit latency of the network.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_SM_TRAFFIC_CNT</strong><br></td>
+<td> 12<br></td>
+<td><br></td>
+<td>Number of 32-bit shared memory data phases.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_SPY_TRAFFIC_CNT</strong><br></td>
+<td> 13<br></td>
+<td>yes<br></td>
+<td>Number of 32-bit data phases transmited by node<br>
+SCGT_SPY_NODE_ID.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_SPY_NODE_ID</strong><br></td>
+<td> 14<br></td>
+<td>yes<br></td>
+<td>The Node Id for whci 32-bit data phases will be<br.
+counted by SCGT_SPY_TRAFFIC_CNT.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_TRANSMIT_ENABLE</strong><br></td>
+<td> 15<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable native packet transmitions. Set to<br>
+'0' to disable. Does not affect retransmition of <br>
+network packets.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_RECIEVE_ENABLE</strong><br></td>
+<td> 16<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable network packet reception. Set to '0'<br>
+to disable. This includes data packets and network<br>
+interrupt packets.  Does not affect retrasnmition of <br>
+Network packets.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_RETRANSMIT_ENABLE</strong><br></td>
+<td> 17<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable retrasnmission of foreign network<br>
+traffic. Set to '0' to disable.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_LASER_0_ENABLE</strong><br></td>
+<td> 18<br></td>
+<td>yes<br></td>
+<td>Set to '0' enable laser. Set to '0' to disable.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_LASER_1_ENABLE</strong><br></td>
+<td> 19<br></td>
+<td>yes<br></td>
+<td>Set to '0' enable laser. Set to '0' to disable.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_LINK_UP</strong><br></td>
+<td> 20<br></td>
+<td><br></td>
+<td>Link up status for active link. '1' if link u, '0' if down.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_LASER_0_SIGNAL_DET</strong><br></td>
+<td> 21<br></td>
+<td><br></td>
+<td>Signal detect state for Laser 0: '1' is signal detected, '0'<br>
+if no signal detected.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_LASER_1_SIGNAL_DET</strong><br></td>
+<td> 22<br></td>
+<td><br></td>
+<td>Signal detect state for Laser 1: '1' is signal detected, '0'<br>
+if no signal detected.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_D64_ENABLE</strong><br></td>
+<td> 23<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable 64-bit PCI data trasnfers by the GT<br>
+DMA engine. Se tto '0' to allow only 32-bit PCI data<br>
+trasnfers by the GT DMA engine.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_BYTE_SWAP_ENABLE</strong><br></td>
+<td> 24<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable byte swapping on accesses to GT<br>
+memory. Set to '0' to disable.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_WORD_SWAP_ENABLE</strong><br></td>
+<td> 25<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable byte swapping of 32-bit words on 64-bit<br>
+accesses to GT memory. Set to '0' to disable.<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_LINK_ERR_INT_ENABLE</strong><br></td>
+<td> 26<br></td>
+<td>yes<br></td>
+<td>Set to '1' to enable reception of link error interrupts.<br>
+Set to 0 to disable. <br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_INT_TRFC_CNTR</strong><br></td>
+<td> 27<br></td>
+<td><br></td>
+<td>Interrpt Traffic Counter. This counter is incremented on <br>
+every reception of network interrupt traffic (native or foreign).<br></td>
+
+
+<tr valign=top>
+<td><strong>SCGT_NHIQ_INT_CNTR</strong><br></td>
+<td> 28<br></td>
+<td><br></td>
+<td>Network Interrupt Counter. This counter is incremented on every network<br>
+interrupt that has been placed into the Network Host Interrupt Queue<br>
+(NHIQ).This values gives a toal number of interrupts received.<br></td>
+
+<tr valign=top>
+<td><strong>SCGT_HST_INT_CNTR</strong><br></td>
+<td> 29<br></td>
+<td><br></td>
+<td>Host Interupt counter. This counter is incremented on<br>
+every new assertion of a host interrupt request.</td>
+
+
+</table> 
+<Table> <tr valign=top><td></Table> 
+</p>
+
+<br>
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt10.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;Shared Memory Node Initialization Structure</td><td>&nbsp;</td><td align=right>scgt Set State&nbsp;</td><td align=right width=20><a href="scgt12.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></td></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

@@ -1,0 +1,47 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#define S_FUNCTION_LEVEL    (0x5b9+946-0x969)
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME     sg_IO113_setup_s
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "sg_io113_18.h"
+#include "simstruc.h"
+#ifdef MATLAB_MEX_FILE
+#include "mex.h"
+#else
+#include "sg_common.h"
+#include "sg_printf.h"
+#include "sg_module_registry.h"
+#include "sg_module_types.h"
+#endif
+#define SG_EARLY_INIT
+#define SG_HAS_MDL_EXIT
+#include "sg_callback.h"
+#define z702a26a5e9                ssGetSFcnParam(S, (0x1535+4406-0x266b))
+#define ze13f49a01f           ssGetSFcnParam(S, (0x166+8961-0x2466))
+#define z1e0b67709d       ssGetSFcnParam(S, (0x4c0+4182-0x1514))
+#define zd6d6a44c19                 ssGetSFcnParam(S, (0xa35+803-0xd55))
+#define z79b944ae89           ssGetSFcnParam(S, (0x12b7+4439-0x240a))
+#define z8fd86139be               ssGetSFcnParam(S, (0xa34+275-0xb42))
+#define zab5e3ff87e          ssGetSFcnParam(S, (0x511+521-0x714))
+#define za6b3fb79a3             ssGetSFcnParam(S, (0x53+8362-0x20f6))
+#define z5317f28eb6           ssGetSFcnParam(S, (0x2267+847-0x25ae))
+#define zcaea56018f             ssGetSFcnParam(S, (0x717+6970-0x2248))
+#define z5bc3ce0d50           ssGetSFcnParam(S, (0x6da+5596-0x1cac))
+#define z1f9bebb47b             ssGetSFcnParam(S, (0x22d6+845-0x2618))
+#define z2d8f240c11           ssGetSFcnParam(S, (0xa55+4493-0x1bd6))
+#define zcd0c7b4197            ssGetSFcnParam(S, (0xda3+266-0xea0))
+#define zf1ce6579c8            ssGetSFcnParam(S, (0x1724+73-0x175f))
+#define zdf24515981                           ((0xde5+3757-0x1c83))
+#define z2e6483d505              ((0x286+5687-0x18bd))
+#define zc5ce4cb81a              ((0x7a8+6773-0x221d))
+#define z2b17e2ee3b              ((0x5c1+5987-0x1d24))
+static char_T msg[(0xc5f+2837-0x1674)];static void mdlInitializeSizes(SimStruct*S){uint16_T i;ssSetNumSFcnParams(S,zdf24515981);if(ssGetNumSFcnParams(S)!=ssGetSFcnParamsCount(S)){sprintf(msg,"\x57\x72\x6f\x6e\x67\x20\x6e\x75\x6d\x62\x65\x72\x20\x6f\x66\x20\x69\x6e\x70\x75\x74\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x70\x61\x73\x73\x65\x64\x2e" "\n" "\x25\x64\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x61\x72\x65\x20\x65\x78\x70\x65\x63\x74\x65\x64" "\n",zdf24515981);ssSetErrorStatus(S,msg);return;}ssSetNumContStates(S,(0x6c0+45-0x6ed));ssSetNumDiscStates(S,(0xbf8+177-0xca9));if(!ssSetNumInputPorts(S,(0x100a+322-0x114c)))return;if(!ssSetNumOutputPorts(S,(0x22bc+644-0x2540)))return;ssSetNumSampleTimes(S,(0xbb8+4520-0x1d5f));ssSetNumRWork(S,zc5ce4cb81a);ssSetNumIWork(S,z2e6483d505);ssSetNumPWork(S,z2b17e2ee3b);ssSetNumModes(S,(0xb1b+951-0xed2));ssSetNumNonsampledZCs(S,(0x822+7317-0x24b7));for(i=(0x1971+2258-0x2243);i<zdf24515981;i++){ssSetSFcnParamTunable(S,i,(0x409+3920-0x1359));}ssSetOptions(S,SS_OPTION_EXCEPTION_FREE_CODE|SS_OPTION_PLACE_ASAP);}static void mdlInitializeSampleTimes(SimStruct*S){ssSetSampleTime(S,(0x20+419-0x1c3),INHERITED_SAMPLE_TIME);ssSetOffsetTime(S,(0x1594+1784-0x1c8c),FIXED_IN_MINOR_STEP_OFFSET);}
+#ifndef MATLAB_MEX_FILE
+static void sg_ModelLoad(SimStruct*S){sg_PCIDevice ze296e0333d;int_T bus,slot;uint32_T za0d38ae598;uint_T i;uint32_T range,z880d37ab6f,ze77fa94a00,zcd308d01c9;uint16_T channel;uint16_T zb5ae6e3431,z9330649150;za7f5fcb87c*zae10e3f17f=NULL;sg_mod_info*mod_info=NULL;if(mxGetN(z702a26a5e9)==(0x7a4+7346-0x2455)){bus=(0xea7+1317-0x13cc);slot=(int_T)mxGetPr(z702a26a5e9)[(0x20c+1339-0x747)];}else{bus=(int_T)mxGetPr(z702a26a5e9)[(0xdd4+4860-0x20d0)];slot=(int_T)mxGetPr(z702a26a5e9)[(0xcc8+5126-0x20cd)];}za0d38ae598=(uint32_T)mxGetPr(ze13f49a01f)[(0x1289+4547-0x244c)];if(sg_findPciDevice(&ze296e0333d,DEVNAME,VENDORID,DEVICEID,SUBVENDORID,SUBDEVICEID,za0d38ae598,bus,slot)){ssSetErrorStatus(S,pSgErrorStr);return;}mod_info=sg_module_get_single(z12ba1d7c25,za0d38ae598);if(mod_info!=NULL){zae10e3f17f=(za7f5fcb87c*)mod_info->custom_data;SG_PRINTF(DEBUG,"\x53\x65\x74\x75\x70\x3a\x20\x44\x6f\x20\x6e\x6f\x74\x20\x72\x65\x2d\x72\x65\x67\x69\x73\x74\x65\x72\x20\x25\x73\x20\x6d\x6f\x64\x75\x6c\x65" "\n",DEVNAME);}else{mod_info=sg_module_register(z12ba1d7c25,za0d38ae598);mod_info->pci_bus=ze296e0333d.bus;mod_info->pci_slot=ze296e0333d.slot;zae10e3f17f=malloc(sizeof(za7f5fcb87c));if(!zae10e3f17f){sprintf(msg,"\x25\x73\x20\x28\x49\x44\x20\x25\x75\x29\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x61\x6c\x6c\x6f\x63\x61\x74\x65\x20\x64\x65\x76\x69\x63\x65\x20\x73\x74\x72\x75\x63\x74\x75\x72\x65" "\n",DEVNAME,za0d38ae598);ssSetErrorStatus(S,msg);return;}mod_info->custom_data=(void*)zae10e3f17f;SG_PRINTF(DEBUG,"\x53\x65\x74\x75\x70\x3a\x20\x52\x65\x67\x69\x73\x74\x65\x72\x65\x64\x20\x25\x73\x20\x6d\x6f\x64\x75\x6c\x65" "\n",DEVNAME);}zae10e3f17f->z3fad3d9764=sg_mapMemory(&ze296e0333d,(0x1892+1440-0x1e30));switch((uint16_T)mxGetPr(z8fd86139be)[(0x1c5b+11-0x1c66)]){case(0x1187+4699-0x23e1):zae10e3f17f->z0754dd67cc=13107.2;zae10e3f17f->offset=10.0;range=(0xd86+2733-0x1831);break;case(0x24da+489-0x26c1):zae10e3f17f->z0754dd67cc=26214.4;zae10e3f17f->offset=5.0;range=(0xcda+2221-0x1586);break;case(0xb0d+4361-0x1c13):zae10e3f17f->z0754dd67cc=52428.8;zae10e3f17f->offset=2.5;range=(0x614+7114-0x21de);break;default:sprintf(msg,"\x25\x73\x3a\x20\x55\x6e\x6b\x6e\x6f\x77\x6e\x20\x72\x61\x6e\x67\x65\x20\x61\x72\x67\x75\x6d\x65\x6e\x74",DEVNAME);ssSetErrorStatus(S,msg);return;}z880d37ab6f=(uint32_T)mxGetPr(z1e0b67709d)[(0x6fb+4820-0x19cf)]-(0x15b8+1536-0x1bb7);zae10e3f17f->z3fad3d9764[zf6f7d641c6]=(z880d37ab6f<<(0x152b+1472-0x1ae6))|((0xd40+6249-0x25a8)<<(0xa6+8329-0x211d))|((0x6ea+7513-0x2442)<<(0x11ba+1995-0x196c));zcd308d01c9=(0x12c8+1000-0x16b0);for(i=(0x8d5+5531-0x1e70);i<(uint32_T)mxGetN(z79b944ae89);i++){channel=(uint16_T)mxGetPr(z79b944ae89)[i]-(0x12f2+1567-0x1910);zcd308d01c9|=1u<<channel;}ze77fa94a00=(uint32_T)mxGetPr(zab5e3ff87e)[(0x626+1362-0xb78)]-(0x2153+1229-0x261f);zae10e3f17f->z3fad3d9764[zbd2bdf5870]=zcd308d01c9|(range<<(0x6bc+6139-0x1eaf))|((0x17eb+3570-0x25dc)<<(0x1f2f+776-0x222c))|(ze77fa94a00<<(0x461+4539-0x160c));zae10e3f17f->z3fad3d9764[z307adcf8f5]|=((0x471+3128-0x10a8)<<(0x18bc+2423-0x222e));zae10e3f17f->z3fad3d9764[z307adcf8f5]|=((0x6d1+4801-0x1991)<<(0x4c3+1776-0xba8));for(i=(0xc56+2134-0x14ac);zae10e3f17f->z3fad3d9764[z307adcf8f5]&((0x16b2+3937-0x2612)<<(0x817+7108-0x23d0));i++){if(i>(0x1583+705-0x17e0)){sprintf(msg,"\x25\x73\x3a\x20\x66\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x63\x6c\x65\x61\x72\x20\x61\x6e\x61\x6c\x6f\x67\x20\x6f\x75\x74\x70\x75\x74\x20\x46\x49\x46\x4f",DEVNAME);ssSetErrorStatus(S,msg);return;}sg_wait_s(0.01);}if(sg_isFirstModelLoad()&&(int)mxGetPr(zd6d6a44c19)[(0x14bb+3216-0x214b)]==(0x6e2+4314-0x17bb)){zae10e3f17f->z3fad3d9764[zf6f7d641c6]|=(1u<<(0x991+5627-0x1f70));SG_PRINTF(INFO,"\x25\x73\x3a\x20\x61\x75\x74\x6f\x63\x61\x6c\x69\x62\x72\x61\x74\x69\x6f\x6e\x20\x73\x74\x61\x72\x74\x65\x64\x2e\x2e" "\n",DEVNAME);for(i=(0x1fd4+896-0x2354);zae10e3f17f->z3fad3d9764[zf6f7d641c6]&(1u<<(0x9e4+7134-0x25a6));i++){if(i>(0xa5f+2958-0x15e3)*(0x6f6+434-0x8a1)){sprintf(msg,"\x25\x73\x3a\x20\x61\x75\x74\x6f\x63\x61\x6c\x69\x62\x72\x61\x74\x69\x6f\x6e\x20\x74\x69\x6d\x65\x64\x20\x6f\x75\x74",DEVNAME);ssSetErrorStatus(S,msg);return;
+}sg_wait_s(0.1);}SG_PRINTF(INFO,"\x25\x73\x3a\x20\x61\x75\x74\x6f\x63\x61\x6c\x69\x62\x72\x61\x74\x69\x6f\x6e\x20\x73\x75\x63\x63\x65\x65\x64\x65\x64\x2e" "\n",DEVNAME);}zb5ae6e3431=(uint16_T)mxGetPr(zcd0c7b4197)[(0xf37+651-0x11c2)]-(0x6cd+1410-0xc4e);z9330649150=(uint16_T)mxGetPr(zf1ce6579c8)[(0x1261+198-0x1327)]-(0x1b1c+1054-0x1f39);zae10e3f17f->z3fad3d9764[z9621b996a9]=((uint32_T)zb5ae6e3431<<(0x3ff+5785-0x1a91))|((uint32_T)z9330649150<<(0xf20+3764-0x1dc5));}static void sg_ModelStart(SimStruct*S){uint32_T za0d38ae598=(uint32_T)mxGetPr(ze13f49a01f)[(0x2653+80-0x26a3)];za7f5fcb87c*zae10e3f17f=(za7f5fcb87c*)sg_module_get_custom_data(z12ba1d7c25,za0d38ae598);if(!zae10e3f17f){sprintf(msg,"\x25\x73\x20\x28\x49\x44\x20\x25\x75\x29\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x69\x65\x76\x65\x20\x6d\x6f\x64\x75\x6c\x65\x20\x69\x6e\x20\x53\x65\x74\x75\x70\x20\x4d\x6f\x64\x65\x6c\x53\x74\x61\x72\x74" "\n",DEVNAME,za0d38ae598);ssSetErrorStatus(S,msg);return;}zae10e3f17f->z3fad3d9764[zf6f7d641c6]|=(0x1u<<(0xbba+549-0xdca));}static void sg_ModelStep(SimStruct*S){}static void sg_ModelStop(SimStruct*S){uint32_T za0d38ae598=(uint32_T)mxGetPr(ze13f49a01f)[(0x148a+1430-0x1a20)];za7f5fcb87c*zae10e3f17f=(za7f5fcb87c*)sg_module_get_custom_data(z12ba1d7c25,za0d38ae598);if(!zae10e3f17f){sprintf(msg,"\x25\x73\x20\x28\x49\x44\x20\x25\x75\x29\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x69\x65\x76\x65\x20\x6d\x6f\x64\x75\x6c\x65\x20\x69\x6e\x20\x53\x65\x74\x75\x70\x20\x4d\x6f\x64\x65\x6c\x53\x74\x6f\x70" "\n",DEVNAME,za0d38ae598);ssSetErrorStatus(S,msg);return;}zae10e3f17f->z3fad3d9764[zf6f7d641c6]&=~(0x1u<<(0x98d+5418-0x1ea2));}static void sg_ModelExit(SimStruct*S){uint32_T za0d38ae598=(uint32_T)mxGetPr(ze13f49a01f)[(0x105+7574-0x1e9b)];za7f5fcb87c*zae10e3f17f=(za7f5fcb87c*)sg_module_get_custom_data(z12ba1d7c25,za0d38ae598);if(zae10e3f17f){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x75\x29\x3a\x20\x46\x72\x65\x65\x69\x6e\x67\x20\x64\x65\x76\x69\x63\x65\x20\x73\x74\x72\x75\x63\x74\x75\x72\x65" "\n",DEVNAME,za0d38ae598);free(zae10e3f17f);SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x75\x29\x3a\x20\x55\x6e\x72\x65\x67\x69\x73\x74\x65\x72\x69\x6e\x67\x20\x6d\x6f\x64\x75\x6c\x65" "\n",DEVNAME,za0d38ae598);sg_module_unregister(z12ba1d7c25,za0d38ae598);}}
+#endif 
+#include "sg_sfcn_glue.h"   
+

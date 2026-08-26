@@ -1,0 +1,35 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO203 - Write v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io203_write_v1.html" title="IO203 - Write v1"><link rel="next" href="refentry_ref_io204.html" title="IO204"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io203_write_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO203 - Write v2</h2><p>IO203 - Write v2 &#8212; <span class="phrase">Writes the IO203 digital
+                    outputs</span></p></div><div class="refsect1"><a name="d5e777"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io203_write_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e785"></a><h2>Description</h2><p>The Write block is used to update the state of the output channels defined in the
+                Setup block. </p><p>For each IO203 module, only one Write block is permitted. </p></div><div class="refsect1"><a name="d5e789"></a><h2>Ports</h2><p>This driver block has no output ports. The number of input ports is determined by
+                the IO203 Setup block configuration and the <span class="bold"><strong>Port
+                    Configuration</strong></span> setting of the IO203 Write block. The channel
+                configurations are transmitted by the Setup block; the Write block does not
+                automatically request these configurations. If the Setup block is configured before
+                the Write block is added to the model, the Setup block must be re-initialized (by
+                changing a setting and clicking <span class="bold"><strong>Apply</strong></span>, or by
+                updating the model) in order to update the new Write block.</p><p>The input ports can be configured in the following two ways:</p><p>
+                <span class="bold"><strong>1 port with a 64-element vector </strong></span></p><p>One input port with a fixed width of 64 is used. The index of each array element
+                is equivalent to the channel number. Array elements for channels which have not been
+                configured as digital outputs have no effect. Each element should have a value of
+                either 0 (Low) or 1 (High). Other values can also be used, in which case a threshold
+                of 0.5 is used to determine if the output state is Low (&lt; 0.5) or High (&gt;=
+                0.5).</p><p>
+                <span class="bold"><strong>1 port for each active output channel </strong></span></p><p>For each channel configured as digital output, one port is added to the IO203
+                Write block. Each port should have a value of either 0 (Low) or 1 (High). Other
+                values can also be used, in which case a threshold of 0.5 is used to determine if
+                the output state is Low (&lt; 0.5) or High (&gt;= 0.5).</p><p><span class="bold"><strong>Supported Data Types:</strong></span>
+                <code class="literal">boolean</code>, <code class="literal">double</code>, <code class="literal">single</code>,
+                    <code class="literal">int8/16/32</code>, <code class="literal">uint8/16/32</code></p></div><div class="refsect1"><a name="d5e808"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Configuration</span>
+                    </span></dt><dd><p>Select one of the two available port types.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Write Ports Indices</span>
+                    </span></dt><dd><p>This part of the mask shows which channels are selected to be output.
+                            Modifying this field will not influence the configuration.</p></dd></dl></div></div></div></body></html>

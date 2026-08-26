@@ -1,0 +1,81 @@
+<html><head><title>Create Shared Memory Partitions :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: Create Shared Memory Partitions -->
+<!-- CHAPNAME:  Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt1.html"><img src="b_prev.gif" alt="Previous page" border=0></a>&nbsp;&nbsp;&nbsp;<a href="scgt3.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>Create Shared Memory Partitions</b></font><br class="hdr">
+
+<p>To use the xPC Target SCRAMNet GT shared memory blocks to Read, or Write data, you must define a partition structure. SCRAMNet GT shared memory drivers use MATLAB structures to define shared memory partitions. A partition structure describes how you want to allocate (or partition) the shared memory. xPC Target allocates shared memory with bundles of data that are packed into memory partitions. The following SCRAMNet GT blocks use shared memory partition structures:</p>
+
+<ul>
+<li>SCGT Read</li>
+<li>SCGT Write</li>
+</ul>
+
+<p>After you define the shared memory partitions, you can add SCRAMNet GT shared memory driver blocks to your Simulink model. Create a shared memory structure in one of the following ways. See <a href="scgt9.html">Shared Memory Partition Structure</a> for the complete list of fields for the structure.</p>
+<p>The following description refers to the <code>scgtpartitionstruct</code> command. Type</p>
+
+<ul class=continued><li class=continued><pre>help scgtpartitionstruct</pre></li></ul>
+
+<p>for a description of the command.</p>
+
+<ul>
+
+<li>Using the <code>scgtpartitionstruct</code> command at the MATLAB Command Window, create a default partition structure. For example, type</li>
+<ul class=continued><li class=continued><pre>scgtpartitionstruct([])
+
+ans = 
+
+      Address: '0x0'
+         Type: 'uint32'
+         Size: '1'
+    Alignment: '4'
+     Internal: [1x1 struct]
+</pre></li></ul>
+
+<li>At the MATLAB Command Window, create a user-defined partition structure. The easiest way to do this is to create an M-file, partially define a structure, load that M-file into the MATLAB workspace, and supplement the resulting structure with a call to the <code>scgtpartitionstruct</code> function. For example</li>
+
+<ul class=continued><li class=continued><pre>
+Partition(1).Address='0x5000';
+Partition(1).Size='10';
+Partition(2).Size='5';
+Partition(3).Size='3';
+Partition(4).Size='[2, 3]';
+</pre></li></ul>
+
+</ul>
+
+<ul class=continued><li class=continued><p>This example defines a partition with four segments.</p>
+
+<ul>
+<li>The <code>Address</code> field is optional. Only specify this field for the first segment of a partition. The elements of a partition are defined as a continuous memory block from the first address. The following segments extrapolate their addresses from the first segment. If you have fragmented memory, use multiple partitions and SCRAMNet GT Read and Write blocks to work with the memory.</li>
+<li>The <code>Size</code> field is required for all fields in the partition structure.</li>
+<li>The base addresses of subsequent segments are fully defined by the size of the preceding segment.</li>
+<li>You can then call the <code>scgtpartitionstruct()</code> command to full populate the partition structure.</li>
+</ul>
+
+</li>
+</ul>
+
+<br>
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt1.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;Before You Start</td><td>&nbsp;</td><td align=right>Initialize Shared Memory Nodes&nbsp;</td><td align=right width=20><a href="scgt3.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></td></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

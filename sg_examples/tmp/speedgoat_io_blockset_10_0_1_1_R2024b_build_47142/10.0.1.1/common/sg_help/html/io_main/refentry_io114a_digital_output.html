@@ -1,0 +1,32 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO114A - Digital output</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io114a_digital_input.html" title="IO114A - Digital input"><link rel="next" href="refentry_ref_io114b.html" title="IO114B"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io114a_digital_output"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO114A - Digital output</h2><p>IO114A - Digital output &#8212; <span class="phrase">Writes the IO114 digital
+                    outputs</span></p></div><div class="refsect1"><a name="d5e9799"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io114a_digital_output.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="refsect_common_digital_output_ports"></a><h2>Ports</h2><p>This driver block has n double-type scalar input ports, where n is the number of
+            selected digital output channels.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                    <span class="guilabel">X (X is the digital output channel number)</span>
+                </span></dt><dd><p>Use the following values to set digital output channel X:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - TTL low</p></li><li class="listitem"><p>1 - TTL high</p></li></ul></div><p><span class="bold"><strong>Data Type:</strong></span>
+                        <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e9828"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_digital_activeOutputChannels"></a><span class="term">
+            <span class="guilabel">Active Output Channels</span>
+        </span></dt><dd><p>Select the active output channels in a vector. A defined number of channels can be
+                selected using square brackets, for example, [1 2 3]. A sequence of channels can be
+                selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_digital_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the <span class="bold"><strong>Initial Values</strong></span> vector
+                is applied to the channel as defined in the enabled channels. A scalar value applies
+                to all the channels; for example, for individual values, type "[1 0 0 1]", and to
+                set all channels to zero, type "0".</p></dd><dt><a name="varlistentry_common_digital_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

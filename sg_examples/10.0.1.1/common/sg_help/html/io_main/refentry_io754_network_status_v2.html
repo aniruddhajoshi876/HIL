@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO754 - Network Status v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io754_network_status.html" title="IO754 - Network Status"><link rel="next" href="refentry_ref_io755.html" title="IO755"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io754_network_status_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO754 - Network Status v2</h2><p>IO754 - Network Status v2 &#8212; <span class="phrase">Reads or writes the
+                    current network status</span></p></div><div class="refsect1"><a name="d5e64998"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io754_network_status_v2.png"></span></span></p></div><div class="refsect1"><a name="refsect_comms_ip_networkstatusdescription"></a><h2>Description</h2><p>The Network status block is common to all IO64X- and IO75X-supported protocols. The
+            driver is available in the IO75X base library (speedgoatlib_IO75X). You can use this
+            block to read or write the current network status:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Network communication disabled</p></li><li class="listitem"><p>1: Network communication enabled</p></li></ul></div></div><div class="refsect1"><a name="refsect_comms_ip_ports_network_status"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                    <span class="guilabel">Network Status</span>
+                </span></dt><dd><p>Allows the Network Status to be set. Type uint8. This port is enabled or
+                        disabled by the <span class="bold"><strong>Set Status Port</strong></span> parameter
+                        in the dialog box of this block.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                    <span class="guilabel">Network Status</span>
+                </span></dt><dd><p>Allows the Network Status to be viewed. Type uint8. This port is enabled
+                        or disabled by the <span class="bold"><strong>Get Status Port</strong></span>
+                        parameter in the dialog box of this block.</p></dd></dl></div></div><div class="refsect1"><a name="d5e65032"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_comms_ip_get_status_port"></a><span class="term">
+            <span class="guilabel">Get Status Port</span>
+        </span></dt><dd><p>Enable the <span class="bold"><strong>Network Status</strong></span> output port.</p></dd><dt><a name="varlistentry_comms_ip_set_status_port"></a><span class="term">
+            <span class="guilabel">Set Status Port</span>
+        </span></dt><dd><p>Enable the <span class="bold"><strong>Network Status</strong></span> input port.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

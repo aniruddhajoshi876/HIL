@@ -1,0 +1,61 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with SJA1000 Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f2-6069.html" title="Chapter&nbsp;3.&nbsp;CAN I/O Blocks No Longer Recommended for Use"><link rel="prev" href="f2-6069.html" title="Chapter&nbsp;3.&nbsp;CAN I/O Blocks No Longer Recommended for Use"><link rel="next" href="bu3bjli-9.html" title="Softing CAN-AC2-PCI with SJA1000 Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bu3bjli-4"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with SJA1000 Setup<a name="Softing_CAN-AC2-PCI-SJA-1000_Setup"></a></h2><p>Softing CAN-AC2-PCI with SJA1000 Setup<a name="Softing_CAN-AC2-PCI-SJA-1000_Setup"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with SJA1000 Setup block (not recommended)<b>CANBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e702"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="bu3bjli-6"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bu3bjli-7"></a><h2>Description</h2><p>The <code class="literal">Setup</code> block defines general settings of the installed CAN
+                boards. The CAN driver blocks for this board support up to 16 boards for each target
+                system, making up to 32 CAN ports available. For each board in the target system,
+                you must use exactly one <code class="literal">Setup</code> driver block.</p></div><div class="refsect1"><a name="bu3bjli-8"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Defines the board being accessed by this driver block instance. If
+                            multiple boards are present in the target computer, you can use the
+                            board number (1...16) to differentiate the boards. The physical board
+                            referenced by the board number depends on the <span class="bold"><strong>PCI
+                                Slot</strong></span> parameter. If just one board is present in the
+                            target system, select board number <code class="literal">1</code>.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 1 - physical bus</strong></span></span></dt><dd><p>Defines the physical CAN bus type of CAN port 1. In the board's
+                            standard configuration, only high-speed CAN is supported. By extending
+                            the board with low-speed CAN piggyback modules, you can also select
+                            low-speed CAN as the physical bus. Do not change this value to low-speed
+                            if the module is not present for the corresponding CAN port. If the
+                            module is present (see the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user manual on how to install the modules),
+                            you can select between high-speed and low-speed CAN here.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 1- baud rate</strong></span></span></dt><dd><p>Defines the most common baud rates for CAN port 1. If your model
+                            requires a special baud rate, select the value <code class="literal">User
+                                defined</code>. In this case, you use the <span class="bold"><strong>CAN 1 - user defined baud rate</strong></span> parameter to provide the
+                            four values for the timing information. The vector elements have the
+                            following meanings:</p><pre class="programlisting">[ Prescaler, Synchronization-Jump-Width, Time-Segment-1,
+Time-Segment-2 ]</pre><p>For more information about these values, see the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user manual
+                            for this board.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 1 - user defined baud rate</strong></span></span></dt><dd><p>See <span class="bold"><strong>CAN 1- baud rate</strong></span>.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 2 - physical bus</strong></span></span></dt><dd><p>Defines the physical CAN bus type of CAN port 2. In the board's
+                            standard configuration, only high-speed CAN is supported. By extending
+                            the board with low-speed CAN piggyback modules, you can also select
+                            low-speed CAN as the physical bus. Do not set this value should to
+                            low-speed if the module is not present for the corresponding CAN port.
+                            If the module is present (see the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user manual
+                            on how to install the modules), you can select between high-speed and
+                            low-speed CAN here.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 2 - baud rate</strong></span></span></dt><dd><p>Defines the most common baud rates for CAN port 2. If your model
+                            requires a special baud rate, select the value <code class="literal">User
+                                defined</code>. In this case, you can use the <span class="bold"><strong>CAN 2 - user defined baud rate</strong></span> parameter to
+                            provide the four values for the timing information. The vector elements
+                            have the following meanings:</p><pre class="programlisting">[ Prescaler, Synchronization-Jump-Width, Time-Segment-1,
+Time-Segment-2 ]</pre><p>For more information about these values, see the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user manual
+                            for this board.</p></dd><dt><span class="term"><span class="bold"><strong>CAN 2 - user defined baud rate</strong></span></span></dt><dd><p>See <span class="bold"><strong>CAN 2 - baud rate</strong></span>.</p></dd><dt><span class="term"><span class="bold"><strong>Initialization command structure and
+                            Termination</strong></span></span></dt><dd><p>Defines CAN messages sent during initialization and termination of the
+                                <code class="literal">Setup</code> block.</p></dd><dt><span class="term"><span class="bold"><strong>Termination</strong></span></span></dt><dd><p>Defines CAN messages sent during termination of the
+                                <code class="literal">Setup</code> block.</p></dd><dt><span class="term"><span class="bold"><strong>Show bus-off status output</strong></span></span></dt><dd><p>Select this check box to enable the bus-off status output port. The
+                            output signal can be 1 (bus-off state); otherwise, it is 0. If the
+                            bus-off status persists, the block optionally initiates recovery,
+                            depending on the setting of <span class="bold"><strong>Bus-off
+                                recovery</strong></span>.</p><p>Clear this check box to disable the output port.</p></dd><dt><span class="term"><span class="bold"><strong>Bus-off recovery</strong></span></span></dt><dd><p>Use this parameter to specify how the model is to perform bus-off
+                            recovery for the CAN network.</p><p>From the list, select:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Off</code></p><p>Does not perform bus-off recovery.</p></li><li class="listitem"><p><code class="literal">Auto</code></p><p>Upon detection, the model waits 1 second to see if the bus-off
+                                    state persists. After 1 second, bus-off recovery occurs.</p></li><li class="listitem"><p><code class="literal">Manual Trigger Input</code></p><p>Enables you to input a signal when you want bus-off recovery
+                                    to occur. Selecting this option creates an input port for the
+                                        <code class="literal">Setup</code> block.</p></li></ul></div></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div><p>The board allows you to terminate each of the two CAN ports separately with DIP
+                switches at the rear panel. Refer to the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; user manual on how to
+                set the DIP switches. Both CAN ports must be terminated when you use the loopback
+                model provided to test the board and drivers.</p></div><div class="refsect1"><a name="d5e826"></a><h2>Related Links</h2><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></div></div></body></html>

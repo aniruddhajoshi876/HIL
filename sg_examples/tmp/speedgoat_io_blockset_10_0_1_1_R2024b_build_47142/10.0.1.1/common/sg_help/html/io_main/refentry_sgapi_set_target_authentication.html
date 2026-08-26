@@ -1,0 +1,17 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.setTargetAuthentication</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_set_password.html" title="speedgoat.setPassword"><link rel="next" href="refentry_sgapi_set_target_time.html" title="speedgoat.setTargetTime"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_set_target_authentication"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.setTargetAuthentication</h2><p>speedgoat.setTargetAuthentication &#8212; 
+            <span class="phrase">Authenticate your Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e1419"></a><h2>Description</h2><p>This Speedgoat API function starts the step-by-step instruction to authenticate your Speedgoat
+real-time target machine.</p><p>It must be used if you have already run the <span class="bold"><strong>speedgoat.getTargetAuthentication</strong></span> function and
+have received the serial file from Speedgoat Support. When you are ready to install the serial
+file, simply run this function and follow the instructions displayed in your MATLAB Command
+Window.</p></div><div class="refsect1"><a name="d5e1424"></a><h2>Examples</h2><p>Set the serial file on the default target machine:</p><pre class="programlisting">speedgoat.setTargetAuthentication</pre><p>Set the serial file on a specified target machine using the target name (e.g. 'TargetPC1'):</p><pre class="programlisting">speedgoat.setTargetAuthentication('TargetName', 'TargetPC1')</pre><p>Set the serial file on a specified target machine using the target object (e.g. tg):</p><pre class="programlisting">speedgoat.setTargetAuthentication('TargetObject', tg)</pre></div><div class="refsect1"><a name="d5e1432"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e1436"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p></div></div></body></html>

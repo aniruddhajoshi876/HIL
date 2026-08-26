@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO623 - Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io623_setup.html" title="IO623 - Setup"><link rel="next" href="refentry_io623_send.html" title="IO623 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io623_receive"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO623 - Receive</h2><p>IO623 - Receive &#8212; 
+                <span class="phrase">Receives FlexRay frames</span>
+            </p></div><div class="refsect1"><a name="d5e19078"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io623_receive.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e19089"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CCX (X is the communication controller number)</span>
+                    </span></dt><dd><p>FlexRay frames read from the receive buffer. The width of this output
+                            is equal to the maximum number of frames to return.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">Io623_FlexrayFrame</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e19101"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Max Number of Frames</span>
+                    </span></dt><dd><p>Defines the maximum number of frames that can be received in one
+                            sample step (equal to one FlexRay cycle).</p><p>Note that all the frames transmitted on the bus are received, not just
+                            the frames specified in the CHI file. Set this value to at least the
+                            number of slots you have configured per FlexRay cycle.</p><p>If more frames are received than specified by this parameter, then
+                            they will be dropped and a warning message will be written to the target
+                            machine log. The log is displayed on the target screen and can be
+                            accessed by entering the following in the MATLAB command window:
+                            </p><pre class="programlisting">log = SimulinkRealTime.utils.getConsoleLog()</pre></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

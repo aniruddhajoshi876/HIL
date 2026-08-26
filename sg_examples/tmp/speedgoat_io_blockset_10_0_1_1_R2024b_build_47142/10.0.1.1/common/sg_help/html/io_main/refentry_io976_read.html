@@ -1,0 +1,61 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO976 - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_temperature.html" title="Temperature I/O"><link rel="up" href="book_temperature.html" title="Temperature I/O"><link rel="prev" href="refentry_io976_pin_mapping.html" title="IO976 Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io976_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO976 - Read</h2><p>IO976 - Read &#8212; <span class="phrase">Reads the IO976 temperature
+                    inputs</span></p></div><div class="refsect1"><a name="d5e533"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io976_read.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e544"></a><h2>Ports</h2><p>This driver block has n scalar output ports of type double where n is the number
+                of selected input channels. Each port (signal) returns the temperature in either
+                degrees C, K, or F.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number) </span>
+                    </span></dt><dd><p>The temperature value from thermocouple channel X in either degrees C,
+                            K, or F.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e557"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Conversion Rate (Integration Time) </span>
+                    </span></dt><dd><p>From the list, choose either 50Hz, 60Hz, or 400 Hz. This is the
+                            conversion rate for the V-F A/D converter. The conversion rate is the
+                            same for all input channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Samples for Moving Average </span>
+                    </span></dt><dd><p>From the list, choose a value from 1 to 16. Converted signal values
+                            are put into a cyclic buffer of size n which is used to calculate the
+                            moving average over these n samples.</p></dd><dt><span class="term">
+                        <span class="guilabel">Active Channels</span>
+                    </span></dt><dd><p>From the list, choose a value from 1 to 16. This defines the number of
+                            channels to be acquired.</p></dd><dt><span class="term">
+                        <span class="guilabel">Vector of Input Thermocouple Types (Cell Array of Char)
+                        </span>
+                    </span></dt><dd><p>For each acquired channel, enter a valid type of either 'J', 'K', 'E',
+                            'T', 'R', 'S', or 'B'. This vector defines the type of thermocouple for
+                            each channel. The vector must be the same length as the Number of
+                            channels to be acquired.</p></dd><dt><span class="term">
+                        <span class="guilabel">Vector of Input Gains (Double Array) </span>
+                    </span></dt><dd><p>For each acquired channel, enter a valid input gain of either 1, 125,
+                            166.7, or 400. This vector defines the input gain for each channel. The
+                            vector must be the same length as the Number of channels to be acquired.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Vector of Temperature Formats (Cell Array of Char) </span>
+                    </span></dt><dd><p>For each acquired channel, enter a valid format of either 'C' or 'F'.
+                            'C'= Celsius and 'F'= Fahrenheit. The vector must be the same length as
+                            the Number of channels to be acquired.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read and Output CJC Temperature </span>
+                    </span></dt><dd><p>If you want the block to read, convert, and output the temperature of
+                            the cold junction (CJC) sensor on the board, select this check box. If
+                            selected, the block shows an additional output port with the value of
+                            the CJC temperature.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

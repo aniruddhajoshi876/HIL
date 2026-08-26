@@ -1,0 +1,173 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SCPI PSU</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_scpi_landing.html" title="SCPI"><link rel="next" href="refentry_scpi_psu_usage_notes.html" title="SCPI PSU Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_scpi_psu"></a><div class="titlepage"></div><div class="refnamediv"><h2>SCPI PSU</h2><p>SCPI PSU &#8212; 
+                <span class="phrase">Block for controlling Power Supply Units (PSUs)</span>
+            </p></div><div class="refsect1"><a name="d5e76487"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_scpi_psu.png"></span></span></p></div><div class="refsect1"><a name="d5e76496"></a><h2>Description</h2><p>The SCPI PSU block acts as the translator between the user and a controlled
+                instrument. Consequently, the user does not have to know specific SCPI commands. The
+                block also automates when and in what sequence the commands are sent, and provides
+                the instrument responses, triggered by the query commands, on the correct output
+                port of the block.</p><p>The SCPI PSU block does not communicate directly with the instruments: the
+                transmission and reception of the messages must be outsourced to other blocks in the
+                Speedgoat I/O Blockset that control either I/O modules or the real-time target
+                machine onboard communication.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Only one SCPI PSU block is permitted for each communication port. Currently,
+                    only serial communication is supported.</p></td></tr></table></div><p>The SCPI PSU product example and usage notes are available from the <a href="refentry_scpi_landing.html" class="olink">SCPI main
+                page</a>.</p><p>Currently, this block supports these PSU:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>TDK Lambda GEN PSU (serial only; daisy chaining is supported)</p></li><li class="listitem"><p>TTi CPX400DP (serial only)</p></li></ul></div></div><div class="refsect1"><a name="d5e76510"></a><h2>Ports</h2><p>The number of input elements depends on the number of commands configured in the
+                block mask <span class="bold"><strong>Command Table</strong></span>.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Number of bytes received from the serial interface.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data received from the serial interface.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Skip Cmd</span>
+                    </span></dt><dd><p>This port is used to skip a command when it is stuck for any reason,
+                            and to activate it the input must switch from 0 to 1. Please refer to
+                            the <a href="refentry_scpi_psu_usage_notes.html" class="olink">usage notes</a> for
+                            additional information.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Retry Cmd</span>
+                    </span></dt><dd><p>This port is used to resend a command when it is stuck for any reason,
+                            and to activate it the input must switch from 0 to 1. Please refer to
+                            the <a href="refentry_scpi_psu_usage_notes.html" class="olink">usage notes</a> for
+                            additional information.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">&lt;n&gt;#S&lt;adr&gt;[&lt;cmd&gt;][Ch&lt;ch&gt;]</span>
+                    </span></dt><dd><p>For each command line correctly configured as <span class="bold"><strong>Set</strong></span> in the <span class="bold"><strong>Command
+                                Table</strong></span> in the mask, a port is created indicating the line
+                            number in the command table (&lt;n&gt;), an indication that this is a Set
+                            command (S), the address of the destination device (&lt;adr&gt;) if the
+                            device uses it, the selected command abbreviation (&lt;cmd&gt;), and the
+                            channel (&lt;ch&gt;) if the device uses it. For example, if the first
+                            command is a Set Voltage command for device 9 and channel 2 is selected,
+                            the name of the port could be "1#S9[Volt][Ch2]". Showing the command
+                            abbreviation, channel number or address number, can be enabled or
+                            disabled in the mask options.</p><p>The command is sent every time the input value changes (the input
+                            value is the command parameter). The port internal value is initialized
+                            at <span class="bold"><strong>-1</strong></span>. If during the first execution a
+                            specific command does not need to be sent, set the value for the command
+                            to <span class="bold"><strong>-1</strong></span>.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">double</code></p></dd><dt><span class="term">
+                        <span class="guilabel">&lt;n&gt;#R&lt;adr&gt;[&lt;cmd&gt;][Ch&lt;ch&gt;]</span>
+                    </span></dt><dd><p>For each command line correctly configured as <span class="bold"><strong>Request</strong></span> in the <span class="bold"><strong>Command
+                                Table</strong></span> in the mask, a port is created indicating the line
+                            number in the command table (&lt;n&gt;), an indication that this is a
+                            Request command (R), the address of the destination device (&lt;adr&gt;) if
+                            the device uses it, the selected command abbreviation (&lt;cmd&gt;), and
+                            the channel (&lt;ch&gt;) if the device uses it. For example, if the first
+                            command is a Request Voltage command for device 9 and channel 2 is
+                            selected, the name of the port could be "1#R9[Volt][Ch2]". Showing the
+                            command abbreviation, channel number or address number, can be enabled
+                            or disabled in the mask options.</p><p>The command is sent every time the input value changes. The port
+                            internal value is initialized at <span class="bold"><strong>-1</strong></span>. If
+                            during the first execution a specific command does not need to be sent,
+                            set the value for the command to <span class="bold"><strong>-1</strong></span>.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">double</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Number of bytes to send to the serial interface.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data to send to the serial interface.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Drain</span>
+                    </span></dt><dd><p>This port outputs all the unexpected messages and errors received from
+                            the device. When a Drain message is received, this is also displayed on
+                            the status monitor of the target machine, with additional information
+                            depending on the case; for example, if the received response was not the
+                            expected one, it will show the received and the expected. Usually when a
+                            message is sent to Drain, the communication is also stuck and
+                            ClearToSend is not enabled. Refer to the <a href="refentry_scpi_psu_usage_notes.html" class="olink">usage notes</a> for
+                            additional information.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">ClearToSend</span>
+                    </span></dt><dd><p>This port outputs the internal state of the ClearToSend flag. When the
+                            port is true, the block is ready to send. When the port is false, the block
+                            is waiting for a response, waiting for a timer, or stuck because an unexpected
+                            message was received.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">boolean</code></p></dd><dt><span class="term">
+                        <span class="guilabel">LastCmdIdx</span>
+                    </span></dt><dd><p>This port outputs the number of the last command sent (first value of
+                            the command port name)</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">int8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">&lt;n&gt;#R&lt;adr&gt;[&lt;cmd&gt;][Ch&lt;ch&gt;]</span></span></dt><dd><p>For each command line correctly configured as <span class="bold"><strong>Request</strong></span> in the <span class="bold"><strong>Command
+                                Table</strong></span> in the mask, an input port is created as explained
+                            above, and a corresponding output port is created to display the
+                            response from the device.</p><p><span class="bold"><strong>Data Type:
+                            </strong></span><code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e76629"></a><h2>Main Tab parameters</h2><div class="variablelist"><div class="variablelist-title">Device Settings</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">ID</span>
+                    </span></dt><dd><p>Defines the block number. This value is not linked directly to any
+                            physical device.</p></dd><dt><span class="term">
+                        <span class="guilabel">Device Type</span>
+                    </span></dt><dd><p>Select the device from a list of preconfigured devices.</p></dd><dt><span class="term">
+                        <span class="guilabel">Communication Interface</span>
+                    </span></dt><dd><p>Select the communication interface with which to communicate.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Software FIFO Size</span>
+                    </span></dt><dd><p>This must match the TX FIFO communication interface, since it also
+                            determines the Data output port size.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Software FIFO Size</span>
+                    </span></dt><dd><p>This must match the RX FIFO communication interface, since it also
+                            determines the Data input port size.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Commands</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Save Command Table</span>
+                    </span></dt><dd><p>This button saves and applies the changes in the Command Table, saving
+                            internally the commands, and updating the input and output ports.</p><p>After this button is pushed, the <span class="bold"><strong>Table
+                                State</strong></span> will show that the table is up to date. The buttons
+                                <span class="bold"><strong>OK</strong></span> or <span class="bold"><strong>Apply</strong></span> still need to be used, since <span class="bold"><strong>Cancel</strong></span> will not keep the changes of the Command
+                            Table.</p></dd><dt><span class="term">
+                        <span class="guilabel">Table State</span>
+                    </span></dt><dd><p>Every time something changes with the configuration
+                            (new/removed/moved/modified line, changed device), this field changes to
+                            "Unsaved Table changes" . If the state is not "Command Table up to
+                            date", it means that the configuration showed in the Command Table does
+                            not represent the currently applied configuration.</p></dd><dt><span class="term">
+                        <span class="guilabel">Command Table</span>
+                    </span></dt><dd><p>The table containing the commands to control the device. Please refer
+                            to the <a href="refentry_scpi_psu_usage_notes.html" class="olink">usage
+                            notes</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Add</span>
+                    </span></dt><dd><p>Adds an empty command line in the <span class="bold"><strong>Command
+                                Table</strong></span>. If a command line is selected, it will create the
+                            new one under it, if none are selected it will create it at the end of
+                            the table.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remove</span>
+                    </span></dt><dd><p>Removes the selected lines of commands from the <span class="bold"><strong>Command Table</strong></span>. At least one line must be
+                            selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Up</span>
+                    </span></dt><dd><p>Moves up the selected line by one in the <span class="bold"><strong>Command
+                                Table</strong></span>. One line must be selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Down</span>
+                    </span></dt><dd><p>Moves down the selected line by one in the <span class="bold"><strong>Command Table</strong></span>. One line must be selected.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Other</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Suggested Message for the Serial Write Block ModelStop</span>
+                    </span></dt><dd><p>There could be a suggested message to send at the end of model
+                            execution, like a reset, for the specific device selected. This text can
+                            be copied and then pasted in the ModelStop message field in the Serial
+                            Write block for OnBoard Serial or IO50x/IO581 modules.</p></dd></dl></div></div><div class="refsect1"><a name="d5e76718"></a><h2>Options Tab parameters</h2><div class="variablelist"><div class="variablelist-title">Model Start Messages</div><p>This section of the block mask is used to define a series of messages sent at
+                    the beginning of the execution. Note that these messages are sent during the
+                    first model steps, not at model start.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>This enables the ModelStart message.</p></dd><dt><span class="term">
+                        <span class="guilabel">Messages</span>
+                    </span></dt><dd><p>Messages are declared here. Multiple messages can be sent, but they
+                            must be separated using this format: {[msg1], [msg2], ...}. Each message
+                            can be an array of char, a string, an array of numerical values, or a
+                            combination of these. Char arrays and strings are automatically
+                            converted to their numerical ASCII equivalents. The SCPI PSU block will
+                            not add the termination to the message, so you must add it yourself
+                            (e.g., carriage return, line feed, NULL).</p></dd><dt><span class="term">
+                        <span class="guilabel">Delay Between Each Message [ms]</span>
+                    </span></dt><dd><p>This is the delay applied after each one of the ModelStart messages
+                            declared.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Port Text Options</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Command on the port</span>
+                    </span></dt><dd><p>Shows the command name in the port label.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Address on the port</span>
+                    </span></dt><dd><p>Shows the device address in the port label. This option is disabled
+                            when daisy chaining is not available for the selected device.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Channel on the port</span>
+                    </span></dt><dd><p>Shows the device channel in the port label. This option is disabled
+                            when the selected device has only one channel.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Port Options</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Skip Cmd Port</span>
+                    </span></dt><dd><p>Enables and shows the Skip Cmd Port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Retry Cmd Port</span>
+                    </span></dt><dd><p>Enables and shows the Retry Cmd Port.</p></dd></dl></div></div></div></body></html>

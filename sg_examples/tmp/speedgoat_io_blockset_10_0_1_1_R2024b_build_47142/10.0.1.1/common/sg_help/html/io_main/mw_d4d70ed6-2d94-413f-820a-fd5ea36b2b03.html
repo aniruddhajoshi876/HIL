@@ -1,0 +1,146 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Send/Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="mw_ebefb990-e878-4650-838f-44b82f7f1b6e.html" title="Chapter&nbsp;13.&nbsp;RS232 blocks"><link rel="prev" href="mw_ebefb990-e878-4650-838f-44b82f7f1b6e.html" title="Chapter&nbsp;13.&nbsp;RS232 blocks"><link rel="next" href="mw_board_setup.html" title="Board Setup and Interrupt Check"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="mw_d4d70ed6-2d94-413f-820a-fd5ea36b2b03"></a><div class="titlepage"></div><div class="refnamediv"><h2>Send/Receive</h2><p>Send/Receive &#8212; Send/Receive block<b>RS232Blocks</b></p></div><div class="refsect1"><a name="mw_acde290c-0513-42a1-b156-03ea52dffe90"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library for
+                RS-232</p></div><div class="refsect1"><a name="mw_0cf6ab02-c0b4-4097-9e23-36397fb85496"></a><h2>Description</h2><p>The dialog box for these subsystem blocks allows you to perform basic board setup
+                and setup of send/receive data.</p><p>You control parameter visibility with the <span class="guilabel">Parameter Group</span>
+                parameter and the port number.</p><p>There are two versions of this block, non-F and F (FIFO). Both serial boards and
+                the main board have these two versions. The primary difference is that the F blocks
+                bring the FIFO signal out of the subsystem:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The non-F blocks have RCV outputs. These blocks have basic FIFO read
+                        blocks inside the subsystem. They are most useful for simple character
+                        streams. These subsystem blocks generate output as an array of packed
+                        integers (settable at 8 bits, 16 bits, or 32 bits). Characters appear in the
+                        lower byte and received status information in the upper byte.</p></li><li class="listitem"><p>The F blocks have FIFO outputs. These blocks give you greater flexibility
+                        and allow you to use the FIFO read blocks.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>FIFO Read</strong></span> &#8212; A model that
+                                contains an F block with the FIFO Read block provides the same
+                                capability as the non-F block.</p></li><li class="listitem"><p><span class="bold"><strong>FIFO Read HDRS and FIFO Read
+                                    Binary</strong></span> &#8212; A model that contains an F block with
+                                a FIFO Read HDRS or FIFO Read Binary block provides greater
+                                capability than the FIFO Read block. See FIFO Read HDRS (Composite)
+                                and FIFO Read Binary (Composite).</p></li></ul></div></li></ul></div><p>Only one Send/Receive block can exist for each interrupt.
+                All ports that use that interrupt must be
+                associated with that block.</p><p>For example, if you have four ports configured on the main board, COM1 and COM3
+                typically share an interrupt. In this case, COM1 and COM3 must then share a
+                Send/Receive block. COM1 is also of note because you can use it for linking the
+                development and target computers. If COM1 is used for the serial link, you cannot
+                use COM1 or COM3 with this block as long as they share an interrupt. The same is
+                true for COM2 and COM4.</p><p>The <code class="literal">Board Setup</code> and <code class="literal">Basic Setup</code>
+                configuration parameter options for F-Send-Receive blocks are the same as for their
+                non-F Send Receive block counterparts. To provide direct access to the board, these
+                blocks also have a <code class="literal">FIFO Setup</code> parameter option. The following
+                descriptions merge the common elements and call out the differences among the
+                different blocks.</p></div><div class="refsect1"><a name="mw_106b4458-62fa-4047-8a33-70da30e319d8"></a><h2>Block Parameters</h2><p><span class="guilabel">Parameter Group</span>
+            </p><p>This parameter allows you to select which subset of configuration parameters you
+                want to modify. Possible values are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Board Setup</code></p></li><li class="listitem"><p><code class="literal">Basic Setup</code></p></li><li class="listitem"><p><code class="literal">FIFO Setup</code></p></li></ul></div><p>The configuration parameter subsets are:</p><div class="refsect2"><a name="mw_020d68e6-924a-403d-a164-7a915396957b"></a><h3>Board Setup</h3><p>Both F and non-F Send Receive blocks support the <span class="guilabel">Parameter
+                        Group</span>
+                    <code class="literal">Board Setup</code> option.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">IRQ number</span></span></dt><dd><p>Enter the number of the interrupt request line for this board. If
+                                you do not know the interrupt request line number for this board, at
+                                the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window, enter:</p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre><p>This command displays the PCI interfaces currently attached to the
+                                target computer. From that display, find the instance of the board
+                                controlled by this block. Each board uses a unique interrupt request
+                                line number.</p></dd><dt><span class="term"><span class="guilabel">Master Clock Frequency</span></span></dt><dd><p>Enter the clock generator frequency for the master clock. Enter a
+                                value between 6 MHz and 50 MHz, inclusive.</p></dd><dt><span class="term"><span class="guilabel">Use standard reference and rates</span></span></dt><dd><p>This check box enables you to use default values for the block.
+                                Select this check box to use the default values for the
+                                    <span class="guilabel">Master Clock Frequency</span> parameter. If you
+                                clear this check box, you can enter a custom value for the
+                                    <span class="guilabel">Master Clock Frequency</span> parameter. This same
+                                check box also appears on the <code class="literal">Basic Setup</code> option
+                                page for all ports. Selecting
+                                this box applies to all
+                                channels.</p></dd><dt><span class="term"><span class="guilabel">Slot (PCI boards)</span>
+                        </span></dt><dd><p>If only one board of this type is in the target computer, enter
+                                    <code class="literal">-1</code> to automatically locate the board.</p><p>If two or more boards of this type are in the target computer,
+                                enter the bus number and the PCI slot number of the board associated
+                                with this driver block. Use the format <code class="literal">[BusNumber,
+                                    SlotNumber]</code>. To determine the bus number and the PCI
+                                slot number, type:</p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect2"><a name="mw_bd02a73c-07af-42e2-9578-5a038cb6643b"></a><h3>Basic Setup</h3><p>Both F and non-F Send Receive blocks support the <span class="guilabel">Parameter
+                        Group</span>
+                    <code class="literal">Basic Setup</code> option.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Port to modify</span></span></dt><dd><p>From the list, choose a port. The <span class="guilabel">Port to
+                                    modify</span> parameter specifies the port for which you
+                                want to view or modify the parameters.</p><p>For Baseboard drivers, the port is the <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; block
+                                port, where the upper port is <code class="literal">1</code> and the lower
+                                port is <code class="literal">2</code>. For other drivers, the port number
+                                corresponds to the channel number.</p></dd><dt><span class="term"><span class="guilabel">Use standard reference and rates</span></span></dt><dd><p>This check box enables you to use default values for the block.
+                                Select this check box to use the default values for the
+                                    <span class="guilabel">Baud divisor</span> and <span class="guilabel">Sampling
+                                    rate</span> parameters. Selecting this check box allows you
+                                to enter a value for the <span class="guilabel">Baud rate</span> parameter
+                                and also selects the <span class="guilabel">Prescale</span> parameter. If you
+                                clear this check box, you can enter custom values for the
+                                    <span class="guilabel">Baud divisor</span> and <span class="guilabel">Sampling
+                                    rate</span> parameters, but must use the default value for
+                                the <span class="guilabel">Baud rate</span> parameter. Clearing this check
+                                box also clears the <span class="guilabel">Prescale</span> check box.</p><p>If selected:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Reference is set to 14.7456 MHz.</p></li><li class="listitem"><p><span class="guilabel">Prescale</span> is disabled.</p></li><li class="listitem"><p>Sampling rate is <code class="literal">16X (standard)</code>.</p></li><li class="listitem"><p>Select the baud rate from <span class="guilabel">Baud
+                                        Rate</span>.</p></li></ul></div><p>If not selected, you must provide a custom baud rate that is not
+                                on the drop-down list to get the desired reference. For example, if
+                                you have a desired baud rate of 1.0 MHz, you can use the following
+                                equation to calculate the reference:</p><pre class="programlisting" width="66">reference = baud rate x sampling rate x divisor x prescale</pre><p>The following values give an acceptable reference that is less
+                                than or equal to 50 MHz.</p><pre class="programlisting">reference = 1.10e6 x 16 x 1 x 1 = 16 MHz</pre></dd><dt><span class="term"><span class="guilabel">Baud Divisor</span></span></dt><dd><p>Enter a divisor integer. The block determines the actual baud rate
+                                for a particular channel by dividing the maximum baud rate by this
+                                divisor. This number can be different for each channel.</p></dd><dt><span class="term"><span class="guilabel">Baud rate</span></span></dt><dd><p>From the list, choose a baud rate.</p></dd><dt><span class="term"><span class="guilabel">Sampling rate</span></span></dt><dd><p>From the list, select <code class="literal">8x</code> or <code class="literal">16x
+                                    (standard)</code> per port. This parameter is enabled if you
+                                clear the <span class="guilabel">Use standard reference and rates</span>
+                                parameter.</p></dd><dt><span class="term"><span class="guilabel">Prescale</span></span></dt><dd><p>For very slow baud rates, you might need to enable this divide by
+                                4 prescaler to achieve the desired rate. In most cases, you do not
+                                need to enable this.</p></dd><dt><span class="term"><span class="guilabel">Parity</span></span></dt><dd><p>From the list, choose
+                                    <code class="literal">None</code>,
+                                    <code class="literal">Even</code>, <code class="literal">Odd</code>,
+                                    <code class="literal">Mark</code>, or <code class="literal">Space</code>. This
+                                parameter defines the parity.</p></dd><dt><span class="term"><span class="guilabel">Data bits</span></span></dt><dd><p>From the list, choose either 5, 6, 7, or 8 to select the number of
+                                bits per character.</p></dd><dt><span class="term"><span class="guilabel">Stop bits</span></span></dt><dd><p>From the list, choose either 1 or 2 to define the number of stop
+                                bits for the port. Most modern RS-232 boards work fine with a
+                                character stream that uses single (1) stop bits.</p></dd><dt><span class="term"><span class="guilabel">Receive FIFO interrupt level</span></span></dt><dd><p>From the list, choose <code class="literal">1</code>, <code class="literal">quarter
+                                    full</code>, <code class="literal">half full</code>, or <code class="literal">almost
+                                    full</code>. This parameter specifies the number of
+                                characters in the Receive FIFO before an interrupt occurs. Receive
+                                interrupts occur at least as often as this parameter
+                                specifies.</p><p>If a gap of at least 4 character times, the span of four
+                                characters, occurs in a data stream, the UART requests an interrupt
+                                for the receiver. The UART requests an interrupt regardless of the
+                                value of <span class="guilabel">Receive FIFO interrupt level</span>. If the
+                                FIFO on the board contains at least one character, an interrupt is
+                                signaled.</p></dd><dt><span class="term"><span class="guilabel">Hardware handshake</span></span></dt><dd><p>Enable the RTS/CTS handshake for flow control. This feature of the
+                                UART is used to prevent loss due to FIFO overflow. From the list,
+                                select <code class="literal">RTS/CTS</code> to enable this behavior;
+                                otherwise, select
+                                    <code class="literal">none</code>.</p></dd><dt><span class="term"><span class="guilabel">Software handshake</span></span></dt><dd><p>Allows the UART to send the XOFF character if the receive FIFO
+                                gets too full. It then sends the XON character when the receive FIFO
+                                empties. Because the UART handles this, the XON/XOFF characters are
+                                sent immediately, even if the transmitter is empty. From the list,
+                                select <code class="literal">XON/XOFF</code> to enable this behavior;
+                                otherwise, select
+                                    <code class="literal">none</code>.</p></dd><dt><span class="term"><span class="guilabel">XON character</span></span></dt><dd><p>Normally, enter <code class="literal">17</code> (<span class="keycap"><strong>Control
+                                Q</strong></span>). This is the default.</p></dd><dt><span class="term"><span class="guilabel">XOFF character</span></span></dt><dd><p>Normally, enter <code class="literal">19</code> (<span class="keycap"><strong>Control
+                                S</strong></span>). This is the default.</p></dd><dt><span class="term"><span class="guilabel">RS485 auto turnaround</span></span></dt><dd><p>Select this check box to enable RS-485 automatic turnaround. In
+                                RS-485 mode, where the transmitters and receivers use the same
+                                differential pair of wires, you can enable only one transmitter at a
+                                time. Select this check box to turn on the automatic transmitter
+                                control in the UART. The RTS output is routed to the enable input of
+                                the RS-485 transmitter.</p></dd><dt><span class="term"><span class="guilabel">RS485 turnaround delay</span></span></dt><dd><p>Enter the desired RS-485 turnaround delay. The UART automatically
+                                asserts RTS when there are characters in the transmit FIFO. It
+                                de-asserts RTS when the transmit FIFO empties and the RS-485
+                                turnaround default delay of 0 to 15 bit times elapses. The
+                                transmitter output goes tristate (high impedance) when disabled,
+                                which allows another device to transmit.</p></dd></dl></div></div><div class="refsect2"><a name="mw_1260e09a-4eae-4b00-b145-dd207aba9073"></a><h3>FIFO Setup</h3><p>Only F Send Receive blocks support the <span class="guilabel">Parameter Group</span>
+                    <code class="literal">FIFO Setup</code> option.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Port to modify</span></span></dt><dd><p>From the list, choose port <code class="literal">1</code> or
+                                    <code class="literal">2</code>. The <span class="guilabel">Port to modify</span>
+                                parameter specifies the port for which you want to view or modify
+                                the parameters.</p></dd><dt><span class="term"><span class="guilabel">Transmit software FIFO size</span></span></dt><dd><p>Enter the transmit software FIFO size, in bytes. This parameter
+                                specifies the size of the software FIFO used to buffer transmitted
+                                characters.</p></dd><dt><span class="term"><span class="guilabel">Transmit FIFO data type</span></span></dt><dd><p>From the list, choose <code class="literal">count+32 bit int</code>,
+                                    <code class="literal">count+32 bit uint</code>, <code class="literal">count+16 bit
+                                    int</code>, <code class="literal">count+16 bit uint</code>, <code class="literal">8
+                                    bit int null terminated</code>, or <code class="literal">8 bit uint null
+                                    terminated</code>. This parameter specifies the data type of
+                                the transmitter. The 8-bit data types require a NULL-terminated
+                                character vector in the input vector.</p><p>The 16- and 32-bit data types reserve the first full element to
+                                contain the number of elements to expect in the rest of the input
+                                vector. Only the low-order byte of each data element is sent.
+                                Setting this data type allows a wider data type to hold the bytes.
+                                If the data stream needs to include a NULL byte, you must select one
+                                of the 16- or 32-bit data types.</p></dd><dt><span class="term"><span class="guilabel">Receive software FIFO size</span></span></dt><dd><p>Enter the size of the receive software FIFO, in bytes. This
+                                parameter specifies the size of the software FIFO to buffer
+                                characters between interrupt service and periodic execution.</p></dd></dl></div></div></div><div class="refsect1"><a name="d5e11068"></a><h2>Related Links</h2><p><a class="link" href="https://fastcomproducts.com/" target="_top">https://fastcomproducts.com/</a></p><p><a class="link" href="https://www.advantech.com/en" target="_top">https://www.advantech.com/en</a></p></div></div></body></html>

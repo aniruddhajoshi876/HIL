@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Bus Controller Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_setup.html" title="IO672 - Setup"><link rel="next" href="refentry_io672_bus_monitor.html" title="IO672 - Bus Monitor"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_bus_controller_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Bus Controller Send</h2><p>IO672 - Bus Controller Send &#8212; <span class="phrase">This block sends a
+                    list of messages to the specified channel on the board</span></p></div><div class="refsect1"><a name="d5e51291"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_bus_controller_send.png"></span></span></p></div><div class="refsect1"><a name="d5e51299"></a><h2>Description</h2><p>This block sends a list of messages to the specified channel on the board.</p><p>Before you construct the list of messages:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Allocate space for the list with the Create BC Message List
+                            block.</p></li><li class="listitem"><p>Fill in information about each message with Encode BC Message
+                            blocks.</p></li><li class="listitem"><p>Each instance of an Encode BC Message block fills in information for
+                            a single message on the list. Daisy chain the Encode BC Message block L
+                            signals so that the Encode BC blocks execute before the Bus Controller
+                            Send block.</p></li></ul></div><p>
+            </p><p>The Bus Controller Send block allocates a list for the reception of messages. This
+                block can:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Read the set of messages and statuses from the last time a message
+                            was sent before sending the new list.</p></li><li class="listitem"><p>Send the new list and wait for a response.</p></li></ul></div><p>
+            </p><p>In other words, for time step N, the output of the Send block is either the
+                response to time step N-1 or the response to time step N, chosen from the Response
+                mode parameter.</p></div><div class="refsect1"><a name="d5e51319"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>BC Message List to be send.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>Received BC Message List.</p></dd></dl></div></div><div class="refsect1"><a name="d5e51335"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel </span>
+                    </span></dt><dd><p>From the list of available channels on the board, choose channel 1, 2,
+                            3 or 4. This channel is initialized for this command stream.</p></dd><dt><span class="term">
+                        <span class="guilabel">Response mode </span>
+                    </span></dt><dd><p>Options: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Send new message then wait and read response &#8212; Transmit
+                                        new message, and then wait for response before
+                                        continuing.</p></li><li class="listitem"><p>Use the Maximum wait time (microseconds) parameter to set
+                                        the amount of time the block must wait for a
+                                        response.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Maximum wait time (microseconds) </span>
+                    </span></dt><dd><p>The maximum time that this block waits for the message stream to be
+                            sent by the board. If the Response mode parameter is set to Send new
+                            message then wait and read response, use this parameter. A reasonable
+                            maximum wait time is 1000 microseconds (1 millisecond). This value must
+                            not exceed the sample time as exceeding the sample time triggers an
+                            execution overload.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

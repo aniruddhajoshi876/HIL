@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO691 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io691_pin_mapping.html" title="IO691 Pin Mapping"><link rel="next" href="refentry_io691_setup.html" title="IO691 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io691_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO691 Usage Notes</h2><p>IO691 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e54926"></a><h2>CAN Read Strategy</h2><p>The CAN Read block reads one message from one port of the IO691 input queue. The
+                "Data present" output port shows if there are more messages available in the queue.</p><p>If your model runs faster than the CAN messages come in, it is safe to just read
+                one message on each model execution step. If, however, there is a chance that more
+                than one CAN message might be received per step, you may want to read all the
+                available messages.</p><p>This is most conveniently done with a "While Iterator" subsystem.</p></div><div class="refsect1"><a name="d5e54931"></a><h2>Top level view: </h2><p><span class="inlinemediaobject"><img src="././graphics/IO601_Read_v4_block_whileIteratorSS.png"></span></p></div><div class="refsect1"><a name="d5e54937"></a><h2>Inside the While Iterator Subsystem </h2><p><span class="inlinemediaobject"><img src="././graphics/IO601_Read_v4_block_whileIterator.png"></span></p><p>The "Sample Time" input port defines the rate at which the subsystem is executed.
+                Otherwise it will run on the base rate.</p></div><div class="refsect1"><a name="refsect1_io691_init_term_can"></a><h2>Initialization and Termination CAN Messages</h2><p>The IO691 Setup driver block allows you to define CAN messages to be sent during
+                initialization and termination of the real-time application. The driver block can
+                send messages at each application start and stop. The main purpose for sending these
+                messages is to initialize or terminate other CAN nodes on the network, such as
+                CANopen or DeviceNet nodes. Even if the CAN layers are not directly supported, the
+                model can usually communicate with these nodes with standard CAN messages, provided
+                the nodes are initialized. The initialization and termination fields of the Setup
+                blocks are intended for this purpose.</p><p>You define the initialization and termination CAN messages by using
+                    MATLAB<sup>&reg;</sup> structure arrays with CAN-specific field
+                names. This approach was also used for the RS-232 and general counter driver blocks
+                found in the Simulink Real-Time&#8482; I/O library. Refer to these driver blocks and their
+                help for additional information about this basic concept.</p><div class="itemizedlist"><p>The CAN Setup block-specific field names are:</p><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Channel: Selects the CAN channel on which the message is sent. Valid
+                        values are either 1 or 2 (double)</p></li><li class="listitem"><p>Protocol: Defines the protocol type of the message to be either "CAN" or
+                        "CAN-FD". The permitted data range is automatically adjusted to be [0 8]
+                        byte for "CAN" or [0 64] byte for "FD". Use a character vector with this
+                        parameter</p></li><li class="listitem"><p>BRS: Defines if the fast data baudrate should be used for CAN-FD. Valid
+                        values are either 0 for standard baud rate or 1 for fast data baud rate
+                        (double)</p></li><li class="listitem"><p>Type: Defines whether the message to be sent is of a standard or extended
+                        type. Valid values are either "Standard" or "Extended" (character
+                        vectors)</p></li><li class="listitem"><p>Identifier: Defines the identifier of the message. The value (scalar) must
+                        be in the corresponding identifier range (standard or extended)</p></li><li class="listitem"><p>Data: Defines the data frame to be sent out along with the CAN message.
+                        The length of the row vector defines the data frame size. The limits depend
+                        on the selection made for the <span class="bold"><strong>Protocol</strong></span>
+                        parameter.</p></li><li class="listitem"><p>Pause: Defines the amount of time, in seconds, that the Setup block waits
+                        after this message has been sent before sending the next message. Valid
+                        values are 0&#8211;0.05 seconds. Some CAN nodes need time to settle before they
+                        can accept the next message. For example, the node must settle when the
+                        previous message puts it in a new operational mode. Use this field to
+                        specify the idle times</p></li></ul></div></div></div></body></html>

@@ -1,0 +1,7 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#ifndef zcae0309284
+#define zcae0309284
+enum z554102d0ae{z34108795cb=(0x13a2+4314-0x247b),zf978414bc0,zfd38823b72,};enum zab22c577b9{z095fd7457e=(0x1ba+4218-0x1233),ze21b49a23b};enum z67acf25e11{z1c59540e2a=(0xe5c+4864-0x215b),zd6cb43b591,z18240e8900};enum z1fd483ff0d{z2d761ad741=(0x1301+1537-0x1901),z56b2c2e1ca,z44b19bc29a,zfe22970b85,zbcd1565f7f,z791b7dd67f,z834b88d1e9};enum z4bfd53fc53{z306ebaedbe=(0x1cd8+1121-0x2138),zd5664fdc19};enum z0f8ec80759{z1a2fb2f393=(0xe9f+2456-0x1836),z10b17fa9da,z6063bfa2ca,z1c3c1e02f4,zde355d4f5b,z0e7b16e000};enum zc3a7d8318c{zc7fd5f1687=(0x5d0+1921-0xd50),z50ef5fd9d8};enum zd948a7fcda{z84f8c5991f=(0x809+5661-0x1e25),zcf379b5ad9,z778c903ece};enum z2d265fda22{z8710ced919=(0x15b4+3375-0x22e2),zd5a42dd0fd,z970c6e4d4b,ze58e271da7,};
+#endif  
+

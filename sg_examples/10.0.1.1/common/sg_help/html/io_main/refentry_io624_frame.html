@@ -1,0 +1,51 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Frame</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_send.html" title="IO624 - Send"><link rel="next" href="refentry_io624_control.html" title="IO624 - Wheel Speed Control"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_frame"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Frame</h2><p>IO624 - Frame &#8212; 
+                <span class="phrase">Constructs the payload and calculates the CRC</span>
+            </p></div><div class="refsect1"><a name="d5e20546"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_frame.png"></span></span></p></div><div class="refsect1"><a name="d5e20554"></a><h2>Description</h2><p>Use this block to easily construct the PSI5 frame. This block places the different
+                configuration and data fields (Payload) in the correct order in the PSI5 frame,
+                calculates automatically the CRC and concatenates it in the correct way.</p><p>Here a reminder of how a PSI5 Frame is constructed.</p><p><span class="inlinemediaobject"><img src="././graphics/io624_psi5_frame.png" width="756"></span></p><p>The Input Ports and the Options in the Mask represent the Payload Data Region, and
+                the Output Port provides the complete PSI5 frame, minus the Start bits, which are
+                generated automatically by the Setup Block. For the moment the Parity bit option is
+                not available, only the CRC.</p></div><div class="refsect1"><a name="d5e20563"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">DataA</span>
+                    </span></dt><dd><p>This is a mandatory field in the Frame. If left unconnected it will be
+                            replaced by an equal number of <span class="bold"><strong>Size of
+                                DataA</strong></span> in zeros.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">DataB</span>
+                    </span></dt><dd><p>This is an optional field in the Frame. If left unconnected it will be
+                            replaced by an equal number of <span class="bold"><strong>Size of
+                                DataB</strong></span> in zeros. </p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint16</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Output</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Frame</span>
+                    </span></dt><dd><p>This port outputs the constructed PSI5 Frame with all the options and
+                            Fields selected by the user, except the Start bits.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e20595"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Size of DataA</span>
+                    </span></dt><dd><p> Mandatory field. Defines the length in bits of the Data Region A. It
+                            must be greater or equal to 1, and lower or equal to 24.</p></dd><dt><span class="term">
+                        <span class="guilabel">Size of DataB (Optional)</span>
+                    </span></dt><dd><p>Optional field. Defines the length in bits of the Data Region B. It
+                            must be greater or equal to 0, and lower or equal to 12. If it is set to
+                            0 the <span class="bold"><strong>DataB</strong></span> Port will be
+                            ignored.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use Messaging</span>
+                    </span></dt><dd><p>Activate the use of <span class="bold"><strong>Messaging</strong></span> in the
+                            PSI5 Frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">Messaging</span>
+                    </span></dt><dd><p>Optional field. If used, declare a vector [LSB, ..., MSB] of 2 bits.
+                            These bits are for Serial messaging. </p></dd><dt><span class="term">
+                        <span class="guilabel">Use Frame Control</span>
+                    </span></dt><dd><p>Activate the use of <span class="bold"><strong>Frame Control</strong></span> in
+                            the PSI5 Frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Control</span>
+                    </span></dt><dd><p>Optional field. If used, declare a vector [LSB, ..., MSB] of 1 to 4
+                            bits. These bits specify either the frame data type, data content, or
+                            sensor identification.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use Status</span>
+                    </span></dt><dd><p>Activate the use of <span class="bold"><strong>Status</strong></span> in the
+                            PSI5 Frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Optional field. If used, declare a vector [LSB, ..., MSB] of 1 or 2
+                            bits. These bits are reserved for Error flags.</p></dd></dl></div></div></div></body></html>

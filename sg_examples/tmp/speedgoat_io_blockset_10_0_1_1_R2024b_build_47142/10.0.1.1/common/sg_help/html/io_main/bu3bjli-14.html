@@ -1,0 +1,99 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with SJA1000 Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f2-6069.html" title="Chapter&nbsp;3.&nbsp;CAN I/O Blocks No Longer Recommended for Use"><link rel="prev" href="bu3bjli-9.html" title="Softing CAN-AC2-PCI with SJA1000 Send"><link rel="next" href="f4-6069.html" title="Chapter&nbsp;4.&nbsp;CAN I/O FIFO Blocks No Longer Recommended for Use"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bu3bjli-14"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with SJA1000 Receive<a name="Softing_CAN-AC2-PCI-SJA-1000_Receive"></a></h2><p>Softing CAN-AC2-PCI with SJA1000 Receive<a name="Softing_CAN-AC2-PCI-SJA-1000_Receive"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with SJA1000 Receive block (not recommended)<b>CANBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e998"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="bu3bjli-16"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bu3bjli-17"></a><h2>Description</h2><p>The <code class="literal">Receive</code> driver block retrieves data from a CAN network to
+                be used within a block model. You can use as many instances of the
+                    <code class="literal">Receive</code> block in the model as required.</p><p>To use CAN_MESSAGE data types to transmit messages, use the <a class="link" href="matlab: doc Can Unpack;" target="_top">CAN Unpack</a> block to unpack
+                individual signals from the received CAN messages.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Do not mix message data types in a block. Each block can receive only
+                        CAN_MESSAGE data types, or receive only 8 bytes in double data types.</p></li><li class="listitem"><p>To process a remote frame, use the <code class="literal">CAN Unpack</code> block
+                        with the <span class="guibutton">Output remote</span> check box selected to enable
+                        the Remote port. When the Remote port becomes <code class="literal">true</code>, send
+                        the current value to the requesting subsystem.</p></li></ul></div></div><div class="refsect1"><a name="bu3bjli-18"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Defines the board the CAN messages defined by this block instance are
+                            retrieved from. For more information about the meaning of the board
+                            number, see the <code class="literal">Setup</code> driver block described above.
+                            If just one board is present in the target system, select board number
+                            1.</p></dd><dt><span class="term"><span class="bold"><strong>CAN port</strong></span></span></dt><dd><p>Selects the CAN port from which the CAN messages are retrieved.
+                        </p></dd><dt><span class="term"><span class="bold"><strong>CAN identifier range</strong></span></span></dt><dd><p>Selects the identifier range of the CAN messages retrieved by this
+                            block instance. If an application makes use of mixed standard and
+                            extended identifier ranges, you must use at least two instances of this
+                            block, each defining the corresponding identifier range.</p><p>If the CAN message data type is a CAN_MESSAGE data type, this range
+                            must match the <span class="bold"><strong>Identifier type</strong></span>
+                            parameter of the connected <code class="literal">CAN Unpack</code> block.</p></dd><dt><span class="term"><span class="bold"><strong>Identifiers</strong></span></span></dt><dd><p>Defines the identifiers of the CAN messages retrieved by this block.
+                            It must be a row vector in which the elements define a set of either
+                            standard or extended identifiers. Each element must be in the range
+                            between 0 and 2047 for standard identifiers or 0 and
+                                2<sup>29</sup>&nbsp;-&nbsp;1 for extended
+                            identifiers. The number of identifiers for each CAN port in a model per
+                            physical CAN board cannot exceed 200 (limitation of the firmware's
+                            dynamic object buffer mode). The number of elements defined here also
+                            defines the number of output ports of the block. The block icon displays
+                            the selected identifier at each output port.</p></dd><dt><span class="term"><span class="bold"><strong>Message lengths</strong></span></span></dt><dd><p>Defines the message length, in bytes, for each CAN message represented
+                            by an identifier in the <span class="bold"><strong>Identifiers</strong></span>
+                            list. It must be a row vector in which the elements define a set of
+                            message lengths. Each element must be in the range between 0 and 8. If
+                            the message length for the identifiers must be the same, you can provide
+                            the length as a scalar, and scalar expansion applies. If the lengths are
+                            different for at least two identifiers, you must provide one length
+                            element for each identifier. Therefore the dimensions of the two vectors
+                            must be the same.</p></dd><dt><span class="term"><span class="bold"><strong>Output port options</strong></span></span></dt><dd><p>If the CAN message data type is CAN_MESSAGE, connect each output port
+                            to one <code class="literal">CAN Unpack</code> block. Verify that the <span class="bold"><strong>Identifier</strong></span> parameter for each <code class="literal">CAN
+                                Unpack</code> block matches the <code class="literal">Receive</code> block
+                            output port.</p><p>If the CAN message data type is not CAN_MESSAGE data type, each output
+                            port outputs the data frame being retrieved along with the CAN message.
+                            The signal leaving each output port is a scalar of type double
+                            representing the maximum size of 8 bytes of a CAN message data
+                            frame.</p><p>From the list, select:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">Data</code></span></dt><dd><p>Output vector of one double with just data.</p></dd><dt><span class="term"><code class="literal">Data - Status</code></span></dt><dd><p>Output vector of two doubles. First element of the vector
+                                        contains the data, the second element contains the
+                                        status.</p></dd><dt><span class="term"><code class="literal">Data - Timestamp</code></span></dt><dd><p>Output vector of two doubles. First element of the vector
+                                        contains the data, the second element contains the
+                                        timestamp.</p></dd><dt><span class="term"><code class="literal">Data - Status - Timestamp</code></span></dt><dd><p>Output vector of three doubles. First element of the
+                                        vector contains the data, the second element contains the
+                                        status, the third element contains the timestamp.</p></dd><dt><span class="term"><code class="literal">CAN_MESSAGE data type</code></span></dt><dd><p>One CAN_MESSAGE. You can extract the data, status, and
+                                        timestamp from this message using a <code class="literal">CAN
+                                            Unpack</code> block.</p></dd></dl></div><p>Refer to the <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; manual for more information. The function
+                            return codes are:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="11%" class="col1"><col width="89%" class="col2"></colgroup><thead><tr><th valign="top">Code</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>No new data
+                                                received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">1</code></p>
+                                        </td><td>
+                                            <p>Data frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">2</code></p>
+                                        </td><td>
+                                            <p>Remote frame received.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-1</code></p>
+                                        </td><td>
+                                            <p>Receive data frame overrun.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-2</code></p>
+                                        </td><td>
+                                            <p>Receive remote frame overrun.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-3</code></p>
+                                        </td><td>
+                                            <p>Object not active.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-7</code></p>
+                                        </td><td>
+                                            <p>Timed out firmware communication</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">-99</code></p>
+                                        </td><td>
+                                            <p>Board not initialized.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Generate interrupts</strong></span></span></dt><dd><p>Defines whether the CAN messages defined in this instance of the block
+                            will initiate an interrupt from the CAN board each time they are
+                            received. If selected, you can use CAN messages to control real-time
+                            application execution.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Defines the sample time at which the <code class="literal">Send</code> block is
+                            executed during a real-time application run.</p></dd></dl></div><p>You can use as many instances of the <code class="literal">Receive</code> block in the model
+                as required. For example, by using two instances of the block, you can check for CAN
+                messages at different sample times. Or you can use multiple instances to structure
+                your model more efficiently.</p></div><div class="refsect1"><a name="d5e1171"></a><h2>Related Links</h2><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></div></div></body></html>

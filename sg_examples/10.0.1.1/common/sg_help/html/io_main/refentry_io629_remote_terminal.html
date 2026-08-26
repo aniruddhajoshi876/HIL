@@ -1,0 +1,30 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO629 - Remote Terminal</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io629_bus_monitor.html" title="IO629 - Bus Monitor"><link rel="next" href="refentry_ref_io641.html" title="IO641"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io629_remote_terminal"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO629 - Remote Terminal</h2><p>IO629 - Remote Terminal &#8212; <span class="phrase">Simulate an ARINC629
+                    remote terminal unit</span></p></div><div class="refsect1"><a name="d5e21468"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io629_remote_terminal.png"></span></span></p></div><div class="refsect1"><a name="d5e21476"></a><h2>Description</h2><p>Remote Terminals can transmit on the ARINC 629 databus. The configuration of
+                Remote Terminal parameters is partially done in the block mask and partially with a
+                .csv file containing the XPP information.</p></div><div class="refsect1"><a name="d5e21479"></a><h2>Ports</h2><p>This block provides only input ports. The number and size of the input ports is
+                defined in the XPP .csv cofiguration file.</p></div><div class="refsect1"><a name="d5e21482"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Submodule ID </span>
+                    </span></dt><dd><p>This parameter holds the reference to the corresponding Submodule
+                            block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Block Sample Time </span>
+                    </span></dt><dd><p>This parameter defines the base sample time at which this driver block
+                            gets its sample hit. It can also be set to -1 for inherited sample time.
+                            The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Terminal ID </span>
+                    </span></dt><dd><p>This parameter defines the ID of the Simulink block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Terminal Gap </span>
+                    </span></dt><dd><p>This parameter holds the Remote Terminal's Terminal gap. Remote
+                            Terminals should be assigned a unique number N from 1 to 125. Several
+                            Remote Terminals should not have the same number N. The TG length of
+                            time in microseconds is N + 1.6875.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel ID </span>
+                    </span></dt><dd><p>This parameter holds the channel ID.</p></dd><dt><span class="term">
+                        <span class="guilabel">Mode </span>
+                    </span></dt><dd><p>This parameter defines either the Block or Independent transmission
+                            mode. The XPP format must be defined accordingly (no control is
+                            effectuated by the driver).</p></dd><dt><span class="term">
+                        <span class="guilabel">XPP CSV </span>
+                    </span></dt><dd><p>This parameter holds the path to the csv file. The browse button might
+                            be used to select the file.</p></dd></dl></div></div></div></body></html>

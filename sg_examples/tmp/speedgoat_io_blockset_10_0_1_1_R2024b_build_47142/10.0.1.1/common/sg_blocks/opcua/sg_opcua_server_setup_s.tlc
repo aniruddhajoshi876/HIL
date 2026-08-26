@@ -1,0 +1,173 @@
+%implements sg_opcua_server_setup_s "C"
+
+%include "sg_opcua.tlc"
+
+%<LibAddToCommonIncludes("%<LibGetModelName()>_opcua.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+%realformat "CONCISE"
+
+    %<createUniqueBlockId(block)>
+    %<opcuaFileCreation(block)>
+        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %<opcuaCreateRemanentItem(block, "cServerStation", 0)>
+
+    %assign SFcnParamSettingsIdx = 0
+    %with block.SFcnParamSettings[SFcnParamSettingsIdx]
+    %assign SFcnParamSettingsIdx = SFcnParamSettingsIdx + 1
+
+    %openfile tmpBuf
+    
+    {
+        int32_t ret = 0;
+        opcua::cServerStation* Station = NULL;
+
+        /* Initialize the OPC UA API */
+        opcua::Root.init();
+
+        /* Add one server station */
+        ret = opcua::Root.addStation(%<ServerID>, OPCUA_STATION_TYPE_SERVER, (opcua::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA server station %i failed!", %<ServerID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        static OPCUA_ENDPOINT_PROPS_T EndpointProps[OPCUA_NUM_ENDPOINTS];
+
+        EndpointProps[0].IsActive         = %<Endpoints[0][0]>;
+        EndpointProps[0].SecurityMode   = %<Endpoints[1][0]>;  
+        EndpointProps[1].IsActive         = %<Endpoints[0][1]>;
+        EndpointProps[1].SecurityMode   = %<Endpoints[1][1]>;  
+        EndpointProps[2].IsActive         = %<Endpoints[0][2]>;
+        EndpointProps[2].SecurityMode   = %<Endpoints[1][2]>;  
+        EndpointProps[3].IsActive         = %<Endpoints[0][3]>;
+        EndpointProps[3].SecurityMode   = %<Endpoints[1][3]>;  
+        EndpointProps[4].IsActive         = %<Endpoints[0][4]>;
+        EndpointProps[4].SecurityMode   = %<Endpoints[1][4]>;  
+
+        %assign CertificateVar = "NULL"
+        %assign PrivateKeyVar = "NULL"
+        %assign TrustListVar = "NULL"        
+
+        %if HasPolicy
+
+            %with block.SFcnParamSettings[SFcnParamSettingsIdx]
+            %assign SFcnParamSettingsIdx = SFcnParamSettingsIdx + 1
+
+            %assign EndpointsVar = "EndpointProps"
+            %assign CertificateVar = "(char*)\"%<Certificate>\""
+            %assign PrivateKeyVar = "(char*)\"%<PrivateKey>\""
+            %assign TrustListVar = "(char*)\"%<TrustList>\"" 
+
+            %endwith
+
+        %endif
+
+        %assign UsernamesVar = "NULL"
+        %assign PasswordsVar = "NULL"
+
+        %if UserTokenPolicy >= 2
+
+            %with block.SFcnParamSettings[SFcnParamSettingsIdx]
+            %assign SFcnParamSettingsIdx = SFcnParamSettingsIdx + 1
+
+                static char_T *Usernames[%<NumUsers>] = { \
+                %foreach i = NumUsers
+                        (char_T*)"%<Usernames[i]>" \
+                        %if i != NumUsers - 1
+                        , \
+                        %endif
+                %endforeach
+                };
+        
+                static char_T *Passwords[%<NumUsers>] = { \
+                %foreach i = NumUsers
+                        (char_T*)"%<Passwords[i]>" \
+                        %if i != NumUsers - 1
+                        , \
+                        %endif
+                %endforeach
+                };
+
+                %assign UsernamesVar = "Usernames"
+                %assign PasswordsVar = "Passwords"
+
+            %endwith
+        %endif
+
+        /* Initialize the server station */
+        ret = Station->init(%<IpAddr>, %<TcpPort>, 0, 0, EndpointProps, %<UserTokenPolicy>, %<NumUsers>, %<UsernamesVar>, %<PasswordsVar>, %<CertificateVar>, %<PrivateKeyVar>, %<TrustListVar>, (char*)"%<AppUri>", %<NumSpaces>);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing OPC UA server station %i failed!", %<ServerID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Store station in remanent item */
+        %<opcuaSetRemanentItem(block, "Station", 0)>  
+
+        /* Register the model exit callback */
+        sg_add_exit_handler(&opcua::ModelExitCb, NULL); 
+    }
+
+    %closefile tmpBuf
+
+    %<sgAddInitCode(tmpBuf, "execution")>
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+    
+    {
+        using namespace opcua;
+        static bool NumSteps = 0;
+        static bool FirstStep = true;
+        static uint64_t StartDelayTimer = 0;
+
+        %%cServerStation* Station;
+        %%<opcuaAssignFromRegistryField(block, "Station", "Station", "")>
+        %<opcuaGetRemanentItem(block, "Station", "cServerStation", 0)>
+        %<LibBlockOutputSignal(0, "", "", 0)> = Station->NumConnections;
+
+        if (FirstStep)
+        {
+            StartDelayTimer = getTime();
+            FirstStep = false;
+        }
+        if ((getTime() - StartDelayTimer) > 1000)
+        {
+            Root.Run = true;
+        }
+    }
+
+    %<opcuaFileCompletion(block)>
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+    
+    %<opcuaStop(block)>
+
+%endfunction

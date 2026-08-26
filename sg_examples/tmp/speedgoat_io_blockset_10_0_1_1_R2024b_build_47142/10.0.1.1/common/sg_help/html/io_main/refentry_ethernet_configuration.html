@@ -1,0 +1,141 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Speedgoat Tools</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_ref_software_migration.html" title="Speedgoat Tools"><link rel="next" href="refentry_model_configuration.html" title="Speedgoat Tools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ethernet_configuration"></a><div class="titlepage"></div><div class="refnamediv"><h2>Speedgoat Tools</h2><p>Speedgoat Tools &#8212; 
+                <span class="phrase">Speedgoat Ethernet Configuration Tool</span>
+            </p></div><div class="refsect1"><a name="refsect1_ethernet_configuration"></a><h2>Ethernet Configuration</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To debug networking issues, we recommend analyzing the traffic with a tool,
+                    such as Wireshark.</p></td></tr></table></div><p>In addition to the Host Link, most Speedgoat real-time target machines feature
+                auxiliary Ethernet interfaces. More interfaces can be added with general-purpose
+                Ethernet I/O modules, such as IO71X, IO731, or IO791. Starting with R2020b, these
+                interfaces are configured with the Speedgoat Ethernet Configuration Tool. To open
+                the tool, run the following command in the MATLAB command window:
+                </p><pre class="programlisting">speedgoat.configureEthernet</pre><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_ethernet_configuration_tool_not_connected.png"></span></p><p>Select your target machine and click <span class="bold"><strong>Connect &amp;
+                    Load</strong></span> to get started. The tool will then try to establish a connection
+                and load the current Ethernet configuration. If your selected target is already
+                connected, the configuration will load automatically.</p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_ethernet_configuration_tool_r2025b.png"></span></p><p>Configure each of your Ethernet interfaces either for <span class="bold"><strong>IP
+                    Protocols</strong></span> (TCP/IP or UDP/IP) or <span class="bold"><strong>EtherCAT</strong></span>. Note that for <span class="bold"><strong>IP
+                    Protocols</strong></span>, all Ethernet interfaces must be configured to separate
+                subnets. The <span class="bold"><strong>Host Link</strong></span> is automatically configured
+                for <span class="bold"><strong>IP Protocols</strong></span> through the slrealtime APIs
+                (Target Object, Simulink Real-Time Explorer).</p><p>If you select <span class="bold"><strong>EtherCAT</strong></span> for at least one
+                interface, the <span class="bold"><strong>EtherCAT Port</strong></span> column appears. You
+                will need to enter the information in this column in certain EtherCAT driver blocks
+                in Simulink. The value can be copied to the clipboard using the right-click
+                (context) menu.</p><p>After entering your configuration, click <span class="bold"><strong>Store</strong></span> to
+                apply the settings to the target machine. It will automatically restart, if
+                necessary.</p><p>This configuration is now permanently stored on the target machine. It is not
+                associated with any application and is not affected by updating the target software
+                with the tg.update command.</p></div><div class="refsect1"><a name="d5e120"></a><h2>Overriding the Host Link</h2><p>Your target machine is configured to use the interface labeled <span class="bold"><strong>Host Link</strong></span> for the host-target connection. If for some
+                reason you need to use a different interface, you can display it by checking
+                    <span class="bold"><strong>Show Host Link Interface</strong></span>.</p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_ethernet_configuration_tool_overridden_r2025b.png"></span></p><p>You can now configure the interface labeled <span class="bold"><strong>Host
+                    Link</strong></span> to be used with IP protocols and choose another interface for
+                your Host Link connection. One interface must be configured to act as the Host Link.
+                However, note that EtherCAT is not available on the interface labeled <span class="bold"><strong>Host Link</strong></span>.</p><p>
+                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Changing the Host Link interface is not supported on the Pulse real-time
+                        target machine.</p></td></tr></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e135"></a><h2>Advanced Settings</h2><p>Check the <span class="bold"><strong>Show Advanced Settings</strong></span> box to configure
+                IP aliases, to change the default gateway, to restore your target machine to the
+                factory settings, and to show the <span class="bold"><strong>Advanced Interface
+                    Settings</strong></span> button.</p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_ethernet_configuration_tool_advanced_r2025b.png"></span></p><div class="refsect2"><a name="d5e144"></a><h3>Alias Configuration</h3><p>To add an IP alias, select an interface, then enter the IP alias address and
+                    click the <span class="bold"><strong>+ Add</strong></span> button.</p><p>Interfaces will only appear in the drop-down list after they have been
+                    configured for <span class="bold"><strong>IP Protocols</strong></span> with an IP address
+                    and a subnet mask and then applied to the target using the <span class="bold"><strong>Store</strong></span> button.</p><p>The <span class="bold"><strong>+ Add</strong></span> button will only become active when
+                    the alias address entered is valid. Changes will be applied to the target
+                    machine immediately; there is no need to reboot the machine.</p><p>Up to 255 different IP aliases can be added to one Ethernet interface; use
+                    semicolons to enter multiple addresses at once.</p><p>By default, all IP aliases have a subnet mask of 255.255.255.255. You can
+                    optionally define a different subnet mask by appending a slash ('/') and the
+                    network prefix length to the alias IP address. The prefix length is a decimal
+                    number between 1 and 32 and defines the number of bits set to 1 (from left to
+                    right) in the subnet mask. For example, to define the IP alias 192.168.10.1 with
+                    subnet mask 255.255.255.0, enter "192.168.10.1/24".</p><p>To remove one or multiple IP aliases, select the alias in the drop-down list
+                    and click the <span class="bold"><strong>- Remove</strong></span> button. Repeat the
+                    operation to remove further IP aliases.</p><p>Select <span class="bold"><strong>All</strong></span> to remove all the IP aliases for
+                    the selected interface.</p><p>The changes will be applied to the target machine immediately; there is no
+                    need to reboot the machine.</p><p>IP alias settings, like all other Ethernet configurations, are persistently
+                    stored on the target. The IP alias addresses for the interface used as Host
+                    Link, however, are only persistent with MATLAB R2022a and later.</p><p>
+                    </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Using protocols with many IP aliases on the Host Link interface
+                            reduces the performance of data streaming to applications, such as
+                            Simulation Data Inspector (SDI).</p></td></tr></table></div><p>
+                    </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When defining IP aliases on different subnets than the primary IP
+                            address, you may not be able to transmit network packets with the
+                            default subnet mask, in this case you can set the subnet mask for the IP
+                            alias as mentioned above.</p></td></tr></table></div><p>
+                </p></div><div class="refsect2"><a name="d5e166"></a><h3>Default Gateway</h3><p>To change the default gateway, enter a new value directly in the <span class="bold"><strong>Default Gateway</strong></span> field. The chosen gateway must be on
+                    the same subnet as one of the Ethernet interfaces configured for IP protocols.
+                    Click the <span class="bold"><strong>Store</strong></span> button to apply the gateway to
+                    the target. The machine will then reboot automatically.</p></div><div class="refsect2"><a name="d5e171"></a><h3>Factory Settings</h3><p>To restore the factory settings, click the <span class="bold"><strong>Restore</strong></span> button and confirm your selection. The Host Link will
+                    retain its current IP settings but will move back to the interface labeled
+                        <span class="bold"><strong>Host Link</strong></span> (if you originally changed this
+                    interface). The default gateway will be reset to the Host Link IP address and
+                    all additional interfaces will be reset to <span class="bold"><strong>IP
+                        Protocols</strong></span> with no IP address set. The target machine will reboot
+                    automatically.</p></div><div class="refsect2"><a name="d5e177"></a><h3>Advanced Interface Settings</h3><p>Click the <span class="bold"><strong>Advanced Interface Settings</strong></span> button
+                    to open a separate window with more interface-specific settings.</p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_ethernet_configuration_tool_advanced_window.png"></span></p><p>Under <span class="bold"><strong>General Information</strong></span>, you can see the
+                    current configuration, IP address and subnet mask. To change these settings, go
+                    back to the main window.</p><p>Under <span class="bold"><strong>Physical Interface Settings</strong></span>, you can
+                    see both the current speed/duplex setting and the status of the interface and
+                    also change the speed/duplex values manually. The default is to use
+                    auto-negotiation, which determines the best speed/duplex values
+                    automatically.</p></div></div><div class="refsect1"><a name="d5e189"></a><h2>Using PTP</h2><p>If you want to synchronize your target machine's clock with the IEEE 1588
+                Precision Time Protocol, you may need to set up the protocol to use a specific
+                Ethernet interface. Since not all Ethernet controllers can properly handle this
+                protocol, Speedgoat provides an API to assist with the configuration:
+                </p><pre class="programlisting">speedgoat.showPtpInterfaces</pre><pre class="programlisting">
+         Label         Index     PTPSupport                  Configuration
+    _____________    _______    __________    _________________________________________
+
+    {'Host Link'}    {'wm0'}     {'Yes'}      {'IP: 192.168.7.5 Subnet: 255.255.255.0'}
+    {'IO791_1A' }    {'wm1'}     {'Yes'}      {'IP: 192.168.5.5 Subnet: 255.255.255.0'}
+    {'IO791_1B' }    {'wm2'}     {'Yes'}      {'EtherCAT'                             }
+    {'ETH1'     }    {'wm3'}     {'Yes'}      {'IP: 10.10.10.5 Subnet: 255.255.255.0' }
+</pre><p>If
+                the entry in the <span class="bold"><strong>PTPSupport</strong></span> column is <span class="bold"><strong>'Yes'</strong></span>, then the interface supports PTP and must be
+                configured for IP protocols.</p><p>The <span class="bold"><strong>Index</strong></span> column shows the name of the interface
+                given by the operating system. To bind the PTP protocol, for example, to the
+                interface labeled <span class="bold"><strong>'ETH1'</strong></span>, you must add '-b wm3' to
+                your tg.ptpd.Command. Refer to the MathWorks Simulink Real-Time <a class="link" href="https://www.mathworks.com/help/slrealtime/api/slrealtime.target.ptpd.html" target="_blank">help</a> documentation to learn how to configure the PTP
+                daemon.</p></div><div class="refsect1"><a name="d5e201"></a><h2>Configuring Host Link on the Target Machine</h2><p>If you are unable to configure the IP settings of your host computer to connect to
+                the target machine, you can change the settings on the target machine
+                directly.</p><p>Connect a keyboard and a monitor to your target machine and follow these
+                instructions:</p><p>
+                </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Switch from statusmonitor (on Console 1) to the shell on Console 2
+                            using <span class="bold"><strong>Ctrl+Alt+F2</strong></span> (on MATLAB R2026a and
+                            later) or <span class="bold"><strong>Ctrl+Alt+2</strong></span> (on MATLAB R2025b
+                            and earlier)</p></li><li class="listitem"><p>Log in with <span class="bold"><strong>root</strong></span>/<span class="bold"><strong>root</strong></span> (unless you use a different root
+                            password)</p></li><li class="listitem"><p>Use the following command to change the IP address and subnet mask:
+                                <span class="bold"><strong>speedgoat_setHostLink &lt;ip-address&gt;
+                                [netmask]</strong></span></p></li></ol></div><p>
+            </p><p>Examples:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>speedgoat_setHostLink 10.10.10.5</strong></span>
+                            (uses netmask 255.255.255.0)</p></li><li class="listitem"><p>
+                            <span class="bold"><strong>speedgoat_setHostLink 10.11.12.13 255.255.0.0
+                            </strong></span></p></li></ul></div><p>
+            </p><p>This configures the interface labeled <span class="bold"><strong>Host Link</strong></span>
+                to use these settings immediately; no reboot is required.</p><p>
+                </p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>When using the keyboard on the target machine, <span class="bold"><strong>do
+                            not press the NumLock key.</strong></span> If you accidentally press the key
+                        (e.g., when entering the IP address),<span class="bold"><strong>do not use the
+                            command history</strong></span> (up arrow), as this may freeze the target and
+                        a machine reboot will be required.</p></td></tr></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e234"></a><h2>Configuring Default Gateway on the Target Machine</h2><p>If you are unable to configure the default gateway of your host computer to
+                connect to the target machine, you can change the settings on the target machine
+                directly.</p><p>Connect a keyboard and a monitor to your target machine and follow these
+                instructions:</p><p>
+                </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Switch from statusmonitor (on Console 1) to the shell on Console 2
+                            using <span class="bold"><strong>Ctrl+Alt+F2</strong></span> (on MATLAB R2026a and
+                            later) or <span class="bold"><strong>Ctrl+Alt+2</strong></span> (on MATLAB R2025b
+                            and earlier)</p></li><li class="listitem"><p>Log in with <span class="bold"><strong>root</strong></span>/<span class="bold"><strong>root</strong></span> (unless you use a different root
+                            password)</p></li><li class="listitem"><p>Use the following command to change the default gateway: <span class="bold"><strong>speedgoat_setDefaultGateway
+                                &lt;ip-address&gt;</strong></span></p></li></ol></div><p>
+            </p><p>Example:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>speedgoat_setDefaultGateway
+                                192.168.7.5</strong></span></p></li></ul></div><p>
+            </p><p>This configures the interface with the <span class="bold"><strong>192.168.7.5</strong></span> IP address to be used as the default gateway; no reboot
+                is required.</p><p>The same command can be used to remove the setting and go back to the default
+                behavior. A reboot of the target machine will be required afterward: <span class="bold"><strong>speedgoat_setDefaultGateway delete</strong></span></p><p>
+                </p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>When using the keyboard on the target machine, <span class="bold"><strong>do
+                            not press the NumLock key.</strong></span> If you accidentally press the key
+                        (e.g., when entering the IP address), <span class="bold"><strong>do not use the
+                            command history</strong></span> (up arrow), as this may freeze the target and
+                        a machine reboot will be required.</p></td></tr></table></div><p>
+            </p></div></div></body></html>

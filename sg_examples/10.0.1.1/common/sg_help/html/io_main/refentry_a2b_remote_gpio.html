@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">A2B - Remote GPIO</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_a2b_i2stdm_write.html" title="A2B - I2S/TDM Write"><link rel="next" href="refentry_a2b_remote_i2c.html" title="A2B - Remote I2C"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_a2b_remote_gpio"></a><div class="titlepage"></div><div class="refnamediv"><h2>A2B - Remote GPIO</h2><p>A2B - Remote GPIO &#8212; <span class="phrase">Access remote GPIO over A2B</span></p></div><div class="refsect1"><a name="d5e500"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_a2b_remote_gpio.png"></span></span></p></div><div class="refsect1"><a name="d5e508"></a><h2>Description</h2><p>This block acquires the chosen remote GPIO.</p></div><div class="refsect1"><a name="d5e511"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">X (X is the GPIO number)</span></span></dt><dd><p>Value to set the chosen remote GPIO.</p></dd><dt><span class="term"><span class="guilabel">Enable</span></span></dt><dd><p>Controls whether the chosen GPIO is enabled or disabled.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the GPIO number)</span>
+                    </span></dt><dd><p>Value read from the chosen remote GPIO.</p></dd></dl></div></div><div class="refsect1"><a name="d5e532"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">A2B Interface ID</span>
+                    </span></dt><dd><p>This parameter selects the physical A2B interface on the -40 I/O
+                            interface extension from which to read data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction</span>
+                    </span></dt><dd><p>Select the direction for the remote GPIO.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node ID</span>
+                    </span></dt><dd><p>Specify the ID of the subordinate node as indicated in the
+                            configuration file.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPIO Number</span>
+                    </span></dt><dd><p>Specify the number of the remote GPIO to control.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Port</span>
+                    </span></dt><dd><p>Select whether the enable input is active.</p></dd></dl></div></div></div></body></html>

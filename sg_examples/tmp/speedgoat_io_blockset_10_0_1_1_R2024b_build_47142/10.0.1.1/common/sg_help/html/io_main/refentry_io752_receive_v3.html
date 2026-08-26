@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO752 - Receive v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io752_receive_v2.html" title="IO752 - Receive v2"><link rel="next" href="refentry_io752_record.html" title="IO752 - Record"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io752_receive_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO752 - Receive v3</h2><p>IO752 - Receive v3 &#8212; <span class="phrase">Outputs the cyclic data
+                    received from the remote PROFINET controller.</span></p></div><div class="refsect1"><a name="d5e62201"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io752_receive_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e62209"></a><h2>Description</h2><p>This block outputs the cyclic data the I/O module receives from the remote
+                PROFINET controller. For acyclic communication, use Record blocks.</p><p lang=""><a name="para_cifx_only_one_receive"></a>Your model can contain only one Receive block for each
+        I/O module in your target machine.</p></div><div class="refsect1"><a name="d5e62213"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The block outputs the output data items of the sub-modules defined in
+                            the <span class="bold"><strong>Data Module Configuration</strong></span> parameter
+                            of the corresponding Setup block. The number, types and dimensions of
+                            the output ports depend on the mask parameters. The block has either: </p><div class="itemizedlist"><div class="itemizedlist-title"></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>one port for each data item</p></li><li class="listitem"><p>one port for each sub-module</p></li><li class="listitem"><p>one port for each module, or</p></li><li class="listitem"><p>one port in total that outputs the entire output data of
+                                        the device</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any input ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e62238"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Output Level</span>
+                    </span></dt><dd><p>Defines the granularity of the data output. There are 4 options:</p><div class="itemizedlist"><div class="itemizedlist-title"></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Data Item: Each port represents one data item and inherits its
+                                    type and length from the <span class="bold"><strong>Data Module
+                                        Configuration</strong></span> parameter of the corresponding
+                                    Setup block</p></li><li class="listitem"><p>Sub-Module: Each port represents one sub-module. The data
+                                    items of the sub-module are packed in a vector of data type
+                                    uint8</p></li><li class="listitem"><p>Module: Each port represents one module. The data items of the
+                                    module's sub-modules are packed in a vector of data type
+                                    uint8</p></li><li class="listitem"><p>Device: One port outputs the entire output data of the device
+                                    as a vector of data type uint8</p></li></ul></div><p>Use Byte Unpacking blocks to extract data items from byte
+                            vectors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Group Data Items as Vector</span>
+                    </span></dt><dd><p>Places the data items of a sub-module into a vector. This reduces the
+                            number of ports and therefore improves usability. All data items must be
+                            scalar and must have the same type. If the sub-module has at least one
+                            data item of another data type, the parameter has no impact and the
+                            block creates a port for every single data item.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Label Elements</span>
+                    </span></dt><dd><p>Shows or hides specific elements of the output port label. The
+                            elements available include the module name, the sub-module name and the
+                            name of the data item. The resulting port label also depends on the
+                                <span class="bold"><strong>Output Level</strong></span> parameter as you
+                            cannot show the sub-module name if the output level is module, for
+                            example.</p></dd></dl></div></div></div></body></html>

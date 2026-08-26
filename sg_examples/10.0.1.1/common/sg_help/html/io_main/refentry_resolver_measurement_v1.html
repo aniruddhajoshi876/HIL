@@ -1,0 +1,100 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Resolver Measurement</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_resolver_emulation_v1.html" title="Resolver Emulation v1"><link rel="next" href="refentry_ref_resolver_examples.html" title="IO3xx Resolver - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_resolver_measurement_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Resolver Measurement</h2><p>Resolver Measurement &#8212; <span class="phrase">The Resolver Measurement
+                    driver block allows users to read the speed and position of a resolver with the
+                    IO3xx-24 I/O interface extension.</span></p></div><div class="refsect1"><a name="d5e6259"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_resolver_measurement_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e6267"></a><h2>Description</h2><p>The Resolver Measurement driver block allows users to read the speed and position
+                of a resolver with the IO3xx-24 I/O interface extension. The module contains two
+                Resolver-to-Digital Converter (RDC) chips including signal conditioning circuitry.
+                The RDC chips can be parameterized by this driver block, which will output the
+                measured speed and position.</p></div><div class="refsect1"><a name="d5e6270"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs is equal to the number of enabled
+                Resolver Measurement channels.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Clear Fault</span>
+                    </span></dt><dd><p>A logic high signal at this input port initializes a clear fault
+                            register sequence of the resolver measurement interface. The fault
+                            register is reset to zero. The data type of this input is
+                            boolean.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If the fault output remains non-zero after a clear fault request,
+                                this means that the fault state persists. .</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed</span></span></dt><dd><p>The measured resolver position in RPS (Revolutions Per Second). The
+                            data type is double.</p></dd><dt><span class="term">
+                        <span class="guilabel">Position</span></span></dt><dd><p>The measured resolver position in degrees. The data type is
+                            double.</p></dd><dt><span class="term">
+                        <span class="guilabel">Fault</span></span></dt><dd><p>The 8-bit fault register of the RDC. The converters indicate different
+                            fault states based on the state of operation and the signal quality at
+                            the interface to the resolver. The meaning of each bit is indicated in
+                            the following table. The data type of the output signal is uint8.</p><p>
+                            </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="c1"><col width="50%" class="c2"></colgroup><thead><tr><th>Bit</th><th>Fault description</th></tr></thead><tbody><tr><td>7</td><td>Sine / cosine inputs clipped</td></tr><tr><td>6</td><td>Sine / cosine inputs below loss-of-signal
+                                                threshold</td></tr><tr><td>5</td><td>Sine / cosine inputs exceed
+                                                degradation-of-signal-overrange threshold</td></tr><tr><td>4</td><td>Sine / cosine inputs exceed
+                                                degradation-of-signal-mismatch threshold</td></tr><tr><td>3</td><td>Loss of tracking</td></tr><tr><td>2</td><td>Velocity exceeds maximum tracking rate</td></tr><tr><td>1</td><td>Phase error</td></tr><tr><td>0</td><td>Configuration parity error</td></tr></tbody></table></div><p>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="d5e6333"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Resolver Sample Trigger</span>
+                    </span></dt><dd><p>Selects the trigger source to sample the speed and position of the
+                            RDC. Speed and position are sampled simultaneously and then transferred
+                            to a register in the FPGA from where they are accessible for the driver
+                            block. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>I/O module digital I/O:</strong></span>
+                                        The resolver speed and position are sampled based on one of
+                                        the digital I/O signals defined in the pin mapping of the
+                                        selected configuration file in the IO3xx Setup block. Any
+                                        digital I/O pin can be selected regardless of its assigned
+                                        functionality and direction. The additional parameters
+                                            <span class="bold"><strong>Trigger edge</strong></span> and
+                                            <span class="bold"><strong>External trigger</strong></span> are
+                                        visible when this option is selected.</p></li><li class="listitem"><p><span class="bold"><strong>Free running:</strong></span> Continuous
+                                        sampling of speed and position and data transfer to the
+                                        FPGA. The driver block outputs the latest available
+                                        values.</p></li><li class="listitem"><p><span class="bold"><strong>Model step:</strong></span> The execution
+                                        of the Resolver Measurement driver block triggers a new
+                                        sample of speed and position each model sample step. The
+                                        speed and position outputs at model step n represent the
+                                        sampled speed and position from model step n-1.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Trigger Edge</span>
+                    </span></dt><dd><p>Defines on which edge of the selected digital I/O signal the speed and
+                            position are sampled. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Rising edge</p></li><li class="listitem"><p>Falling edge</p></li><li class="listitem"><p>Rising and falling edge</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">External Trigger (Digital I/O Channel)</span>
+                    </span></dt><dd><p>Defines the digital I/O channel for the resolver measurement sample
+                            trigger. The value must fall in the range of the available Digital I/O
+                            channels. This information can be found in the pin mapping of the
+                            selected configuration file in the <span class="bold"><strong>IO3xx
+                                Setup</strong></span> block. The digital I/O channel numbers are
+                            indicated in the pin mapping of the configuration file. The edit field
+                            accepts scalar values (same value applies for all active channels) or a
+                            vector with the number of elements equal to the number of enabled
+                            Resolver Measurement channels.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Resolver Measurement Channel 1 and 2 </div><p>Each Resolver Measurement channel can be configured independently in its
+                    corresponding tab.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Resolution vector [bit]</span>
+                    </span></dt><dd><p>The RDC can operate in four different resolution modes. The resolution
+                            also determines the maximum speed which the device can track:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>10-bit (maximum tracking rate: &plusmn;3125 rps)</p></li><li class="listitem"><p>12-bit (maximum tracking rate: &plusmn;1250 rps)</p></li><li class="listitem"><p>14-bit (maximum tracking rate: &plusmn;625 rps)</p></li><li class="listitem"><p>16-bit (maximum tracking rate: &plusmn;156.25 rps)</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Excitation frequency vector [kHz]</span></span></dt><dd><p>Defines the frequency of the sine wave at the excitation output. The
+                            frequency must be within the range of 2 kHz to 20 kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Excitation voltage vector [Vrms]</span></span></dt><dd><p>Defines the RMS voltage of the differential sine wave signal at the
+                            excitation output. The range is between 2 V and 12 V. The edit field
+                            accepts integer values only.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input voltage vector [Vrms]</span></span></dt><dd><p>Defines the input voltage of the modulated sine and cosine
+                            differential signals coming from the resolver. The value refers to the
+                            peak amplitude at 0 degrees (cosine) and 90 degrees (sine). The input
+                            signal conditioning circuit is configured according to this parameter.
+                            Set the input voltage based on the selected <span class="bold"><strong>Excitation voltage</strong></span> and the transfer ratio of the
+                            connected resolver. The range is between 2 Vrms and 12 Vrms. The edit
+                            field accepts integer values only.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Speed Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Speed</strong></span>
+                            output of the block is visible.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Position Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Position</strong></span> output of the block is visible.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Fault Register Output</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Fault</strong></span>
+                            output of the block is visible.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Clear Fault Input</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Clear
+                                Fault</strong></span> input of the block is visible.</p></dd></dl></div></div></div></body></html>

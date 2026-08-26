@@ -1,0 +1,31 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Remote Terminal Operation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="prev" href="btq9ck7.html" title="MIL-STD-1553 Initialization"><link rel="next" href="f0-6414.html" title="Bus Controller Operation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f0-6413"></a>Remote Terminal Operation</h2></div></div></div><p>The following example uses QPCI-1553 blocks to illustrate how you can configure a
+            Remote Terminal from a <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> model. For standard initialization, use the QPCI
+            Initialize block. Use the QPCI RT Initialize block to set up the board for Remote
+            Terminal operation.</p><p>You can run this example on a target computer that has a QPCI-1553 board. If your
+            target computer uses a different board, such as a PCI-1553 board, replace the QPCI-1553
+            blocks with the blocks for your board.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/qpci_rtsample.png"></div></div><p>The <code class="literal">QPCI-1553 RT Initialize</code> block configures the board for Remote
+            Terminal operation on channel 1 of the board. The <code class="literal">QPCI-1553 RT
+                Initialize</code> block configures the Remote Terminal 1 to monitor buses A and B
+            for incoming messages and configure the active transmit and receive sub addresses. The
+            QPCI-1553 Receive and Send blocks use sub address 3 for both transmit and receive. Note
+            the message parameters notation <code class="literal">1-R-3-1</code> on the QPCI-1553 Receive and
+            Send blocks. This notation has the format:</p><pre class="programlisting">remote terminal-R/T-subaddress-number of words</pre><p><code class="literal">Remote terminal</code> &#8212; Indicates the particular Remote
+            Terminal.</p><p><code class="literal">R/T</code> &#8212; Indicates that the command is for receive
+                (<code class="literal">R</code>) or transmit (<code class="literal">T</code>).</p><p><code class="literal">Subaddress</code> &#8212; Indicates the sub address for the
+            message.</p><p><code class="literal">Number of words</code> &#8212; Indicates the number of 16-bit integers to
+            receive as the data part of a message.</p><p>This notation is shorthand that indicates that Remote Terminal 1 is to receive
+            messages on sub address 3 with a length of one word. The incoming message consists of
+            one 16-bit integer with a value of 1 or 2. The <code class="literal">Multiport Switch</code> block
+            uses this input to specify either clock or sine wave data.</p><p>A QPCI-1553 board has a processor that handles the actual transmission and reception
+            of messages. The QPCI-1553 Receive block reads the board receive message buffer for the
+            specified Remote Terminal and sub address. The QPCI-1553 Send block writes data to the
+            board transmit buffer.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When the board receives a transmit or receive message, it must respond quickly
+                because the default timeout is 14 &micro;s. <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> cannot reliably execute a model within so short a
+                timeout period. This situation can cause the board to transmit data from the last
+                time the model executed. Design your model accordingly.</p></td></tr></table></div></div></body></html>

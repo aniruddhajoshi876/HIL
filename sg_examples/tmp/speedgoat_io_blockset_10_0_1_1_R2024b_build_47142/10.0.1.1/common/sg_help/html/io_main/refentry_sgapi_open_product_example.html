@@ -1,0 +1,14 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.openProductExample</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_migrate_target.html" title="speedgoat.migrateTarget"><link rel="next" href="refentry_sgapi_restbus_io723block_api.html" title="speedgoat.restbus.IO723BlockAPI"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_open_product_example"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.openProductExample</h2><p>speedgoat.openProductExample &#8212; 
+            <span class="phrase">Open the Speedgoat Product Example</span>
+         </p></div><div class="refsect1"><a name="d5e1207"></a><h2>Description</h2><p>This Speedgoat API function opens either a specific Speedgoat product example or the webpage
+listing all the available Speedgoat product examples.</p></div><div class="refsect1"><a name="d5e1210"></a><h2>Syntax</h2><p>Open the webpage listing all Speedgoat product examples:</p><pre class="programlisting">speedgoat.openProductExample()</pre><p>
+         </p><p>Open a specific Speedgoat product example using the example name:</p><pre class="programlisting">speedgoat.openProductExample(exampleName)</pre><p>
+         </p></div><div class="refsect1"><a name="d5e1216"></a><h2>Examples</h2><p>Open the webpage listing all Speedgoat product examples:</p><pre class="programlisting">speedgoat.openProductExample</pre><p>Open the Speedgoat product example for the Real-Time UDP communication protocol:</p><pre class="programlisting">speedgoat.openProductExample('UDP_Loopback')</pre><p>Open the Speedgoat product example for the IO750 (the I/O module is required in order to run
+the example):</p><pre class="programlisting">speedgoat.openProductExample('IO750_EtherCATDriveControl')</pre></div><div class="refsect1"><a name="d5e1224"></a><h2>Input Arguments</h2><p>exampleName - Example's name
+[character vector | string].
+The name of the example you want to open, e.g. "UDP_Loopback" for the Real-Time UDP
+communication protocol. Otherwise use the auto-suggestion feature to find the example
+that matches your Speedgoat I/O module (see Notes).</p></div><div class="refsect1"><a name="d5e1227"></a><h2>Notes</h2><p>The list of all the product examples is available when using the auto-suggestion feature:
+open the first left bracket of the function then press the <span class="bold"><strong>Tab</strong></span> key.</p></div></div></body></html>

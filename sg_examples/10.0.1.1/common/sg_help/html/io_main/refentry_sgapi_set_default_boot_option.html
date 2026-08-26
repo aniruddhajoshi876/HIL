@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.setDefaultBootOption</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_restbus_io723block_config.html" title="speedgoat.restbus.IO723BlockConfig"><link rel="next" href="refentry_sgapi_set_password.html" title="speedgoat.setPassword"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_set_default_boot_option"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.setDefaultBootOption</h2><p>speedgoat.setDefaultBootOption &#8212; 
+            <span class="phrase">Set default boot OS for your Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e1340"></a><h2>Description</h2><p>If your Speedgoat real-time target machine is configured for dual-boot, this Speedgoat API
+function lets you define which operating system is loaded by default at startup.</p><p>You can run this function without input arguments, in which case you will be prompted to
+select one of the different OS options. Alternatively, you can run the function using input
+arguments and directly specify the exact release.</p><p>Additionally, you can specify the timeout for the dual-boot selection menu. By default, this
+menu is displayed on the target monitor with a timeout of 10 s. This can be changed to 0 s
+(i.e., no menu), a value in seconds, or simply no timeout.</p><p>Moreover, you can specify whether the target automatically reboots to the newly selected
+operating system.</p></div><div class="refsect1"><a name="d5e1346"></a><h2>Compatibility</h2><p>The default boot option can be changed across host/target versions:</p><p>- Host running: MATLAB R2026a and later with SLRT.
+Target running: 'Simulink Real-Time R2020b to R2025b'.
+Automatic reboot: supported.</p><p>- Host running: MATLAB R2020b to R2025b with SLRT.
+Target running: 'Simulink Real-Time R2026a and later (Antelope RTOS)'.
+Automatic reboot: supported.</p><p>- Host running: MATLAB R2020a and earlier with SLRT.
+Target running: 'Simulink Real-Time R2020b to R2025b'.
+Automatic reboot: not supported.</p></div><div class="refsect1"><a name="d5e1352"></a><h2>Examples</h2><p>Set the default target machine to boot on a different OS using the dialog box:</p><pre class="programlisting">speedgoat.setDefaultBootOption</pre><p>Set the default target machine to boot the OS for R2025b:</p><pre class="programlisting">speedgoat.setDefaultBootOption('R2025b')</pre><p>Set the default target machine to boot the OS for R2025a:</p><pre class="programlisting">speedgoat.setDefaultBootOption('R2025a')</pre><p>Set the default target machine to boot the OS for R2025b and set the dual-boot timeout to 3 s:</p><pre class="programlisting">speedgoat.setDefaultBootOption('R2025b', 'DualBootTimeout', 3)</pre><p>Set the default target machine to boot the OS for R2026a and reboot the target automatically:</p><pre class="programlisting">speedgoat.setDefaultBootOption('R2026a', 'AutoReboot', true)</pre><p>Set the default boot option on a specified target machine using the target name
+(e.g. 'TargetPC1'):</p><pre class="programlisting">speedgoat.setDefaultBootOption(___, 'TargetName', 'TargetPC1')</pre><p>Set the default boot option on a specified target machine using the target object (e.g., tg):</p><pre class="programlisting">speedgoat.setDefaultBootOption(___, 'TargetObject', tg)</pre></div><div class="refsect1"><a name="d5e1368"></a><h2>Input Arguments</h2><p>release - Default boot entry
+[character vector | string].
+This argument is optional. If no argument is given, then the function displays a dialog box
+to choose which release should be the new default boot option. A value between 'R2020b' and
+'R2025b' sets the default boot entry to 'Simulink Real-Time R2020b to R2025b'.
+A value of 'R2026a' or later sets the default boot entry to 'Simulink Real-Time R2026a and
+later (Antelope RTOS)'.</p><p>Name-Value Pair Arguments:
+'DualBootTimeout' - Dual-boot timeout value
+[numerical].
+This name-value pair argument specifies the time, in seconds, to wait for a keyboard
+input before booting the default operating system. A timeout of 0 causes the system to
+boot the default operating system immediately without displaying the menu. A value of
+-1 causes the system to wait indefinitely for a keyboard input.
+You have to specify the release version if you use this name-value pair argument.</p><p>'AutoReboot' - Reboot the target automatically
+[boolean].
+This name-value pair argument specifies whether the target reboots automatically to the
+operating system specified by the release argument. The default value is set to false.</p><p>'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e1375"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. In addition, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p><p>The target machine must have previously been configured for dual-boot using
+the <span class="bold"><strong>speedgoat.migrateTarget</strong></span> function.</p></div></div></body></html>

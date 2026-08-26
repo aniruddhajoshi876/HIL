@@ -1,0 +1,118 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO109 - Analog input (DMA)</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io109_pin_mapping.html" title="IO109 Pin Mapping"><link rel="next" href="refentry_ref_io110.html" title="IO110"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io109_analog_input_dma_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO109 - Analog input (DMA)</h2><p>IO109 - Analog input (DMA) &#8212; 
+                <span class="phrase">Reads the IO109 analog inputs (DMA)</span>
+            </p></div><div class="refsect1"><a name="d5e6499"></a><h2>Library</h2><p><span class="bold"><strong>Library:</strong></span> Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io109_analog_input_dma_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e6508"></a><h2>Description</h2><p>This driver block can be used to acquire frame-based analog input signals from the
+                IO109 I/O module.</p><p>In contrast to most other Speedgoat I/O modules, there is no Setup block available
+                for the IO109.</p></div><div class="refsect1"><a name="d5e6512"></a><h2>Ports</h2><p>This driver block has, depending on the "Output port dimensions" parameter, either
+                one output port for each channel (when set to "Vectors") or a single output port
+                (when set to "Matrix") returning the acquired analog input frames.</p><p>Each port (signal) returns the analog value in volts or the raw ADC data.</p><div class="variablelist"><div class="variablelist-title">Outputs (when "Output port dimensions" is set to "Vectors")</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number)</span>
+                    </span></dt><dd><p>The value from analog channel X in volts or the raw ADC data.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code> (when returning voltage values) or
+                                <code class="literal">int32</code> (when returning ADC values)</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs (when "Output port dimensions" is set to "Matrix")</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Output</span>
+                    </span></dt><dd><p>A matrix of the "frame size" x "selected channels" size, containing
+                            the values of the corresponding analog channel in volts or the raw ADC
+                            data.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code> (when returning voltage values) or
+                                <code class="literal">int32</code> (when returning ADC values)</p></dd></dl></div></div><div class="refsect1"><a name="d5e6538"></a><h2>Parameters</h2><p>The two tabs of the analog input parameter dialog box contain the IO109 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>A unique module ID must be used for each IO109 Analog input block in
+                            your model.</p><p>The module ID has an impact on the PCI slot auto-search feature: if
+                            only one I/O module is installed, the module ID must be set to 1. If
+                            multiple modules are installed, it must be in the range 1:n. Not all the
+                            I/O modules installed in the target machine need to be used.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Trigger Mode</span>
+                    </span></dt><dd><p>Initiator mode uses the internal clock, and target mode requires a
+                            compatible clock connected to the corresponding input pins.</p></dd><dt><span class="term">
+                        <span class="guilabel">External Sync Logic Level</span>
+                    </span></dt><dd><p>Defines which kind of electrical signal is used on the EXT CLK/SYNC
+                            input and output pins.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Multiboard Sync</span>
+                    </span></dt><dd><p>If selected, the module will generate a sync pulse on the "EXT SYNC
+                            OUT" pins. This option is only available if the module is configured as
+                            an Initiator (refer to "Triggering Mode").</p><p>If you want to synchronize multiple IO109 I/O modules, then set this
+                            option and connect the "EXT SYNC OUT" pins of this module to the "EXT
+                            SYNC INP" pins of the target modules. You can use the "EXT SYNC OUT"
+                            pins of the target modules to link even more targets together. However,
+                            this will introduce a small propagation delay.</p><p>The sync pulse will be sent on the second sample hit of the model.
+                            Before that, the modules will not be synchronized.</p><p>You do not need to enable this option when clocking an IO107/IO108 I/O
+                            module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Manual Sync Port</span>
+                    </span></dt><dd><p>If selected, the Analog input block will get a new input port, which
+                            can be used to manually synchronize the I/O module with an external
+                            clock source. This option is only available if the module is configured
+                            as a target (refer to "Triggering Mode").</p><p>If you want to clock and synchronize an IO109 I/O module with an
+                            external clock source (for example with an FPGA), then you need to go
+                            through the sync cycle manually. The external source needs to provide
+                            the clock at the "EXT CLK INP" pins of this module and the sync pulses
+                            at the "EXT SYNC INP" pins. You can use the "EXT SYNC OUT" pins of the
+                            target modules to link even more targets together. However, this will
+                            introduce a small propagation delay.</p><p>The sync cycle is as follows:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Set the manual sync port "S" of the Analog input block to
+                                        0</p></li><li class="listitem"><p>Send a sync pulse on the "EXT SYNC INP" pins</p></li><li class="listitem"><p>Set the manual sync port "S" of the Analog input block to
+                                        1</p></li><li class="listitem"><p>Send a sync pulse on the "EXT SYNC INP" pins</p></li></ol></div><p>The IO109 I/O module is now synchronized with the external
+                            clock and sync source.</p><p>You do not need to enable this option when using an IO109 I/O module
+                            as the initiator.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Input Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Range</span>
+                    </span></dt><dd><p>Select the voltage range for all input channels: &plusmn;2.5 V, &plusmn;5
+                            V or &plusmn;10 V.</p></dd><dt><span class="term">
+                        <span class="guilabel">Filter</span>
+                    </span></dt><dd><p>High frequency noise and digital filter images are attenuated by a
+                            2-pole Butterworth lowpass filter, the cut-off frequency of which can be
+                            selected from either of two fixed frequencies.</p></dd><dt><span class="term">
+                        <span class="guilabel">Auto-Calibration at Download</span>
+                    </span></dt><dd><p>If selected, the module will calibrate itself each time the model is
+                            downloaded to the target.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Signal</span>
+                    </span></dt><dd><p>Select whether the output port data will be the measured voltage with
+                            the data type double or a 32-bit signed integer value representing the
+                            raw ADC data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Ports</span>
+                    </span></dt><dd><p>Select how to structure the output ports:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>"One port per channel" generates a separate output port for
+                                    each channel. Every port outputs a vector where the length
+                                    corresponds to the given frame size</p></li><li class="listitem"><p>"One port for all channels" generates a single output port
+                                    which outputs a 2D matrix, where the number of rows is equal to
+                                    the frame size, and the number of columns is equal to the number
+                                    of active channels</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output Frame-Based Signals</span>
+                    </span></dt><dd><p>If this option is selected, then the output ports will not be normal
+                            vectors or matrices but frame-based signals instead. The organization of
+                            the values inside the vectors/matrix will stay the same. However, this
+                            simplifies the use of blocks from the DSP System Toolbox&#8482;, which can
+                            work with frame-based data. This option is only usable when the DSP
+                            System Toolbox has been installed. For more information, refer to the
+                            page about <a class="link" href="https://mathworks.com/help/dsp/ug/sample-and-frame-based-concepts.html" target="_top">Sample- and Frame-Based Concepts</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size</span>
+                    </span></dt><dd><p>Enter the number of samples in one frame for each channel listed in
+                            the active channels field. The module issues an interrupt each time the
+                            acquisition of one frame is complete. The frame size must be equal to
+                            the product of the sample time and sample rate. Set one of the three
+                            parameters to -1. This parameter will then be calculated
+                            automatically.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Rate</span>
+                    </span></dt><dd><p>Enter the frequency at which the samples are taken in Hertz. This
+                            frequency must be between 2,000 to 20,0000&nbsp;Hz (2&nbsp;kHz to
+                            200&nbsp;kHz).</p></dd><dt><span class="term">
+                        <span class="guilabel">Block Sample Time</span>
+                    </span></dt><dd><p>Enter the time between frame completions.</p></dd></dl></div></div></div></body></html>

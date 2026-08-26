@@ -1,0 +1,125 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature - Decoder v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_quadrature_usage_notes.html" title="Quadrature Usage Notes"><link rel="next" href="refentry_quadrature_encoder_v1.html" title="Quadrature - Encoder v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_decoder_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature - Decoder v2</h2><p>Quadrature - Decoder v2 &#8212; <span class="phrase">The QAD driver block
+                    allows quadrature encoders to be read.</span></p></div><div class="refsect1"><a name="d5e4929"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_qad_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e4937"></a><h2>Description</h2><p>The QAD driver block allows quadrature encoders to be read.</p></div><div class="refsect1"><a name="d5e4940"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs are equal to the channel count as
+                defined in the channel vector parameter.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Async. value </span>
+                    </span></dt><dd><p>The value to load to the counter when an asynchronous load is
+                            requested. This port is enabled/disabled using the 'Show asynchronous
+                            load value input port' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Async. command </span>
+                    </span></dt><dd><div class="itemizedlist"><p>Options for the input are:</p><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: position value is not modified</p></li><li class="listitem"><p>1: position value is set to zero</p></li><li class="listitem"><p>2: Position value is reset to the value(s) defined in
+                                    parameter field "Preload counter value", or if the "asynchronous
+                                    value" input port is present (by enabling the 'Show asynchronous
+                                    load value input port' parameter), the position value is reset
+                                    to the value from this port.</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Using this port introduces additional latency. This port is
+                                enabled/disabled using the 'Show asynchronous command register input
+                                port' parameter.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Load on index value </span>
+                    </span></dt><dd><p>The quadrature decoder will reload this value to the counter value
+                            when index control mode is set to reload on index. This port is
+                            enabled/disabled using the 'Show load on index input port' parameter.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Current position </span>
+                    </span></dt><dd><p>The most recently measured position. This port is enabled/disabled
+                            using the 'Show current position output port' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latched position </span>
+                    </span></dt><dd><p>The position at the moment when the latch occurred. This port is
+                            enabled/disabled using the 'Show latched position output port'
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction </span>
+                    </span></dt><dd><p>The direction of rotation for the most recently measure position.
+                            Possible values for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Counter-clockwise</p></li><li class="listitem"><p>1: Clockwise</p></li></ul></div><p> This port is enabled/disabled using the 'Show direction
+                            output port' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index found </span>
+                    </span></dt><dd><p>Indicates if the C/index position has been reached. Possible values
+                            for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Encoder hasn't reached C/Index position</p></li><li class="listitem"><p>1: Encoder has reached C/Index position. The value remains
+                                        at 1 until counting is reset for example via a Cmd input
+                                        port command.</p></li></ul></div><p> This port is enabled/disabled using the 'Show index
+                            found output port' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latch </span>
+                    </span></dt><dd><p>Indicates if new latched data is present. If the index control mode is
+                            not used (ignore index input), the C/Index line can be used for the
+                            latched data, see parameter "Latch mode" for further information. If the
+                            C/Index I/O line is used, an additional D (dedicated latched) I/O line
+                            must be provided. Possible values for each vector element are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: No new position data (no new trigger event was
+                                        asserted)</p></li><li class="listitem"><p>1: New position data received (trigger event). This will
+                                        clear after each sample hit.</p></li></ul></div><p> This port is enabled/disabled using the 'Show latch
+                            status output port' parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e5011"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Quadrature decoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Preload counter value vector </span>
+                    </span></dt><dd><p>The counter value loaded when the model starts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operating mode </span>
+                    </span></dt><dd><p>This QAD code module supports the following operating modes: Mode
+                            Resolution Quadrature decoding 1x, 2x, and 4x Direction count 1x, and 2x
+                            Up/down count 2x, and 4x</p></dd><dt><span class="term">
+                        <span class="guilabel">Sampling </span>
+                    </span></dt><dd><p>Sampling resolution. Supported sampling resolutions are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1x (Quadrature decoding, and direction count only)</p></li><li class="listitem"><p>2x (All modes)</p></li><li class="listitem"><p>4x (Quadrature decoding, and up/down count only)</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Index control mode </span>
+                    </span></dt><dd><p>Defines how the QAD code module reacts at each low to high transition
+                            detected on the C/Input I/O line. Supported modes are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Ignore index input: no action</p></li><li class="listitem"><p>Load on index: Loads the 'Load on index value' parameter
+                                        when the encoder index line goes high.</p></li><li class="listitem"><p>Index reference mode: Counter is reset to zero at the
+                                        first C/Index event detection and Index control mode then
+                                        changes to "Ignore index input"</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Counting mode </span>
+                    </span></dt><dd><p>The counter range (min and max). Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled (Cycling counter): Counter runs from
+                                        [-2'147'483'648 to + 2'147'483'647 (32-bit).</p></li><li class="listitem"><p>Divide-by-N: If this mode is selected, parameter field
+                                        'Counting limit' appears to define the counter value range
+                                        for a sampling resolution of one. Typical values are a power
+                                        of two, such as 1024, 2048, 4096.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Counting limit </span>
+                    </span></dt><dd><p>This is enabled if the 'Counting mode' parameter is set to
+                            'Divide-by-N'. See 'Counting mode' parameter description for more
+                            information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latch mode </span>
+                    </span></dt><dd><p>Counter latch mode. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled: No latching</p></li><li class="listitem"><p>Latch on C/Index: Current counter value is stored into the
+                                        position register (latched). The counter value will only be
+                                        updated again at the next low to high transition event on
+                                        the C/Index line.</p></li><li class="listitem"><p>Hardware latch: latches counter value read by dedicated
+                                        hardware input (D-line).</p></li><li class="listitem"><p>Software latch: the model latches counter values for all
+                                        channels configured with the specific QAD driver
+                                        block.</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show asynchronous command register input port </span>
+                    </span></dt><dd><p>Enables/disables the Async. command input port, which is used to
+                            dynamically change position values during real-time execution. Note that
+                            enabling this port introduces additional latency. See Input and output
+                            ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show asynchronous load value input port </span>
+                    </span></dt><dd><p>Enables/disables the Async. value input port. See Input and output
+                            ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show load on index value input port </span>
+                    </span></dt><dd><p>Enables/disables the Load on index value input port. See Input and
+                            output ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show latch status output port </span>
+                    </span></dt><dd><p>Enables/disables the Latch output port. See Input and output ports
+                            section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show direction output port </span>
+                    </span></dt><dd><p>Enables/disables the Direction output port. See Input and output ports
+                            section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show index found output port </span>
+                    </span></dt><dd><p>Enables/disables the Index found output port. See Input and output
+                            ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show latched position output port </span>
+                    </span></dt><dd><p>Enables/disables the Latched position output port. See Input and
+                            output ports section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show current position output port </span>
+                    </span></dt><dd><p>Enables/disables the Current position output port. See Input and
+                            output ports section for more information.</p></dd></dl></div></div></div></body></html>

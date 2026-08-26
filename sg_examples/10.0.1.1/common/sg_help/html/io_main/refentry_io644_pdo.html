@@ -1,0 +1,121 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO644 - PDO</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io644_object.html" title="IO644 - Object"><link rel="next" href="refentry_io644_transceiver.html" title="IO644 - Transceiver"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io644_pdo"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO644 - PDO</h2><p>IO644 - PDO &#8212; <span class="phrase">Configures a process data object the
+                    IO644 sends or receives</span></p></div><div class="refsect1"><a name="d5e50343"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io644_pdo.png"></span></span></p></div><div class="refsect1"><a name="d5e50351"></a><h2>Description</h2><p>This block defines a PDO (Process Data Object). You add a block for each PDO you
+                want to define. The CANopen PDO protocol ensures deterministic data transfer. A PDO
+                is an 8-byte long data container, carrying data that corresponds to the specific
+                objects of a slave's object dictionary. For that purpose, each PDO has a
+                configurable PDO mapping.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RxPDOs are sent from the master to the slave. The slave protocol stack
+                        copies the data received to the corresponding objects, according to the PDO
+                        mapping.</p></li><li class="listitem"><p>TxPDOs are sent from the slave to the master. The slave protocol stack
+                        collects the data from specific objects according to the PDO mapping and
+                        sends the data to the master.</p></li></ul></div><p>The slave has a default PDO mapping, which is specified in the slave's EDS file.
+                In specific network states, the master can change the mapping via the SDO protocol,
+                as the PDO configuration is also represented by objects in the dictionary of the
+                slave. Each PDO has a configuration object and a mapping object.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The first RxPDO's configuration object is 0x1400; the second is at 0x1401
+                        and so on. The actual attributes, like the transmission type, are defined as
+                        sub-objects. The first TxPDO's configuration object is 0x1800.</p></li><li class="listitem"><p>The first RxPDO's mapping object is 0x1600; the second is at 0x1601 and so
+                        on. One mapping object defines the content of one PDO. The mapped items are
+                        defined as sub-objects. Each sub-object links to an application object. The
+                        first TxPDO's configuration object is 0x1A00.</p></li></ul></div></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e50368"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">PDO Type</span>
+                    </span></dt><dd><p>Defines the direction of the PDO. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Rx</strong></span>: The module receives
+                                        the PDO from the remote master</p></li><li class="listitem"><p><span class="bold"><strong>Tx</strong></span>: The module sends the
+                                        PDO to the remote master</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">PDO ID</span>
+                    </span></dt><dd><p>The module identifier in the range 1 to 255. It must start at 1 and be
+                            continuous. To define three RxPDOs and two TxPDOs, for example, place
+                            five PDO blocks in the model. Three blocks with <span class="bold"><strong>PDO Type</strong></span>
+                            <span class="bold"><strong>Rx</strong></span> and <span class="bold"><strong>PDO
+                                ID</strong></span> 1, 2, 3. Two blocks with <span class="bold"><strong>PDO
+                                Type</strong></span>
+                            <span class="bold"><strong>Tx</strong></span> and <span class="bold"><strong>PDO
+                                ID</strong></span> 1, 2.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">CAN ID</span>
+                    </span></dt><dd><p>Each PDO frame has a unique 11-bit CAN identifier. This identifier
+                            ranges from 385 to 1408 according to the formulas listed below which
+                            work for a maximum of 127 devices with no more than 4 RxPDOs and 4
+                            TxPDOs per device. For additional PDOs, CAN identifiers belonging to
+                            other (non-existing) devices must be applied.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For RxPDOs:
+                                        </p><pre class="programlisting"><span class="bold"><strong>CAN ID</strong></span> = 0x080 + <span class="bold"><strong>PDO ID</strong></span> * 0x100 + <span class="bold"><strong>Node ID</strong></span></pre></li><li class="listitem"><p>For TxPDOs:
+                                        </p><pre class="programlisting"><span class="bold"><strong>CAN ID</strong></span> = 0x100 + <span class="bold"><strong>PDO ID</strong></span> * 0x100 + <span class="bold"><strong>Node ID</strong></span></pre></li></ul></div><p> Examples: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The first RxPDO of the device with Node ID 1 has CAN ID
+                                        385</p></li><li class="listitem"><p>The fourth TxPDO of the device with Node ID 127 has CAN ID
+                                        1407</p></li></ul></div><p>A parameter value of 0 prompts the PDO block to
+                            internally calculate the CAN ID using the formula described. The
+                            required node ID is inherited from the <span class="bold"><strong>CAN Node
+                                ID</strong></span> parameter of the corresponding Setup block. If your
+                            device has more than 4 RxPDOs or 4 TxPDOs, you must find unused CAN IDs
+                            in your specific network and directly assign them to your additional
+                            PDOs. These CAN IDs can originate from inside or outside the reserved
+                            range for PDOs. Refer to the Communication Object Identifier section in
+                            the <a href="refentry_io644_usage_notes_v2.html" class="olink">IO644 usage notes</a>
+                            to learn more about CAN ID ranges. In the object dictionary, the CAN ID
+                            is part of the COB ID, which is represented by the first sub-object of a
+                            PDO's configuration object (for example object 0x1800 sub-object
+                            0x01).</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term"><span class="guilabel">Mapping</span></span></dt><dd><p>This parameter defines the objects whose value should be included in
+                            the PDO's payload. The parameter is an n-by-2 matrix with up to eight
+                            rows representing eight data items. The first column defines the
+                            object's index, and the second column defines the object's sub-index.
+                            Only objects of type <span class="bold"><strong>VAR</strong></span> can be mapped.
+                            The maximum length of a PDO payload is 8 bytes. As a result, you can map
+                            eight objects of type uint8, four objects of type int16, two objects of
+                            type single or one object of type double. You can mix data types as long
+                            as their overall length does not exceed 8 bytes.</p><p>Example: [0x6040, 0x00; 0x6155, 0x03]</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric matrix</code></p></dd><dt><span class="term"><span class="guilabel">Transmission Type</span></span></dt><dd><p>Defines the timing for the PDO transmission.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="20%" class="Type"><col width="10%" class="Type ID"><col width="70%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>Type</strong></span></td><td><span class="bold"><strong>Type Number*</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>synchronous acyclic</td><td>0</td><td>The Transmission is triggered when the node receives
+                                            the SYNC event AND one of the data items in the PDO has
+                                            changed since the previous transmission.</td></tr><tr><td>synchronous cyclic</td><td>1-240</td><td>The Transmission is triggered when the node receives
+                                            the SYNC event. You can reduce the frequency of the
+                                            transmission with the <span class="bold"><strong>Transmission
+                                                Rate</strong></span> parameter. A transmission rate of 1
+                                            results in a Transmission Type of 1. A transmission rate
+                                            of 240 results in a Transmission Type of 240.</td></tr><tr><td>synchronous RTR-only</td><td>252</td><td>The transmission is triggered with the next SYNC
+                                            event if an RTR telegram (Remote Transmission Request)
+                                            has been received.</td></tr><tr><td>asynchronous RTR-only</td><td>253</td><td>The transmission is triggered when an RTR telegram
+                                            has been received.</td></tr><tr><td>event-driven manufacturer specific</td><td>254</td><td>The transmission is triggered when one of the data
+                                            items in the PDO changes.</td></tr><tr><td>event-driven profile specific</td><td>255</td><td>Same as event-driven manufacturer specific</td></tr></tbody></table></div><p>* Defined by the CANopen standard. The block writes the resulting
+                            number into the object dictionary and the EDS file. The transmission
+                            type is represented by the second sub-object of a PDO's configuration
+                            object (object 0x1800 sub-object 0x02, for example).</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmission Rate</span>
+                    </span></dt><dd><p>This parameter defines the transmission rate for <span class="bold"><strong>synchronous cyclic</strong></span> mode. A transmission rate of 1 means
+                            that the PDO will be transferred with each SYNC event. A transmission
+                            rate of n means the PDO will be transferred with each n-th SYNC event.
+                            The value must be between 1 and 240. SYNC is a message the master node
+                            sends out cyclically. Its cycle time is configured in the master
+                            configuration tool.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Inhibit Time</span>
+                    </span></dt><dd><p>Defines the minimum waiting time between the transmission of two
+                            identical messages. This prevents the same message (same data) from
+                            being transmitted too frequently. The unit is a multiple of 100 &micro;s. The
+                            value must be between 0 and 65535. 65535 equals 6553500 &micro;s.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Event Timer</span>
+                    </span></dt><dd><p>Applies to event-driven transmission modes and forces the transmission
+                            within the specified time, even though the data has not changed (the
+                            event has not occurred). The unit is ms. The value must be between 0 and
+                            65535.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd></dl></div></div></div></body></html>

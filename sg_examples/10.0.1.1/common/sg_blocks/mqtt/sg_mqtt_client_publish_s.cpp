@@ -1,0 +1,218 @@
+#define S_FUNCTION_LEVEL    2
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME     sg_mqtt_client_publish_s
+
+/* Includes */
+#include "simstruc.h"
+
+#ifdef MATLAB_MEX_FILE
+#include "mex.h"
+#include "fixedpoint.h"
+#include "fixedpoint.c"
+#endif
+
+#include "mqtt_def.h"
+
+#ifndef MATLAB_MEX_FILE
+#include "sg_common.h"
+#include "sg_printf.h"
+
+#endif
+
+#include "sg_callback.h"
+
+#ifndef MATLAB_MEX_FILE
+using namespace mqtt;
+#endif
+
+/* Defines */
+#define CLIENT_ID_ARG       (uint16_T)mxGetPr(ssGetSFcnParam(S, 0))[0]
+#define CONNECTION_ID_ARG   (uint16_T)mxGetPr(ssGetSFcnParam(S, 1))[0]
+#define TOPIC_ARG                             ssGetSFcnParam(S, 2)
+#define QOS_ARG			      (uint8_T)mxGetPr(ssGetSFcnParam(S, 3))[0]
+#define RETAIN_ARG		      (boolean_T)mxGetPr(ssGetSFcnParam(S, 4))[0]
+#define EXTENDED_ARG	   (boolean_T)mxGetPr(ssGetSFcnParam(S, 5))[0]
+#define SAMPLE_TIME_ARG               mxGetPr(ssGetSFcnParam(S, 6))[0]
+#define NUMBER_OF_ARGS                                          7
+
+/* Definitions */
+static char_T ErrMsg[256];
+
+static void mdlInitializeSizes(SimStruct *S)
+{
+    uint32_T i = 0;
+
+    /* Set and check parameters */
+    ssSetNumSFcnParams(S, NUMBER_OF_ARGS);
+    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))
+    {
+        sprintf(ErrMsg, "Check list of parameters, %i parameters are expected!", NUMBER_OF_ARGS);
+        ssSetErrorStatus(S, ErrMsg);
+        return;
+    }
+
+    /* Set all parameters to non-tunable */
+    for (i = 0; i < NUMBER_OF_ARGS; i++)
+    {
+        ssSetSFcnParamTunable(S, i, 0);
+    }
+
+    /* Output ports */
+    if (!ssSetNumOutputPorts(S, 0)) return;
+
+    /* Input ports */
+    if (EXTENDED_ARG)
+    {
+    	if (!ssSetNumInputPorts(S, 3)) return;
+    }
+    else
+    {
+    	if (!ssSetNumInputPorts(S, 1)) return;
+    }
+
+    /* 1. DATA output port */
+	/* DATA input port derives type and dimensions from connected source */
+    ssSetInputPortDataType(S, 0, DYNAMICALLY_TYPED);
+    ssSetInputPortWidth(S, 0, DYNAMICALLY_SIZED);
+    ssSetInputPortRequiredContiguous(S, 0, 1);
+    ssSetInputPortDirectFeedThrough(S, 0, 1);
+
+    if (EXTENDED_ARG)
+    {
+        /* 2. ENABLE output port */
+        ssSetInputPortDataType(S, 1, SS_BOOLEAN);
+        ssSetInputPortWidth(S, 1, 1);
+        ssSetInputPortRequiredContiguous(S, 1, 1);
+        ssSetInputPortDirectFeedThrough(S, 1, 1);
+
+		/* 3. DATA LENGTH input port */
+		ssSetInputPortDataType(S, 2, SS_UINT32);
+		ssSetInputPortWidth(S, 2, 1);
+		ssSetInputPortRequiredContiguous(S, 2, 1);
+		ssSetInputPortDirectFeedThrough(S, 2, 1);
+    }
+
+    ssSetNumPWork(S, 1);
+    ssSetNumDWork(S, 1);
+    ssSetDWorkName(S, 0, "Buffer");
+    ssSetDWorkDataType(S, 0, 0);
+    ssSetDWorkWidth(S, 0, 1);
+
+    ssSetNumSampleTimes(S, 1);
+
+    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);
+}
+
+static void mdlInitializeSampleTimes(SimStruct *S)
+{
+    ssSetModelReferenceSampleTimeInheritanceRule(S, USE_DEFAULT_FOR_DISCRETE_INHERITANCE);
+
+    if (SAMPLE_TIME_ARG == -1.0)
+    {
+        ssSetSampleTime(S, 0, INHERITED_SAMPLE_TIME);
+        ssSetOffsetTime(S, 0, FIXED_IN_MINOR_STEP_OFFSET);
+    }
+    else
+    {
+        ssSetSampleTime(S, 0, SAMPLE_TIME_ARG);
+        ssSetOffsetTime(S, 0, 0.0);
+    }
+}
+
+
+#define MDL_SET_INPUT_PORT_DATA_TYPE
+#if defined(MDL_SET_INPUT_PORT_DATA_TYPE) && defined(MATLAB_MEX_FILE)
+static void mdlSetInputPortDataType(SimStruct* S, int_T port, DTypeId id)
+{
+    ssSetInputPortDataType(S, port, id);
+}
+#endif
+
+#define MDL_SET_INPUT_PORT_WIDTH
+#if defined(MDL_SET_INPUT_PORT_WIDTH) && defined(MATLAB_MEX_FILE)
+void mdlSetInputPortWidth(SimStruct *S, int_T port, int_T width)
+{
+    ssSetInputPortWidth(S, port, width);
+}
+#endif
+
+#define MDL_SET_DEFAULT_PORT_DATA_TYPES
+#if defined(MDL_SET_DEFAULT_PORT_DATA_TYPES) && defined(MATLAB_MEX_FILE)
+void mdlSetDefaultPortDataTypes(SimStruct *S)
+{
+	if (!ssGetInputPortConnected(S, 0))
+	{
+		ssSetErrorStatus(S, "The Data input port must be connected to a nonvirtual block\n");
+        return;
+	}
+	else
+	{
+		ssSetErrorStatus(S, "The data type of the source signal to which the Data input port is connected must not be inherited via back propagation\n");
+        return;
+	}
+}
+#endif
+
+#define MDL_SET_DEFAULT_PORT_DIMENSION_INFO
+#if defined(MDL_SET_DEFAULT_PORT_DIMENSION_INFO) && defined(MATLAB_MEX_FILE)
+static void mdlSetDefaultPortDimensionInfo(SimStruct* S) {
+
+	if (!ssGetInputPortConnected(S, 0))
+	{
+		ssSetErrorStatus(S, "The Data input port must be connected to a nonvirtual block\n");
+        return;
+	}
+	else
+	{
+		ssSetErrorStatus(S, "The data type of the source signal to which the Data input port is connected must not be inherited via back propagation\n");
+        return;
+	}
+}
+#endif
+
+#define MDL_SET_WORK_WIDTHS
+void mdlSetWorkWidths(SimStruct *S)
+{
+     ssSetDWorkDataType(S, 0, ssGetInputPortDataType(S, 0));
+     ssSetDWorkWidth(S, 0, ssGetInputPortWidth(S, 0));
+}
+
+static void sg_ModelLoad(SimStruct *S) {}
+static void sg_ModelStart(SimStruct *S) {}
+static void sg_ModelStep(SimStruct *S) {}
+static void sg_ModelStop(SimStruct *S) {}
+
+#define MDL_RTW
+#if defined(MDL_RTW) && (defined(MATLAB_MEX_FILE) || defined(NRT))
+static void mdlRTW(SimStruct * S) {
+
+    int32_T i = 0;
+    uint16_T ConnectionId = CONNECTION_ID_ARG;
+    uint16_T ClientId = CLIENT_ID_ARG;
+    char *Topic = mxArrayToString(TOPIC_ARG);
+    uint8_T QoS = QOS_ARG;
+    boolean_T Retain = RETAIN_ARG;
+    bool Extended = EXTENDED_ARG;
+
+    if (!ssWriteRTWWorkVect(S, "PWork", 1, "Instance", ssGetNumPWork(S))) {
+        return;
+    }
+
+    /* Set parameters */
+    if (!ssWriteRTWParamSettings(S, 6,
+        SSWRITE_VALUE_DTYPE_NUM, "ClientId", &ClientId, DTINFO(SS_UINT16, COMPLEX_NO),
+		SSWRITE_VALUE_DTYPE_NUM, "ConnectionId", &ConnectionId, DTINFO(SS_UINT16, COMPLEX_NO),
+		SSWRITE_VALUE_QSTR, "Topic", Topic,
+		SSWRITE_VALUE_DTYPE_NUM, "QoS", &QoS, DTINFO(SS_UINT8, COMPLEX_NO),
+		SSWRITE_VALUE_DTYPE_NUM, "Retain", &Retain, DTINFO(SS_BOOLEAN, COMPLEX_NO),
+		SSWRITE_VALUE_DTYPE_NUM, "Extended", &Extended, DTINFO(SS_BOOLEAN, COMPLEX_NO)
+    )) {
+        return;
+    }
+
+    mxFree(Topic);
+}
+
+#endif /* MDL_RTW */
+
+#include "sg_sfcn_glue.h"   // Code generation glue

@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO731 - Configuration</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io731_usage_notes.html" title="IO731 Usage Notes"><link rel="next" href="refentry_ref_io750.html" title="IO750"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io731_configuration"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO731 - Configuration</h2><p>IO731 - Configuration &#8212; <span class="phrase">Configure the IO731 TSN I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e56633"></a><h2>Description</h2><p>The IO731 combines TSN Endpoint and TSN Bridge functionality into a single I/O
+                module. Two SFP Ethernet ports (Port-0 and Port-1) provide access to the TSN
+                network. The Ethernet interface (PCIe) is available within Simulink&reg; Real-Time&#8482; to
+                access the data packets. The IP address of the PCIe Ethernet interface can be set in
+                the Speedgoat Ethernet Configuration Tool. The Internal Port is used to access the
+                CPU of IO731, which allows you to configure the module. The IP address of the
+                Internal Ethernet interface can be set in the Speedgoat IO731 Configuration
+                Tool.</p><p><span class="inlinemediaobject"><img src="./graphics/io731_schematic.png" width="486"></span></p></div><div class="refsect1"><a name="d5e56640"></a><h2>Configuration</h2><p>This interface is configured using the <a href="refentry_ethernet_configuration.html" class="olink">Speedgoat Ethernet Configuration
+                    Tool</a>. To open the tool, run the following command in the MATLAB Command
+                Window, then click the <span class="bold"><strong>TSN Configurator</strong></span> button:
+                </p><pre class="programlisting">speedgoat.configureEthernet</pre><p><span class="inlinemediaobject"><img src="./graphics/ethConfigTool_IO731.png"></span></p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When you start the TSN Configurator, a connection through the host link to the
+                    internal port of the IO731 is established. The <span class="bold"><strong>TSN
+                        Configurator</strong></span> button turns green to indicate this. As long as the
+                    configuration tool is open, the bridge between the host link and the PCIe port
+                    of the IO731 is active.</p></td></tr></table></div><div class="refsect2"><a name="d5e56653"></a><h3>General Tab</h3><p><span class="inlinemediaobject"><img src="./graphics/io731_generalTab.png"></span></p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">IP Address of Internal Port</span>
+                        </span></dt><dd><p>Specify the IP address for the internal port.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If you want to change the IP address, first connect to the
+                                    IO731 and then update the IP address. If you do not connect to
+                                    the module, you cannot establish a connection and store the new
+                                    value.</p></td></tr></table></div></dd><dt><span class="term">
+                            <span class="guilabel">Launch Configurator</span>
+                        </span></dt><dd><p>Launches the configurator in your default web browser.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>You must be connected to your target machine using the
+                                    host-target link to be able to access the IO731.</p></td></tr></table></div></dd></dl></div></div><div class="refsect2"><a name="d5e56674"></a><h3>Reset Tab</h3><p>This utility guides you through the reset procedure of the IO731. Follow the
+                    instructions step-by-step as indicated by the tool.</p><p><span class="inlinemediaobject"><img src="./graphics/io731_resetTab.png"></span></p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Next</span>
+                        </span></dt><dd><p>Follow the instructions listed and then click <span class="bold"><strong>Next</strong></span> to continue.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>In case of an error, check whether you can ping the IP address
+                                    192.168.4.64 from the host before you click <span class="bold"><strong>Next</strong></span> again.</p></td></tr></table></div></dd></dl></div><p><span class="inlinemediaobject"><img src="./graphics/io731_resetTabNext.png"></span></p><p>Follow the instructions listed and then click <span class="bold"><strong>Next</strong></span> to continue.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>In case of an error, close the configurator and run the reset procedure
+                        again from the beginning. Make sure to only click <span class="bold"><strong>Next</strong></span> when your target has fully started up.</p></td></tr></table></div><p><span class="inlinemediaobject"><img src="./graphics/io731_resetTabFinish.png"></span></p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Finish</span>
+                        </span></dt><dd><p>After a successful reset, click <span class="bold"><strong>Finish</strong></span> to complete the reset procedure.</p></dd></dl></div></div><div class="refsect2"><a name="d5e56711"></a><h3>Configurator Documentation</h3><p>The documentation of the configurator is stored on the module to match the
+                    current firmware version. It can be found by clicking the Settings icon on the
+                    top-right and then select <span class="bold"><strong>Downloads</strong></span>. Then click
+                    the <span class="bold"><strong>USER GUIDE </strong></span>icon to download the
+                    documentation.</p><p><span class="inlinemediaobject"><img src="./graphics/io731_userGuide.png" width="162"></span></p></div></div></div></body></html>

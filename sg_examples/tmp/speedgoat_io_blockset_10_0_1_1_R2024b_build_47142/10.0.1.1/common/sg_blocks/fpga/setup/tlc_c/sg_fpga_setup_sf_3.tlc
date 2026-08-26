@@ -1,0 +1,551 @@
+%% sg_fpga_setup_sf_3.tlc - Controls the generation of FPGA setup block specific code generation.
+
+%implements sg_fpga_setup_sf_3 "C"
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%% Function: Start ========================================================
+%%
+%function Start (block, system) Output
+    %% Write our code into a buffer and place it manually
+    %% This one is for HEADER and therefore executed before anyting else
+    %openfile buffer
+    {
+        int32_t ErrCode;
+        uint32_t *bitstream = NULL;
+        uint8_t *fpgacode = NULL;
+        char *devname;
+        sg_fpga_io3xxModuleIdT  moduleId;
+        static char mcsBinFile[200];
+        static char msg[500];
+
+        %% We need to initialize the model run manually when using TLC
+        sg_initModelRun();
+
+        // Determine path to bitstream file
+        %assign bitstreamFile = "/fpga/%<bitstreamFilename>"
+        if (sg_getModelBaseDir(mcsBinFile, sizeof(mcsBinFile))) {
+            sprintf(msg, "Could not determine location of the model on the target machine.");
+            %<LibSetRTModelErrorStatus("msg")>;
+            return;
+        }
+        if ((strlen(mcsBinFile) + strlen("%<bitstreamFile>") + 1) > sizeof(mcsBinFile)) {
+            sprintf(msg, "Path to the bitstream (model name + bitstream name) is too long.");
+            %<LibSetRTModelErrorStatus("msg")>;
+            return;
+        }
+        strcat(mcsBinFile, "%<bitstreamFile>");
+        SG_PRINTF(DEBUG, "Bitstream: %s\n", mcsBinFile);
+
+        %if ISSUBSTRING(bitstreamFilename, ".mcs")
+            uint32_t i;
+            FILE *mcs;
+            // Read bitstream file
+            if ((mcs = fopen(mcsBinFile, "r")) == NULL){
+                sprintf(msg, "Bitstream file not found at %s\n", mcsBinFile);
+                %<LibSetRTModelErrorStatus("msg")>;
+                SG_PRINTF(ERROR,msg);
+                return; 
+            }
+            bitstream = (uint32_t *) malloc(%<bitstreamLength>*sizeof(uint32_t));
+            fpgacode = (uint8_t *) malloc(%<bitstreamLength>*sizeof(uint8_t));
+            for(i = 0; i<%<bitstreamLength>; i++){
+                fscanf(mcs, "%d\n", &bitstream[i]);
+                fpgacode[i] = bitstream[i];
+            }
+            fclose(mcs);
+        %endif
+
+        // Get module IDs (PIC info)
+        SG_PRINTF(INFO, "FPGA Setup TLC: Getting module information.\n");
+        ErrCode = (int32_t)sg_fpga_IO3xxGetModuleId(%<boardType>, &moduleId);
+
+        if (ErrCode >= 0)
+        {
+            devname = moduleId.devname;
+            SG_PRINTF(DEBUG, "boardType: %d\n", %<boardType>);
+            SG_PRINTF(DEBUG, "moduleId->devname: %s\n", moduleId.devname);
+            SG_PRINTF(DEBUG, "moduleId->vendorid: 0x%x\n", moduleId.vendorid);
+            SG_PRINTF(DEBUG, "moduleId->subvendorid: 0x%x\n", moduleId.subvendorid);
+            SG_PRINTF(DEBUG, "moduleId->deviceid: 0x%x\n", moduleId.deviceid);
+            SG_PRINTF(DEBUG, "moduleId->subdeviceid: 0x%x\n", moduleId.subdeviceid);
+            SG_PRINTF(DEBUG, "moduleId.moduleArchitecture: %d\n", moduleId.moduleArchitecture);
+        }
+        else
+        {
+            sprintf(msg, "Setup block: board type unknown.");
+            %<LibSetRTModelErrorStatus("msg")>;
+            SG_PRINTF(ERROR,msg);
+            return;
+        }
+        // Call the programming function
+        SG_PRINTF(INFO,"Running board specific programming file.\n");
+        %switch %<boardType>
+        %case 30625
+        %case 30725
+        %case 30825
+            ErrCode = IO30x_programFPGA(devname, (int16_t)%<pciBus>, (int16_t)%<pciSlot>,
+                (int32_t)%<deviceId>, (int32_t)%<id>,
+                (int32_t)%<programSPIFlash>, (uint32_t)%<bitstreamLength>, bitstream,
+                &moduleId,(uint32_t)%<timestamp>);
+        %break
+       
+        %case 324200
+        %case 334325
+        %case 336325
+        %case 325160
+            ErrCode = IO324_programmFPGA(devname, (int16_t)%<pciBus>,
+                (int16_t)%<pciSlot>, (int32_t)%<deviceId>, (int32_t)%<id>,
+                (int32_t)%<programSPIFlash>, (uint32_t)%<bitstreamLength>, fpgacode,
+                (uint32_t)%<timestamp>, &moduleId, (uint32_t)%<pullFront>,
+                (uint32_t)%<diffSettings>);
+        %break
+
+        %case 316
+        %case 316100
+        %case 317
+        %case 317100
+        %case 318
+        %case 318100
+        %case 322
+        %case 323
+            ErrCode = IO31x_IO32x_programmFPGA(devname, (int16_t)%<pciBus>,
+                (int16_t)%<pciSlot>, (int32_t)%<deviceId>, (int32_t)%<id>,
+                (int32_t)%<programSPIFlash>, (uint32_t)%<bitstreamLength>, fpgacode,
+                &moduleId, (uint32_t)%<pullFront>,(uint32_t)%<timestamp>);
+        %break
+
+        %case 301
+        %case 302
+        %case 303
+        %case 304
+        %case 311
+        %case 312
+        %case 313
+        %case 314
+        %case 321
+        %case 331
+            ErrCode = IO331_programmFPGA(devname, (int16_t)%<pciBus>, (int16_t)%<pciSlot>,
+                (int32_t)%<deviceId>, (int32_t)%<id>,
+                (uint32_t)%<bitstreamLength>, bitstream, &moduleId);
+        %break
+
+        %case 332
+            ErrCode = IO332_programmFPGA(devname, (int16_t)%<pciBus>,
+                (int16_t)%<pciSlot>, (int32_t)%<deviceId>, (int32_t)%<id>,
+                (uint32_t)%<bitstreamLength>, bitstream, (uint32_t)%<timestamp>,
+                &moduleId);
+        %break
+
+        %case 332
+        %case 3331
+        %case 3332
+            ErrCode = IO333_programmFPGA(devname, (int16_t)%<pciBus>,
+                (int16_t)%<pciSlot>, (int32_t)%<deviceId>, (int32_t)%<id>,
+                (uint32_t)%<bitstreamLength>, bitstream, (uint32_t)%<timestamp>,
+                &moduleId);
+        %break
+    
+        %case 39150
+        %case 39250
+        %case 39350
+        %case 39450
+        %case 39750
+            ErrCode = IO39x_programmFPGA(devname, (int16_t)%<pciBus>, (int16_t)%<pciSlot>,
+                (int32_t)%<deviceId>, (int32_t)%<id>,
+                (uint32_t)%<bitstreamLength>, fpgacode, (uint32_t)%<pullFront>, &moduleId);
+        %break
+
+        %case 3091001
+        %case 3091002
+        %case 3091003
+        %case 3601901
+        %case 3601902
+        %case 3601903
+        %case 3614691
+        %case 3614692
+        %case 3614693
+
+            // Return an initialized static constant variable string of form:
+            %<LibGenConstVectWithInit(io36xFront, tSS_UINT32, "io36xFrontArray")>
+
+            ErrCode = IO36x_programmFPGA(devname, (int16_t)%<pciBus>, (int16_t)%<pciSlot>,
+                (int32_t)%<deviceId>, (int32_t)%<id>, (uint32_t)%<bitstreamLength>, fpgacode,
+                &moduleId, io36xFrontArray, (uint32_t)%<dirFront>);
+        %break
+
+        %case 337650
+            ErrCode = IO337_programmFPGA(devname, (int16_t)%<pciBus>, (int16_t)%<pciSlot>,
+                (int32_t)%<deviceId>, (int32_t)%<id>,
+                (uint32_t)%<bitstreamLength>, fpgacode,
+                (uint32_t)%<pullFront>, (uint32_t)%<diffSettings>, &moduleId);
+        %break
+
+        %case 1000
+            ErrCode = sg_pulse_programFpga(devname, %<deviceId>, %<id>,
+                mcsBinFile, %<timestamp>);
+        %break
+
+        %default
+                sprintf(msg, "Setup block: module architecture incorrect.");
+                %<LibSetRTModelErrorStatus("msg")>;
+                // Free the bitstream allocation
+                SG_PRINTF(ERROR,msg);
+                free(bitstream);
+                free(fpgacode);
+                return;
+        %endswitch
+
+        // Set board type (by now the board is registered)
+        io3xxSetBoardTypeSgLib(%<id>, %<boardType>);
+
+        // Free the bitstream allocation
+        free(bitstream);
+        free(fpgacode);
+
+        // Handle any error states
+        if (ErrCode)
+        {
+            switch (ErrCode)
+            {
+                
+                case BOARD_NOT_FOUND:
+                    // reason for this error can be found in the pSgErrorStr (error message from sg-lib (sg_findPciDevice))
+                    sprintf(msg, "%s", pSgErrorStr);
+                    break;
+
+                case EEPROM_ERROR:
+                    sprintf(msg, "Setup block %s: Error updating board EEPROM.\n", devname);
+                    break;
+
+                case REPROG_ERROR:
+                    sprintf(msg, "Setup block %s: Error writing new bitstream to FPGA.\n", devname);
+                    break;
+
+                case FLASH_ERROR:
+                    sprintf(msg, "Setup block %s: Bitstream flash storage error.\n", devname);
+                    break;
+
+                case BIST_ERROR:
+                    sprintf(msg, "Setup block %s: Built in self test error.\n", devname);
+                    break;
+
+                case ICAP_RECONF_FAILED:
+                    sprintf(msg, "Setup block %s: ICAP Reconfiguration was not successful.\n",devname);
+                    break;
+
+                case BOARD_TYPE_UNKNOWN:
+                    sprintf(msg, "Setup block %s: The board type selected is unknown.\n",devname);
+                    break;
+                
+                case DMA_SETUP_ERROR:
+                    sprintf(msg, "Setup block %s: Error during DMA setup.\n",devname);
+                    break;
+
+                default:
+                    sprintf(msg, "Setup block %s: An unknown error %d occurred.\n", devname, ErrCode);
+            }
+            %<LibSetRTModelErrorStatus("msg")>;
+            SG_PRINTF(ERROR,msg);
+            return;
+        }
+        
+        // ------------------------------------------------------------------------------------------------------
+        // i/o extension callbacks
+        // ------------------------------------------------------------------------------------------------------
+
+        // check and decide whether the i/o extension interface uses the old wrapper with i2c or if the design
+        // implements the axi i2c ip core
+
+        // check if the bitstream has the axi iic ip cores for p14
+        %if (%<nbrRearIo> != 0)
+        uint32_t useAxiI2cFlag = sg_fpga_io3xx_getP14AxiIicFlag(%<id>);
+        (void)useAxiI2cFlag;
+        %endif
+
+        // call the i/o extension init functions
+        %foreach i = nbrRearIo
+            %if (%<rearIO[i]> == 2)
+            // -21
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -21 at position %d \n", devname, %<id>, %<i+1>);
+                if (useAxiI2cFlag){
+                    ErrCode = IO3xx_21_update2(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>, %<i>);
+                } else {
+                    IO3xx_21_update(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>,%<i>);
+                    ErrCode = 0;
+                }
+
+            %elseif (%<rearIO[i]> == 3)
+            // -22
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -22 at position %d \n", devname, %<id>, %<i+1>);
+                if (useAxiI2cFlag){
+                    ErrCode = IO3xx_22_update2(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>, %<i>);
+                } else {
+                    IO3xx_22_update(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>, %<i>);
+                    ErrCode = 0;
+                }
+
+            %elseif (%<rearIO[i]> == 4)
+            // -24
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -24 at position %d \n", devname, %<id>, %<i+1>);
+                if (useAxiI2cFlag){
+                    ErrCode = (int32_t)IO3xx_24_update2(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>, %<rearDiffSettings[i]>, %<i>);
+                } else {
+                    ErrCode = (int32_t)IO3xx_24_update(devname, %<id>, %<pullRear[i]>, %<dirRear[i]>, %<vioRear[i]>, %<rearDiffSettings[i]>, %<i>);
+                }
+
+            %elseif (%<rearIO[i]> == 5)
+            // -40
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -40 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = (int32_t)IO3xx_40_update(devname, %<id>, %<i>);
+                if (ErrCode == 14) {
+                    SG_PRINTF(WARNING, "Must be a prototype!\n");
+                    ErrCode = 0;
+                }
+
+            %elseif (%<rearIO[i]> == 6)
+            // -120
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -120 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = (int32_t)IO3xx_120_update(devname, %<id>, %<i>);
+                if (ErrCode == 14) {
+                    SG_PRINTF(WARNING, "Must be a prototype!\n");
+                    ErrCode = 0;
+                }            
+            %elseif (%<rearIO[i]> == 7)
+            // -41
+                SG_PRINTF(INFO, "%s ID %d: Init Rear I/O Extension -41 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = (int32_t)IO3xx_41_update(devname, %<id>, %<i>);
+                if (ErrCode == 14) {
+                    SG_PRINTF(WARNING, "Must be a prototype!\n");
+                    ErrCode = 0;
+                }
+
+            %endif
+
+            %if (%<rearIO[i]> != 0 )
+            // throw an error if something went wrong
+            // The error codes are defined in sg_fpga_xilinx_i2c.h in the FPGA-setup lib
+                if (ErrCode != 0) {
+                    sprintf(msg, "%s ID %d: Error updating I/O extension position %d. ErrorCode: %d", devname, %<id>, %<i+1>, ErrCode);
+                    %<LibSetRTModelErrorStatus("msg")>;
+                    // need to free some pointers? --> should be handled in the called functions
+                    return;
+                } else {
+                    SG_PRINTF(INFO, "%s ID %d: Successfully initialized rear I/O extension at position %d.\n", devname, %<id>, %<i+1>);
+                }
+            %endif
+
+        %endforeach
+
+        // initial settings on module registry        
+        // Set all DIO's to registry inital values (all input, all output states = 0, all sources = codemodule)
+        %if (%<numDio> > 0)
+            sg_fpga_io3xx_initDioLines(%<id>, SG_FPGA_IO3XX_BAR2);
+        %else
+            SG_PRINTF(INFO, "No DIO implemented: Skipping DIO initialization.\n");
+        %endif
+
+        // DMA Engine and DMA Controller settings
+        ScatterGatherDmaState *sgDmaSharedState;
+        sg_fpga_io3xx_getSharedSgDmaState(%<id>, &sgDmaSharedState);
+        sgDmaSharedState->enableDma             = %<enableDma>;
+        sgDmaSharedState->useFpgaDmaController  = %<useFpgaDmaController>;
+
+        sgDmaSharedState->dmaTriggerTimeTicks   = (uint32_t)(%<sampleTime> * %<fpgaFrequency[0]>);
+        sgDmaSharedState->dmaTriggerSourceSel   = %<dmaTriggerSourceSel>;
+        sgDmaSharedState->dmaModeSequential     = %<dmaModeSequential>;
+        sgDmaSharedState->dmaModeParallel       = %<dmaModeParallel>;
+
+        // set FPGA frequency and sample time
+        modelTimings_t *modelTimingsPtr;
+        sg_fpga_io3xx_getSharedTimingInfo(%<id>, &modelTimingsPtr);
+        modelTimingsPtr->fpgaFrequency = %<fpgaFrequency[1]>;
+        modelTimingsPtr->sampleTime = %<sampleTime>;
+
+    }
+    %closefile buffer
+    %<sgAddInitCode(buffer, "header")>
+
+    %% Write our code into a buffer and place it manually
+    %% This one is for TRAILER and therefore executed after anyting else
+    %openfile buffer
+    {
+
+        // run any code here at end of model-load
+        // SG_PRINTF(INFO, "Setup Block: Entering TLC Trailer\n");
+        // if(%<useFpgaDmaController>){
+        //     io3xx_sgdma_finalizeDmaController(%<id>);
+        //     io3xx_sgdma_startDmaController(%<id>);
+        // }
+
+        %if (%<boardType> == 3091001) | \
+            (%<boardType> == 3091002) | \
+            (%<boardType> == 3091003) | \
+            (%<boardType> == 324200) | \
+            (%<boardType> == 325160) | \
+            (%<boardType> == 332) | \
+            (%<boardType> == 3331) | \
+            (%<boardType> == 3332) | \
+            (%<boardType> == 334325) | \
+            (%<boardType> == 336325) | \
+            (%<boardType> == 337650) | \
+            (%<boardType> == 3601901) | \
+            (%<boardType> == 3601902) | \
+            (%<boardType> == 3601903) | \
+            (%<boardType> == 3614691) | \
+            (%<boardType> == 3614692) | \
+            (%<boardType> == 3614693) | \
+            (%<boardType> == 1000)
+
+            int32_t ErrCode;
+            char *devname;
+            sg_fpga_io3xxModuleIdT  moduleId;
+            static char msg[500];
+            
+            ErrCode = (int32_t)sg_fpga_IO3xxGetModuleId(%<boardType>, &moduleId);
+            devname = moduleId.devname;
+            
+            uintptr_t bar = (uintptr_t)io3xxGetAddressSgLib(%<id>,SG_FPGA_IO3XX_BAR2);
+            volatile uint32_t *dutTimeStamp = (volatile uint32_t*)(bar + DUT_TIME_STAMP_OFFSET); 
+
+            if(*dutTimeStamp != 0){
+                // do we need to check something here????
+            }
+
+            // Call DMA buffer allocation function
+            ErrCode = createDmaMemoryPool(%<id>);
+            if (ErrCode != 0) {
+                sprintf(msg, "%s ID %d: Failed to allocate memory buffer!\n", devname, %<id>);
+                %<LibSetRTModelErrorStatus("msg")>;
+                return;
+            }
+
+        %endif
+
+    }
+    %closefile buffer
+    %<sgAddInitCode(buffer, "trailer")>
+
+%endfunction
+
+%% Function: BlockTypeSetup ===============================================
+%%
+%function BlockTypeSetup (block, system) void
+    %<LibAddToCommonIncludes("sg_fpga_io30x_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io31x_io32x_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io33x_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io337_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io36x_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io39x_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_fpga_io3xx_scatter_gather_dma.h")>
+    %<LibAddToCommonIncludes("sg_fpga_pulse_setup_util.h")>
+    %<LibAddToCommonIncludes("sg_common.h")>
+    %<LibAddToCommonIncludes("sg_printf.h")>
+%endfunction
+
+%% Function: BlockInstanceSetup ===========================================
+%%
+%function BlockInstanceSetup (block, system) void
+%endfunction
+
+%% Function: Outputs ======================================================
+%%
+%function Outputs (block, system) Output
+    %% Write our code into a buffer and place it manually
+    %% This one is for HEADER and therefore executed before anything else
+    %openfile buffer
+    {
+        %if %<useFpgaDmaController>
+        static char msg[500];
+            ScatterGatherDmaState *sgDmaSharedState;
+            sg_fpga_io3xx_getSharedSgDmaState(%<id>, &sgDmaSharedState);
+            // if overload flag is set, stop the model execution in case DMA controller is overtimed
+            if ((*sgDmaSharedState->intPollCounterPtr & 0x0080) && (%<dmaStopOnOverload>)) {
+                sprintf(msg, "DMA Controller Overload\n");
+                %<LibSetRTModelErrorStatus("msg")>;
+                SG_PRINTF(ERROR,msg);
+                return;
+            }
+        %endif
+    }
+    %closefile buffer
+    %<LibSystemOutputCustomCode(system, buffer, "header")>
+
+    %% Write our code into a buffer and place it manually
+    %% This one is for TRAILER and therefore executed after anything else
+    %openfile buffer
+    {
+        %if %<useFpgaDmaController>
+            io3xx_sgdma_feedSequential(%<id>);
+        %endif
+    }
+    %closefile buffer
+    %<LibSystemOutputCustomCode(system, buffer, "trailer")>
+%endfunction
+
+%% Function: Terminate ====================================================
+%%
+%function Terminate (block, system) Output
+    %openfile buffer
+    {
+        
+        %% if the board contains the front pull resistors, reset them (all TEWS modules with DIO)
+        %assign isTEWS = FEVAL("regexp", "%<boardType>", "31[678]\d*|32[2-5]\d*|336\d*")
+        
+        %if !ISEMPTY(isTEWS) | (%<nbrRearIo> != 0)
+        uintptr_t bar2Addr;
+        static char msg[500];
+        bar2Addr = (uintptr_t)io3xxGetAddressSgLib((int32_t)%<id>, SG_FPGA_IO3XX_BAR2);
+        if (bar2Addr == 0) {
+            sprintf(msg, "%s", pSgErrorStr);
+            %<LibSetRTModelErrorStatus("msg")>;
+            SG_PRINTF(ERROR,msg);
+            return;
+        }
+        %endif
+        
+        %if !ISEMPTY(isTEWS)
+            volatile io3xx_pull *ptrIO31x_pull;
+            // Get pointer to io31x_pull
+            ptrIO31x_pull = (io3xx_pull *)((uintptr_t)bar2Addr + IO3xx_PULL_BASE);
+            // Disable pull resistors
+            ptrIO31x_pull->enable = 0x0; // disable
+        %endif
+
+        %if (%<nbrRearIo> != 0)
+        sg_fpga_io3xxModuleIdT  moduleId;
+        sg_fpga_IO3xxGetModuleId(%<boardType>, &moduleId);
+        char *devname = moduleId.devname;
+        int32_t ErrCode;
+        %endif
+
+        %foreach i = nbrRearIo
+            %if (rearIO[i] == 2)
+                SG_PRINTF(INFO, "%s ID %d: Terminate Rear I/O Extension -21 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = IO3xx_21_terminate(devname, %<id>, %<vioRear[i]>,%<i>);
+            %elseif (rearIO[i] == 3)
+                SG_PRINTF(INFO, "%s ID %d: Terminate Rear I/O Extension -22 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = IO3xx_22_terminate(devname, %<id>, %<vioRear[i]>,%<i>);
+            %elseif (rearIO[i] == 4)
+                SG_PRINTF(INFO, "%s ID %d: Terminate Rear I/O Extension -24 at position %d \n", devname, %<id>, %<i+1>);
+                ErrCode = IO3xx_24_terminate(%<id>,%<i>);
+            %else
+                (void)devname;
+                (void)ErrCode;
+            %endif       
+            %if ((%<rearIO[i]> >= 2) & (%<rearIO[i]> <= 4))
+            // throw a warning if something went wrong 
+            // The error codes are defined in sg_fpga_xilinx_i2c.h in the FPGA-setup lib
+                if (ErrCode != 0) {
+                    SG_PRINTF(WARNING, "%s ID %d: Issue with termination of I/O extension position %d. ErrorCode: %d", devname, %<id>, %<i+1>, ErrCode);
+                } else {
+                    SG_PRINTF(INFO, "%s ID %d: Successfully terminated rear I/O extension at position %d.\n", devname, %<id>, %<i+1>);
+                }
+            %endif
+        %endforeach
+
+        freeFPGAModuleSgLib((uint32_t)%<id>);
+
+    }
+    %closefile buffer
+    %<LibMdlTerminateCustomCode(buffer, "trailer")>
+%endfunction

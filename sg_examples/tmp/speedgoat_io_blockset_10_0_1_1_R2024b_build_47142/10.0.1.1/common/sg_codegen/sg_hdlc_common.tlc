@@ -1,0 +1,6 @@
+
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%function sgHdlcAddInitCode_v24a(code, location) Output
+    %<sgAddInitCode(code, location)>
+%endfunction

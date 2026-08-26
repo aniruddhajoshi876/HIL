@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">A2B - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_a2b_examples.html" title="IO3xx A2B - Examples"><link rel="next" href="refentry_a2b_i2stdm_read.html" title="A2B - I2S/TDM Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_a2b_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>A2B - Setup</h2><p>A2B - Setup &#8212; <span class="phrase">Configure the A2B bus</span></p></div><div class="refsect1"><a name="d5e289"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_a2b_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e297"></a><h2>Description</h2><p>The A2B Setup driver block configures the A2B bus on the -40 I/O interface
+                extension.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e303"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interface Settings</span>
+                    </span></dt><dd><p>Select the mode or disable the specified interface.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The number of interfaces displayed depends on the number of I/O
+                                interface extensions (-40) activated in the FPGA setup block.</p></td></tr></table></div></dd><dt><span class="term">Audio Clock</span></dt><dd><p>Set the audio clock to either 44.1&nbsp;kHz or 48&nbsp;kHz for the A2B
+                            network. Make sure you use the same setting in the configuration
+                            file.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>In case several nodes are used as main node, the <span class="bold"><strong>Audio Clock</strong></span> must be the same for all
+                                nodes. </p></td></tr></table></div></dd><dt><span class="term">Frame Size</span></dt><dd><p>Specify the frame size for the TDM data.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">A2Bx Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Network Configuration File</span>
+                    </span></dt><dd><p>Specify the path of the configuration file (.dat) to set up the A2B
+                            network. Click the <span class="bold"><strong>Browse</strong></span> button to
+                            easily find your file or enter the file name manually. The nework
+                            configuration file only needs to be set in case the corresponding A2B
+                            node is used as a main node.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Configuration File</span>
+                    </span></dt><dd><p>Specify the path of the node configuration file in order to configure
+                            the corresponding A2B interface. Click the <span class="bold"><strong>Browse</strong></span> button to easily find your file or enter the file
+                            name manually. By clicking the <span class="bold"><strong>Update</strong></span>
+                            button, the whole configuration file is parsed again.</p></dd></dl></div></div></div></body></html>

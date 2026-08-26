@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO611 - LIN Slave Read v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io611_lin_slave_write_v2.html" title="IO611 - LIN Slave Write v2"><link rel="next" href="refentry_io611_lin_status_v2.html" title="IO611 - LIN Status v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io611_lin_slave_read_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO611 - LIN Slave Read v2</h2><p>IO611 - LIN Slave Read v2 &#8212; <span class="phrase">Read messages from the
+                    LIN channel</span></p></div><div class="refsect1"><a name="d5e12913"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io611_lin_slave_read_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e12921"></a><h2>Description</h2><p>This driver block allows LIN messages to be read. The LIN message information (LIN
+                version, ID, DLC) can be set in the block mask.</p><p>The buffer size is 20 messages per channel, so depending on the selected baud rate
+                and the "LIN Slave Read" block sample times, it is important to not let the input
+                buffer overflow.</p><p>For each LIN message a single read block is required.</p></div><div class="refsect1"><a name="d5e12926"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">State </span>
+                    </span></dt><dd><p>Message status:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1: New message received</p></li><li class="listitem"><p>0: No new message received</p></li><li class="listitem"><p>-1: Error ("Data" output holds the corresponding error
+                                    code)</p></li></ul></div><p><span class="bold"><strong>Data
+                            Type:</strong></span><code class="literal">int32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Msg Type</span>
+                    </span></dt><dd><p>Message Type:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Dataframe message</p></li><li class="listitem"><p>2: Error message</p></li><li class="listitem"><p>3: Wakeup message</p></li></ul></div><p>If the message type is "Error message", the error code is written to
+                            the "Data" output.<span class="bold"><strong>Data
+                                Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term"><span class="guilabel">Data Overrun</span></span></dt><dd><p>Buffer Overflow:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: No overflow</p></li><li class="listitem"><p>1: Receive queue overflow (already one or more messages
+                                    lost)</p></li></ul></div><p><span class="bold"><strong>Data
+                            Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>The timestamp for receipt of the LIN message. The resolution is 1&micro;s,
+                            so in order to get a double value in seconds, the block output must be
+                            converted to double and multiplied by 1e-6. This 1&micro;s resolution is given
+                            by the hardware implementation of the IO61X modules. The time is reset
+                            to zero at each model start. <span class="bold"><strong>Data
+                                Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data </span>
+                    </span></dt><dd><p>The number of bytes is defined in the block mask with the parameter
+                            DLC. <span class="bold"><strong>Data
+                            Type:</strong></span><code class="literal">uint8</code></p><p>If an error message has been received, Data[0] and Data[1] holds the
+                            error code. The following error codes are possible:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: no error</p></li><li class="listitem"><p>1: bit error</p></li><li class="listitem"><p>2: checksum error</p></li><li class="listitem"><p>3: parity error</p></li><li class="listitem"><p>4: no answer from slave</p></li><li class="listitem"><p>5: Sync break error</p></li><li class="listitem"><p>6: Inconsistent sync break field</p></li><li class="listitem"><p>7: More data expected</p></li><li class="listitem"><p>8: Timeout after start of sync break field</p></li><li class="listitem"><p>9: Timeout after sync break field</p></li><li class="listitem"><p>10: Timeout after sync field</p></li><li class="listitem"><p>11: Slave didn't start</p></li><li class="listitem"><p>12: LIN parameter error</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e13015"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term"><span class="guilabel">Receive message with channel</span></span></dt><dd><p>Choose the LIN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term"><span class="guilabel">Enable update state</span></span></dt><dd><p>Enables the output port for the message state.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Message Type</span>
+                    </span></dt><dd><p>Enables the output port for the message type.</p></dd><dt><span class="term"><span class="guilabel">Enable Data Overrun</span></span></dt><dd><p>Enables the output port for data overrun information.</p></dd><dt><span class="term"><span class="guilabel">Enable Timestamp</span></span></dt><dd><p>Enables the output port for the Timestamp.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type</span>
+                    </span></dt><dd><p>Currently only the message type RAW is supported.</p></dd><dt><span class="term">
+                        <span class="guilabel">LIN version</span>
+                    </span></dt><dd><p>Select the LIN version:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>LIN 1.X representing versions 1.1, 1.2 and 1.3 uses Classic
+                                    Checksum.</p></li><li class="listitem"><p>LIN 2.X representing versions 2.0, 2.1 and 2.2 uses Enhanced
+                                    Checksum except for IDs 60 and 61.</p></li></ul></div></dd><dt><a name="varlistentry_lin_parameter_protid"></a><span class="term">
+                <span class="guilabel">Identifier</span>
+            </span></dt><dd><p>Message ID of the LIN message without parity protection. Valid values are in
+                    the range 0 through 63.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>LIN specifies the Protected ID (PID) to be a 8-bit value, where bits 7 and
+                        8 contain parity sums over the other bits. The ID therefore consists of bits
+                        1 through 6.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">DLC</span>
+                    </span></dt><dd><p>Identifies the length of the LIN message data array (Data Length
+                            Code). The value can be chosen in the range of 1 through 8.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>LIN version 1.1 defines the DLC as a function of the ID (0-31: 2;
+                                32-47: 4; 48-63: 8).</p></td></tr></table></div></dd></dl></div></div></div></body></html>

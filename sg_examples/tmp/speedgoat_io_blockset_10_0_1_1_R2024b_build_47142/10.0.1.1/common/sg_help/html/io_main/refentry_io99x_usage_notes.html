@@ -1,0 +1,33 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO99X Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_io99x_pin_mapping.html" title="IO99X Pin Mapping"><link rel="next" href="refentry_io99x_battery_control.html" title="IO99X - Battery simulation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io99x_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO99X Usage Notes</h2><p>IO99X Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e210"></a><h2>Global Enable</h2><p>High output voltages can be generated when multiple modules are connected in
+                series. An Interlock feature prevents the generation of any output voltage unless
+                the "Hardware Input Enable" (Pin 17) is raised to 3.3 V (Input is 5 V tolerant).
+                This can be done by connecting this pin to 3.3V (Pin 16). Another option is to use
+                the "Hardware Output Status" (Pin 18) from another module or an external signal.
+                This pin is active high when the enable input is raised to 3.3 V and a reset has
+                occurred (the module is reset when the model is loaded to the target or before the
+                model is started). The interlock can be used in various ways as shown below:</p><p><span class="inlinemediaobject"><img src="././graphics/io99x_commonSignalEnable.png"></span></p><p><span class="inlinemediaobject"><img src="././graphics/io99x_masterModuleEnable.png"></span></p><p><span class="inlinemediaobject"><img src="././graphics/io99x_independentEnable.png"></span></p><p><span class="inlinemediaobject"><img src="././graphics/io99x_dasyChainEnable.png"></span></p></div><div class="refsect1"><a name="d5e229"></a><h2>Channel Enabling</h2><p>Each channel can be independently enabled using the corresponding enable port when
+                the <span class="bold"><strong>Show input enable ports</strong></span> checkbox is activated.
+                Enabling a channel during runtime can take several milliseconds. The time required
+                increases when enabling multiple channels at the same time. Using this feature with
+                small sample rates may result in CPU overloads. If a channel is disabled, it is
+                disconnected from the load. To prevent damage, each channel has a diode on every
+                output which can withstand currents up to 3 A. It is recommended to not turn off
+                channels connected in series, and to apply a low voltage instead. Otherwise, a
+                negative voltage will appear across the channel output because of the diode.</p><p><span class="inlinemediaobject"><img src="././graphics/io99x_outputProtection.png" width="486"></span></p></div><div class="refsect1"><a name="d5e237"></a><h2>Sense Input Lines</h2><p>Each channel provides two input Sense Lines allowing the battery module to make a
+                correction for any voltage drop in the connecting wires. These lines should to be
+                connected to the load for optimal performance.</p><p><span class="inlinemediaobject"><img src="././graphics/Battery_SenseLines.png" width="486"></span></p></div><div class="refsect1"><a name="d5e244"></a><h2>Current Sinking</h2><p>Current Sinking can be used when simulating a battery connected to a charger. Sink
+                current can be used to limit the current that a Charger Current can deliver to the
+                load. Refer to the OEM Manual for further information.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The output voltage must be greater than 0.5 V for the current sink to work
+                    correctly.</p></td></tr></table></div><p><span class="inlinemediaobject"><img src="././graphics/Battery_CurrentSink.png" width="486"></span></p></div><div class="refsect1"><a name="d5e253"></a><h2>Cell Stacking</h2><p>All channels are individually isolated from each other and from chassis ground.
+                This allows channels to be connected in series. Therefore, connect the positive
+                output with a negative output of another channel as shown below:</p><p><span class="inlinemediaobject"><img src="././graphics/io99x_cellStacking.png" width="486"></span></p><p>The sense input can either be left unconnected or connected to the load as shown
+                above. It is recommended that all channels connected in series should be turned on.
+                If a channel is off, a diode between the outputs is used to protect the channel from
+                damage. The diode can withstand currents of up to 3 A.</p></div><div class="refsect1"><a name="d5e261"></a><h2>Module Startup</h2><p>If the <span class="bold"><strong>Initial channel enable values</strong></span> are set to
+                one, the initial voltage and current sink values are applied to the outputs. These
+                values are set before the model starts. However, before these values are applied, a
+                reset of the I/O module is triggered in the initialization phase, which disables all
+                the outputs. The duration of the reset is approximately 500 ms.</p></div></div></body></html>

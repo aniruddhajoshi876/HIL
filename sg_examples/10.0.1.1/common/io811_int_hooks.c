@@ -1,0 +1,8 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#include "sg_blocks/video/include/sg_IO811.h"
+#include "sg_blocks/common/libsg/sg_common.h"
+static const int SG_INT_BARS[]={(0xf54+4314-0x202e),(0x646+1974-0xdfb)};
+#define SG_INT_PREFIX IO811
+#include "sg_interrupt_config.h"
+SG_INT_START_FUNC{int32_t i;sg_mod_list zcbf6b8e27f;int32_t zc14dfc38df=sg_module_get(&zcbf6b8e27f,zcc4598f69e,-(0x10c5+2798-0x1bb2));for(i=(0x6c1+2472-0x1069);i<zc14dfc38df;i++){int32_t moduleId=zcbf6b8e27f[i]->id;zbbbd9b49d7*zae10e3f17f=(zbbbd9b49d7*)sg_module_get_custom_data(zcc4598f69e,moduleId);if(!zae10e3f17f)continue;uint32_t z4498a0a185=zae10e3f17f->z4498a0a185;sg_BFResetAndStart(z4498a0a185,(0x103b+1343-0x1578));SG_PRINTF(INFO,"\x25\x73\x20\x44\x4d\x41" "\n",DEVNAME);sg_BFIntEnable(z4498a0a185);}return;}SG_INT_ISR_FUNC{uint32_t stat;int32_t i;sg_mod_list zcbf6b8e27f;int32_t zc14dfc38df=sg_module_get(&zcbf6b8e27f,zcc4598f69e,-(0x8dc+3444-0x164f));for(i=(0x13b+7672-0x1f33);i<zc14dfc38df;i++){int32_t moduleId=zcbf6b8e27f[i]->id;zbbbd9b49d7*zae10e3f17f=(zbbbd9b49d7*)sg_module_get_custom_data(zcc4598f69e,moduleId);if(!zae10e3f17f)continue;uint32_t z4498a0a185=zae10e3f17f->z4498a0a185;if(sg_BFIntAny(z4498a0a185)){stat=sg_BFIntAck(z4498a0a185);if(stat!=(0x825+5673-0x1e4e)){return SG_RUN_ISR;}}}return SG_DROP_ISR;}SG_INT_STOP_FUNC{int32_t i;sg_mod_list zcbf6b8e27f;int32_t zc14dfc38df=sg_module_get(&zcbf6b8e27f,zcc4598f69e,-(0x716+1523-0xd08));for(i=(0xf5+2293-0x9ea);i<zc14dfc38df;i++){int32_t moduleId=zcbf6b8e27f[i]->id;zbbbd9b49d7*zae10e3f17f=(zbbbd9b49d7*)sg_module_get_custom_data(zcc4598f69e,moduleId);if(!zae10e3f17f)continue;uint32_t z4498a0a185=zae10e3f17f->z4498a0a185;sg_BFStop(z4498a0a185);sg_BFIntDisable(z4498a0a185);}return;}

@@ -1,0 +1,60 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO145 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io145_digital_output.html" title="IO145 - Digital Output"><link rel="next" href="refentry_ref_io17x.html" title="IO17x"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io145_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO145 Usage Notes</h2><p>IO145 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e20757"></a><h2>Simultaneous sampling</h2><p>The IO145 is generally considered to use sequential sampling, as the individual
+                ADCs sample the channels successively. In order to achieve simultaneous sampling,
+                the analog input block can be configured to only use one channel per ADC, for
+                example, the first Channel from Input Group 1, the first Channel from Input Group 2,
+                the first Channel from Input Group 3 and the first Channel from Input Group 4.
+            </p></div><div class="refsect1"><a name="d5e20760"></a><h2>DMA Setup</h2><p>If DMA is enabled for analog input, analog output or both, then the model or the
+                asynchronous subsystem where the module is located must be triggered by the module's
+                interrupt.</p><p>This is required so that the sample hits of the blocks are synchronous to the
+                module's DMA engine.</p><p><a name="para_common_interrupt_setup_information"></a>In DMA mode, the model must contain an
+        Interrupt Setup block that triggers a subsystem or the model. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+            documentation</a> for more information. </p></div><div class="refsect1"><a name="d5e20766"></a><h2>Output DMA Latency</h2><p>This note shows the difference between the two configuration options for the
+                latency of the Analog output block in DMA mode.</p><p>The configuration is defined in the analog output tab of the Setup block.</p><p><span class="bold"><strong>Latency as Small as Possible</strong></span></p><p>If the latency is kept as small as possible, then the module will start to output
+                values immediately after receiving a frame. However, the transmission time will
+                vary, meaning that the delay between the sample hit of the model and the change at
+                the output pins is not constant. If both the analog input and output use DMA, then
+                the latency between measuring a value, processing and writing the value to the
+                output will vary.</p><p>If the DMA transfer, during one sample hit, requires more time than the previous
+                transfer, then the outputs will remain on the last value until the transfer has
+                finished.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_asap.svg" width="972"></span></p><p><span class="bold"><strong>Latency until Next Frame</strong></span></p><p>If the latency is fixed to the beginning of the next frame, then the analog
+                outputs will only start to output the data of the frame at the next sample hit. The
+                delay between the sample hit and the outputs, or between the analog inputs and the
+                analog outputs is therefore constant. There is no danger of running out of data at
+                the outputs, however, the latency will be higher.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_1frame.svg" width="972"></span></p></div><div class="refsect1"><a name="d5e20789"></a><h2>Frame Trigger</h2><p>The frame trigger starts the conversion of analog input or output data over DMA.
+                The advantage of operating with the frame trigger is that the data frame can be
+                smaller than the trigger signal and the analog input and output frames can be of
+                different sizes. Without the frame trigger, it is still possible to have different
+                sample times for the input and output, but they must complete their frames at the
+                same time.</p><p>The disadvantage of the frame trigger is that different conversion clocks cannot
+                be used for the analog input and output.</p><p><span class="bold"><strong>Example: Input and Output Frames are the Same Size as the
+                    Frame Trigger</strong></span></p><p>In this example, the analog input and output frames have the same size as the
+                frame trigger. If the analog input frame size and analog output frame size are both
+                100 samples/channel, then the frame trigger clock divider must be 100. This results
+                in a frame trigger with 100 conversions/trigger. With these settings, the IO145 I/O
+                module performs the analog conversions at an interval defined with the chosen
+                conversion clock.</p><p>When using the frame trigger, the frames are always synchronized. Consequently,
+                the analog input and output have to use the same conversion clock. The system
+                latency is therefore double the time of one frame.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_frame_trigger_big_frame.svg" width="918"></span></p><p><span class="bold"><strong>Example: Input and Output Frames are Smaller than the Frame
+                    Trigger</strong></span></p><p>In this example, the analog input and output frames are smaller than the frame
+                trigger. The analog input frame size could, for example, be 40 samples/channel, the
+                analog output frame size could be 60 samples/channel and the frame trigger clock
+                divider could be 100. The result is a configuration where the system starts
+                converting both the analog input and output samples after a frame trigger. After 40
+                samples, the analog input frame is full, the ADC conversions are stopped and the
+                data frame is transferred over DMA to the model in Simulink. For the next 20
+                conversion clocks, the module will continue to update the analog outputs until the
+                output frame has also finished. During the last 40 conversion clocks, the module
+                will not perform anymore conversions. It may however load the next output frame over
+                DMA. The whole cycle will start again after the next frame trigger.</p><p>When using the frame trigger, the frames are always synchronized. Consequently,
+                the analog input and output have to use the same conversion clock. The system
+                latency is therefore double the time of one frame. Shorter latencies cannot be
+                guaranteed for every configuration.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_frame_trigger_small_frame.svg" width="918"></span></p></div><div class="refsect1"><a name="d5e20813"></a><h2>Output Differential Signals using Single-Ended Channels</h2><p>Analog I/O modules with single-ended outputs and simultaneous channel update
+                functionality can support differential output signals. Two single-ended channels are
+                needed to output one differential signal, and the <span class="bold"><strong>Simultaneous
+                    Channel Update</strong></span> setting must be enabled. The following screenshot
+                illustrates one way in which you can implement differential signals over
+                single-ended channels in Simulink. Ensure that the voltage ranges configured are
+                compatible with the output signals.</p><p><span class="inlinemediaobject"><img src="././graphics/io145_df_signals_se_channels.png" width="950"></span></p></div></div></body></html>

@@ -1,0 +1,135 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO61X Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_can_ofa_2_pin_mapping.html" title="IO61X Pin Mapping"><link rel="next" href="refentry_ref_can_ofa_2_setup.html" title="IO61X - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_can_ofa_2_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO61X Usage Notes</h2><p>IO61X Usage Notes &#8212; <span class="phrase">Usage information about
+                    the CAN I/O modules</span></p></div><div class="refsect1"><a name="d5e2696"></a><h2>CAN Message Types</h2><p>The CAN and CAN FD messages are defined using the CAN_MESSAGE_BUS and
+                CAN_FD_MESSAGE_BUS Simulink bus datatypes, which contain individual signals for the
+                different properties of the message. For CAN, a non-bus datatype is available to
+                support the "SAE J1939" and "XCP over CAN" Simulink blocks. With the exception of
+                these two use cases, using the non-bus datatype is not recommended.</p><p>The CAN_MESSAGE_BUS and the CAN_FD_MESSAGE_BUS datatypes contain the following
+                signals:</p><p><span class="inlinemediaobject"><img src="././graphics/CAN_BUS_datatype.svg"></span></p><p>To create a bus object in the base workspace for the Simulink CAN and CAN FD
+                message bus, refer to the MathWorks VNT documentation for <a class="link" href="https://mathworks.com/help/vnt/ug/canfdmessagebustype.html" target="_blank">canMessageBusType</a> and <a class="link" href="https://mathworks.com/help/vnt/ug/canfdmessagebustype.html" target="_blank">canFDMessageBusType</a>.</p><p><span class="bold"><strong>CAN and CAN FD Message Bus Signals</strong></span></p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="22%" class="col1"><col width="55%" class="col2"><col width="23%" class="col3"></colgroup><thead><tr><th>Signal</th><th>Description</th><th>Datatype</th></tr></thead><tbody><tr><td>ProtocolMode*</td><td>Protocol mode defined as CAN <code class="code">(0)</code> or
+                                CAN FD <code class="code">(1)</code>.</td><td>uint8</td></tr><tr><td>ID</td><td>ID of the message, specified as a numeric value.</td><td>uint32</td></tr><tr><td>Extended</td><td>Specifies whether the message ID is of standard or extended type.
+                                The value <code class="code">(1)</code> indicates that the ID is of extended type
+                                (29 bits), <code class="code">(0)</code> indicates standard type (11
+                                bits).</td><td>uint8</td></tr><tr><td>Length</td><td>Message length in bytes.</td><td>uint8</td></tr><tr><td>Remote</td><td>Specifies if message is remote frame - either true
+                                    <code class="code">(1)</code> or false <code class="code">(0)</code>.</td><td>uint8</td></tr><tr><td>Error</td><td>Specifies if message is error frame - either true
+                                    <code class="code">(1)</code> or false <code class="code">(0)</code>.</td><td>uint8</td></tr><tr><td>BRS*</td><td>Specifies if message uses bit rate switch - either
+                                true <code class="code">(1)</code> or false <code class="code">(0)</code>.</td><td>uint8</td></tr><tr><td>ESI*</td><td>Specifies message error state indicator - either
+                                true <code class="code">(1)</code> or false <code class="code">(0)</code>.</td><td>uint8</td></tr><tr><td>DLC*</td><td>Data length code value.</td><td>uint8</td></tr><tr><td>Reserved*</td><td>-</td><td>uint32</td></tr><tr><td>Timestamp</td><td>Message received timestamp when read from CAN
+                                interface.</td><td>double</td></tr><tr><td>Data</td><td>Contains the packed data of the message.</td><td>uint8</td></tr></tbody></table></div><p>(* only used with CAN FD messages.)</p></div><div class="refsect1"><a name="d5e2781"></a><h2>CAN Read Modes</h2><p>The CAN Read block can be used in one of two different read modes: <span class="bold"><strong>Single Read from Buffer (FIFO)</strong></span> and <span class="bold"><strong>Specify by IDs</strong></span>. This defines how the CAN messages are read from the
+                bus.</p></div><div class="refsect1"><a name="d5e2786"></a><h2>Single Read from Buffer (FIFO)</h2><p>With <span class="bold"><strong>Single Read from Buffer (FIFO)</strong></span>, all CAN
+                messages that are available on the specified CAN channel are stored in a message
+                queue, which is implemented as a First-In-First-Out (FIFO) buffer. In this mode, the
+                CAN Read block has direct access to this buffer and if there are messages in the
+                message queue, the <span class="bold"><strong>Data present</strong></span> outport will be 1.
+                With every execution of the CAN Read block, one single message is read from the
+                queue and output on the <span class="bold"><strong>CAN Msg</strong></span> output port.</p><p>To ensure that the complete receive buffer is processed and emptied in one sample
+                step, the CAN Read block must be executed multiple times until the <span class="bold"><strong>Data present</strong></span> outport indicates that there are no messages
+                remaining in the queue. This can be achieved with a do-while subsystem construction,
+                which will result in multiple iterations of the complete subsystem. Consequently,
+                every CAN message that has been read from the bus can be processed individually and
+                the complete buffer is cleared in every sample step.</p><p>The maximum number of iterations is set in the While Iterator block in the
+                Simulink/Ports &amp; Subsystem library. It can be set to unlimited iterations with
+                (-1) but it is best practice to limit this to 500 iterations.</p><p>Inside the subsystem, multiple CAN or CAN FD unpack blocks can be directly
+                connected to the <span class="bold"><strong>CAN Msg</strong></span> output port. The matching
+                IDs are then unpacked into the signals of the message and can be routed out of the
+                subsystem. If multiple messages with the same Message ID are received, only the most
+                recent messages will appear in the do-while subsystem output.</p><p>The sample time of the subsystem is defined by Simulink inheritance rules: If the
+                subsystem does not have input ports, it will inherit the fundamental sample time of
+                the model. Alternatively, the sample time of the subsystem can be controlled by
+                adding an input port, with a connected signal that has a defined sample time. The
+                sample time must be chosen depending on the bus load in order to avoid buffer
+                overflow during one sample step.</p><p>A limitation of this read mode is that there can only be one CAN Read block per
+                channel configured with the <span class="bold"><strong>Single Read from Buffer
+                    (FIFO)</strong></span> mode. Therefore, all CAN messages that are received on this
+                channel, must be processed inside this subsystem.</p><p><span class="bold"><strong>Top Level View</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/IO691_Read_block_whileIterator.svg"></span></p><p><span class="bold"><strong>Inside the While Iterator Subsystem </strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/IO61X_Read_block_whileIteratorSS.svg"></span></p><p>The <span class="bold"><strong>Sample Time</strong></span> input port defines the rate at
+                which the subsystem is executed. If the <span class="bold"><strong>Sample Time</strong></span>
+                is not defined, the subsystem will run on the base rate.</p></div><div class="refsect1"><a name="d5e2815"></a><h2>Specify by IDs</h2><p>If the application only requires specific CAN IDs and the most recent data of a
+                CAN message, the <span class="bold"><strong>Specify by IDs</strong></span> read mode can be
+                used. In this mode, no While Iterator block is required and the number of CAN Read
+                blocks per CAN channel is not limited. When reading the same ID with different CAN
+                Read blocks, execution with different sample times is supported and all the blocks
+                will read the most recent CAN message.</p></div><div class="refsect1"><a name="d5e2819"></a><h2>Initialization and Termination CAN Messages </h2><p>The CAN Setup driver block allows users to define individual CAN messages to be
+                sent during initialization and termination of the real-time application. This
+                functionality can be used to initialize or terminate other CAN nodes (such as data
+                loggers) on the network.</p><p>The initialization and termination CAN messages must be defined with structure
+                arrays that require the following specific field names:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Channel: Selects the CAN channel on which the message is sent.</p></li><li class="listitem"><p>Protocol: Defines the protocol type of the message to be either CAN or
+                        CAN-FD. The permitted data range is automatically adjusted to [0 8] byte for
+                        CAN or [0 64] byte for CAN-FD.</p></li><li class="listitem"><p>BRS: Defines whether the fast data baud rate should be used for CAN-FD.
+                        Valid values are either 0 for standard baud rate or 1 for fast data baud
+                        rate (double).</p></li><li class="listitem"><p>Type: Defines whether the message to be sent is of a standard or extended
+                        type. Valid values are either <span class="bold"><strong>Standard</strong></span> or
+                            <span class="bold"><strong>Extended</strong></span> (character vectors).</p></li><li class="listitem"><p>Identifier: Defines the identifier of the message. The value (scalar) must
+                        be in the corresponding identifier range (standard or extended).</p></li><li class="listitem"><p>Data: Defines the data frame to be sent out along with the CAN message.
+                        The length of the row vector defines the data frame size. The limits depend
+                        on the selection made for the <span class="bold"><strong>Protocol</strong></span>
+                        parameter.</p></li><li class="listitem"><p>Pause: Defines the amount of time, in seconds, that the Setup block waits
+                        after a message has been sent before sending the next message. Valid values
+                        are 0&#8211;0.05 seconds. Some CAN nodes need time to settle before they can
+                        accept the next message; for example, the node must settle when the previous
+                        message sets a new operational mode. Use this field to specify the idle
+                        times.</p></li></ul></div><p><span class="bold"><strong>Initialization and Termination Structure</strong></span></p><p>In MATLAB, the following script can be used to create the initialization and
+                termination structure. The initCAN and termCAN variables must be specified in the
+                CAN setup block for the <span class="bold"><strong>Initialization Structures
+                    Array</strong></span> and <span class="bold"><strong>Termination Structures
+                    Array</strong></span> fields.</p><pre class="programlisting">% create Initialization structure
+initCAN.Channel     = 1;
+initCAN.Protocol    = 'CAN-FD';         % 'CAN' or 'CAN-FD'
+initCAN.BRS         = 1;                % 0 or 1
+initCAN.Type        = 'Standard';       % 'Standard' or 'Extended'
+initCAN.Identifier  = 99;               % ID must be double
+initCAN.Data        = [8 8 8 8 8 8 8 8];
+initCAN.Pause       = 0.05;
+
+% create Termination structure
+termCAN.Channel     = 1;
+termCAN.Protocol    = 'CAN-FD';         % 'CAN' or 'CAN-FD'
+termCAN.BRS         = 1;                % 0 or 1
+termCAN.Type        = 'Extended';       % 'Standard' or 'Extended'
+termCAN.Identifier  = double(0xFFF);    % ID must be double
+termCAN.Data        = [1 1 1 1 1 1 1 1];
+termCAN.Pause       = 0.05;</pre></div><div class="refsect1"><a name="d5e2847"></a><h2>Baud Rate Configuration</h2><p>The IO61X I/O modules offer both pre-defined Baud Rates and custom
+                configurations.</p><p>The CAN driver uses a CAN Controller, which monitors the serial bus line and
+                performs sampling and adjustment of the sample point by synchronizing with the
+                start-bit edge and resynchronizing with the following edges.</p><p>According to the CAN specification<a href="#ftn.d5e2852" class="footnote" name="d5e2852"><sup class="footnote">[2]</sup></a>, the nominal bit time is split into four segments:</p><p><span class="inlinemediaobject"><img src="././graphics/IO691_IO602_CAN_Bit_Time.png"></span></p><p>The basic time unit of the CAN Nominal Bit Time is time quantum (t_q). The length
+                of one time quantum is determined by the clock rate of the CAN controller and a Baud
+                Rate Prescaler. While the synchronization segment has a fixed length, the other
+                three sections are programmable.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Sync Seg: The Synchronization Segment (Sync Seg) has a fixed length of one
+                        time quantum (1 t_q). The edges of the bus level are expected to occur
+                        during the Sync Seg. If an edge occurs outside of Sync Seg, its distance is
+                        called the phase error of this edge. On the other hand, if the edge occurs
+                        before Sync Seg, the phase error is negative.</p></li><li class="listitem"><p>Prop Seg: The Propagation Time Segment (Prop Seg) compensates for the
+                        physical delay times within the CAN network. These delay times consist of
+                        the signal propagation time on the bus and the internal delay time of the
+                        CAN nodes.</p></li><li class="listitem"><p>Phase Seg1: The Phase Buffer Segment 1 (Phase Seg1) compensates for
+                        positive phase errors and may be lengthened during resynchronization. The
+                        end of this segment defines the Sample Point (SP).</p></li><li class="listitem"><p>Phase Seg2: The Phase Buffer Segment 2 compensates for negative phase
+                        errors and may be shortened during resynchronization.</p></li></ul></div><p><span class="inlinemediaobject"><img src="././graphics/IO61X_Baud_Rate_Param.png"></span></p><p>Baud Rate parameters:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>BRP: Baud Rate Prescaler (BRP). The bit time quantum (t_q) is obtained by
+                        dividing BRP by the CAN controller clock rate (CAN_Clk = 80.000.000 [Hz]).
+                    </p></li><li class="listitem"><p>SJW: Synchronization Jump Width (SJW) value used for the synchronization.
+                        This will be SJW + 1. The SJW value must not exceed the time quanta assigned
+                        to Phase Buffer Segment 1.</p></li><li class="listitem"><p>TSEG1: Time segment before the sample point. This covers the Propagation
+                        Time Segment and Phase Buffer Segment 1. The TSEG1 value used for the bit
+                        timing will be TSEG1 + 1.</p></li><li class="listitem"><p>TSEG2: Time segment after the sample point. The TSEG2 value used for the
+                        bit timing will be TSEG2 + 1. The minimum value of TSEG2 is the configured
+                        SJW.</p></li></ul></div><p>The following formulas are used for calculating the CAN bit rate:</p><p>t_q = BRP / CAN_Clk</p><p>t_BS1 = t_q * (TSEG1 + 1)</p><p>t_BS2 = t_q * (TSEG2 + 1)</p><p>NominalBitTime = t_q + t_BS1 + t_BS2 = t_q * (1 + TSEG1 + TSEG2)</p><p>CAN Baud rate = 1/NominalBitTime</p><p>Depending on the cable length and machine setup, the Sample-Point can be rather
+                late, for example, 87.5% (recommended value from CiA).</p><p></p></div><div class="refsect1"><a name="d5e2890"></a><h2>Remote frames</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>For reading Remote Frames with an IO61X channel works solely with the Read
+                    block parameter <span class="bold"><strong>Read Mode</strong></span> set to <span class="bold"><strong>Single Read from Buffer (FIFO)</strong></span></p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using Remote Frames with the IO61X modules, alongside with the Rtr bit
+                    being set, the <span class="bold"><strong>DLC</strong></span> has to set to zero. This
+                    applies to both <span class="bold"><strong>CAN Pack</strong></span> and <span class="bold"><strong>CAN Unpack</strong></span> blocks.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e2901"></a><h2>Usage of LIN Pack and Unpack Blocks</h2><p>In order to support the Simulink LIN Pack and Unpack blocks, the DLC parameter for
+                the respective LIN Write and Read block must always be set to 8. Unused data fields
+                are filled with zero.</p><p>When reading LIN messages in a triggered subsystem, as recommended, the output of
+                the Enable block must be connected to the <span class="bold"><strong>Msg
+                    Updated</strong></span> input of the LIN Unpack block.</p><p>To successfully load a LIN Descriptor File (.ldf), the following requirements must
+                be met:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The line endings in the .ldf file must conform to the Windows style (CR
+                        LF).</p></li><li class="listitem"><p>Use the .ldf file of the LIN product example as a template.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Do not rearrange the order of the sections in the .ldf file,
+                                delete them or leave them empty. If necessary, placeholder elements
+                                must be added. In the simplest configuration, only the entries
+                                "Signals", "Frames" and "Signal Encoding Types - physical_value"
+                                have an influence on the functionality of the LIN Pack and Unpack
+                                blocks.</p></li></ul></div></li><li class="listitem"><p>The "physical_value" encoding type is supported for the "Signal Encoding
+                        Types" section but must not be used due to unhandled cases. All other encoding
+                        types are currently not supported and can therefore be used as
+                        placeholders.</p></li></ul></div><p>The following functions are supported by the LIN Pack and Unpack blocks:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The parameter "init_value" is supported for the "Signals" section of the
+                        LIN Unpack block.</p></li></ul></div></div><div class="footnotes"><br><hr class="footnote-hr"><div id="ftn.d5e2852" class="footnote"><p><a href="#d5e2852" class="para"><sup class="para">[2] </sup></a>ISO 11898-1, Road vehicles &#8211; Controller area network (CAN) &#8211; Data link
+                        layer and physical signaling, 2015</p></div></div></div></body></html>

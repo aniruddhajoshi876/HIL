@@ -1,0 +1,141 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 - LVDT/RVDT Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_lvdtrvdt_read.html" title="IO421 - LVDT/RVDT Read"><link rel="next" href="refentry_io421_synchroresolver_read.html" title="IO421 - Synchro/Resolver Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_lvdtrvdt_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 - LVDT/RVDT Write</h2><p>IO421 - LVDT/RVDT Write &#8212; 
+                <span class="phrase">Writes the IO421 LVDT/RVDT outputs</span>
+            </p></div><div class="refsect1"><a name="d5e1041"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io421_lvdt_write.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e1049"></a><h2>Description</h2><p>The IO421-3 sub-module simulates up to three Linear or Rotary Variable
+                Differential Transformers. Each simulated device consists of a primary coil, which
+                requires a reference alternating current, and two secondary coils. The output
+                voltages of the secondary coils depend on the position of the ferromagnetic rod. You
+                can define the position in the Simulink model, using the LVDT write driver
+                block.</p><p>The characteristics of the sub-module depend on the factory configuration selected
+                at the time of the order. This information is available in a separate documentation
+                shipped with the device.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="11%" class="col1"><col width="11%" class="col2"><col width="22%" class="col3"><col width="22%" class="col4"><col width="22%" class="col5"><col width="12%" class="col6"></colgroup><thead><tr><th>sub-module code</th><th>Format</th><th>Output (V<sub>LL</sub>)[V<sub>
+                                    RMS</sub>]</th><th>Ref
+                                (V<sub>REF</sub>)[V<sub>RMS</sub>]</th><th>Frequency [Hz]</th><th>Max Load [VA]</th></tr></thead><tbody><tr><td>5G</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>360 - 1k</td><td>0.1</td></tr><tr><td>5H</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>47 - 400</td><td>0.1</td></tr><tr><td>5J</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>1k - 3k</td><td>0.1</td></tr><tr><td>5K</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>3k - 5k</td><td>0.1</td></tr><tr><td>5L</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>5k - 7k</td><td>0.1</td></tr><tr><td>5M</td><td>DLV</td><td>2 - 11.8</td><td>2 - 28</td><td>7k - 10k</td><td>0.1</td></tr></tbody></table></div><p>See section IO421-3 LVDT/RVDT connection methods in the 'Usage notes' section for
+                more information about the various connection methods.</p></div><div class="refsect1"><a name="d5e1117"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position n (n is the channel number) </span>
+                    </span></dt><dd><p>The position of the ferromagnetic rod during the simulated runtime.
+                            The input value is limited to the supported range which is between
+                            -0.995 and +0.995. The number of these ports is dependent on the channel
+                            count, which is specified by the 'Channels vector' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Excitation</span>
+                    </span></dt><dd><p>Set the expected reference (R inputs) voltage in (V RMS). The voltage
+                            range depends on the submodule code of your I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">VLL Voltage</span>
+                    </span></dt><dd><p>Set the line to line output voltage of the A/B signals in (V RMS). The
+                            voltage range depends on the submodule code of your I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Phase Offset</span>
+                    </span></dt><dd><p>Set the phase offset between A/B output and the reference signal in
+                            degrees [ &deg; ]. The parameter can be defined with an accuracy of 0.1&deg; and
+                            the range is -90&deg; to 90&deg;.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Wrapped position </span>
+                    </span></dt><dd><p>Position data based on A/B value. This port is enabled or disabled in
+                            the 'Input and output ports configuration' tab of this block's dialog
+                            box. The width of this port is dependent of the number of channels
+                            (defined by the 'Channels vector' parameter).</p></dd><dt><span class="term">
+                        <span class="guilabel">Wrapped frequency </span>
+                    </span></dt><dd><p>The frequency of the reference (excitation) signal. This port is
+                            enabled or disabled in the 'Input and output ports configuration' tab of
+                            this block's dialog box. The width of this port is dependent of the
+                            number of channels (defined by the 'Channels vector' parameter).</p></dd><dt><span class="term">
+                        <span class="guilabel">Wrapped voltage </span>
+                    </span></dt><dd><p>The voltage of the reference (excitation) signal. This port is enabled
+                            or disabled in the 'Input and output ports configuration' tab of this
+                            block's dialog box. The width of this port is dependent of the number of
+                            channels (defined by the 'Channels vector' parameter).</p></dd><dt><span class="term">
+                        <span class="guilabel">Status </span>
+                    </span></dt><dd><p>Status information for this module. This parameter is a vector of 4
+                            binary elements. Each element represents a fault. A value of 0 indicates
+                            that no fault is present, and 1 indicates a fault. The faults are as
+                            follows (in order of position within the vector): </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The signal is below 90% of the expected threshold, and
+                                        signal loss occurs.</p></li><li class="listitem"><p>The reference is below 90% of the expected
+                                        threshold.</p></li><li class="listitem"><p>The built-in tests have failed.</p></li><li class="listitem"><p>Reference phase has been lost.</p></li></ul></div><p> This port is enabled or disabled in the 'Input and
+                            output ports configuration' tab of this block's dialog box.</p></dd></dl></div><p>All ports are vectors. The width of the vector, and the order of the corresponding
+                channels, is dependent on the configuration of the 'Channel vector'
+                parameter.</p></div><div class="refsect1"><a name="d5e1173"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>A unique module ID must be used for each type of IO421 module block in
+                            your model.</p><p>The module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to link the I/O module
+                                    driver blocks with each other</p></li><li class="listitem"><p>It also has an impact on the PCI slot auto-search feature: if
+                                    only one I/O module is installed, the module ID must be set to
+                                        <span class="bold"><strong>1</strong></span>. If multiple modules are
+                                    installed, it must be in the range 1:n. Not all the I/O modules
+                                    installed in the target machine need to be used</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Slot </span>
+                    </span></dt><dd><p>The carrier board can contain up to three sub-modules. This parameter
+                            indicates where is your IO421-1 located.</p></dd><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output ports Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Status Output Port </span>
+                    </span></dt><dd><p>When checked the 'Status' output port is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show "Wrapped frequency" Output Port </span>
+                    </span></dt><dd><p>When checked the 'Wrapped reference frequency' output port is enabled.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Show "Wrapped voltage" Output Port </span>
+                    </span></dt><dd><p>When checked the 'Wrapped reference voltage' output port is enabled.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Show "Wrapped position" Output Port </span>
+                    </span></dt><dd><p>When checked the 'Wrapped position' output port is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Excitation Voltage Input Port </span>
+                    </span></dt><dd><p>When checked the excitation input port is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show VLL Voltage Input Port </span>
+                    </span></dt><dd><p>When checked the VLL voltage input port is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Phase Offset Input Port </span>
+                    </span></dt><dd><p>When checked the phase offset input port is enabled.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Excitation </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Expected Excitation Voltage VREF Vector </span>
+                    </span></dt><dd><p>This parameter informs the IO421 I/O module about the expected
+                            reference (R inputs) voltage in (V RMS). You can either use a scalar
+                            value, which applies to all channels, or a vector which is mapped to the
+                            Channels vector.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The phase lock between the excitation and the signal output can
+                                take up to 1 second after connecting a valid excitation signal or
+                                starting the model. Consequently, no signals are immediately present
+                                at the output.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: A/B Output </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Wiring Mode Vector </span>
+                    </span></dt><dd><p>Define if the LVDT simulator is connected in 2-wire or 4-wire mode.
+                            For 3-wire connections, select 4-wire mode. See IO421-1 LVDT/RVDT
+                            connection methods for more information about the wiring. Define either
+                            a vector which will be mapped to the Channels vector, or a scalar which
+                            applies to all channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">VLL Output Mode Vector </span>
+                    </span></dt><dd><p>Select either '0' for ratio-metric output or '1' for fixed output. In
+                            ratio-metric mode, the output reflects changes in the excitation
+                            voltage, based on the ratio defined by VLL output voltage / Expected
+                            excitation voltage. V OUT = V REF IN * (VLL output voltage / Expected
+                            excitation voltage) In fixed mode, the changes in the excitation voltage
+                            are not reflected on the outputs. The value of VLL output voltage
+                            defines the voltage of the outputs. Define either a vector which will be
+                            mapped to the Channels vector, or a scalar which applies to all
+                            channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">VLL Output Vector </span>
+                    </span></dt><dd><p>This parameter configures the line to line output voltage of the A/B
+                            signals in (V RMS). Define either a vector which will be mapped to the
+                            Channels vector, or a scalar which applies to all channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Phase Offset Vector </span>
+                    </span></dt><dd><p>This parameter defines the phase offset between A/B output and the
+                            reference signal in degrees [ &deg; ]. The parameter can be defined with an
+                            accuracy of 0.1&deg;.</p></dd></dl></div></div></div></body></html>

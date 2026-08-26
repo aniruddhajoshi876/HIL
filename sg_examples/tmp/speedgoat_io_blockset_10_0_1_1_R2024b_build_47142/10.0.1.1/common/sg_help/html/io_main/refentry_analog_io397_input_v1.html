@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Analog IO397 - Input v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_analog_io397.html" title="Analog IO397"><link rel="next" href="refentry_analog_io397_output_v1.html" title="Analog IO397 - Output v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_analog_io397_input_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Analog IO397 - Input v1</h2><p>Analog IO397 - Input v1 &#8212; <span class="phrase">This driver block is
+                    available for the IO397-50k module only.</span></p></div><div class="refsect1"><a name="d5e9378"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ad_read_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e9386"></a><h2>Description</h2><p>This driver block is available for the IO397-50k module only.</p><p>Your model can only contain one of these blocks for each I/O module in your target
+                machine.</p></div><div class="refsect1"><a name="d5e9390"></a><h2>Ports</h2><p>This block has as many outputs as defined by the channel vector.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is channel number) </span>
+                    </span></dt><dd><p>The value read from analog input X. Type double.</p></dd></dl></div></div><div class="refsect1"><a name="d5e9400"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Analog input range </span>
+                    </span></dt><dd><p>For better accuracy, select the input voltage range - this parameter
+                            is used to indicate the expected input voltage range: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>5.12 [V]</p></li><li class="listitem"><p>&plusmn; 5 [V]</p></li><li class="listitem"><p>&plusmn; 5.12 [V]</p></li><li class="listitem"><p>10[V]</p></li><li class="listitem"><p>10.24[V]</p></li><li class="listitem"><p>&plusmn; 10 [V]</p></li><li class="listitem"><p>&plusmn; 10.24 [V]</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Input Trigger - ADC Sample Trigger</span>
+                    </span></dt><dd><p>The block supports four trigger options for the analog inputs: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Model Step</strong></span> At each model
+                                        sample step the analog input channels are triggered and the
+                                        driver reads the analog data from the previous sample
+                                        step.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Clock</strong></span> The
+                                        triggering of the analog channels is based on internal
+                                        clocking functionality. The sample frequency can be set in
+                                        the <span class="bold"><strong>ADC Sample Rate</strong></span>
+                                        parameter. If the ADC Sample Rate is set to 0, the maximum
+                                        achievable rate will be set.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Internal
+                                            Signal</strong></span> The triggering of the analog channels
+                                        is based on I/O module internal signals. The available
+                                        signals can be selected in the <span class="bold"><strong>Internal Signal</strong></span> dropdown and depend on what
+                                        is supported in the corresponding configuration file.</p></li><li class="listitem"><p><span class="bold"><strong>I/O Module Digital I/O</strong></span>
+                                        The triggering of the analog channels is based on a
+                                        configurable digital I/O pin. Both input and output signals
+                                        are possible to use for triggering.</p></li></ul></div><p> Note: the available trigger options depend on the
+                            implementation of your specific configuration file.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

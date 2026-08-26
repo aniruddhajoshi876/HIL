@@ -1,0 +1,30 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO629 - Bus Monitor</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io629_submodule.html" title="IO629 - Submodule"><link rel="next" href="refentry_io629_remote_terminal.html" title="IO629 - Remote Terminal"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io629_bus_monitor"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO629 - Bus Monitor</h2><p>IO629 - Bus Monitor &#8212; <span class="phrase">Monitors the bus data
+                    traffic</span></p></div><div class="refsect1"><a name="d5e21401"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io629_bus_monitor.png"></span></span></p></div><div class="refsect1"><a name="d5e21409"></a><h2>Description</h2><p>The Bus Monitor Simulink driver block allows the reception of the traffic on the
+                ARINC 629 databus. A single Bus Monitor Block can be instantiated per ARINC 629
+                submodule.</p><p>An example for the configuration of the Bus Monitor Driver Block can be found
+                here: <a href="refentry_io629_usage_notes.html" class="olink">IO629
+                    Usage Notes</a></p></div><div class="refsect1"><a name="d5e21414"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Timestamp </span>
+                    </span></dt><dd><p>Array of datarecords timestamp. Type double.</p></dd><dt><span class="term">
+                        <span class="guilabel">Size </span>
+                    </span></dt><dd><p>Array of datawords size. Type double.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data </span>
+                    </span></dt><dd><p>Matrix containing the datawords received. Type uint16.</p></dd></dl></div><p>Data size and ordering is further explained here: <a href="refentry_io629_usage_notes.html" class="olink">IO629 Usage Notes</a></p></div><div class="refsect1"><a name="d5e21435"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Submodule ID </span>
+                    </span></dt><dd><p>This parameter holds the reference to the Submodule block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Mode </span>
+                    </span></dt><dd><p>This parameter holds the acquisition mode. In the current driver
+                            version it is fixed to string mode (a time tag for every data string).
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Block Sample Time </span>
+                    </span></dt><dd><p>This parameter defines the base sample time at which this driver block
+                            gets its sample hit. It can also be set to -1 for inherited sample time.
+                            The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Num of wordstrings to read </span>
+                    </span></dt><dd><p>This parameter is used to define the width of the output port
+                            arrays.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max wordstring size </span>
+                    </span></dt><dd><p>This parameter is used to define the 2nd dimension of the Data output
+                            port matrix.</p></dd></dl></div></div></div></body></html>

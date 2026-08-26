@@ -1,0 +1,81 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SPI - Master / Slave v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_spi_usage_notes.html" title="SPI Usage Notes"><link rel="next" href="refentry_spi_masterslave_v2.html" title="SPI - Master / Slave v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_spi_masterslave_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>SPI - Master / Slave v1</h2><p>SPI - Master / Slave v1 &#8212; <span class="phrase">The SPI driver block can act
+                    as SPI Master or SPI slave.</span></p></div><div class="refsect1"><a name="d5e10826"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_spi_masterslave_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e10834"></a><h2>Description</h2><p>The SPI driver block can act as SPI Master or SPI slave.</p></div><div class="refsect1"><a name="d5e10837"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">TX n (n is the channel number) </span>
+                    </span></dt><dd><p>Definition of the frame to send. The number of elements of the input
+                            vector is defined with the frame size parameter in the <span class="bold"><strong>SPI Configuration</strong></span> tab. Each element of the
+                            input data vector corresponds to a SPI data word.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">RX n (n is the channel number) </span>
+                    </span></dt><dd><p>Gives access to data from the MiSo or MoSI I/O line, depending on
+                            which role (Master or Slave) was selected. This port is enabled by
+                            ticking the <span class="bold"><strong>Show RX outputs</strong></span> checkbox.
+                            As this will introduce additional latency, it is good practice to only
+                            check this box if such data is required.</p></dd></dl></div></div><div class="refsect1"><a name="d5e10855"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel"></a><span class="term">
+            <span class="guilabel">Channel</span>
+        </span></dt><dd><p>The number of the channel which this driver block entity will access. Only one
+                channel per driver block can be addressed. You can specify channels in the range 1-N
+                (N = the number of channels implemented in your specific configuration file defined
+                in the Setup block).</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SPI Configuration, Master Role </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CPOL </span>
+                    </span></dt><dd><p>The clock polarity parameter: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: SCLK idle state is low</p></li><li class="listitem"><p>1: SCLK idle state is high</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">CPHA </span>
+                    </span></dt><dd><p>The clock phase parameter</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: sample on the leading (first) clock edge</p></li><li class="listitem"><p>1: sample on the trailing (second) clock edge regardless of
+                                    whether that clock is rising or falling.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Role </span>
+                    </span></dt><dd><p>Role of the SPI module.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Master role</p></li><li class="listitem"><p>Slave role</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SPI Configuration, Master Role </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Clock Divider </span>
+                    </span></dt><dd><p>Clock rate of the SCLK I/O line, in reality the duration of the SCK
+                            half period (Parameter T2 of the timing diagram in the <a href="refentry_spi_usage_notes.html" class="olink">
+                                Usage Notes</a>). The FPGA counts from 0 to the clock divider
+                            value, e.g. for a value of 5, the clock output will be low for ticks 0,
+                            1, 2, 3, 4 and 5 (this makes a total of 6 effective FPGA ticks) and then
+                            the clock output will be high for the following ticks 0, 1, 2, 3, 4 and
+                            5. Valid range is 1 to 2<sup>32</sup>-1.</p></dd><dt><span class="term">
+                        <span class="guilabel">Start Delay </span>
+                    </span></dt><dd><p>Time between the end of a start condition, and when the frame is sent.
+                            The units are in ticks. Valid range is 0 to 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interwords Delay </span>
+                    </span></dt><dd><p>Idle time between words of a single frame. The units are in ticks.
+                            Valid range is 0 to 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop Delay </span>
+                    </span></dt><dd><p>Time between sending the last bit and entering the stop condition
+                            state. The units are in ticks. Valid range is 0 to 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bits per Word </span>
+                    </span></dt><dd><p>Defines the size of the words. Valid range is 1 to 32 (see Note under
+                            "Number of Words per Frame").</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Words per Frame </span>
+                    </span></dt><dd><p>Defines the count of words which are sent in a frame. Valid range is 1
+                            to 32 (see Note immediately below).</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The maximum number of bits per SPI transition is limited to 256
+                                bits. Therefore, the product of <span class="bold"><strong>Number of Bits
+                                    per Word</strong></span> x <span class="bold"><strong>Number of Words per
+                                    Frame</strong></span> may not be greater than 256.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Line Delay Compensation </span>
+                    </span></dt><dd><p>Defines the phase shift between the emitted clock and internal clock
+                            used to sample slave information. The units are in ticks. Valid range is
+                            0 to 15.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SPI Configuration, Slave role </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Word Size Vector </span>
+                    </span></dt><dd><p>Defines the size of the words. Valid range is 1 to 32 (see Note under
+                            "Number of Words per Frame").</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size Vector </span>
+                    </span></dt><dd><p>Defines the count of words which are sent in a frame. Valid range is 1
+                            to 32 (see Note under "Number of Words per Frame").</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show RX Outputs </span>
+                    </span></dt><dd><p>When this checkbox is enabled, data read on the MiSo I/O line will be
+                            available in Simulink via a dedicated output port. Enabling this
+                            checkbox introduces additional latency due to additional data transfer.
+                            Only enable this parameter if absolutely necessary.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show TX Outputs </span>
+                    </span></dt><dd><p>When this checkbox is enabled, data sent on the MoSi I/O line will be
+                            available in Simulink via a dedicated input port. Enabling this checkbox
+                            introduces additional latency due to additional data transfer. Only
+                            enable this parameter if absolutely necessary.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div></div></div></body></html>

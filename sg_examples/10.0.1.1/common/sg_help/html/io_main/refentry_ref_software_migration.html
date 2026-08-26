@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Speedgoat Tools</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_speedgoat_tools.html" title="Speedgoat Tools"><link rel="next" href="refentry_ethernet_configuration.html" title="Speedgoat Tools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ref_software_migration"></a><div class="titlepage"></div><div class="refnamediv"><h2>Speedgoat Tools</h2><p>Speedgoat Tools &#8212; Speedgoat Target Software Migration Tool</p></div><div class="refsect1"><a name="refsect1_software_migration_25b"></a><h2>Software Migration</h2><p>If your real-time target machine is still configured for MATLAB R2020a and earlier
+                (without QNX dual-boot), you can use this tool to migrate your target machine and
+                connect to the MATLAB release you are currently running (MATLAB R2023b and
+                later).</p><p>The Software Migration tool guides you step-by-step through the migration process.
+                If you still need to use your target machine with MATLAB R2020a and earlier,
+                configure the machine using the dual-boot option so that you can easily switch
+                between Simulink Real-Time R2023b and later and the version of Simulink Real-Time
+                you previously used.</p><p>
+                </p><div class="warning"><table border="0" summary="Warning"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="images/warning.png"></td><th align="left">Warning</th></tr><tr><td align="left" valign="top"><p>Speedgoat I/O Blocksets for MATLAB R2021b and earlier are no longer
+                        maintained.</p></td></tr></table></div><p>
+                </p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>The migration process requires an Ethernet cable, monitor and keyboard,
+                        all of which should be connected to your target machine. <span class="bold"><strong>Use PS/2 keyboards when these are supported by your target
+                            machine</strong></span>.</p><p>The configuration is made directly on the target machine using a bootable
+                        USB drive. You can either order a Target Software Migration USB drive
+                            <span class="bold"><strong>(Windows hosts only)</strong></span> from Speedgoat or
+                        easily generate one yourself using the software migration tool.</p><p><span class="bold"><strong>It is important to note that your main drive will be
+                            reformatted. All the data you generated will be lost!</strong></span></p></td></tr></table></div><p>
+            </p><p>You can start the tool by entering the following in the MATLAB Command Window:
+                </p><pre class="programlisting">speedgoat.migrateTarget</pre><p>
+            </p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_target_software_migration_tool_25b.png"></span></p><p>The tool will guide you through these three different processes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Set Up a Dual-Boot System</strong></span></p><p>Install both operating systems in dual-boot mode: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>The QNX-based 64-bit Simulink Real-Time for MATLAB R2023b and
+                                    later with the Speedgoat target software</p></li><li class="listitem"><p>The 32-bit Simulink Real-Time for MATLAB R2020a and
+                                    earlier</p></li></ul></div><p>The previously installed 32-bit kernel will be saved and carried over as
+                        the second boot option.</p><p>You will be able to select how your hard drive is partitioned, for
+                        example: 20 % for R2023b and later, 75 % for R2020a and earlier, 5 % for the
+                        bootloader.</p><p>The dual-boot mode allows you to select which version to boot. After a
+                        short timeout, the default boot option is used. The Speedgoat API provides a
+                        function to select which real-time operating system is loaded by default and
+                        how long the boot loader will wait for user input before booting the default
+                        real-time operating system.
+                        </p><pre class="programlisting">speedgoat.setDefaultBootOption</pre><p>
+                    </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Dual-boot mode does not have any negative impact on real-time
+                            performance or compatibility.</p></td></tr></table></div></li><li class="listitem"><p><span class="bold"><strong>Update to R2023b and later</strong></span></p><p>Install the QNX-based 64-bit Simulink Real-Time for MATLAB R2023b and
+                        later with the Speedgoat target software.</p><p>The previously installed 32-bit kernel will be saved and can be recovered
+                        using the other processes: <span class="bold"><strong>Create a Dual-Boot
+                            System</strong></span> or <span class="bold"><strong>Revert to R2020a and
+                            earlier</strong></span>.</p></li><li class="listitem"><p><span class="bold"><strong>Revert to R2020a and earlier</strong></span></p><p>Install the 32-bit Simulink Real-Time for MATLAB R2020a and
+                        earlier.</p></li></ul></div><p>
+                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>You will not need to repeat these processes for current versions of
+                        MATLAB. You can, for example, update a target machine running R2020b to
+                        R2023b or R2025b using Simulink Real-Time Explorer (slrtExplorer) or by
+                        executing tg.update from your R2023b or R2025b MATLAB.</p></td></tr></table></div><p>
+            </p></div></div></body></html>

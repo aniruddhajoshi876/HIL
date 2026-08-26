@@ -1,0 +1,35 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Acceptance Filters</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bkur.html" title="Chapter&nbsp;10.&nbsp;CAN I/O FIFO Support"><link rel="prev" href="f4-6110.html" title="CAN FIFO Basics"><link rel="next" href="bq222ql-1.html" title="CANdb DBC Format Databases"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f4-6137"></a>Acceptance Filters</h2></div></div></div><p>You can use the CAN controller acceptance filters to select received messages by
+            identifier for writing into the receive FIFO. Therefore, fewer read attempts are
+            required to get the messages of importance to the real-time application.</p><p>The behavior of the acceptance filter is described for standard and extended
+            identifier ranges individually (one for standard identifiers and one for extended
+            identifiers). A mask parameter and a code parameter define each acceptance
+            filter.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For each bit of the identifier, the mask parameter defines whether the
+                    filtering process cares about this bit or not. A <code class="literal">0</code> means
+                    &#8220;do not care&#8221; and a <code class="literal">1</code> means &#8220;do
+                    care.&#8221;</p></li><li class="listitem"><p>For each bit that the filtering process cares about, the code parameter
+                    defines the bit value (<code class="literal">0</code> or <code class="literal">1</code>).</p></li></ul></div><p>For standard identifiers, the mask parameter and code parameter must both be in the
+            range <code class="literal">0&#8211;2047</code>. For extended identifiers, the mask parameter and code
+            parameter must both be in the range <code class="literal">0</code> to
+                    <code class="literal">2<sup>29</sup> - 1</code>.</p><p>The filtering process evaluates the following binary expression:</p><pre class="programlisting">and(xor(mask, identifier), code)</pre><p>If all bits of the resulting value are
+                <code class="literal">0</code>, the message with this identifier is accepted. If a bit is
+                <code class="literal">1</code>, the message is voided.</p><p>According to this description, acceptance filters work using binary evaluation, while
+            most systems differentiate messages (identifiers) in a decimal or hexadecimal manner. As
+            a consequence, it is possible to filter messages, whose identifiers are above a certain
+            decimal number. The opposite (identifiers below a certain decimal number) cannot be
+            achieved in a general way.</p><p>The default values for the mask parameter and the code parameter in the FIFO setup
+            driver block are both <code class="literal">0</code>. Because the filtering expression evaluates
+            to <code class="literal">0</code>, all incoming messages
+            reach the receive FIFO (no filtering takes place).
+            The parameter values are defined using decimal numbers. You can use the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; function
+                <code class="literal">hex2dec</code> to define hexadecimal numbers in the dialog box
+            entry.</p><p>For example, assume a CAN network model where messages with the following identifiers
+            (standard) are crossing the CAN network:</p><pre class="programlisting">2-30, 48-122 (decimal)</pre><p>The real-time application processes only incoming messages <code class="literal">4&#8211;29</code>.</p><p>Ideally, all messages not having identifiers
+                <code class="literal">4&#8211;29</code> would be filtered, but the mask and code parameters do not
+            allow this scheme. You can, however, filter the messages with identifiers above
+                <code class="literal">31</code> by using <code class="literal">2047 &#8211; 31 = 2016</code> for the mask
+            parameter and <code class="literal">0</code> for the code parameter. The FIFO read driver block
+            cannot filter messages with identifiers <code class="literal">0</code>, <code class="literal">1</code>,
+                <code class="literal">2</code>, and <code class="literal">3</code>. The block returns them, even if the
+            real-time application does not process them.</p></div></body></html>

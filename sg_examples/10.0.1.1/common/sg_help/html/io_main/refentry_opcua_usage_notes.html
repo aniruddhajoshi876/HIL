@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_opcua_examples.html" title="OPC UA - Examples"><link rel="next" href="refentry_opcua_status_codes.html" title="OPC UA Status Codes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA Usage Notes</h2><p>OPC UA Usage Notes &#8212; <span class="phrase">Detailed information about the
+                    OPC UA protocol and the native OPC UA blockset</span></p></div><div class="refsect1"><a name="d5e70882"></a><h2>Introduction to OPC UA</h2><p>OPC UA is an Ethernet communication protocol based on a client-server
+                architecture. Each item of information in the server is represented by nodes of
+                different node classes, such as objects, variables and methods. Depending on the
+                node class, the node has different attributes such as name, value and unit. Nodes
+                can be derived from other node definitions, they can have references to one another
+                and they are part of a node tree whose structure is given by the information model
+                used. Clients connect to servers to read and write nodes, call methods, request
+                historical data, check alarms, or transfer a file. Speedgoat provides a native
+                interface for OPC UA which is supported with the onboard Ethernet interfaces and I/O
+                modules. The OPC UA protocol stack runs on the target machine's CPU. Simulink driver
+                blocks for client and server operation are available.</p><p>For further information about OPC UA, read the OPC UA Online Reference: <a class="link" href="https://reference.opcfoundation.org/" target="_blank">https://reference.opcfoundation.org/</a>
+            </p></div><div class="refsect1"><a name="d5e70887"></a><h2>Typical Target Machine Configurations</h2><p>Use the Ethernet Configuration Tool to assign IP addresses the target machine's
+                Ethernet interfaces. Enter the following in the MATLAB command window to open the
+                tool:
+                </p><pre class="programlisting">&gt;&gt; speedgoat.configureEthernet</pre><p>
+                <span class="inlinemediaobject"><img src="././graphics/dnp3_configeth.png"></span>
+            </p><p>For OPC UA, you can use any Ethernet interface when <span class="bold"><strong>Configuration</strong></span> is set to <span class="bold"><strong>IP
+                    Protocols</strong></span>.</p><p>One real-time target machine can perform multiple OPC UA clients and servers.
+                There are three possible configurations:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">One IP Address per Ethernet Interface</span></dt><dd><p>One IP address is assigned to one Ethernet interface. This Ethernet
+                            interface acts as either one OPC UA client or one OPC UA server in the
+                            network. You can install multiple Ethernet I/O modules (providing up to
+                            4 interfaces each) or use additional onboard Ethernet interfaces to set
+                            up multiple OPC UA clients or servers. As all the Ethernet interfaces of
+                            a target machine must be associated with different Ethernet subnets,
+                            each OPC UA station must operate in another Ethernet network. If an
+                            application requires multiple clients to communicate with different OPC
+                            UA networks, then this target configuration is the correct choice. In
+                            contrast, if the simulation of an OPC UA network with multiple servers
+                            is required, this setup cannot be used.</p><p>The subnet dedication of an Ethernet interface is defined by IP
+                            address and subnet mask.</p></dd><dt><span class="term">Multiple IP Addresses per Ethernet Interface (IP Aliasing)</span></dt><dd><p>IP aliasing can be used to assign multiple IP addresses to a single
+                            physical interface. This allows multiple OPC UA clients and servers to
+                            be operated on the same Ethernet I/O module or the same onboard Ethernet
+                            interface. As the related IP addresses are always associated with the
+                            same Ethernet subnet, this configuration is ideal for simulating an OPC
+                            UA network containing multiple servers. Even mixed operation (client and
+                            server) is possible for the purpose of loopback testing. Alias addresses
+                            can be configured in the advanced settings of the Ethernet Configuration
+                            Tool or by functions.</p><p>Enter the following in the MATLAB command window to manage IP
+                            aliasing:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj = speedgoat.IpAliasConfiguration()
+&gt;&gt; ipAliasObj.add('ETH2', {'192.168.10.31','192.168.10.32','192.168.10.33'})
+&gt;&gt; ipAliasObj.remove('ETH2', {'192.168.10.33'})
+&gt;&gt; ipAliasObj.add('Host Link', {'192.168.1.15','192.168.1.19'})</pre><p>
+                            Enter the following in the MATLAB command window to check the available
+                            Ethernet interfaces and configured IP aliases:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj.show()
+Interface Name      IP Address          Subnet Mask
+---------------     ---------------     ---------------
+ETH2                192.168.10.1        255.255.255.0
+                    192.168.10.31       255.255.255.255
+                    192.168.10.32       255.255.255.255
+                    192.168.10.33       255.255.255.255
+Host Link           192.168.1.14        255.255.255.0
+                    192.168.1.15        255.255.255.255
+                    192.168.1.19        255.255.255.255</pre><p>
+                        </p></dd><dt><span class="term">Multiple TCP Ports per IP Address</span></dt><dd><p>This is the normal operation for clients as each connection of the
+                            client to a server requires a separate TCP port.</p><p>For server simulation, you can ignore the default server port 4840 and
+                            allow multiple servers to listen on different TCP ports. All these
+                            servers will then act in the same subnet.</p></dd></dl></div></div><div class="refsect1"><a name="d5e70919"></a><h2>Runtime License</h2><p>OPC UA blocks require a runtime license installed on the target machine. Please refer to
+                the <a href="refentry_runtime_license.html" class="olink">Runtime
+                Licensing</a> help.</p></div></div></body></html>

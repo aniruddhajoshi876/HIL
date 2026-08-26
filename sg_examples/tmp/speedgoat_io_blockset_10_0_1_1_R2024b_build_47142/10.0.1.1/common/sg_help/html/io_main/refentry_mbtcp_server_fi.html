@@ -1,0 +1,155 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus - Server Fault Insertion</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mbtcp_server_write.html" title="Modbus - Server Write"><link rel="next" href="refentry_mbtcp_client_setup.html" title="Modbus TCP - Client Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbtcp_server_fi"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus - Server Fault Insertion</h2><p>Modbus - Server Fault Insertion &#8212; <span class="phrase">Blocks connections attempts and
+                    modifies Modbus messages</span></p></div><div class="refsect1"><a name="d5e69155"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mbtcp_server_fi.png"></span></span></p></div><div class="refsect1"><a name="d5e69163"></a><h2>Description</h2><p>This block rejects connection attempts from certain clients and modifies Modbus
+                messages before they are sent to the client. You can place multiple Fault Insertion
+                blocks in the model.</p></div><div class="refsect1"><a name="d5e69166"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If enabled by the <span class="bold"><strong>Show Enable port</strong></span>
+                            parameter, this port enables or disables the items defined in the
+                                <span class="bold"><strong>Rules</strong></span> table. The signal connected
+                            to the port must be a boolean array whose length matches the number of
+                            defined rules. Each array element corresponds to a rule, following the
+                            order in the table; if no rule is defined, the port is hidden. A value
+                            of TRUE enables the corresponding rule, while a value of FALSE disables
+                            it.</p></dd><dt><span class="term">
+                        <span class="guilabel">Modifier</span>
+                    </span></dt><dd><p>If enabled by the <span class="bold"><strong>Show Modifier port</strong></span>
+                            parameter, this port sets the modifiers for the rules in message mode.
+                            The <span class="bold"><strong>Modifier</strong></span> column in the <span class="bold"><strong>Rules</strong></span> table no longer serves a purpose. The
+                            signal connected to the port must be a double array whose length matches
+                            the number of defined rules. Each array element corresponds to a rule,
+                            following the order in the table; if no rule is defined or the <span class="bold"><strong>Mode</strong></span> parameter is not set to <span class="bold"><strong>Message</strong></span>, the port is hidden.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e69194"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Server Station ID</span>
+                    </span></dt><dd><p>Apply the <span class="bold"><strong>Server Station ID</strong></span> of the
+                            corresponding Setup block. It must range between 0 and 65535.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Specifies the basic operation of the block. In <span class="bold"><strong>Peer</strong></span> mode, the block accepts or rejects connection
+                            attempts from specific remote clients. In <span class="bold"><strong>Message</strong></span> mode, the block modifies the content of the
+                            message that will be sent to the client. In general, Modbus servers only
+                            send messages in response to client requests.</p></dd><dt><span class="term">
+                        <span class="guilabel">Rules</span>
+                    </span></dt><dd><p>The table contains the action items for the <span class="bold"><strong>Peer</strong></span> and <span class="bold"><strong>Message</strong></span> modes.
+                            During runtime, the rules are processed sequentially from top to bottom.
+                            If the effects of multiple rules overlap, the last rule takes
+                            precedence. If rules are distributed across multiple Fault Insertion
+                            blocks, the execution order of those blocks also influences which rule
+                            takes precedence. Depending on the <span class="bold"><strong>Mode</strong></span>
+                            parameter, the table displays different columns:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Peer</strong></span> mode</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> The <span class="bold"><strong>Action</strong></span> column
+                                            defines how to handle incoming connection requests from
+                                            clients. By default, if no rules are defined, all
+                                            connection attempts from any client are accepted. </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="11%" class="col1"><col width="89%" class="col2"></colgroup><thead><tr><th>Action</th><th>Description</th></tr></thead><tbody><tr><td>None</td><td> Disables the rule. </td></tr><tr><td>Accept</td><td> Accepts the connection. Data transfer is
+                                                  allowed. </td></tr><tr><td>Reject</td><td> Closes the connection. No data transfer is
+                                                  allowed. </td></tr></tbody></table></div></li><li class="listitem"><p> The <span class="bold"><strong>IP Address</strong></span>
+                                            column defines the remote IP addresses to which the rule
+                                            applies. Values can be scalars or two-element vectors,
+                                            where the first element specifies the start of the range
+                                            and the second element specifies the end of the range.
+                                            Supported formats include character arrays such as
+                                            '192.168.1.101', strings such as "192.168.1.101", string
+                                            vectors such as ["192.168.1.101","192.168.1.105"],
+                                            numeric scalars such as hex2dec('C0A80165'), numeric
+                                            vectors such as [hex2dec('C0A80165'),
+                                            hex2dec('C0A80169')], and cell arrays containing numeric
+                                            values, strings, or character arrays such as
+                                            {'192.168.1.101','192.168.1.105'}. </p><p> If the value is <span class="bold"><strong>-1</strong></span>,
+                                            the rule is applied to all IP addresses. </p></li><li class="listitem"><p> The <span class="bold"><strong>TCP Port</strong></span> column
+                                            defines the remote TCP ports to which the rule is
+                                            applied. Values must be numeric and can be scalars or
+                                            two-element vectors, where the first element specifies
+                                            the start of the range and the second element specifies
+                                            the end of the range. Example of a single port: 502.
+                                            Example of a port range: [500, 599]. </p><p> If the value is <span class="bold"><strong>-1</strong></span>,
+                                            the rule is applied to all ports. </p></li></ul></div></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Message</strong></span> mode</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> The <span class="bold"><strong>Action</strong></span> column
+                                            defines how to manipulate the response message that is
+                                            sent to the client. The action is processed only if the
+                                            request message previously received from the client
+                                            matches the filter criteria defined by the <span class="bold"><strong>Unit</strong></span>, <span class="bold"><strong>Function Code</strong></span>, and <span class="bold"><strong>Index</strong></span> columns. </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="21%" class="col1"><col width="79%" class="col2"></colgroup><thead><tr><th>Action</th><th>Description</th></tr></thead><tbody><tr><td>None</td><td> Disables the rule. The <span class="bold"><strong>Modifier</strong></span> field is ignored.
+                                                  </td></tr><tr><td>No response</td><td> No response is sent. The <span class="bold"><strong>Modifier</strong></span> field is ignored.
+                                                  </td></tr><tr><td>Trim response</td><td> The response message is shortened by a
+                                                  number of bytes defined by the modifier. The
+                                                  modifier must be in the range 0 to 65535. The
+                                                  Modbus header and its length field are not
+                                                  changed. </td></tr><tr><td>Extend response</td><td> The response message is extended by a
+                                                  number of bytes defined by the modifier. The
+                                                  modifier must be in the range 0 to 65535. The
+                                                  Modbus header and its length field are not
+                                                  changed. The added bytes are filled with zeros.
+                                                  </td></tr><tr><td>Send error code</td><td> The original response is blocked and a
+                                                  Modbus error message is sent instead. The error
+                                                  code is defined by the modifier, which must be in
+                                                  the range 0 to 255. </td></tr><tr><td>Change transaction ID</td><td> Modifies the transaction ID of the
+                                                  response message. If the modifier is 0, the
+                                                  transaction ID is set to 0; otherwise, the
+                                                  modifier is added to the original transaction ID.
+                                                  The modifier must be in the range -65535 to 65535.
+                                                  </td></tr><tr><td>Change length code</td><td> Modifies the length code, which specifies
+                                                  the length of the remaining message following the
+                                                  Modbus header. If the modifier is 0, the length
+                                                  code is set to 0; otherwise, the modifier is added
+                                                  to the original length code. The modifier must be
+                                                  in the range -65535 to 65535. The actual message
+                                                  length is not changed. </td></tr><tr><td>Change unit</td><td> Modifies the unit value of the response
+                                                  message. If the modifier is 0, the unit is set to
+                                                  0; otherwise, the modifier is added to the
+                                                  original unit value. The modifier must be in the
+                                                  range -255 to 255. </td></tr><tr><td>Change function code</td><td> Replaces the function code in the response
+                                                  message with the modifier value. The modifier must
+                                                  be in the range 0 to 255. </td></tr><tr><td>Change index</td><td> Modifies the index value of the response
+                                                  message. If the modifier is 0, the index is set to
+                                                  0; otherwise, the modifier is added to the
+                                                  original index. The modifier must be in the range
+                                                  -65535 to 65535. </td></tr><tr><td>Change quantity</td><td> Modifies the quantity value of the
+                                                  response message. If the modifier is 0, the
+                                                  quantity is set to 0; otherwise, the modifier is
+                                                  added to the original quantity. The modifier must
+                                                  be in the range -65535 to 65535. The actual
+                                                  message length is not changed. </td></tr><tr><td>Change byte count</td><td> Modifies the byte count field, which
+                                                  specifies the overall number of bytes
+                                                  corresponding to the requested number of bits or
+                                                  registers. If the modifier is 0, the byte count is
+                                                  set to 0; otherwise, the modifier is added to the
+                                                  original byte count. The modifier must be in the
+                                                  range -255 to 255. The actual message length is
+                                                  not changed. </td></tr></tbody></table></div></li><li class="listitem"><p> The <span class="bold"><strong>Unit</strong></span> column
+                                            defines a filter for the unit value in the request
+                                            message received from the client. The rule is applied
+                                            only if the received unit value falls within the
+                                            specified range. Values can be numeric scalars or
+                                            two-element vectors, where the first element specifies
+                                            the start of the range and the second element specifies
+                                            the end of the range. Valid values range from 0 to 255. </p><p> If the value is <span class="bold"><strong>-1</strong></span>,
+                                            the unit value in the received message is ignored.
+                                        </p></li><li class="listitem"><p> The <span class="bold"><strong>Function Code</strong></span>
+                                            column defines a filter for the function code value in
+                                            the request message received from the client. The rule
+                                            is applied only if the received function code falls
+                                            within the specified range. Values can be numeric
+                                            scalars or two-element vectors, where the first element
+                                            specifies the start of the range and the second element
+                                            specifies the end of the range. Valid values range from
+                                            0 to 255. </p><p> If the value is <span class="bold"><strong>-1</strong></span>,
+                                            the function code value in the received message is
+                                            ignored. </p></li><li class="listitem"><p> The <span class="bold"><strong>Index</strong></span> column
+                                            defines a filter for the index and quantity values in
+                                            the request message received from the client. The rule
+                                            is applied only if the requested data range overlaps
+                                            with the specified range. Values can be numeric scalars
+                                            or two-element vectors, where the first element
+                                            specifies the start of the range and the second element
+                                            specifies the end of the range. Valid values range from
+                                            0 to 65535. </p><p> If the value is <span class="bold"><strong>-1</strong></span>,
+                                            the index and quantity values in the received message
+                                            are ignored. </p></li><li class="listitem"><p>Depending on the selected action, the <span class="bold"><strong>Modifier</strong></span> is either written
+                                            directly to the corresponding field in the response
+                                            message or added to the intended value of that
+                                            field.</p></li></ul></div></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable port</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> input port; otherwise, the port is hidden.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Modifier port</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Modifier</strong></span> input port; otherwise, the port is
+                            hidden.</p></dd></dl></div></div></div></body></html>

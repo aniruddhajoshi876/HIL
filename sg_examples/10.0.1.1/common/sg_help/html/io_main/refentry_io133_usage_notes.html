@@ -1,0 +1,121 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO133 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io133_digital_output_v2.html" title="IO133 - Digital Output"><link rel="next" href="refentry_ref_io134.html" title="IO134"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io133_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO133 Usage Notes</h2><p>IO133 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e14230"></a><h2>DMA Setup</h2><p>If DMA is enabled for analog input, analog output or both, then the model or the
+                asynchronous subsystem where the module is located must be triggered by the module's
+                interrupt.</p><p>This is required so that the sample hits of the blocks are synchronous to the
+                module's DMA engine.</p><p><a name="para_common_interrupt_setup_information"></a>In DMA mode, the model must contain an
+        Interrupt Setup block that triggers a subsystem or the model. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+            documentation</a> for more information. </p></div><div class="refsect1"><a name="d5e14236"></a><h2>Output DMA Latency</h2><p>This note shows the difference between the two configuration options for the
+                latency of the Analog output block in DMA mode.</p><p>The configuration is defined in the analog output tab of the Setup block.</p><p><span class="bold"><strong>Latency as small as possible</strong></span></p><p>If the latency is kept as small as possible, then the module will start to output
+                values immediately after receiving a frame. However, the transmission time will
+                vary, meaning that the delay between the sample hit of the model and the change at
+                the output pins is not constant. If both the analog input and output use DMA, then
+                the latency between measuring a value, processing and writing the value to the
+                output will vary.</p><p>If the DMA transfer, during one sample hit, requires more time than the previous
+                transfer, then the outputs will remain on the last value until the transfer has
+                finished.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_asap.svg" width="972"></span></p><p><span class="bold"><strong>Latency until next frame</strong></span></p><p>If the latency is fixed to the beginning of the next frame, then the analog
+                outputs will only start to output the data of the frame at the next sample hit. The
+                delay between the sample hit and the outputs, or between the analog inputs and the
+                analog outputs is therefore constant. There is no danger of running out of data at
+                the outputs, however, the latency will be higher.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_1frame.svg" width="972"></span></p></div><div class="refsect1"><a name="d5e14259"></a><h2>Frame Trigger</h2><p>The frame trigger starts the conversion of analog input or output data over DMA.
+                The advantage of operating with the frame trigger is that the data frame can be
+                smaller than the trigger signal and the analog input and output frames can be of
+                different sizes. Without the frame trigger, it is still possible to have different
+                sample times for the input and output, but they must complete their frames at the
+                same time.</p><p>The disadvantage of the frame trigger is that different conversion clocks cannot
+                be used for the analog input and output.</p><p><span class="bold"><strong>Example: Input and output frames are the same size as the
+                    frame trigger</strong></span></p><p>In this example, the analog input and output frames have the same size as the
+                frame trigger. If the analog input frame size and analog output frame size are both
+                100 samples/channel, then the frame trigger clock divider must be 100. This results
+                in a frame trigger with 100 conversions/trigger. With these settings, the IO133
+                module performs the analog conversions at an interval defined with the chosen
+                conversion clock.</p><p>When using the frame trigger, the frames are always synchronized. Consequently,
+                the analog input and output have to use the same conversion clock. The system
+                latency is therefore double the time of one frame.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_frame_trigger_big_frame.svg" width="918"></span></p><p><span class="bold"><strong>Example: Input and output frames are smaller than the frame
+                    trigger</strong></span></p><p>In this example, the analog input and output frames are smaller than the frame
+                trigger. The analog input frame size could, for example, be 40 samples/channel, the
+                analog output frame size could be 60 samples/channel and the frame trigger clock
+                divider could be 100. The result is a configuration where the system starts
+                converting both the analog input and output samples after a frame trigger. After 40
+                samples, the analog input frame is full, the ADC conversions are stopped and the
+                data frame is transferred over DMA to the model in Simulink. For the next 20
+                conversion clocks, the module will continue to update the analog outputs until the
+                output frame has also finished. During the last 40 conversion clocks, the module
+                will not perform anymore conversions. It may however load the next output frame over
+                DMA. The whole cycle will start again after the next frame trigger.</p><p>When using the frame trigger, the frames are always synchronized. Consequently,
+                the analog input and output have to use the same conversion clock. The system
+                latency is therefore double the time of one frame. Shorter latencies cannot be
+                guaranteed for every configuration.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_frame_trigger_small_frame.svg" width="918"></span></p></div><div class="refsect1"><a name="d5e14283"></a><h2>Output Differential Signals using Single-Ended Channels</h2><p>Analog I/O modules with single-ended outputs and simultaneous channel update
+                functionality can support differential output signals. Two single-ended channels are
+                needed to output one differential signal, and the <span class="bold"><strong>Simultaneous
+                    Channel Update</strong></span> setting must be enabled. The following screenshot
+                illustrates one way in which you can implement differential signals over
+                single-ended channels in Simulink. Ensure that the voltage ranges configured are
+                compatible with the output signals.</p><p><span class="inlinemediaobject"><img src="././graphics/io133_df_signals_se_channels.png" width="950"></span></p></div><div class="refsect1"><a name="refsec1_common_manual_data_correction_IO13x_usage_notes"></a><h2>Manual Data Correction</h2><p>Analog inputs and outputs can be calibrated manually by specifying offset- and
+            gain-correction values. The correction values are set per channel and voltage range
+            individually and are applied as follows:</p><p><span class="inlinemediaobject"><img src="././graphics/IO132_IO135_DataCorrection.svg"></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="emphasis"><em>Data</em></span> is the digital value that would be used if the ADC
+                    Channels were ideal</p></li><li class="listitem"><p><span class="emphasis"><em>Data_Corrected</em></span> is the corrected digital value that has to
+                    be used with the real ADC Channels and DAC Channels</p></li></ul></div><p>The correction values are stored as two's complement 16-bit wide values in the range
+            &#8211;32768 to +32767. For improved accuracy, they are scaled to &frac14; LSB (least
+            significant bit). No correction is performed for
+                    <span class="emphasis"><em>Gain<sub>CORR</sub></em></span> = 0 and
+                    <span class="emphasis"><em>Offset<sub>CORR</sub></em></span> = 0. Please consult the
+            hardware reference manual for additional information.</p><p>The calibration process is performed for an individual channel at a given voltage
+            range. The following steps outline a procedure to calculate
+                    <span class="emphasis"><em>Offset<sub>CORR</sub></em></span> and
+                    <span class="emphasis"><em>Gain<sub>CORR</sub></em></span> for an analog input channel
+            with an input voltage range of &plusmn;5&nbsp;V. (A similar procedure can be followed for the
+            calibration of other voltage ranges or analog output channels).</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Disable data correction</p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Set the data correction method in the Simulink block to <span class="bold"><strong>None</strong></span></p></li></ol></div></li><li class="listitem"><p>Estimate <span class="emphasis"><em>Offset<sub>CORR</sub></em></span></p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Supply a 0&nbsp;V-certified reference voltage to the input channel and
+                            record the reading</p></li><li class="listitem"><p>Use the reading
+                                (<span class="emphasis"><em>Offset<sub>MEASURE</sub></em></span>) to
+                            calculate <span class="emphasis"><em>Offset<sub>CORR</sub></em></span></p><pre class="programlisting">Offset_CORR =  Offset_MEAS/(LSB/4);</pre><p>(LSB denotes least significant bit and equates to LSB = full scale
+                            range/adc resolution. Please consult the hardware reference manual for
+                            additional information.)</p></li></ol></div></li><li class="listitem"><p>Estimate <span class="emphasis"><em>Gain<sub>CORR</sub></em></span></p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Sequentially supply -5&nbsp;V and 5&nbsp;V (certified reference
+                            voltage) to the input channel and record the readings</p></li><li class="listitem"><p>Use the readings (-5&nbsp;V:&nbsp;<span class="emphasis"><em>voltage_m5</em></span>,
+                                5&nbsp;V:&nbsp;<span class="emphasis"><em>voltage_p5</em></span>) to calculate
+                                    <span class="emphasis"><em>Gain<sub>CORR</sub></em></span></p><pre class="programlisting">voltageRange_target = +5 -(-5); % -&gt; 10&nbsp;V
+voltageRange_measurement = voltage_p5 - voltage_m5;
+Gain_CORR = (voltageRange_target - voltageRange_measurement)/(LSB/4);</pre><p></p></li></ol></div></li><li class="listitem"><p>Verify the manual data correction</p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>In the Simulink block, set the data correction method to <span class="bold"><strong>Manual</strong></span> and input
+                                    <span class="emphasis"><em>Offset<sub>CORR</sub></em></span> and
+                                    <span class="emphasis"><em>Gain<sub>CORR</sub></em></span></p></li><li class="listitem"><p>Supply some sample voltages and verify the readings. Make fine
+                            adjustments as needed</p></li></ol></div></li></ol></div></div><div class="refsect1"><a name="refsect1_common_inter_module_synchronization_IO13x_usage_notes"></a><h2>Inter-Module Synchronization Setup</h2><p>With the help of inter-module synchronization, the IO132-IO135 range of modules allows
+            for synchronous DMA usage of more than one module. Some of the possible use cases are
+            listed below.</p><p><span class="bold"><strong>Conversion Signals</strong></span></p><p>To use inter-module synchronization, the conversion signals must meet certain timing
+            and voltage requirements. The requirements are listed below. Note that when inter-module
+            synchronization is used with a module from the IO132-IO135 range, these requirements are
+            taken care of automatically.</p><p><span class="bold"><strong>Conversion Clock</strong></span></p><p>The conversion clock signal is an active-high pulse signal that determines the basic
+            frequency of the data output or the acquisition of the modules.</p><p><span class="bold"><strong>Frame Trigger</strong></span></p><p>The frame trigger signal is a divider of the conversion clock signal. It indicates the
+            time when the DMA shifts the data in the desired direction. The first falling edge of
+            the frame trigger also makes up the starting interrupt signal of the module.</p><p><span class="bold"><strong>Conversion Signal Requirements</strong></span></p><p>The exact timing requirements for the inter-module synchronization are as
+            follows:</p><p>
+            <span class="inlinemediaobject"><img src="././graphics/IO132_IO135_ConversionSignalRequirements.png" width="700"></span>
+        </p><p>Here is an example for the conversion signals exchanged between two IO132-IO135 I/O
+            modules. The red signal is the conversion clock signal, the signal in blue is the frame
+            trigger signal. The frame trigger clock divider is set to 10.</p><p>
+            <span class="inlinemediaobject"><img src="././graphics/IO132_IO135_ConversionSignalVisualization.png" width="700"></span>
+        </p><p><span class="bold"><strong>Hardware Setup</strong></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Front I/O:</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/IO132_IO135_FrontioSchematic.png" width="700"></span></p><p>When using inter-module synchronization in Front I/O mode, connect all the
+                    concerned modules' DIO 1, DIO 3 and DIO 5 lines. In a case where only one
+                    conversion clock is used, the other conversion clock line can be omitted.
+                    However, the respective DIO line cannot be used for its original purpose.
+                </p></li><li class="listitem"><p><span class="bold"><strong>Rear I/O:</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/IO132_IO135_RearioSchematic.png" width="700"></span></p><p>If all dedicated modules are to be connected via rear I/O connection, the DIO
+                    ports can all be used for their intended purpose. If you wish to upgrade your
+                    system to support rear I/O configuration, please contact Speedgoat to check
+                    whether your system supports rear I/O configuration.</p></li></ul></div><p><span class="bold"><strong>Software Setup</strong></span></p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Initiator and Target Modules in the Same Real-Time
+                        Target Machine</strong></span></p><p>When both the initiator module and a target module(s) are installed in the
+                    same machine, inter-module synchronization must be activated to use DMA on all
+                    modules.</p></li><li class="listitem"><p><span class="bold"><strong>Initiator and Target Modules in Separate Real-Time
+                        Target Machines</strong></span></p><p>Another use case for inter-module synchronization is the synchronous start of
+                    several real-time target machines. For this purpose, we need to set the relevant
+                    module on every target machine as model trigger. We then need to start the
+                    real-time target machine containing the target module first. The application
+                    will transition to the &#8220;running&#8221; state, without the model execution starting.
+                    This only happens when the machine gets the Frame Trigger signal from the
+                    real-time target machine containing the initiator module. All connected modules
+                    will then start to sample and output synchronously, on different
+                    machines.</p></li><li class="listitem"><p><span class="bold"><strong>PWM Signal from an External Source or a Speedgoat
+                        Configurable I/O Module as Synchronization Signal</strong></span></p><p>If the aforementioned conversion signal requirements are met, an external
+                    source or another module present inside or outside the dedicated real-time
+                    target machine can be used to trigger the IO132-IO135 modules set to target
+                    mode. Note that the exact bus/slot number must be specified at every instance to
+                    use the IO132-IO135 as interrupt trigger of your model or subsystem.</p></li></ul></div></div></div></body></html>

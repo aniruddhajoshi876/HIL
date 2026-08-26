@@ -1,0 +1,41 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO629 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io629_pin_mapping.html" title="IO629 Pin Mapping"><link rel="next" href="refentry_io629_setup.html" title="IO629 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io629_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO629 Usage Notes</h2><p>IO629 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="refsect1_how_connect_the_io629"></a><h2>How to connect the IO629 I/O module to a Speedgoat Real-Time Target
+                machine</h2><p>The Speedgoat IO629 I/O module is an external device. It is connected to a
+                Speedgoat real-time target machine via a PCIe expansion card and a PCIe extension
+                cable. The I/O module provides multiple interfaces for different functions and
+                protocols, however, Speedgoat provides Simulink driver blocks uniquely for the ARINC
+                629 avionic protocol.</p><p>The green rectangle shows the PCIe expansion card on the RTTM with the PCIe
+                extension cable. The yellow rectangle shows the front ARINC 629 SIM interface. This
+                connection can only be used with the appropriate current mode coupler.</p><p>
+                </p><div class="figure"><a name="d5e21249"></a><div class="figure-title">Figure&nbsp;5.&nbsp;IO629 connected to a Speedgoat real-time target machine</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/IO629_front_view_connected.png" alt="IO629 connected to a Speedgoat real-time target machine"></div></div></div><p><br class="figure-break">
+            </p><p>The blue rectangle shows the PCIe connection, and the orange rectangle shows the
+                ARINC 629 TTL connector.</p><div class="figure"><a name="d5e21255"></a><div class="figure-title">Figure&nbsp;6.&nbsp;IO629 rear view</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/IO629_Rear_view.png" alt="IO629 rear view"></div></div></div><br class="figure-break"><p>In order to use the IO629 with a Speedgoat RTTM, it's necessary to set the switch
+                pointed by the red arrow to "PCIe/PXIe/TB" as shown in the picture.</p><p>
+                </p><div class="figure"><a name="d5e21262"></a><div class="figure-title">Figure&nbsp;7.&nbsp;A close up of the IO692 back panel</div><div class="figure-contents"><div class="mediaobject"><img src="././graphics/IO629_Rear_view_close.png" alt="A close up of the IO692 back panel"></div></div></div><p><br class="figure-break">
+            </p></div><div class="refsect1"><a name="refsect1_io629_firmware"></a><h2>IO629 Firmware</h2><p>In order to use Speedgoat driver blocks for the IO629 I/O module it's necessary to
+                load the MAXFW5AD.BIN file onto the Speedgoat real-time target machine file system.
+                This binary file must be placed in a folder named FIRMWARE as depicted in the
+                picture below.</p><p>This can be done by using Simulink Real-Time Explorer (MATLAB command
+                    <span class="command"><strong>slrtexplr</strong></span>). It is also possible to achieve the same result
+                using MATLAB command line tools. Please refer to the MATLAB documentation or contact
+                Speedgoat support.</p><p><span class="inlinemediaobject"><img src="././graphics/IO629_firmware_location.png"></span></p></div><div class="refsect1"><a name="refsect1_io629_xpp_format"></a><h2>IO629 XPP Format</h2><p>IO629 Remote Terminal Simulink blocks need an XPP to define their message
+                structure. For a detailed explaination of the XPP concepts, please refer to the
+                ARINC 629 specification.</p><p>In the context of the Speedgoat IO629 I/O module, the XPP is defined in a .csv
+                file.</p><p>The csv consists of 4 columns: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The first column holds the index of the row in the XPP (starting from
+                            1)</p></li><li class="listitem"><p>The second column holds the index of the column in the XPP (starting
+                            from 1)</p></li><li class="listitem"><p>The third column holds the label</p></li><li class="listitem"><p>The fourth column holds the size of the wordstring (in
+                            datawords)</p></li></ul></div><p>The data sizes are needed for setting the Simulink block's port sizes</p><p>
+                <span class="bold"><strong>Example </strong></span></p><p>A csv file with the following content:</p><p>1, 1, 1, 1</p><p>1, 2, 2, 1</p><p>1, 3, 3, 1</p><p>2, 1, 4, 2</p><p>2, 2, 5, 2</p><p>3, 1, 6, 3</p><p>4, 1, 7, 4</p><p>4, 2, 8, 4</p><p>corresponds to an XPP formatted as follows (labels):</p><p><span class="inlinemediaobject"><img src="././graphics/label_xpp.png"></span></p><p>With the corresponding data sizes:</p><p><span class="inlinemediaobject"><img src="././graphics/size_xpp.png"></span></p></div><div class="refsect1"><a name="refsect1_io629_configuration_example"></a><h2>Bus Monitor Configuration Example</h2><p>In this example a Bus Monitor block is configured as follows:</p><p><span class="inlinemediaobject"><img src="././graphics/IO629_busmonitor_conf_exmpl_mask.png"></span></p><p>Submodule ID should be set according to a Submodule Block existing in the model.</p><p>Block sample time is set in order to receive data frequently enough to avoid a Rx
+                buffer overflow. Indeed, if the Rx buffer gets full, the acquisition automatically
+                stops and any new received data is lost. This parameter should be chosen according
+                to all the ARINC 629 databus and Remote Terminals application settings, timers and
+                wordstring lengths in particular.</p><p>At each simulation step on the Timestamp and Size ports an array of length Num of
+                wordstrings (index n = 6 in the picture below) is emitted.</p><p>The Data output port outputs a matrix with Max datastring size lines (index m = 10
+                in the picture below) and Num of wordstrings columns. Each column contains the
+                received data (16 bits words) corresponding to the n-th data string. If the received
+                number of datawords is smaller than Max wordstring size then the remaining values
+                are zero padded in order to fill the matrix values. The Size port indicates how many
+                words (16 bits label and 16 bits datawords) were correctly received in each
+                wordstring.</p><p><span class="inlinemediaobject"><img src="././graphics/IO629_busmonitor_conf_exmpl_ports.png"></span></p></div></div></body></html>

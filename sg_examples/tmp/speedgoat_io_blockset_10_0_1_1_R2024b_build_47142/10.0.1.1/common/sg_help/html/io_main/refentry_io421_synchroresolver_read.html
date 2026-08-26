@@ -1,0 +1,137 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 - Synchro/Resolver Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_lvdtrvdt_write.html" title="IO421 - LVDT/RVDT Write"><link rel="next" href="refentry_io421_synchroresolver_write.html" title="IO421 - Synchro/Resolver Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_synchroresolver_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 - Synchro/Resolver Read</h2><p>IO421 - Synchro/Resolver Read &#8212; 
+                <span class="phrase">Reads the IO421 Synchro/Resolver inputs</span>
+            </p></div><div class="refsect1"><a name="d5e1291"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io421_synchroresolver_read.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e1299"></a><h2>Description</h2><p>The IO421-2 sub-module measures up to four Synchro or Resolver. Each channel has
+                separate inputs for the reference (excitation) and the S signals.</p><p>The characteristics of the sub-module depend on the factory configuration selected
+                at the time of the order. This information is available in a separate documentation
+                shipped with the device.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="25%" class="col1"><col width="25%" class="col2"><col width="25%" class="col3"><col width="25%" class="col4"></colgroup><thead><tr><th>sub-module code</th><th>Input
+                                    (V<sub>LL</sub>)[V<sub>RMS</sub>
+                                ]</th><th>Ref
+                                    (V<sub>REF</sub>)[V<sub>RMS</sub>
+                                ]</th><th>Frequency [Hz]</th></tr></thead><tbody><tr><td>SA</td><td>2 - 28</td><td>2 - 115</td><td>50 - 400</td></tr><tr><td>SB</td><td>2 - 28</td><td>2 - 115</td><td>400 - 1k</td></tr><tr><td>SC</td><td>2 - 28</td><td>2 - 115</td><td>1k - 3k</td></tr><tr><td>SD</td><td>2 - 28</td><td>2 - 115</td><td>3k - 5k</td></tr><tr><td>SE</td><td>2 - 28</td><td>2 - 115</td><td>5k - 7k</td></tr><tr><td>SF</td><td>2 - 28</td><td>2 - 115</td><td>7k - 10k</td></tr><tr><td>SG</td><td>2 - 28</td><td>2 - 115</td><td>10k - 20k</td></tr><tr><td>SH</td><td>90</td><td>115</td><td>50 - 400</td></tr><tr><td>SJ</td><td>90</td><td>115</td><td>400 - 1k</td></tr><tr><td>SX</td><td>x</td><td>x</td><td>x</td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e1370"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Max RPS </span>
+                    </span></dt><dd><p>The maximum rotational velocity. Units are RPS (revolutions per
+                            second). This port is enabled or disabled in the 'Input and output ports
+                            configuration' tab of this block's dialog box.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position </span>
+                    </span></dt><dd><p>The measured rotational position in radians. This port is enabled or
+                            disabled in the 'Input and output ports configuration' tab of this
+                            block's dialog box.</p></dd><dt><span class="term">
+                        <span class="guilabel">Velocity </span>
+                    </span></dt><dd><p>The measured rotational velocity in revolutions per second RPS. This
+                            port is enabled or disabled in the 'Input and output ports
+                            configuration' tab of this block's dialog box.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status </span>
+                    </span></dt><dd><p>A bit field indicating test, signal, and reference statuses. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Bit0: the status of the BIT (built-in tests
+                                        procedure).</p></li><li class="listitem"><p>Bit1: the signal status. If the signal is below 90% of
+                                        the expected threshold, this flag is high.</p></li><li class="listitem"><p>Bit2: the reference status. If the reference is below
+                                        90% of the expected threshold this flag is high.</p></li></ul></div><p> This port is enabled or disabled in the 'Input and
+                            output ports configuration' tab of this block's dialog box.</p></dd></dl></div><p>All ports are vectors. The width of the vector, and the order of the corresponding
+                channels, is dependent on the configuration of the 'Channel vector'
+                parameter.</p></div><div class="refsect1"><a name="d5e1404"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>A unique module ID must be used for each type of IO421 module block in
+                            your model.</p><p>The module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to link the I/O module
+                                    driver blocks with each other</p></li><li class="listitem"><p>It also has an impact on the PCI slot auto-search feature: if
+                                    only one I/O module is installed, the module ID must be set to
+                                        <span class="bold"><strong>1</strong></span>. If multiple modules are
+                                    installed, it must be in the range 1:n. Not all the I/O modules
+                                    installed in the target machine need to be used</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Slot </span>
+                    </span></dt><dd><p>The carrier board can contain up to three sub-modules. This parameter
+                            indicates where is your IO421-1 located.</p></dd><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Synchro/Resolver</div><p>For all parameters in the table below you can either use a scalar value, which
+                    applies to all channels, or a vector which is mapped to the Channels
+                    vector.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Expected Signal Voltage VLL </span>
+                    </span></dt><dd><p>This value is used in the internal signal detection circuit: When the
+                            measured signal input falls below 90% of this value, the signal
+                            status bit in the optional status output goes to its failure state.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Expected Reference Voltage VREF </span>
+                    </span></dt><dd><p>This value is used in the internal signal detection circuit: When the
+                            measured reference (excitation) input falls below 90% of this value,
+                            the reference status bit in the optional status output goes to its
+                            failure state.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bandwidth Vector </span>
+                    </span></dt><dd><p>Enter the bandwidth for each channel which can individually be
+                            programmed between 6 [Hz] and 1280[Hz] (even numbers only). By selecting
+                            a value of 0 the sub-module automatically sets the bandwidth.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ratio Vector (1-256) </span>
+                    </span></dt><dd><p>Enter the desired ratio as an integer number corresponding to the pair
+                            of channels (CH 1&amp;2 or CH 3&amp;4) to be used for a two-speed or
+                            multiple-speed configuration. Example: Gear ratio 36:1 = integer 36.
+                            Values which can selected are 1-256, where 1 is for single speed. See
+                            Synchro/Resolver connection methods for an example.</p></dd><dt><span class="term">
+                        <span class="guilabel">High Resolution Vector </span>
+                    </span></dt><dd><p>The resolution can be individually selected by channel. Select either
+                            '0' for 16-bit or '1' for 24-bit. Use 24-bit for two-speed configuration
+                            otherwise 16-bit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchro Vector </span>
+                    </span></dt><dd><p>The S/D measurement format can be individually selected for each
+                            channel. Enter a scalar or a vector having the same length as the
+                            Channels vector. Possible values are '0' for Resolver or '1' for
+                            Synchro.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max RPS Vector </span>
+                    </span></dt><dd><p>Enter the maximum measurable velocity (in revolutions per second) for
+                            each channel. This value sets the velocity scale for each channel. This
+                            value must be a scalar or a vector that is the same length as the
+                            Channels vector value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Latch all Channels before Reading Position Data </span>
+                    </span></dt><dd><p>Select this check box to guarantee that all channels are latched
+                            before being read. This ensures that all channels are sampled at the
+                            same time. Note that selecting this option incurs a small additional
+                            resource overhead.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Ports Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Position Output </span>
+                    </span></dt><dd><p>When this parameter is checked, an output port labeled "Position" is
+                            available. Its width is equal to channel count and the vector elements
+                            are ordered as they are defined by the channel vector. This output
+                            contains the linear position measured by the S/R module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Velocity Output </span>
+                    </span></dt><dd><p>When this parameter is checked, an output port labeled "Velocity" is
+                            available. Its width is equal to channel count and the vector elements
+                            are ordered as they are defined by the channel vector. This output
+                            contains the velocity measured by the S/R module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Status Output </span>
+                    </span></dt><dd><p>When this parameter is checked, an output port labeled "Status" is
+                            available. Its width is equal to channel count and the vector elements
+                            are ordered as they are defined by the channel vector. The status value
+                            is encoded in a 3-bit integer returned as a double and includes the
+                            following channel information: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>test status, weight of 0</p></li><li class="listitem"><p>signal status, weight of 1</p></li><li class="listitem"><p>reference status, weight of 2</p></li></ul></div><p> Each status value is a binary value (0 = OK, 1 =
+                            FAILURE). The driver encodes these binary values into a single signal.
+                            For example, a status value of 6 (110) indicates that the test status is
+                            OK and both signal status and reference status are FAILURE. If the board
+                            does not provide a reference/excitation, the test status and reference
+                            status have no meaning.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Input Port for Dynamic Max RPS </span>
+                    </span></dt><dd><p>Select this check box to display an input port for all channels to be
+                            used for specifying the maximum RPS dynamically. When you select this
+                            check box, the input port signals are internally limited to between
+                            11.9209 and 190.7348 RPS.</p></dd></dl></div></div></div></body></html>

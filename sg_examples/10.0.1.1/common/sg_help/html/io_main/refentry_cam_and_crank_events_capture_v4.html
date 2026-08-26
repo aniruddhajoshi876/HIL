@@ -1,0 +1,151 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Events Capture v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_vrs_v3.html" title="Cam and Crank - Variable Reluctance Sensor v3"><link rel="next" href="refentry_cam_and_crank_vrs_v4.html" title="Cam and Crank - Variable Reluctance Sensor v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_events_capture_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Events Capture v4</h2><p>Cam and Crank - Events Capture v4 &#8212; <span class="phrase">The Events
+                    Capture code module records the current crank angle (0 to 720&deg;) when a digital
+                    event pulse is detected. The code module captures the pulse duration in seconds
+                    and degrees and the exact angle when a pulse occurs.</span></p></div><div class="refsect1"><a name="d5e13166"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_events_capture_v4.png" width="220"></span></span></p></div><div class="refsect1"><a name="d5e13175"></a><h2>Description</h2><p>The Events Capture code module records the current crank angle (0 to 720&deg;) when a
+                digital event pulse is detected. The code module captures the pulse duration in
+                seconds and degrees and the exact angle when a pulse occurs.</p><p>The block must be used in combination with the <span class="olink">Crank Angle v4</span> block from which it
+                inherits the high-resolution position signal.</p><p>Up to two angular windows can be defined in the block mask to suppress incoming
+                pulses outside of the window of interest.</p></div><div class="refsect1"><a name="d5e13181"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><p>The output ports of the Events Capture v4 block provide access to signals that
+                    characterize the captured event pulses. The event data is updated at the end of
+                    a window or engine cycle (0&deg;). </p><p>If not otherwise noted, the output port dimensions depend on the <span class="bold"><strong>Number of events</strong></span> (e) and <span class="bold"><strong>Channel vector</strong></span> (c) parameters defined in the block mask. The
+                    ports output a matrix with dimensions e by c. The output port data type is
+                    double. If windowing is enabled, separate output ports are available per window,
+                    with suffix 1 or 2.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Start </span>
+                    </span></dt><dd><p>The Start output port provides the event start angle in degrees.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Stop </span>
+                    </span></dt><dd><p>The Stop output port provides the event stop angle in degrees.</p></dd><dt><span class="term">
+                        <span class="guilabel">Length </span>
+                    </span></dt><dd><p>The Length output port provides the length of the event in
+                            degrees.</p></dd><dt><span class="term">
+                        <span class="guilabel">Duration </span>
+                    </span></dt><dd><p>The Duration output port provides the duration of the event in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Valid </span>
+                    </span></dt><dd><p>The Valid output port provides a validity flag (0 or 1) of type double
+                            for the Start, Stop, Length, and Duration outputs. Its dimensions match
+                            these ports. At each index, a value of 1 indicates valid data and a
+                            value of 0 indicates invalid data (e.g., when no pulse is
+                            detected).</p></dd><dt><span class="term">
+                        <span class="guilabel">Event Count </span>
+                    </span></dt><dd><p>The Event Count port indicates how many events were captured during
+                            the last window or cycle. If windowing is enabled, one Event Count
+                            output port is available per window, with suffix 1 or 2. The port
+                            outputs a vector of type double. The vector length matches the number of
+                            defined channels in the block mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Error </span>
+                    </span></dt><dd><p>The Error port signals loss of event data. This can happen when the
+                            execution rate of the CPU block is too low compared to the speed of the
+                            crankshaft. The block should be executed at least once per engine cycle
+                            to transfer all captured events to the CPU.</p></dd></dl></div></div><div class="refsect1"><a name="d5e13224"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector </span>
+                    </span></dt><dd><p>A vector of Event Capture channels that are addressed by this block
+                            entity. Channels can be specified in the range 1 to N but must not exceed
+                            the number of implemented channels in the selected configuration file in
+                            the <a href="refentry_fpga_setup_io3xx.html" class="olink">Setup</a> block. The order
+                            of channels can be freely defined. The same channel must not be used
+                            more than once. The number of channels impacts the expected dimensions
+                            of vector parameters and output port dimensions.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Angle source channel vector </span>
+                    </span></dt><dd><p>The Events Capture v4 block must be used in combination with the
+                                <span class="olink">Crank Angle v4</span> block,
+                            from which it inherits the position signal. The <span class="bold"><strong>Angle source channel vector</strong></span> defines from which Crank
+                            Angle v4 channel each Events Capture v4 channel inherits its position
+                            signal. Multiple Events Capture channels can inherit their position
+                            signal from the same Crank Angle channel.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Event and window configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Reference angle vector</span>
+                    </span></dt><dd><p>A reference angle between 0&deg; and 720&deg; can be defined for each active
+                            Events Capture channel. The captured start and stop angles of an event
+                            are output relative to the defined reference angle. For example, if the
+                            reference angle is set to 90&deg; and an incoming pulse is detected at 95&deg;,
+                            the Start output will indicate that the event started at 5&deg;, relative to
+                            the defined reference angle.</p><p>The parameter accepts vectors or scalars. If a vector is used, its
+                            length must match the number of active channels of this block. Scalar
+                            inputs apply to all active channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of events </span>
+                    </span></dt><dd><p>This parameter defines how many events are expected per channel
+                            during one engine cycle. The <span class="bold"><strong>Number of
+                                events</strong></span> must be identical for all channels defined in one
+                            block. The edit field expects a scalar integer value in the range of 1
+                            to 8. It has a direct impact on the output port dimensions. This
+                            parameter is not visible if windowing is enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Events per window </span>
+                    </span></dt><dd><p>This parameter defines how many events are expected per window and
+                            channel during one engine cycle. The <span class="bold"><strong>Events per
+                                window</strong></span> must be identical for all channels defined in one
+                            block and also for both windows. The edit field expects a scalar integer
+                            value in the range of 1 to 4. It has a direct impact on the output port
+                            dimensions. This parameter is only visible if windowing is
+                            enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable window 1 </span>
+                    </span></dt><dd><p>This parameter defines whether windowing is active or not. When this
+                            checkbox is empty, all incoming pulses are considered. When the checkbox
+                            is enabled, only pulses that occur within the defined window are
+                            considered. All other pulses are ignored. Pulses that cross the window
+                            boundaries are truncated.</p></dd><dt><span class="term">
+                        <span class="guilabel">Window 1 start angle vector </span>
+                    </span></dt><dd><p>This parameter defines the angle at which the window starts. The
+                            window boundaries can be defined for each channel relative to the
+                                <span class="bold"><strong>Reference angle vector</strong></span> of the
+                            channel. The parameter must be either a scalar or a vector with the same
+                            length as the <span class="bold"><strong>Channel vector</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Window 1 stop angle vector </span>
+                    </span></dt><dd><p>This parameter defines the angle at which the window stops. The window
+                            boundaries can be defined for each channel relative to the Reference
+                            angle of the channel. The parameter must be either a scalar or a vector
+                            with the same length as the <span class="bold"><strong>Channel
+                                vector</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable window 2 </span>
+                    </span></dt><dd><p>This checkbox defines whether a second window is active or not. Note
+                            that window 2 can only be enabled if window 1 is already enabled; otherwise, this parameter is not visible.</p></dd><dt><span class="term">
+                        <span class="guilabel">Window 2 start angle vector </span>
+                    </span></dt><dd><p>This parameter defines the angle at which the window starts. The
+                            window boundaries can be defined for each channel relative to the
+                            Reference angle of the channel. The parameter must be either a scalar or
+                            a vector with the same length as the <span class="bold"><strong>Channel
+                                vector</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Window 2 stop angle vector</span>
+                    </span></dt><dd><p>This parameter defines the angle at which the window stops. The window
+                            boundaries can be defined for each channel relative to the Reference
+                            angle of the channel. The parameter must be either a scalar or a vector
+                            with the same length as the <span class="bold"><strong>Channel
+                                vector</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show start angle output </span>
+                    </span></dt><dd><p>Enable the Start output port. If windows are enabled, the block has
+                            one start output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show stop angle output </span>
+                    </span></dt><dd><p>Enable the Stop output port. If windows are enabled, the block has one
+                            stop angle output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show length output</span>
+                    </span></dt><dd><p>Enable the Length output port. If windows are enabled, the block has
+                            one length output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show duration output</span>
+                    </span></dt><dd><p>Enable the Duration output port. If windows are enabled, the block has
+                            one duration output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show valid output</span>
+                    </span></dt><dd><p>Enable the Valid output port. If windows are enabled, the block has
+                            one valid output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show event count output</span>
+                    </span></dt><dd><p>Enable the Event Count output port. If windows are enabled, the block
+                            has one event count output port per window.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show error output</span>
+                    </span></dt><dd><p>Enable the Error output port.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Digital input configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Debounce Duration </span>
+                    </span></dt><dd><p>Defines the time in seconds during which the Events Capture input
+                            signal must be stable before an edge is detected. Defaults to 100e-9
+                            (100 ns).</p><p>The range and resolution of the debounce duration depends on the clock
+                            frequency defined in the configuration file. The <span class="bold"><strong>Effective Debounce Duration</strong></span> therefore indicates the
+                            applied duration at the module level.</p><p>To disable debouncing, enter the value 0.</p><p>Valid values are in the range 0 to 2^8-1 ticks (e.g., 2.55&nbsp;&micro;s
+                            at a frequency of 100&nbsp;MHz). The parameter must be a scalar
+                            value which applies to all channels defined in the <span class="bold"><strong>Channel Vector</strong></span>.</p></dd></dl></div></div></div></body></html>

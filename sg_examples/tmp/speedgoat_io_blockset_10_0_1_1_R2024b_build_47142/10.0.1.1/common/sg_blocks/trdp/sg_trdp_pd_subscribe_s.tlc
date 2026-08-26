@@ -1,0 +1,116 @@
+%implements sg_trdp_pd_subscribe_s "C"
+
+%include "sg_trdp.tlc"
+
+%<TrdpCommonIncludes()>
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+        int32_t ret = 0;
+        ns_sg_trdp::cStation* Station = NULL;
+        ns_sg_trdp::cTransceiver *Transceiver = NULL;
+
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+
+        /* Initialize the TRDP API */
+        SgTrdp->init();
+
+        /* Add one station */
+        ret = SgTrdp->addStation(%<StationId>, 0, (ns_sg_trdp::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding TRDP station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one transceiver to the station */
+        ret = Station->addTransceiver((ns_sg_trdp::cTransceiver**)&Transceiver);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding TRDP subscribe block to station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the transceiver */
+        ret = Transceiver->init(TRDP_BLOCK_TYPE_PD_SUBSCRIBE, %<ComId>, %<Timeout>, %<DestIpAddr>, %<SrcIpAddr>, (uint8_T*)%<LibBlockDWorkAddr(Buffer,"","",0)>, %<MaxDataLen>, %<Pull>);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing TRDP subscribe block failed!");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Copy init values to output ports */
+        %if LibBlockOutputSignalConnected(0)
+            memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, \
+                (void*)%<LibBlockMatrixParameterBaseAddr(InitValue)>, \
+                %<MaxDataLen>);  
+        %endif
+        %if Extended
+            %if LibBlockOutputSignalConnected(2)
+                %<LibBlockOutputSignal(2, "", "", 0)> = %<MaxDataLen>;
+            %endif
+        %endif
+
+        /* Write the block address to PWork */
+        %<LibBlockPWork(Instance, "", "", 0)> = Transceiver;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %%assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Buffer)) * LibBlockDWorkWidth(Buffer)
+    %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockParameterDataTypeId(InitValue)) * LibBlockParameterWidth(InitValue)
+
+    {
+        ns_sg_trdp::cTransceiver* Transceiver = (ns_sg_trdp::cTransceiver*)%<LibBlockPWork(Instance, "", "", 0)>;
+        uint32_t DevFlagsRx = Transceiver->DevFlagsRx;
+
+        %if Pull
+            %if LibBlockInputSignalConnected(0)
+                if (%<LibBlockInputSignal(0, "", "", 0)>) 
+                {
+                    Transceiver->HostFlagsTx++;
+                }
+            %endif
+        %endif
+
+        if (DevFlagsRx != Transceiver->HostFlagsRx)
+        {
+            %if LibBlockOutputSignalConnected(0)
+                memset(%<LibBlockOutputSignalAddr(0, "", "", 0)>, 0, %<MaxDataLen>);
+                memcpy(%<LibBlockOutputSignalAddr(0, "", "", 0)>, \
+                        %<LibBlockDWorkAddr(Buffer,"","",0)>, \
+                        Transceiver->OutDataLen);
+            %endif
+            %if Extended
+                %if LibBlockOutputSignalConnected(1)
+                    %<LibBlockOutputSignal(1, "", "", 0)>++; 
+                %endif
+                %if LibBlockOutputSignalConnected(2)
+                    %<LibBlockOutputSignal(2, "", "", 0)> = Transceiver->OutDataLen;
+                %endif
+            %endif
+            Transceiver->HostFlagsRx = DevFlagsRx;
+        }
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

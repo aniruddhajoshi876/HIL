@@ -1,0 +1,31 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - RT Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_rt_initialize.html" title="IO672 - RT Initialize"><link rel="next" href="refentry_io672_rt_receive.html" title="IO672 - RT Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_rt_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - RT Send</h2><p>IO672 - RT Send &#8212; <span class="phrase">Send message from MIL-1553 remote
+                    terminal</span></p></div><div class="refsect1"><a name="d5e51735"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_rt_send.png"></span></span></p></div><div class="refsect1"><a name="d5e51743"></a><h2>Description</h2><p>A Remote Terminal sends data only if it receives a transmit command from the Bus
+                Controller. This block prepares the board for the next transmit command on this
+                channel, Remote Terminal number, and sub address as specified by the Initialize and
+                RT Initialize blocks.</p><p>The data vector signal input to this block is copied to the board message buffer
+                that corresponds to the specified address. The input data vector must have the same
+                length as specified in the Number of words to send parameter. The input vector can
+                be either 16- or 32-bit signed or unsigned data. The block sends only the bottom 16
+                bits of each element.</p><p>Your model might have multiple Remote Terminal Send blocks. To help you locate a
+                particular block, the Remote Terminal Send block displays the channel number and
+                address parameters. The address display has the format:</p><p>remote terminal-T-sub address-number of words</p><p>Remote terminal &#8212; Derives from the Remote Terminal parameter</p><p>T &#8212; Indicates transmit (or send) command</p><p>Subaddress &#8212; Derives from the Sub address parameter</p><p>Number of words &#8212; Derives from the Number of words to receive parameter</p><p>A transmit command for RT 1, sub address 3 to send 2 words has the layout 1-T-3-2.
+            </p></div><div class="refsect1"><a name="d5e51754"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Data</span></span></dt><dd><p>Vector of data to be send.</p></dd></dl></div></div><div class="refsect1"><a name="d5e51763"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel </span>
+                    </span></dt><dd><p>From the list of available channels on the board, choose channel 1, 2,
+                            3 or 4. This channel is initialized for this command stream.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote terminal </span>
+                    </span></dt><dd><p>A Remote Terminal from 0 to 31. The remote terminal number configured
+                            in RT Send and RT Receive must match that specified by the corresponding
+                            RT Initialize block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sub address </span>
+                    </span></dt><dd><p>The sub address for this message.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of words to send </span>
+                    </span></dt><dd><p>The number of 16-bit integers to send as the data part of this
+                            message. This number must be between 1 and 32. The input data vector
+                            must have the same vector width.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

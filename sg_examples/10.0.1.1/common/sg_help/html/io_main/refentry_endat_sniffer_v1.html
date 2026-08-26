@@ -1,0 +1,93 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EnDat - Sniffer v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_endat_encoder_v1.html" title="EnDat - Encoder v1"><link rel="next" href="refentry_ref_spi.html" title="SPI"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_endat_sniffer_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>EnDat - Sniffer v1</h2><p>EnDat - Sniffer v1 &#8212; <span class="phrase">The EnDat Sniffer code module
+                    is used to monitor the data stream of an existing EnDat data communication.. The
+                    driver block can be configured for generic support of different EnDat encoders.
+                    The driver block is currently only supporting EnDat 2.1
+                commands</span></p></div><div class="refsect1"><a name="d5e10394"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_endat_sniffer_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e10402"></a><h2>Description</h2><p>The EnDat Sniffer code module is used to monitor the data stream of an existing
+                EnDat data communication.. The driver block can be configured for generic support of
+                different EnDat encoders.</p><p>The driver block is currently only supporting EnDat 2.1 commands and can only be
+                used to sniff the position and revolution value. If particular EnDat 2.2
+                functionality is required, Speedgoat can provide this upon request.</p></div><div class="refsect1"><a name="d5e10406"></a><h2>Ports</h2><p>This EnDat Sniffer driver block has no inputs, and up to five output ports.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position </span>
+                    </span></dt><dd><p>The encoder position value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Position Width </span>
+                    </span></dt><dd><p>The number of bits for the position value representation. This port is
+                            only visible if a multiturn-setup is selected (<span class="bold"><strong>Distinguishable Revolutions Data Width</strong></span> is set different
+                            to 0)</p></dd><dt><span class="term">
+                        <span class="guilabel">Revolution </span>
+                    </span></dt><dd><p>The encoder revolution value. This port is only visible if a
+                            multiturn-setup is selected (<span class="bold"><strong>Distinguishable
+                                Revolutions Data Width</strong></span> is set different to 0)</p></dd><dt><span class="term">
+                        <span class="guilabel">Revolution Width</span>
+                    </span></dt><dd><p>The number of bits for the revolution value representation. This port
+                            is only visible if a multiturn-setup is selected (<span class="bold"><strong>Distinguishable Revolutions Data Width</strong></span> is set different
+                            to 0)</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Port </span>
+                    </span></dt><dd><p>The 8 bit error code, decoded as follows:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="21%" class="col1"><col width="79%" class="col2"></colgroup><tbody><tr><td>Bit</td><td>Description</td></tr><tr><td>
+                                            <p>Bit 0</p>
+                                            <p>Bit 1</p>
+                                            <p>Bit 2</p>
+                                            <p>Bit 3</p>
+                                            <p>Bit 4</p>
+                                            <p>Bit 5</p>
+                                            <p>Bit 6</p>
+                                            <p>Bit 7</p>
+                                        </td><td>
+                                            <p>F-Typ III Error 1F</p>
+                                            <p>F-Typ III Error 0F</p>
+                                            <p>F-Typ II Error</p>
+                                            <p>F-Typ I Error</p>
+                                            <p>CRC Error</p>
+                                            <p>Error bit 2 of EnDat protocol (Alarm2)</p>
+                                            <p>Error bit 1 of EnDat protocol (Alarm1)</p>
+                                            <p>FPGA configuration error</p>
+                                        </td></tr></tbody></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e10466"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: EnDat configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position Data Width Vector </span>
+                    </span></dt><dd><p>Configures the number of data bits for the position reading of the
+                            EnDat encoder. Valid range 1 to 32.</p></dd><dt><span class="term">
+                        <span class="guilabel">Distinguishable Revolutions Data Width Vector (multiturn only)
+                        </span>
+                    </span></dt><dd><p>Configures the number of bits for the distinguishable revolutions
+                            reading of the EnDat encoder. For single-turn encoder a value of 0 needs
+                            to be configured. Valid range 0 to 15.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset Time Vector [s] </span>
+                    </span></dt><dd><p>The time until the EnDat Sniffer aborts the reception of an ongoing
+                            EnDat frame in case the CLK singal line stays high for a bigger time
+                            than this parameter (&#8594; CLK signal is inactive).</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Error Port </span>
+                    </span></dt><dd><p>If checked, the error port is enabled. The error port holds
+                            information of several errors decoded as follows:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="21%" class="col1"><col width="79%" class="col2"></colgroup><tbody><tr><td>Bit</td><td>Description</td></tr><tr><td>
+                                            <p>Bit 0</p>
+                                            <p>Bit 1</p>
+                                            <p>Bit 2</p>
+                                            <p>Bit 3</p>
+                                            <p>Bit 4</p>
+                                            <p>Bit 5</p>
+                                            <p>Bit 6</p>
+                                            <p>Bit 7</p>
+                                        </td><td>
+                                            <p>F-Typ III Error 1F</p>
+                                            <p>F-Typ III Error 0F</p>
+                                            <p>F-Typ II Error</p>
+                                            <p>F-Typ I Error</p>
+                                            <p>CRC Error</p>
+                                            <p>Error bit 2 of EnDat protocol (Alarm2)</p>
+                                            <p>Error bit 1 of EnDat protocol (Alarm1)</p>
+                                            <p>FPGA configuration error</p>
+                                        </td></tr></tbody></table></div></dd></dl></div></div></div></body></html>

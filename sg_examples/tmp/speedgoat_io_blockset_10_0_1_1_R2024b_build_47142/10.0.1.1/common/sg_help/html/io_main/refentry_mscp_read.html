@@ -1,0 +1,27 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MSCP Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="up" href="book_signal_conditioning.html" title="Signal Conditioning"><link rel="prev" href="refentry_mscp_setup.html" title="MSCP Setup"><link rel="next" href="refentry_mscp_write.html" title="MSCP Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mscp_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>MSCP Read</h2><p>MSCP Read &#8212; <span class="phrase">Configure the MSCP Read
+                block</span></p></div><div class="refsect1"><a name="d5e166"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mscp_read.png"></span></span></p></div><div class="refsect1"><a name="d5e175"></a><h2>Description</h2><p>The MSCP Read block allows the user to read back data from an MSCP. One MSCP Read
+                block handles the data of one MSCP device and only works in combination with an MSCP
+                Setup block.</p></div><div class="refsect1"><a name="d5e178"></a><h2>Ports</h2><p>This driver block has one output port.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The data port outputs a Simulink bus signal, the structure of which
+                            depends on the selected device's slot/module configuration. The Simulink
+                            bus object and a template structure for initialization are created in
+                            the MATLAB<sup>&reg;</sup> workspace after the block has
+                            been configured. It is recommended to use a Bus Selector block to access
+                            the data contained in the bus signal.</p></dd></dl></div></div><div class="refsect1"><a name="d5e189"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Sample Time</strong></span> is displayed here; however, it must be configured in
+                            the corresponding MSCP Setup block, this is because the sample time for
+                            EtherCAT communication is set globally.</p></dd><dt><span class="term">
+                        <span class="guilabel">Network Index</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Network Index</strong></span> is a user-defined
+                            ID to associate the MSCP Read block with the corresponding MSCP Setup
+                            block. The value must be an integer between 0 and 11. When changing the
+                            network index, click the <span class="bold"><strong>Reload Device
+                                List</strong></span> button to load the list of devices from the MSCP
+                            Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Device</span>
+                    </span></dt><dd><p>Selects the <span class="bold"><strong>Device</strong></span> from which the MSCP Read block will receive data.
+                        </p></dd></dl></div></div></div></body></html>

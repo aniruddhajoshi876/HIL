@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Cam Decoder v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_crank_decoder_event_v1.html" title="Cam and Crank - Crank Decoder Event v1"><link rel="next" href="refentry_cam_and_crank_crank_encoder_v3.html" title="Cam and Crank - Crank Encoder v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_cam_decoder_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Cam Decoder v1</h2><p>Cam and Crank - Cam Decoder v1 &#8212; <span class="phrase">The cam decoder
+                    acquires a camshaft signal (generated from a cam encoder) and decodes the start
+                    position and the camshaft tooth size.</span></p></div><div class="refsect1"><a name="d5e12514"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_cam_decoder_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e12523"></a><h2>Description</h2><p>The cam decoder acquires a camshaft signal (generated from a cam encoder) and
+                decodes the start position and the camshaft tooth size.</p></div><div class="refsect1"><a name="d5e12526"></a><h2>Ports</h2><p>The Simulink block has two output ports:</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Cam tooth offset</span>
+                    </span></dt><dd><p>Displays the cam tooth offset in degrees.</p></dd><dt><span class="term">
+                        <span class="guilabel">Cam tooth size </span>
+                    </span></dt><dd><p>Displays the cam tooth size in degrees.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12541"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Cam Decoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Crank master vector (read only) </span>
+                    </span></dt><dd><p>The corresponding crank decoder master. This parameter is read-only,
+                            and therefore only for information purpose. The crank decoder master is
+                            predefined during the pin layout.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of teeth vector (read only) </span>
+                    </span></dt><dd><p>This parameter defines the number of teeth defined in the crank
+                            decoder master. This parameter is read-only, and therefor only for
+                            information purpose. The number of teeth vector is defined in the crank
+                            decoder mask.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,139 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC429 - Encode v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io682_update_scheduled_messages_v4.html" title="IO682 - Update Scheduled Messages v4"><link rel="next" href="refentry_arinc429_decode_v4.html" title="ARINC429 - Decode v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc429_encode_v4"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC429 - Encode v4</h2><p>ARINC429 - Encode v4 &#8212; 
+                <span class="phrase">Encode ARINC 429 words for the Send block</span>
+            </p></div><div class="refsect1"><a name="d5e53809"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc429_encode_v4.png"></span></span></p></div><div class="refsect1"><a name="d5e53818"></a><h2>Description</h2><p>This block encodes the input values in the ARINC 429 protocol depending on the
+                data type selected.</p></div><div class="refsect1"><a name="d5e53821"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>A single value or a vector that should be encoded.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Msg</span>
+                    </span></dt><dd><p>ARINC 429-encoded messages.</p></dd></dl></div></div><div class="refsect1"><a name="d5e53837"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Label</span>
+                    </span></dt><dd><p>Enter a three-digit octal number or vector as the ARINC 429 label.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Label</strong></span> bit order is
+                                    reversed automatically by the transmit logic prior to
+                                    transmission of the ARINC 429 word for all <span class="bold"><strong>Data Type</strong></span> options.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>Select the encoding style for the defined labels. The data type
+                            determines how the input value is converted to a corresponding ARINC
+                            value:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="16%" class="col1"><col width="84%" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Interpretation</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p>RAW</p>
+                                        </td><td>
+                                            <p>Pack the low-order 23 bits into an ARINC word and
+                                                add the value of the <span class="bold"><strong>Label</strong></span> parameter.</p>
+                                        </td></tr><tr><td>
+                                            <p>BNR (Two's-complement binary notation)</p>
+                                        </td><td>
+                                            <p>Scale the input by dividing it by the scale vector
+                                                in the <span class="bold"><strong>Scale</strong></span>
+                                                parameter. This input value is restricted to the
+                                                range <code class="literal">[-Scale, Scale]</code>, resulting
+                                                in a scaled value in the range <code class="literal">[-1,
+                                                  1]</code>.</p>
+                                            <p>The block performs the following on the scaled
+                                                value:</p>
+                                            <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Multiplies the scaled value by 2^18.</p></li><li class="listitem"><p>Truncates the value to a 19-bit fixed-point
+                                                  integer and then uses the number of high-order
+                                                  bits specified in the <span class="bold"><strong>Bits
+                                                  to Send</strong></span> parameter.</p></li><li class="listitem"><p>Shifts the result up by 10 bits and inserts
+                                                  it into the 32-bit integer along with the
+                                                  <span class="bold"><strong>SSM</strong></span>, <span class="bold"><strong>SDI</strong></span>, and <span class="bold"><strong>Label</strong></span> parameter
+                                                  values.</p></li></ol></div>
+                                            <p>To place discrete bits into unused positions,
+                                                construct the 32-bit word and use it with RAW mode
+                                                instead of the BNR mode, or combine these modes
+                                                after encoding. </p>
+                                            <p>
+                                                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If SDI bits are not used, two more bits are
+                                                  available for the data section. Select the
+                                                  <span class="bold"><strong>Use SDI Bits for
+                                                  Data</strong></span> checkbox as required.</p></td></tr></table></div><p>
+                                            </p>
+                                        </td></tr><tr><td>
+                                            <p>BCD (Binary-coded decimal)</p>
+                                        </td><td>
+                                            <p>Cast the input as a signed integer, limit it to
+                                                the range representable by an ARINC five-character
+                                                BCD value, and pack it into an ARINC word. Set the
+                                                required <span class="bold"><strong>SSM</strong></span>,
+                                                  <span class="bold"><strong>SDI</strong></span>, and
+                                                  <span class="bold"><strong>Label</strong></span> parameter
+                                                values.</p>
+                                        </td></tr><tr><td>
+                                            <p>Discretes</p>
+                                        </td><td>
+                                            <p>Pack the low-order 19 bits (or 21 bits if SDI is
+                                                not used) into an ARINC word and set the required
+                                                  <span class="bold"><strong>SSM</strong></span>, <span class="bold"><strong>SDI</strong></span>, and <span class="bold"><strong>Label</strong></span> parameters.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Resolution (BCD) or Scale (BNR)</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the resolution/scale vector. If a
+                            vector is entered, then it must be the same length as the <span class="bold"><strong>Label</strong></span>; otherwise, the scalar value is applied
+                            to the length of the <span class="bold"><strong>Label</strong></span>
+                            vector.</p><p>The interpretation of this value depends on the data type:</p><div class="informaltable"><table class="informaltable" border="1" width="800"><colgroup><col width="90" class="col1"><col width="710" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Effect</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">BNR</code></p>
+                                        </td><td>
+                                            <p>The block uses this value as a scale factor. The
+                                                block divides the input value by the scale. Doing so
+                                                limits the valid input range to <code class="literal">[-Scale,
+                                                  Scale]</code>. Values outside this range are
+                                                limited to <code class="literal">&plusmn;Scale</code>.</p>
+                                            <p>A 19-bit signed ARINC binary can represent a range
+                                                from -262,144 to 262,143. If the combination of the
+                                                input signal and resolution produces a value outside
+                                                this range, then the block returns the result to the
+                                                minimum/maximum value of the stated range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BCD</code></p>
+                                        </td><td>
+                                            <p>The resolution vector specifies (in the same units
+                                                as the input signal) the value of the
+                                                least-significant digit of the BCD data field to be
+                                                encoded and sent. For example, if the associated
+                                                resolution is <code class="literal">0.01</code> and the input
+                                                signal contains the value <code class="literal">3.1415</code>,
+                                                the output ARINC word contains the number
+                                                  <code class="literal">314</code> in its data field, encoded
+                                                in BCD. Use the same resolution on the receive side
+                                                to reconstruct 3.14. The resolution is typically a
+                                                power of 10, but this is not a strict
+                                                requirement.</p>
+                                            <p>The range representable as an ARINC BCD value is
+                                                -79,999 to 79,999. If the combination of the input
+                                                signal and resolution produces a value outside this
+                                                range, the block returns the result to the
+                                                minimum/maximum value of the stated range.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Bits to Send (BNR)</span>
+                    </span></dt><dd><p>Specifies the number of high order bits of the 19-bit (or 21-bit if
+                            SDI is not used) scaled input to retain when the value is inserted into
+                            the encoded word. The block uses this value for a BNR format
+                            input.</p></dd><dt><span class="term">
+                        <span class="guilabel">SDI</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the <span class="bold"><strong>SDI</strong></span> data. If a vector is entered, then it must be the
+                            same length as the <span class="bold"><strong>Label</strong></span>; otherwise,
+                            the scalar value is applied to the length of the <span class="bold"><strong>Label</strong></span> vector.</p><p>If the SDI element is in the range <code class="literal">0</code> to
+                                <code class="literal">3</code>, the block sets the SDI field of the
+                            corresponding output word to that value. If an SDI element has a value
+                            of <code class="literal">-1</code>, then the block does not perform SDI processing
+                            on the corresponding output word.</p></dd><dt><span class="term">
+                        <span class="guilabel">SSM</span>
+                    </span></dt><dd><p>Enter a vector or scalar value as the sign/status matrix (<span class="bold"><strong>SSM</strong></span>) data. If a vector is entered, then it
+                            must be the same length as the <span class="bold"><strong>Label</strong></span>;
+                            otherwise, the scalar value is applied to the length of the <span class="bold"><strong>Label</strong></span> vector.</p><p>If the SSM element is in the range <code class="literal">0</code> to
+                                <code class="literal">3</code>, then the block sets the SSM field of the
+                            corresponding output word to that value. If an SSM element has a value
+                            of <code class="literal">-1</code>, the block does not perform SSM processing on
+                            the corresponding output word.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use SDI Bits for Data</span>
+                    </span></dt><dd><p>Select whether the SDI field should be used for data (the data field
+                            can be extended by two bits).</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable SSM Input</span>
+                    </span></dt><dd><p>Select whether the SSM input should be active.</p></dd></dl></div></div></div></body></html>

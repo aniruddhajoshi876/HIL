@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO105 - Analog input</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io105_setup.html" title="IO105 - Setup"><link rel="next" href="refentry_ref_io106.html" title="IO106"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io105_analog_input"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO105 - Analog input</h2><p>IO105 - Analog input &#8212; <span class="phrase">Reads the IO105 analog
+                    inputs</span></p></div><div class="refsect1"><a name="d5e3288"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io105_analog_input.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e3299"></a><h2>Ports</h2><p>This driver block has either n scalar output ports or 1 output port with a width
+                of n depending on the setting of the Port type dialog field (where n is the number
+                of selected analog input channels).</p><p>If Port type is set to "n ports of type double" the driver block shows n ports
+                with a signal width of 1. Each port (signal) returns the converted A/D value in
+                Volts.</p><p>As the IO105 module has a high channel count which can lead to a large number of
+                output ports (see above), you can set Port type to "1 port with n element vector of
+                type double" as an alternative. In this case the driver block just shows one output
+                port of type double but with a signal width of n.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number)</span>
+                    </span></dt><dd><p>The value from analog channel X in volts.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e3314"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Type</span>
+                    </span></dt><dd><p>Select either "n ports of type double" or "1 port with n element
+                            vector of type double". The data type is double in both cases. For more
+                            information please see the previous 'Inputs and Output' section.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

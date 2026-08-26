@@ -1,0 +1,26 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Database Parser</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_read.html" title="IO602/IO603/IO691 - CAN Read"><link rel="next" href="refentry_ref_can_ofa_parsing_write.html" title="CAN Database Parser Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ref_can_ofa_parsing"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Database Parser</h2><p>CAN Database Parser &#8212; <span class="phrase">CAN Read and Write messaging
+                    supporting database parsing</span></p></div><div class="refsect1"><a name="d5e1645"></a><h2>Introduction</h2><p>Automotive network engineers frequently use *.dbc files to describe nodes,
+                messages and signals of CAN (HS) and CAN-FD networks. The CAN DB Parser Read and
+                Write blocks have been introduced to simplify the workflow when *.dbc files are
+                required. The main features (and additional comments) are listed below:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The CAN DB Parser Read and Write blocks consist of subsystems
+                            dynamically populated with input/output ports, CAN and CAN FD
+                            unpack/pack blocks, standard CAN Read/Write blocks and the
+                            interconnecting lines</p></li><li class="listitem"><p>A Database Manager tool has also been introduced. Its purpose is to
+                            parse a *.dbc file and generate a Simulink library containing a set of
+                            corresponding preconfigured CAN/CAN FD pack/unpack blocks. The Simulink
+                            library is generated in the current folder and is used by the CAN DB
+                            Parser Read and Write blocks to populate the subsystems</p></li><li class="listitem"><p>When a CAN DB Parser Read or Write block is placed in a model, the
+                            link to the library is broken</p></li><li class="listitem"><p>A subsystem can be accessed (Ctrl+u) and modified after generation,
+                            however if the user presses the <span class="bold"><strong>OK</strong></span> or
+                                <span class="bold"><strong>Apply</strong></span> buttons of the CAN DB Parser
+                            Read or Write block, the content of the subsystem will be cleared and
+                            recreated. Any modifications made by the user will also be
+                            deleted</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e1660"></a><h2>Driver Blocks</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="refentry_ref_can_ofa_parsing_write.html" class="olink">CAN DB Parsing
+                            Write</a></p></li><li class="listitem"><p><a href="refentry_ref_can_ofa_parsing_read.html" class="olink">CAN DB Parsing
+                            Read</a></p></li></ul></div></div><div class="refsect1"><a name="d5e1669"></a><h2>Usage Notes</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="refentry_can_ofa_parsing_usage_notes.html" class="olink">CAN DB Parsing Usage
+                            Notes</a></p></li></ul></div></div><div class="refsect1"><a name="d5e1675"></a><h2>Examples</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="https://www.speedgoat.com/help/slrt/page/examples/CAN_ParsingAndMapping" target="_top"> CAN - Working with the DB Parser</a>
+                    </p></li></ul></div></div></div></body></html>

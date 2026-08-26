@@ -1,0 +1,98 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EV EVSE</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_evcharging_usage_notes.html" title="EV Charging Usage Notes"><link rel="next" href="refentry_ref_evse_setup.html" title="EVSE - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_ev_evse"></a><div class="titlepage"></div><div class="refnamediv"><h2>EV EVSE</h2><p>EV EVSE &#8212; <span class="phrase">Configures one EVSE charging board via a
+                    user interface that lets the user select signals from all charging states.
+                </span></p></div><div class="refsect1"><a name="d5e73341"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ev_evse.png"></span></span></p></div><div class="refsect1"><a name="d5e73349"></a><h2>Description</h2><p>This block configures one EV or EVSE charging board via a user interface. The
+                Setup block for the board and Read and Write blocks for all charging states are
+                automatically inserted based on the settings in the user interface.</p></div><div class="refsect1"><a name="d5e73352"></a><h2>Ports</h2><p>Input and Output ports are dynamically allocated based on the selection of signals
+                in the user interface. For each input signal that is enabled &#8211; but not set constant
+                &#8211; and for each enabled output signal, a port is created.</p></div><div class="refsect1"><a name="d5e73355"></a><h2>Parameters</h2><p>The global configuration parameters of the EV or EVSE charging board are set in
+                the panel on the left side. Signals from each charging state can be enabled as input
+                or output signal via tables in different tabs of the user interface.</p><div class="variablelist"><div class="variablelist-title">Configure EV Charging Board</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Board Type</span>
+                    </span></dt><dd><p>Select either <span class="bold"><strong>EV</strong></span> or <span class="bold"><strong>EVSE</strong></span>, depending on which board is being used.
+                            Currently there is no way to use an EV board for EVSE emulation or vice
+                            versa.</p></dd><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Station ID</strong></span> is used to assign
+                            Setup, Read and Write blocks to a particular MQTT client station.
+                            Station IDs range between 0 to 65535 and must be unique along all Setup
+                            blocks in a model. You can define multiple clients by placing a Setup
+                            block with a unique Station ID for each client.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Connection ID</strong></span> is used to assign
+                            Publish and Subscribe blocks to a particular client-broker connection.
+                            Connection IDs range between 0 to 65535 and must be unique along all
+                            Connection blocks of the client (these blocks have the same Station
+                            ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Client Identifier</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Client Identifier</strong></span> represents the
+                            MQTT client in the local network and must be unique along all clients in
+                            that network. The parameter is a character array with a length limit of
+                            256.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the MQTT client. This step does not assign the
+                            IP address to an Ethernet interface; instead, it binds the Setup block
+                            to an IP address, which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_mqtt_usage_notes.html" class="olink">MQTT usage notes</a> for
+                            further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote TCP Port </span>
+                    </span></dt><dd><p>Enter the TCP port the remote MQTT broker is listening on for
+                            connection requests. The default value is 1883.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the EV charging board. The default IP address
+                            is configured to <span class="bold"><strong>169.254.12.53</strong></span> and can
+                            be changed using the <span class="bold"><strong>Change IP</strong></span>
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which data is exchanged with the EV
+                            charging board. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ping Board</span>
+                    </span></dt><dd><p>Send a network ping to the EV Charging Board from the host computer.
+                            Both the <span class="bold"><strong>Local IP Address</strong></span> and the
+                                <span class="bold"><strong>Remote IP Address</strong></span> must be set up
+                            beforehand, and the real-time target machine must be connected and
+                            powered on.</p></dd><dt><span class="term">
+                        <span class="guilabel">slrtExplorer</span>
+                    </span></dt><dd><p>A shortcut to open the Simulink Real-Time explorer for target
+                            configuration.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ethernet Configuration</span>
+                    </span></dt><dd><p>A shortcut to open the Speedgoat Ethernet Configuration Tool to
+                            configure the IP addresses of the target machine's Ethernet
+                            ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Edit JSON</span>
+                    </span></dt><dd><p>This button loads the customer.json file from the EV Charging board
+                            for editing. This file contains base configuration parameters of the EV
+                            Charging board which can be adjusted.</p></dd><dt><span class="term">
+                        <span class="guilabel">Change IP</span>
+                    </span></dt><dd><p>Change the IP address of the EV Charging board. The default IP address
+                                <span class="bold"><strong>169.254.12.53</strong></span> will remain as a
+                            static fallback IP address.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Signals by Charge State</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Base Configuration</span>
+                    </span></dt><dd><p>The setting of the constant Base Configuration parameters is mandatory
+                            and cannot be disabled. Values can be edited directly in the
+                            table.</p></dd><dt><span class="term">
+                        <span class="guilabel">Parameter Discovery</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Parameter Discovery state
+                            of the charge cycle. Enabled input signals can also be set to a constant
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Isolation</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Isolation state of the
+                            charge cycle. Enabled input signals can also be set to a constant
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Pre-Charge</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Pre-Charge state of the
+                            charge cycle. Enabled input signals can also be set to a constant
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Charging</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Charging state of the
+                            charge cycle. Enabled input signals can also be set to a constant
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Welding</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Welding state of the
+                            charge cycle. Enabled input signals can also be set to a constant
+                            value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop</span>
+                    </span></dt><dd><p>Select inputs and outputs enabled during the Stop state of the charge
+                            cycle. Enabled input signals can also be set to a constant value.</p></dd></dl></div></div></div></body></html>

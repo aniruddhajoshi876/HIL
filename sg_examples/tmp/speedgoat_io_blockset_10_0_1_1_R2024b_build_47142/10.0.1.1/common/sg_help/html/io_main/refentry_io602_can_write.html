@@ -1,0 +1,68 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO602 - CAN Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io602_setup.html" title="IO602 - Setup"><link rel="next" href="refentry_io602_can_read.html" title="IO602 - CAN Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io602_can_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO602 - CAN Write</h2><p>IO602 - CAN Write &#8212; <span class="phrase">Send CAN (HS) and CAN-FD
+                    messages to one channel of the IO602 I/O module</span></p></div><div class="refsect1"><a name="d5e10438"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io602_can_write.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_io602_can_write"></a><h2>Description</h2><p>The IO602 CAN Write block executes according to the settings in the corresponding
+                IO602 Setup block. The execution primarily depends on whether the operation mode is
+                set to CAN (HS) or CAN-FD.</p><p>Each execution of a CAN Write block represents a CAN message being written to the
+                IO602 output buffer. Multiple instances of the block can be used to send messages at
+                multiple rates.</p><p>The write block buffer has a size of 16. A higher number of output messages per
+                block per sample will result in losses. The content of the block buffers are
+                transferred to the channel's output buffer on the module. This output buffer has a
+                size of 16, so you must avoid overflows on the buffer. You can use the block's
+                    <span class="bold"><strong>Status Output Port</strong></span> to verify this.</p><p>To avoid buffer overflows, take precaution when defining the settings of the baud
+                rate and the CAN Write block's sample time. If using several IO602 Write blocks in
+                one model, try to distribute them across different samples. Otherwise messages may
+                be lost in the event of high bus loads.</p></div><div class="refsect1"><a name="refsect_ports_io602_can_write"></a><h2>Ports</h2><p>The availability of input ports depends on the <span class="bold"><strong>Channel
+                    Selection</strong></span> setting of the corresponding IO602 Setup block and the
+                    <span class="bold"><strong> Message type</strong></span> setting of the respective block: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN (HS) &amp; CAN: The only message type available is CAN_MESSAGE
+                            input</p></li><li class="listitem"><p>CAN-FD &amp; CAN: The only message type availabe is CAN_FD_MESSAGE_BUS
+                            input</p></li><li class="listitem"><p>CAN (HS) &amp; RAW: Identifier, Length, Identifier Type and Data
+                            inputs are available</p></li><li class="listitem"><p>CAN-FD &amp; RAW: Identifier, Data Length Code (DLC), Identifier Type,
+                            BRS and Data inputs are available</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The complete CAN message. Use the "CAN Pack" or "CAN-FD Pack" block to
+                            create this message.</p><p>The data type is CAN_MESSAGE if CAN (HS) is selected.</p><p>The data type is CAN_FD_MESSAGE_BUS if CAN-FD is selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">ID</span>
+                    </span></dt><dd><p>The CAN message identifier. The data type is uint32.</p></dd><dt><span class="term">
+                        <span class="guilabel">EFF</span>
+                    </span></dt><dd><p>The identifier type (Extended Frame Format) of the CAN message. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: 11-bit standard identifier</p></li><li class="listitem"><p>1: 29-bit extended identifier</p></li></ul></div><p> The data type is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">Length/DLC</span>
+                    </span></dt><dd><p>If CAN (HS) is selected in the related Setup block, this port expects
+                            the length of the payload data. If CAN-FD is selected in the related
+                            Setup block, this port expects the DLC.</p><p>The DLC and corresponding byte lengths are as follows.</p><div class="informaltable"><table class="informaltable" border="1" width="500"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>DLC</th><th>Byte Length</th></tr></thead><tbody><tr><td>0-8</td><td>0-8</td></tr><tr><td>9</td><td>9-12</td></tr><tr><td>10</td><td>13-16</td></tr><tr><td>11</td><td>17-20</td></tr><tr><td>12</td><td>21-24</td></tr><tr><td>13</td><td>25-32</td></tr><tr><td>14</td><td>33-48</td></tr><tr><td>15</td><td>48-64</td></tr></tbody></table></div><p>The data type is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">BRS</span>
+                    </span></dt><dd><p>If enabled (1), the Bit Rate Switch (BRS) transmits the data segment
+                            of a message with the fast data rate defined in the corresponding Setup
+                            block. The data type is uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Expects the payload of a message as a vector of data type uint8. If
+                            the payload is shorter than the size of this input port, complete the
+                            field with zeros.</p><p>The data length of the input port is 8 bytes with CAN (HS).</p><p>The data length of the input port is 64 bytes with CAN-FD.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Indicates if the message supplied to the input ports has been
+                            successfully placed in the IO602 I/O module tx queue. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The message was not successfully written to the send
+                                        buffer</p></li><li class="listitem"><p>1: The message was successfully written to the send
+                                        buffer</p></li></ul></div><p>
+                        </p><p>This port can be enabled or disabled using the <span class="bold"><strong>Enable Status Output Port</strong></span> setting in the dialog box for
+                            this driver block.</p><p>The data type is uint8.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_io602_can_write"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number</span>
+                    </span></dt><dd><p>Selects the CAN channel to which this driver block corresponds.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type </span>
+                    </span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN: Use the "CAN Pack" or "CAN-FD Pack" block to define
+                                        the CAN message, depending on the corresponding setting of
+                                        the IO602 Setup block.</p></li><li class="listitem"><p>RAW: Manual definition of the CAN message. Refer to the
+                                        CAN specification and the description of the inputs</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Input as bus</span>
+                    </span></dt><dd><p>Select this option for the block if the input CAN messages is a bus signal.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Status Output Port </span>
+                    </span></dt><dd><p>Adds the "Status" output port.</p></dd></dl></div></div></div></body></html>

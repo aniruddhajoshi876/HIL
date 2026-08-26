@@ -1,0 +1,14 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.version</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_uninstall.html" title="speedgoat.uninstall"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_version"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.version</h2><p>speedgoat.version &#8212; 
+            <span class="phrase">Show (or get) the Speedgoat I/O Blockset version and other information</span>
+         </p></div><div class="refsect1"><a name="d5e1539"></a><h2>Description</h2><p>This Speedgoat API function provides information about the version of the Speedgoat I/O Blockset
+currently installed on your MATLAB host.</p></div><div class="refsect1"><a name="d5e1542"></a><h2>Examples</h2><p>Show the Speedgoat I/O Blockset version:</p><pre class="programlisting">speedgoat.version</pre><pre class="screen">&gt;&gt; Speedgoat I/O Blockset Version 9.1.0 (R2020b)
+&gt;&gt; Build number: 20576-002
+&gt;&gt; Build date: 02-Sep-2020 08:46:53</pre><p>Get the Speedgoat I/O Blockset version number:</p><pre class="programlisting">sgLibVer = speedgoat.version</pre><p>Get the Speedgoat I/O Blockset version and the build number:</p><pre class="programlisting">[sgLibVer, sgLibBuildNum] = speedgoat.version</pre><p>Get the Speedgoat I/O Blockset version number, the build number and the build date:</p><pre class="programlisting">[sgLibVer, sgLibBuildNum, sgLibBuildDate] = speedgoat.version</pre></div><div class="refsect1"><a name="d5e1553"></a><h2>Output Arguments</h2><p>sgLibVer - Speedgoat I/O Blockset version
+[character vector].
+The version, e.g. '9.1.0'.</p><p>sgLibBuildNum - Speedgoat I/O Blockset build number (code revision)
+[character vector].
+The build number, e.g. '20576'.</p><p>sgLibBuildDate - Speedgoat I/O Blockset build date
+[character vector].
+The build date, e.g. '02-Sep-2020 08:46:53'.</p></div></div></body></html>

@@ -1,0 +1,261 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">PWM - Generation v5</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_pwm_generation_v3.html" title="PWM - Generation v3"><link rel="next" href="refentry_pwm_capture_v1.html" title="PWM - Capture v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_pwm_generation_v5"></a><div class="titlepage"></div><div class="refnamediv"><h2>PWM - Generation v5</h2><p>PWM - Generation v5 &#8212; <span class="phrase">The PWM generation driver
+                    block configures the PWM generation on the configurable I/O
+                module</span></p></div><div class="refsect1"><a name="d5e1420"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pwm_generation_v5.png"></span></span></p></div><div class="refsect1"><a name="d5e1428"></a><h2>Description</h2><p>The PWM (Pulse Width Modulation) code module provides the following functionality:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Symmetric, asymmetric, single-phase, and multi-phase PWM
+                            generation</p></li><li class="listitem"><p>Dead band compensation</p></li><li class="listitem"><p>Frequency-modulated pulse trains</p></li></ul></div><p>
+                </p><div class="important"><table border="0" summary="Important"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="images/important.png"></td><th align="left">Important</th></tr><tr><td align="left" valign="top"><p>If you are using two blocks, the same channel must not be used twice. If a
+                        different configuration for other channels is required, you must use an
+                        additional driver block in your model. This will not, however, guarantee
+                        that the channels are synchronized.</p><p>You should use a single PWM block in your model if the PWM signals must be
+                        synchronized; for example, if you need to control a three-phase inverter,
+                        you should use a single block for the three channels, rather than using
+                        three separate blocks (one for each channel).</p><p>If separate blocks are used, the FPGA registers are updated at different
+                        times (separate PCI write operations, without latching), resulting in
+                        different PWM update times.</p></td></tr></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e1443"></a><h2>Ports</h2><p>Depending on which input ports are enabled in the dialog fields of the PWM
+                generation driver block, this driver block has up to 7 input ports and contains no
+                output ports. The possible input ports are:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">A-On and A-Off </span>
+                    </span></dt><dd><p>These ports compare values in seconds and are only active when
+                                <span class="bold"><strong>Show A Input Port</strong></span> is checked.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">B-On and B-Off </span>
+                    </span></dt><dd><p>These ports compare values in seconds and are only active when
+                                <span class="bold"><strong>Show B Input Port</strong></span> is
+                            checked.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To control PWM A and B with on/off signals, as described above,
+                                    <span class="bold"><strong>PWM Pattern is</strong></span> must be set to
+                                    <span class="bold"><strong>Asymmetric</strong></span>. To use PWM B
+                                independently of PWM A, <span class="bold"><strong>PWM B Output
+                                    is</strong></span> must be set to <span class="bold"><strong>Independent
+                                    of PWM A output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">A-On / B-Off </span>
+                    </span></dt><dd><p>This port compares values in seconds. The value is applied to A-On and
+                            B-Off (B is the complement of A). This port is only active when
+                                <span class="bold"><strong>Show A Input Port</strong></span> is
+                            checked.</p></dd><dt><span class="term">
+                        <span class="guilabel">A-Off / B-On </span>
+                    </span></dt><dd><p>This port compares values in seconds. The value is applied to A-Off
+                            and B-On (B is the complement of A). This port is only active when
+                                <span class="bold"><strong>Show A Input Port</strong></span> is checked.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To control PWM A and B with on/off signals, as described above,
+                                    <span class="bold"><strong>PWM Pattern is</strong></span> must be set to
+                                    <span class="bold"><strong>Asymmetric</strong></span>. To use PWM B as the
+                                complement of PWM A, <span class="bold"><strong>PWM B Output
+                                    is</strong></span> must be set to <span class="bold"><strong>The
+                                    complement of PWM A output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">C-On and C-Off </span>
+                    </span></dt><dd><p>These ports compare values in seconds and are only active when
+                                <span class="bold"><strong>Show C Input Port</strong></span> is checked.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Period </span>
+                    </span></dt><dd><p>The PWM period value in seconds. This port is only active when
+                                <span class="bold"><strong>Show Period Input Port</strong></span> is checked.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The block user must ensure that the values of <span class="bold"><strong>A-compare</strong></span>, <span class="bold"><strong>B-compare</strong></span> and <span class="bold"><strong>Period-compare</strong></span> are correct in relation to each
+                                other</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">PWM A DC and PWM B DC </span>
+                    </span></dt><dd><p>The duty cycle to apply on PWM A and B outputs (values between 0.0 and
+                            1.0). These ports are only active when <span class="bold"><strong>Show A
+                                Input Port</strong></span> is checked for PWM A and <span class="bold"><strong>Show B Input Port</strong></span> is checked for PWM B.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To control PWM A and B with DC signals, as described above,
+                                    <span class="bold"><strong>PWM Pattern is</strong></span> must be set to
+                                    <span class="bold"><strong>Symmetric</strong></span>. To use PWM B
+                                independently of PWM A, <span class="bold"><strong>PWM B Output
+                                    is</strong></span> must be set to <span class="bold"><strong>Independent
+                                    of PWM A output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">PWM A / #B DC </span>
+                    </span></dt><dd><p>The duty cycle to apply on PWM A and B outputs (B is the complement of
+                            A). This port is only active when <span class="bold"><strong>Show A Input
+                                Port</strong></span> is checked.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To control PWM A and B with this signal, as described above,
+                                    <span class="bold"><strong>PWM Pattern is</strong></span> must be set to
+                                    <span class="bold"><strong>Symmetric</strong></span> and <span class="bold"><strong>PWM B Output is</strong></span> must be set to <span class="bold"><strong>The complement of PWM A output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Halt PWM </span>
+                    </span></dt><dd><p>PWM generation is halted at the next model step after this port is set
+                            to 1. This port is only active when <span class="bold"><strong>Show PWM
+                                Generation Halt Input Port</strong></span> is checked.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1532"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: PWM generation </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">PWM Phase Vector (s) </span>
+                    </span></dt><dd><p>A vector of PWM phase values in seconds. The width of this vector must
+                            be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM Pattern is </span>
+                    </span></dt><dd><p>The type of PWM signal. There are two possibilities: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Symmetric</strong></span></p></li></ul></div><p> In this case, only the duty cycle is configurable with a
+                            value in the range [0.0 to 1.0] </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Asymmetric</strong></span></p></li></ul></div><p> In this case A-On and B-On, and A-Off and B-Off are
+                            freely configurable with a value in the range [0.0 to <span class="bold"><strong>Initial Period (s)</strong></span>].</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM B Output is </span>
+                    </span></dt><dd><p>Defines how PWM B output is generated. There are two possibilities:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>The complement of PWM A
+                                            output</strong></span></p></li></ul></div><p> In this case, the driver itself determines the PWM B
+                            parameters to generate the complement of PWM A output. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Independent of PWM A
+                                            output</strong></span></p></li></ul></div><p>In this case, the PWM B output is configured separately.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Deadband Duration Vector </span>
+                    </span></dt><dd><p>Defines how a rising edge on PWM A and on PWM B output is canceled.
+                            The deadband mechanism forces low A/B output until the Deadband Duration
+                            is complete. The units are in seconds. The width of this vector must be
+                            equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Period Vector (s) </span>
+                    </span></dt><dd><p>A vector of PWM period values in seconds. The width of this vector
+                            must be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter. This parameter defines the initial pwm
+                            period after the real-time application has been downloaded and
+                            started.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Frequency Vector (Hz) </span>
+                    </span></dt><dd><p>A vector of PWM frequency values in Hz. This vector is read-only and
+                            is calculated from the <span class="bold"><strong>Initial Period
+                                Vector</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial PWM A Duty Cycle Vector and Initial PWM B Duty Cycle
+                            Vector </span>
+                    </span></dt><dd><p>A vector of duty cycle values for PWM A output and PWM B output. The
+                            recommended values are between 0.0 and 1.0, where 0.0 is a duty cycle of
+                            0% and 1.0 is a duty cycle of 100%. The width of these vectors
+                            must be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>These parameters are only visible when <span class="bold"><strong>PWM
+                                    Pattern is</strong></span> is set to <span class="bold"><strong>symmetric</strong></span>. In addition, for <span class="bold"><strong>Initial PWM B Duty Cycle</strong></span>, <span class="bold"><strong>PWM
+                                    B Output is</strong></span> must be set to <span class="bold"><strong>Independent of PWM A Output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Initial A-On Vector and Initial A-Off Vector </span>
+                    </span></dt><dd><p>A vector of A-On and A-Off values in seconds. The width of this vector
+                            must be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter. The recommended values are between 0
+                            and period (bounds included).</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is only visible when <span class="bold"><strong>PWM
+                                    Pattern is</strong></span> is set to <span class="bold"><strong>asymmetric</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Initial B-On Vector and Initial B-Off Vector</span>
+                    </span></dt><dd><p>A vector of B-On and B-Off values in seconds. The width of this vector
+                            must be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter. The recommended values are between 0
+                            and period (bounds included).</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is only visible when <span class="bold"><strong>PWM
+                                    Pattern is</strong></span> is set to <span class="bold"><strong>asymmetric</strong></span> and <span class="bold"><strong>PWM B Output
+                                    is</strong></span> is set to <span class="bold"><strong>Independent of PWM
+                                    A Output</strong></span>.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Initial C-On Vector and C-Off Vector</span>
+                    </span></dt><dd><p>A vector of C-On and C-Off values in seconds. The width of this vector
+                            must be equal to the width of the <span class="bold"><strong>Channel
+                                Vector</strong></span> parameter. The recommended values are between 0
+                            and period (bounds included).</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>All <span class="bold"><strong>Initial</strong></span> parameters above are
+                                applied after the real-time application has been downloaded and
+                                started. Depending upon which inputs are used (see <span class="bold"><strong>Tab: Input Ports Configuration</strong></span> below),
+                                the corresponding initial parameter will be overwritten by the
+                                real-time application from the first step until it stopped.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">AB-Output Protection </span>
+                    </span></dt><dd><p>This protection is used to prevent A and B being high at the same
+                            time. Protection can be configured to be: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled: A and B can be high at the same time</p></li><li class="listitem"><p>A is forced low when B is high</p></li><li class="listitem"><p>B is forced low when A is high</p></li><li class="listitem"><p>Both A and B are forced low if they are both high.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Enable the Second Update at Half of the PWM Period </span>
+                    </span></dt><dd><p>Updates the PWM parameters (A, B and C-On and -Off values) at the
+                            halfway point of the PWM period. The PWM period is always updated once
+                            at the start of the period.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is no longer visible in PWM 5.7 and subsequent
+                                versions.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Update PWM Generation</span>
+                    </span></dt><dd><p>Updates the PWM parameters (A, B and C-On and -Off values). </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>At period start</p></li><li class="listitem"><p>At period start and at the halfway point of the PWM
+                                        period</p></li><li class="listitem"><p>Always (natural PWM update)</p></li></ul></div><p> The PWM period is always updated once at the start of
+                            the period. This parameter is only visible as of PWM 5.7.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if the FPGA base clock is equal to 75&nbsp;MHz, then the resolution is
+                    13.33&nbsp;ns.</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Tab: Triggering </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Trigger Duration Vector </span>
+                    </span></dt><dd><p>The duration of a trigger pulse in seconds. This duration can be
+                            different from channel to channel, but the duration is the same for each
+                            trigger selected within one channel. The width of this vector must be
+                            equal to the width of the Channel Vector parameter.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The PWM C and triggers share the same I/O line: the triggers and the PWM C
+                    output are OR wired and then applied to the I/O line of the configurable I/O
+                    module. More than one trigger option can be selected at the same time.</p></td></tr></table></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at Period Start </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            period starts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at Half of the Period </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the middle of the defined PWM period.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at A-On </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of A-On. If the rising edge of the PWM
+                            A output is delayed because of the <span class="bold"><strong>Deadband
+                                Duration</strong></span>, the trigger is still generated at A-On as
+                            defined by the user and not when the signal effectively changes its
+                            level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at A-Off </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of A-Off.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at B-On </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of B-On. If the rising edge of the PWM
+                            B output is delayed because of the <span class="bold"><strong>Deadband
+                                Duration</strong></span>, the trigger is still generated at B-On as
+                            defined by the user and not when the signal effectively changes its
+                            level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate a Trigger at B-Off </span>
+                    </span></dt><dd><p>When enabled, the PWM code module will emit one trigger pulse when the
+                            PWM generation reaches the value of B-Off.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if the FPGA base clock is equal to 75&nbsp;MHz, then the resolution is
+                    13.33&nbsp;ns.</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Tab: Input Ports Configuration </div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>In case any of the below inputs is selected, the real-time application
+                        will overwrite the corresponding <span class="bold"><strong>Initial</strong></span>
+                        parameters from above from the first step until it stopped. For example, if
+                        you define <span class="bold"><strong>Initial PWM A Duty Cycle Vector</strong></span>
+                        to 0 and set <span class="bold"><strong>Show A Input Port</strong></span>, then the
+                        PWM A Duty Cycle will be 0 when the real-time application is downloaded and
+                        started. The value that is applied on the PWM A Duty Cycle input port in the
+                        model will be applied from the real-time application as soon as it is
+                        running.</p></td></tr></table></div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show A Input Port </span>
+                    </span></dt><dd><p>Enables input ports to set the PWM A output during runtime. When
+                                <span class="bold"><strong>PWM Pattern is</strong></span> is symmetric, a
+                            single input port is used to configure the PWM A output (duty cycle).
+                            The driver itself computes the correct values in order to obtain a
+                            symmetric and centered PWM generation. When <span class="bold"><strong>PWM
+                                Pattern is</strong></span> is asymmetric, two input ports are available
+                            and they respectively allow A-On and A-Off to be set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show B Input Port </span>
+                    </span></dt><dd><p>Enables input ports to set PWM B output during runtime. When <span class="bold"><strong>PWM Pattern is</strong></span> is symmetric, a single input
+                            port is used to configure the PWM B output (duty cycle). The driver
+                            itself computes the correct values in order to obtain a symmetric and
+                            centered PWM generation. When <span class="bold"><strong>PWM Pattern
+                                is</strong></span> is asymmetric, two input ports are available and they
+                            respectively allow B-On and B-Off to be set. If the PWM B output is set
+                            to be the complement of the PWM A output, there is no input port
+                            dedicated to PWM B output configuration and in that setup, the driver
+                            will set the correct value on PWM B to generate a complementary signal.
+                            This option is only visible when PWM B output is independent of PWM A
+                            output.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show C Input Port </span>
+                    </span></dt><dd><p>Enables input ports to set the PWM C output during runtime. PWM C
+                            output is always defined by the C-On and C-Off parameters.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Period Input Port </span>
+                    </span></dt><dd><p>Enables the input port to set the PWM period during runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show PWM Generation Halt Input Port </span>
+                    </span></dt><dd><p>Enables or disables the PWM generation halt input port. PWM generation
+                            is halted at the next model step after this port is set to 1. The
+                            parameter is only visible as of PWM v5.4.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Offline State </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">PWM Output A is </span>
+                    </span></dt><dd><p>Defines the PWM A output parameter value loaded when PWM generation is
+                            halted.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM Output B is </span>
+                    </span></dt><dd><p>Defines the PWM B output parameter value loaded when PWM generation is
+                            halted.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM Output C/Trigger is </span>
+                    </span></dt><dd><p>Defines the PWM C/Trigger output parameter value loaded when PWM
+                            generation is halted.</p></dd><dt><span class="term">
+                        <span class="guilabel">When Model Stops, PWM Generation Halts After Completion of PWM
+                            Period </span>
+                    </span></dt><dd><p>Controls how PWM generation is halted when the model stops. If
+                            selected, PWM generation continues after the model stops until the
+                            current PWM period is complete, otherwise the PWM generation is halted
+                            when the model stops. The parameter is only visible if the configuration
+                            file supports PWM v5.4.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Polarity </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Invert A Output </span>
+                    </span></dt><dd><p>When checked, the PWM A output is inverted.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The inversion of the signal applies at the very last stage. If PWM
+                                is halted, the defined halt parameter is also inverted. This also
+                                applies to the following two parameters.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Invert B Output </span>
+                    </span></dt><dd><p>When checked, the PWM B output is inverted.</p></dd><dt><span class="term">
+                        <span class="guilabel">Invert C/Trigger Output </span>
+                    </span></dt><dd><p>When checked, the PWM C/Trigger output is inverted.</p></dd></dl></div></div></div></body></html>

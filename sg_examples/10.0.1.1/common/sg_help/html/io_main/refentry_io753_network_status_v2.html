@@ -1,0 +1,67 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO753 - Network Status v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io753_network_status.html" title="IO753 - Network Status"><link rel="next" href="refentry_ref_io754.html" title="IO754"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io753_network_status_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO753 - Network Status v2</h2><p>IO753 - Network Status v2 &#8212; <span class="phrase">Outputs the network
+                    status</span></p></div><div class="refsect1"><a name="d5e63632"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io753_network_status_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e63640"></a><h2>Description</h2><p>The Network Status block outputs the connection state of the I/O module to each
+                Modbus TCP server in the network.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is only supported by MATLAB from <span class="bold"><strong>R2019b</strong></span>.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e63646"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Set State</span>
+                    </span></dt><dd><p>The input signal enables or disables the communication of the I/O
+                            module with the configured Modbus TCP servers. Use the <span class="bold"><strong>Enable Set State Port</strong></span> parameter to hide or
+                            unhide this port.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>The output signal shows the general network status of the I/O module
+                            in the Modbus TCP network. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is true (equal to 1) if the I/O module is
+                                        communicating to at least one server</p></li><li class="listitem"><p>The output is false (equal to 0) if the I/O module was not
+                                        able to establish the communcation with any server</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Config</span>
+                    </span></dt><dd><p>The output signal indicates the configuration status for each Modbus
+                            TCP server with which the I/O module is intended to communicate. The
+                            length of the output signal depends on the number of IP addresses in the
+                            command table. The first element of the vector refers to the first IP
+                            address in the command table. The last element of the vector refers to
+                            the last IP address in the command table. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is true (equal to 1) if the communication with
+                                        the server is correctly configured</p></li><li class="listitem"><p>The output is false (equal to 0) if the communication with
+                                        the server is not correctly configured</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Active</span>
+                    </span></dt><dd><p>The output signal indicates the communication status for each Modbus
+                            TCP server with which the I/O module is intended to communicate. The
+                            length of the output signal depends on the number of IP addresses in the
+                            command table. The first element of the vector refers to the first IP
+                            address in the command table. The last element of the vector refers to
+                            the last IP address in the command table. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is true (equal to 1) if the communication with
+                                        the server is established</p></li><li class="listitem"><p>The output is false (equal to 0) if the communication with
+                                        the server is not established</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Diag</span>
+                    </span></dt><dd><p>For each Modbus TCP server with which the I/O module is intended to
+                            communicate, the output signal indicates whether there is at least one
+                            failing command. The length of the output signal depends on the number
+                            of IP addresses in the command table. The first element of the vector
+                            refers to the first IP address in the command table. The last element of
+                            the vector refers to the last IP address in the command table. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is true (equal to 1) if at least one command
+                                        fails</p></li><li class="listitem"><p>The output is false (equal to 0) if all commands
+                                        succeed</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Command</span>
+                    </span></dt><dd><p>The output signal provides the status of each command in the command
+                            table. The length of the output signal depends on the number of commands
+                            in that table. The first element of the vector refers to the first
+                            command in the command table. The last element of the vector refers to
+                            the last command in the command table. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output is true (equal to 1) if the command
+                                        succeeds</p></li><li class="listitem"><p>The output is false (equal to 0) if the commands
+                                        fails</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd></dl></div></div><div class="refsect1"><a name="d5e63718"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Retrieve Command Configuration</span>
+                    </span></dt><dd><p>Retrieves the command configuration from the related Setup block and
+                            updates the output ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Set State port </span>
+                    </span></dt><dd><p>Enable the <span class="bold"><strong>Set State</strong></span> input
+                            port.</p></dd></dl></div></div></div></body></html>

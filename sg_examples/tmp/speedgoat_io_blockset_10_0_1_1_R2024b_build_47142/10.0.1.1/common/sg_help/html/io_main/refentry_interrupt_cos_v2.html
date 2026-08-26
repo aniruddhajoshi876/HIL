@@ -1,0 +1,94 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Interrupt - CoS v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_interrupt_cos_v1.html" title="Interrupt - CoS v1"><link rel="next" href="refentry_ref_dma_controller.html" title="DMA Controller"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_interrupt_cos_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>Interrupt - CoS v2</h2><p>Interrupt - CoS v2 &#8212; <span class="phrase">The CoS (Change of State)
+                    interrupt block is used to set up an interrupt event on an input of a
+                    configurable I/O module that triggers the Simulink model. Interrupts can also be
+                    generated internally with a configurable frequency.</span></p></div><div class="refsect1"><a name="d5e9747"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_cos_interrupt_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e9755"></a><h2>Description</h2><p>The CoS interrupt block is used to set up an interrupt event on an input of a
+                configurable I/O module that triggers the Simulink model. Advanced settings enable
+                the input signal to be debounced and events to be delayed. A threshold can also be
+                inserted to skip events or repeat an event multiple times. Interrupts can also be
+                generated internally on the FPGA with a configurable frequency.</p></div><div class="refsect1"><a name="d5e9758"></a><h2>Ports</h2><p>Depending on which output ports are enabled in the dialog fields of the CoS
+                interrupt driver block, this driver block has up to 2 output ports and contains no
+                input ports. The number of selected outputs can influence the performance of the CoS
+                interrupt driver block. Please refer to <a href="refentry_interrupt_usage_notes.html#refsect_interrupt_latency" class="olink">Interrupt Usage Notes -
+                Latency</a></p><p>The available output ports are:</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Flag </span>
+                    </span></dt><dd><p>This double-type output has the same width as the "Channel vector
+                            parameter", where each element returns the number of missed interrupts.
+                            A missed interrupt is only detected when repetitions are created. This
+                            port is only active when the "Show missed interrupt output" option is
+                            checked.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp </span>
+                    </span></dt><dd><p>This double-type output has the same width as the "Channel vector
+                            parameter", where each element returns the timestamp of the last
+                            interrupt received. This port is only active when the "Show timestamp
+                            output" option is checked.</p></dd></dl></div></div><div class="refsect1"><a name="d5e9775"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Interrupt source</span>
+                    </span></dt><dd><p>Defines the source for interrupts. There are two possibilities:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>FPGA input pin</p></li></ul></div><p> When "FPGA input pin" is selected, there are multiple
+                            settings available to adjust the behavior of the interrupt input.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>internally generated</p></li></ul></div><p> When "internally generated" is selected, the only
+                            setting available is the Interrupt frequency</p></dd><dt><span class="term"><span class="guilabel">Edge detection </span>
+                    </span></dt><dd><p>This setting defines whether the rising edge (value 0), the falling
+                            edge (value 1) or both transitions (value 2) of the input signal are
+                            recognized as events.</p></dd><dt><span class="term">
+                        <span class="guilabel">Debounce duration vector </span>
+                    </span></dt><dd><p>A vector* of debounce durations in seconds. Defines the debouncing
+                            time. After the first registered transition, all following transitions
+                            will be ignored, until the debounce duration is reached. To turn off
+                            debouncing, enter the value 0. Range: from 0 to 57 seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interrupt delay vector </span>
+                    </span></dt><dd><p>A vector* of delay values in seconds. Defines the time that the
+                            debounced signal is delayed before the interrupt is asserted. During the
+                            delay, new interrupts are ignored, but the flag counter is incremented.
+                            To turn off the delay, enter the value 0. Range: from 0 to 57 seconds.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Advanced settings</span>
+                    </span></dt><dd><p>This checkbox enables the advanced settings for the interrupt input. A
+                            threshold or a number of repetitions can be defined.</p></dd><dt><span class="term">
+                        <span class="guilabel">Threshold vector </span>
+                    </span></dt><dd><p>A vector* of interrupt event thresholds. Defines the number of
+                            interrupts to reach, before one interrupt is propagated. The threshold
+                            operation is executed after the delay and before the generation of
+                            repetitions. To turn off the threshold, enter the value 0. This
+                            parameter is only visible when Advanced settings are enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Repetition vector </span>
+                    </span></dt><dd><p>A vector* of interrupt repetitions. Defines the number of repetitions
+                            for one interrupt. The time between the repetitions is defined in the
+                            "Time gap vector" -dialog field. During the repetitions, new interrupts
+                            are ignored, but the flag counter is incremented. The repetitions are
+                            generated after the threshold operation. To turn off repetitions, enter
+                            the value 0. This parameter is only visible when Advanced settings are
+                            enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time gap vector </span>
+                    </span></dt><dd><p>A vector* of time between the repetitions. Defines the time gap
+                            between the repetitions. Range: from 13.3ns to 57 seconds. This
+                            parameter is only visible when Advanced settings are enabled.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interrupt frequency</span>
+                    </span></dt><dd><p>A vector* of frequencies. Defines the frequency of occurring
+                            interrupts. The smallest step width depends on the FPGA frequency; for
+                            example, when the FPGA frequency is 75MHz, the smallest change between
+                            two period times is 13.3ns. The precise computed time in seconds appears
+                            next to the Interrupt frequency parameter. This parameter is only
+                            visible when the interrupt source is "internally generated".</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The width of the vector must be equal to the width of the Channel vector
+                    parameter. Alternatively, if a scalar value is specified, its value will be used
+                    for all channels.</p></td></tr></table></div><div class="variablelist"><div class="variablelist-title">Tab: Output port settings </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show timestamp output </span>
+                    </span></dt><dd><p>Enables the timestamp output port to read the timestamp of the latest
+                            interrupt. The timestamp is a 64-bit counter value on the FPGA which
+                            starts to count when the model is started.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show missed interrupt output </span>
+                    </span></dt><dd><p>Enables the Flag output port to read the number of missed interrupts.
+                        </p></dd></dl></div></div></div></body></html>

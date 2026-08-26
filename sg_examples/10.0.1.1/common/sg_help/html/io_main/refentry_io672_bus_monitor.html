@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Bus Monitor</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_bus_controller_send.html" title="IO672 - Bus Controller Send"><link rel="next" href="refentry_io672_initialize.html" title="IO672 - Initialize"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_bus_monitor"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Bus Monitor</h2><p>IO672 - Bus Monitor &#8212; <span class="phrase">The IO672 Bus Monitor (BM)
+                    block</span></p></div><div class="refsect1"><a name="d5e51369"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_bus_monitor.png"></span></span></p></div><div class="refsect1"><a name="d5e51377"></a><h2>Description</h2><p>Use one block per channel to get status information. The block outputs all
+                messages received since the last execution or up to the maximum defined number of
+                messages. If more messages are available in the buffer, the block outputs the oldest
+                messages read, while the newest ones remain in the buffer. </p></div><div class="refsect1"><a name="d5e51380"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>Received BM Message List, where the first element corresponds to the
+                            oldest message received.</p></dd></dl></div></div><div class="refsect1"><a name="d5e51389"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel </span>
+                    </span></dt><dd><p>From the list of available channels on the board, choose channel 1, 2,
+                            3, or 4. This channel is initialized for this command stream.</p></dd><dt><span class="term">
+                        <span class="guilabel">Maximum Number of Messages to Receive </span>
+                    </span></dt><dd><p>Defines the size of the message list output. The message buffer must
+                            be large enough to store the maximum number of messages read from the
+                            board.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This value must be equal to or smaller than the number specified
+                                in <span class="bold"><strong>Number of monitor buffers to
+                                    allocate</strong></span> from the IO672 Initialize block.</p></td></tr></table></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

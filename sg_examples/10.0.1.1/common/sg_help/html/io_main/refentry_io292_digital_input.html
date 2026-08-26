@@ -1,0 +1,32 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO292 - digital input</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io292_setup.html" title="IO292 - Setup"><link rel="next" href="refentry_io292_digital_output.html" title="IO292 - digital output"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io292_digital_input"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO292 - digital input</h2><p>IO292 - digital input &#8212; 
+                <span class="phrase">Reads the IO292 digital inputs</span>
+            </p></div><div class="refsect1"><a name="d5e4171"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io292_digital_input.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e4182"></a><h2>Ports</h2><p>This driver block has no input ports. The number of output ports is determined by
+                the number of digital input channels selected, and the <span class="bold"><strong>Port
+                    Configuration</strong></span> setting.</p><p>The output ports can be configured in the following two ways:</p><p>
+                <span class="bold"><strong>1 port with a 24-element vector </strong></span></p><p>One output port with a fixed width of 24 is used. The index of each array element
+                is equivalent to the channel number. Each element has a value of either 0 (Low) or 1
+                (High). Array elements for channels that have not been configured as digital inputs
+                remain 0.</p><p>
+                <span class="bold"><strong>1 port for each active input channel </strong></span></p><p>For each channel configured as digital input, one port is added. Each port outputs
+                a scalar with a value of either 0 (Low) or 1 (High).</p><p>
+                <span class="bold"><strong>Data Type </strong></span></p><p>Select either <span class="bold"><strong>Boolean</strong></span> or <span class="bold"><strong>Double</strong></span> as output data type.</p></div><div class="refsect1"><a name="d5e4198"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the Setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port Configuration</span>
+                    </span></dt><dd><p>Select one of the two available port types.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>Select the data type of the block output signals.</p></dd></dl></div></div></div></body></html>

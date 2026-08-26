@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO750 - Emergency</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io750_sdo_read.html" title="IO750 - SDO Read"><link rel="next" href="refentry_io750_module_status.html" title="IO750 - Module Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io750_emergency"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO750 - Emergency</h2><p>IO750 - Emergency &#8212; 
+                <span class="phrase">Sends emergency messages to EtherCAT main devices</span>
+            </p></div><div class="refsect1"><a name="d5e57859"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io750_emergency.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e57867"></a><h2>Description</h2><p>This block is used to send CoE (CANopen over EtherCAT) emergency messages to the
+                EtherCAT main device. An emergency message (containing an error code, an error register
+                and diagnostic data) informs the main device about certain faults and conditions
+                occurring in the subordinate device. The message can be sent in all EtherCAT states except
+                the Init state. The block has no outputs since the main device sends no responses to
+                emergency messages.</p><p>You can use one block to indicate all possible errors by updating the block's
+                input signals during runtime. As an alternative, your model can contain multiple
+                Emergency blocks, one for each error.</p><p>Your model must contain one Setup block and one PDO Receive block for proper
+                emergency message transmission.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is only supported by MATLAB from <span class="bold"><strong>R2019b</strong></span>.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e57875"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block sends out emergency messages as long as the input port is
+                            TRUE.</p><p>For event-based transmission of emergency messages, set the block's
+                            sample time to a higher rate (e.g., 1 ms) and connect the <span class="bold"><strong>Enable</strong></span> input port with the event
+                            trigger.</p><p><span class="bold"><strong>Data type:</strong></span> Boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Error Code</span>
+                    </span></dt><dd><p>The error code included in the emergency message as defined by IEC
+                            61158 Part 2-6 Type 12 (or ETG 1000.6). Beside the common codes listed
+                            below, you can use any other 16-bit value the remote main device can
+                            interpret.</p><p><span class="bold"><strong>Data type:</strong></span> uint16</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="67%" class="col2"></colgroup><thead><tr><th>Error Code</th><th>Description</th></tr></thead><tbody><tr><td>0x00xx</td><td>Error Reset or No Error</td></tr><tr><td>0x20xx</td><td>Current</td></tr><tr><td>0x22xx</td><td>Current inside the device</td></tr><tr><td>0x30xx</td><td>Voltage</td></tr><tr><td>0x32xx</td><td>Voltage inside the device</td></tr><tr><td>0x40xx</td><td>Temperature</td></tr><tr><td>0x42xx</td><td>Device Temperature</td></tr><tr><td>0x60xx</td><td>Device Software</td></tr><tr><td>0x62xx</td><td>User Software</td></tr><tr><td>0x70xx</td><td>Additional Modules</td></tr><tr><td>0x81xx</td><td>Communication</td></tr><tr><td>0x8210</td><td>PDO not processed due to length error</td></tr><tr><td>0x90xx</td><td>External Error</td></tr><tr><td>0xF0xx</td><td>Additional Functions</td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Error Register</span>
+                    </span></dt><dd><p>The error register included in the emergency message as defined by IEC
+                            61158 Part 2-6 Type 12 (or ETG 1000.6)</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="67%" class="col2"></colgroup><thead><tr><th>Error Register bit mask</th><th>Description</th></tr></thead><tbody><tr><td>0x01</td><td>Generic error</td></tr><tr><td>0x02</td><td>Current error</td></tr><tr><td>0x04</td><td>Voltage error</td></tr><tr><td>0x08</td><td>Temperature error</td></tr><tr><td>0x10</td><td>Communication error</td></tr><tr><td>0x20</td><td>Device profile specific error</td></tr><tr><td>0x40</td><td>Reserved</td></tr><tr><td>0x80</td><td>Manufacturer-specific error</td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>A 5-byte vector that includes diagnostic data specific to the error
+                            code.</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"></dl></div></div><div class="refsect1"><a name="d5e57996"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

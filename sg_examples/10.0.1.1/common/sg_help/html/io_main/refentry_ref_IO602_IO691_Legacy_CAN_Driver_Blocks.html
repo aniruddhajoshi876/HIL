@@ -1,0 +1,27 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Discontinuation of Support for the IO602 and IO691 Legacy CAN Driver Blocks</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_scpi_examples.html" title="SCPI - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ref_IO602_IO691_Legacy_CAN_Driver_Blocks"></a><div class="titlepage"></div><div class="refnamediv"><h2>Discontinuation of Support for the IO602 and IO691 Legacy CAN Driver
+                Blocks</h2><p>Discontinuation of Support for the IO602 and IO691 Legacy CAN Driver
+                Blocks &#8212; <span class="phrase">Not supported on MATLAB R2026a and
+                    later</span></p></div><div class="refsect1"><a name="d5e76857"></a><h2>Introduction</h2><p>Legacy CAN driver blocks for the IO602 and IO691 I/O modules are no longer
+                supported as of MATLAB R2026a and have been replaced by the latest CAN driver
+                blocks.</p><p> In MATLAB R2025b and earlier, these legacy blocks are not automatically replaced
+                and will continue to function up to and including R2025b.</p><p>There are some differences between the legacy and the latest CAN driver blocks
+                that require your attention. These differences are outlined below.</p><div class="refsect2"><a name="d5e76862"></a><h3>CAN Setup: CAN FD Baud Rate Parameter</h3><p>CAN FD baud rate combinations for legacy CAN Setup blocks can be replaced
+                    using fallback settings or a corresponding custom setting for the <span class="bold"><strong>Nominal Baud Rate</strong></span> and <span class="bold"><strong>Data Baud
+                        Rate</strong></span> parameters. The final baud rate configuration should be
+                    checked carefully.</p></div><div class="refsect2"><a name="d5e76867"></a><h3>CAN Write: RAW Option for the Message Type Parameter</h3><p>The <span class="bold"><strong>RAW</strong></span> option for the <span class="bold"><strong>Message Type</strong></span> parameter in legacy CAN Write blocks has been
+                    replaced by <span class="bold"><strong>CAN (HS)</strong></span> and <span class="bold"><strong>CAN FD</strong></span>. Affected input ports must be rerouted manually. You can
+                    manually create a CAN (HS) or CAN FD message bus using a subsystem containing
+                        <a class="link" href="https://mathworks.com/help/simulink/slref/outbuselement.html" target="_top">Out Bus Element</a> blocks. For more information, refer to the <a class="link" href="https://www.speedgoat.com/help/slrt/page/examples/CAN_FDLoopback" target="_top">CAN FD Loopback</a> product example.</p></div><div class="refsect2"><a name="d5e76876"></a><h3>CAN Read: RAW and CAN + RAW Options for the Message Type Parameter</h3><p>The <span class="bold"><strong>RAW</strong></span> and <span class="bold"><strong>CAN +
+                        RAW</strong></span> options for the <span class="bold"><strong>Message Type
+                    </strong></span>parameter have been replaced by <span class="bold"><strong>CAN
+                        (HS)</strong></span> and <span class="bold"><strong>CAN FD</strong></span>. Affected output
+                    ports must be rerouted manually. You can individually extract CAN message bus
+                    elements using a <a class="link" href="https://mathworks.com/help/simulink/slref/busselector.html" target="_top">Bus
+                        Selector</a> block. For more information, refer to the <a class="link" href="https://www.speedgoat.com/help/slrt/page/examples/CAN_FDLoopback" target="_top">CAN FD Loopback</a> product example.</p></div><div class="refsect2"><a name="d5e76886"></a><h3>CAN Status: Output as Array Checkbox</h3><p>The <span class="bold"><strong>Output as Array</strong></span> checkbox in the legacy
+                    CAN Status blocks is no longer available. Certain status information items have
+                    also been removed or remapped, which may require existing downstream wiring to
+                    be modified. Select the <span class="bold"><strong>Enable Expert Mode</strong></span>
+                    checkbox to enable all available status information items. </p><p>The <span class="bold"><strong>Auto</strong></span> option for the <span class="bold"><strong>Bus Off Recover</strong></span> parameter has also been removed. To recover the
+                    bus off state, toggle the new, optional Disable CAN Channel input port.</p></div></div></div></body></html>

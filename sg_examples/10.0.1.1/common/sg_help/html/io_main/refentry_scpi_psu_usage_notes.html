@@ -1,0 +1,70 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SCPI PSU Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_scpi_psu.html" title="SCPI PSU"><link rel="next" href="refentry_ref_scpi_examples.html" title="SCPI - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_scpi_psu_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>SCPI PSU Usage Notes</h2><p>SCPI PSU Usage Notes &#8212; 
+                <span class="phrase">Usage information about the block</span>
+            </p></div><div class="refsect1"><a name="d5e76772"></a><h2>Model Start Messages</h2><p>This series of messages are sent during the first model execution steps. As
+                indicated in the mask, multiple messages can be sent with a delay between them. Each
+                message must not exceed the transmit FIFO size, in terms of the number of
+                characters. There are multiple ways to write the message: with strings, char, or
+                numbers. The strings and char arrays are converted into the numerical ASCII
+                equivalent; numerical values are sent as is. Note that you must add the termination
+                characters to the messages yourself (e.g., carriage return, line feed, NULL).</p></div><div class="refsect1"><a name="d5e76775"></a><h2>Mask Commands</h2><p>The <span class="bold"><strong>Command Table</strong></span> contains the controls needed to
+                add commands.</p><p>When adding a new command line, the command is not configured. When <span class="bold"><strong>Save Command Table</strong></span> is clicked, the block will generate
+                the ports for correctly configured commands; the ones not configured correctly are
+                ignored. A warning message is displayed in the MATLAB command window explaining the
+                problem. Incorrectly configured commands are not removed from the <span class="bold"><strong>Command Table</strong></span>. The buttons <span class="bold"><strong>OK</strong></span> or <span class="bold"><strong>Apply</strong></span> still need to be
+                clicked to keep the contents of the Command Table.</p><p>If a daisy chaining is possible for the selected device, the Device Address column
+                is enabled and must be specified for each command. If the device has multiple
+                channels, the Channel column is enabled and it must be specified for each
+                command.</p><p>Either a <span class="bold"><strong>Set</strong></span> or <span class="bold"><strong>Request</strong></span> command must be chosen. For each <span class="bold"><strong>Set</strong></span> command, a <span class="bold"><strong>Set</strong></span> input port will
+                appear when <span class="bold"><strong>Save Command Table</strong></span> is clicked. For each
+                    <span class="bold"><strong>Request</strong></span> command, <span class="bold"><strong>Request</strong></span> input and output ports will appear when <span class="bold"><strong>Save Command Table</strong></span> is clicked. A maximum of 50 commands
+                are allowed in the <span class="bold"><strong>Command Table</strong></span>.</p></div><div class="refsect1"><a name="d5e76795"></a><h2>Model Stop Message</h2><p>The Serial Write block has a feature that allows you to send a final message
+                during ModelStop. For each device, there is a suggested message that can be copied
+                and pasted to the Serial Write block, often to reset all the devices connected to
+                the communication port.</p></div><div class="refsect1"><a name="d5e76798"></a><h2>Input Command Ports</h2><p>Commands are sent in the order defined in the <span class="bold"><strong>Command
+                    Table</strong></span>, from top to bottom, which corresponds to the order of the
+                command input ports. After all the commands have been sent once, the block sends
+                only those commands whose input values have changed. If multiple values change at
+                the same time, the commands are sent in the same top-to-bottom order.</p><p>The two types of input command ports behave slightly differently:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Set</strong></span>: When the input value of the port
+                        changes, the command is sent with the input value as the command parameter.
+                        The initial value set for each port is <span class="bold"><strong>-1</strong></span>.
+                        If during the initial execution a specific command does not need to be sent,
+                        then set the value for the command to <span class="bold"><strong>-1</strong></span>.</p></li><li class="listitem"><p><span class="bold"><strong>Request</strong></span>: When the input value of the port
+                        changes, the command is sent and, since it is a request, the input value
+                        does not matter. The initial value set for each port is <span class="bold"><strong>-1</strong></span>. If during the initial execution a specific
+                        command does not need to be sent, then set the value for the command to
+                            <span class="bold"><strong>-1</strong></span>. After sending the request command,
+                        a response from the device is expected; if the response meets the format
+                        requirements for the specific command, it is displayed on the corresponding
+                        request output port.</p></li></ul></div></div><div class="refsect1"><a name="d5e76814"></a><h2>Special Ports</h2><div class="itemizedlist"><div class="itemizedlist-title"><span class="bold"><strong>Input Ports</strong></span></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Skip Cmd</strong></span>: This port skips the current
+                        command if it is stuck for any reason. To trigger this port, the port must
+                        switch from 0 to 1; to use the skip again, the port must be set to 0 and to
+                        1 again. When the ClearToSend port constantly stays at 0 and the LastCmdIdx
+                        does not increment, then it means that the block is stuck.</p><p>The occurrences of the block being stuck on a command are if the block is
+                        waiting for a response from the device, waiting for a timer to finish, or
+                        the received response from the device was unexpected (message not expected,
+                        unexpected format, error message, etc.). The solution of this port is to
+                        skip the command entirely, and try with the next one. In the case of a
+                        daisy-chained device, if the command that got stuck is a connection request
+                        before the actual Set or Request command, then the command altogether is
+                        skipped, connection request and Set/Request command.</p></li><li class="listitem"><p><span class="bold"><strong>Retry Cmd</strong></span>: This port retries to send the
+                        current command if it is stuck for any reason. To trigger this port, the
+                        port must switch from 0 to 1; to use the retry again, the port must be set
+                        to 0 and to 1 again. When the ClearToSend port constantly stays at 0 and the
+                        LastCmdIdx does not increment, then it means that the block is stuck.</p><p>The occurrences of the block being stuck on a command are if the block is
+                        waiting for a response from the device, waiting for a timer to finish, or
+                        the received response from the device was unexpected (message not expected,
+                        unexpected format, error message, etc.). The solution of this port is to
+                        retry to send the last command. In the case of a daisy-chained device, if
+                        the command that got stuck is a connection request, that is the message that
+                        is sent again.</p></li></ul></div><div class="itemizedlist"><div class="itemizedlist-title"><span class="bold"><strong>Output Ports</strong></span></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Drain</strong></span>: </p><p>The block may receive unexpected messages, such as random strings,
+                        responses of an unexpected type, or error messages. These messages are
+                        output on the Drain port. This information is also printed on the status
+                        monitor of the target machine with additional information depending on the
+                        case, like what message was expected to be received.</p></li><li class="listitem"><p><span class="bold"><strong>ClearToSend</strong></span>: Shows the state of the
+                        internal ClearToSend flag (1 when it is ready to send; 0 when it is
+                        waiting/stuck).</p></li><li class="listitem"><p><span class="bold"><strong>LastCmdIdx</strong></span>: Shows the index of the last
+                        command sent. The command index is indicated as the first value in the
+                        command input port, or the first column in the <span class="bold"><strong>Command
+                            Table</strong></span>.</p></li></ul></div></div></div></body></html>

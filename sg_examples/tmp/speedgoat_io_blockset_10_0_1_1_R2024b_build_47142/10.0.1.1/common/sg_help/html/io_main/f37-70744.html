@@ -1,0 +1,68 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Measurement Computing PCI-DAS-TC Thermocouple</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f36-6068.html" title="Chapter&nbsp;7.&nbsp;Measurement Computing Blocks No Longer Recommended for Use"><link rel="prev" href="f37-23115.html" title="Measurement Computing PCI-DAS-TC"><link rel="next" href="busnag_.html" title="Chapter&nbsp;8.&nbsp;United Electronic Industries (UEI) Blocks No Longer Recommended for Use"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f37-70744"></a><div class="titlepage"></div><div class="refnamediv"><h2>Measurement Computing PCI-DAS-TC Thermocouple<a name="ComputerBoards_PCI-DAS-TC_Thermocouple"></a></h2><p>Measurement Computing PCI-DAS-TC Thermocouple<a name="ComputerBoards_PCI-DAS-TC_Thermocouple"></a> &#8212; PCI-DAS-TC Thermocouple (not recommended)<b>MeasurementComputing</b><b>ThermocoupleBlocks</b></p></div><div class="refsect1"><a name="d5e8376"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="f37-23115.html" class="olink"><span class="trademark">Measurement Computing</span>&#8482;
+                        PCI-DAS-TC</a></p></li></ul></div></div><div class="refsect1"><a name="f37-77878"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcmeasurementcomputinglib</code> in the
+                Command Window.</p></div><div class="refsect1"><a name="f37-23167"></a><h2>Scaling Input to Output</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col width="33%" class="col1"><col width="46%" class="col2"><col width="21%" class="col3"></colgroup><thead><tr><th>
+                                <p>I/O Module Input</p>
+                            </th><th>
+                                <p>Block Input Data Type</p>
+                            </th><th>
+                                <p>Scaling</p>
+                            </th></tr></thead><tbody><tr><td>
+                                <p>Volts</p>
+                            </td><td>
+                                <p>Double</p>
+                            </td><td>
+                                <p>temperature in either degrees C, K, or F.</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="f37-23168"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Conversion rate (interrogation
+                        time)</strong></span></span></dt><dd><p>From the list, choose either <code class="literal">50Hz</code>,
+                                <code class="literal">60Hz</code>, or <code class="literal">400 Hz</code>. This is the
+                            conversion rate for the V-F A/D converter. The conversion rate is the
+                            same for all input channels.</p></dd><dt><span class="term"><span class="bold"><strong>Number of samples for moving
+                        average</strong></span></span></dt><dd><p>From the list, choose a value from <code class="literal">1</code> to
+                                <code class="literal">16</code>. Converted signal values are put into a cyclic
+                            buffer of size <code class="varname">N</code> which is used to calculate the
+                            moving average over these <code class="varname">N</code> samples.</p></dd><dt><span class="term"><span class="bold"><strong>Number of channels to be acquired
+                        (1..n)</strong></span></span></dt><dd><p>From the list, choose a value from <code class="literal">1</code> to
+                                <code class="literal">16</code>. This is the number of input channels
+                            activated for conversion. The first channel of the scan is an input
+                            channel with the number <code class="literal">1</code> and the last channel has
+                            the number <code class="varname">N</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Vector input thermocouple types (cell array of
+                            char)</strong></span></span></dt><dd><p>For each acquired channel, enter a valid type of either
+                                <code class="literal">'J'</code>, <code class="literal">'K'</code>,
+                                <code class="literal">'E'</code>, <code class="literal">'T'</code>,
+                                <code class="literal">'R'</code>, <code class="literal">'S'</code>, or
+                                <code class="literal">'B'</code>. This vector defines the type of thermocouple
+                            for each channel. The vector must be the same length as the <span class="bold"><strong>Number of channels to be acquired</strong></span>.</p></dd><dt><span class="term"><span class="bold"><strong>Vector of input gains (double
+                        array)</strong></span></span></dt><dd><p>For each acquired channel, enter a valid input gain of either
+                                <code class="literal">1</code>, <code class="literal">125</code>,
+                                <code class="literal">166.7</code>, or <code class="literal">400</code>. This vector
+                            defines the input gain for each channel. The vector must be the same
+                            length as the <span class="bold"><strong>Number of channels to be
+                                acquired</strong></span>.</p></dd><dt><span class="term"><span class="bold"><strong>Vector or temperature formats (cell array of
+                            char)</strong></span></span></dt><dd><p>For each acquired channel, enter a valid format of either <code class="literal">'C'</code>
+                                or <code class="literal">'F'</code>. <code class="literal">'C'</code>= Celsius and
+                                <code class="literal">'F'</code>= Fahrenheit. The vector must be the same
+                            length as the <span class="bold"><strong>Number of channels to be
+                                acquired</strong></span>.</p></dd><dt><span class="term"><span class="bold"><strong>Read and output CJC temperature</strong></span></span></dt><dd><p>If you want the block to read, convert, and output the temperature of
+                            the cold junction (CJC) sensor on the board, select this check box. If
+                            selected, the block shows an additional output port with the value of
+                            the CJC temperature.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div><p>Each time a real-time application containing this driver block is downloaded to
+                the target computer, the board automatically does a full calibration. Thermocouple
+                sensor calibration is an extensive procedure. Because takes place for each channel
+                independently, the calibration time can easily exceed several seconds, especially
+                when five or more channels are being calibrated. Because of this long calibration
+                period during the initialization stage of the real-time application, the download
+                procedure can time out and return an error message. To avoid this error, increase
+                the default timeout duration. See <a class="link" href="matlab: doc Communications Timeout;" target="_top">Communications
+                Timeout</a>.</p></div><div class="refsect1"><a name="d5e8499"></a><h2>Related Links</h2><p><a class="link" href="https://digilent.com/shop/data-acquisition-daq/" target="_top">www.mccdaq.com</a></p></div></div></body></html>

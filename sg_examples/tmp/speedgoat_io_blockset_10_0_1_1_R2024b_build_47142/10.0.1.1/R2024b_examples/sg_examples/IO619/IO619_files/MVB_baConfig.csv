@@ -1,0 +1,2 @@
+PortName,PortAddress,PortSize,PortCycleTime,Slot
+Device1,0x12,8,64,0

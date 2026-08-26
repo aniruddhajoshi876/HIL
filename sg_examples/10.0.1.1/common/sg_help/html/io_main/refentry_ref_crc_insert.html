@@ -1,0 +1,80 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: CRC Insert</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_counter_validation.html" title="CAN Message Utilities: Counter Validation"><link rel="next" href="refentry_ref_crc_validation.html" title="CAN Message Utilities: CRC Validation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_crc_insert"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: CRC Insert</h2><p>CAN Message Utilities: CRC Insert &#8212; <span class="phrase">Computes and Inserts a CRC
+                </span></p></div><div class="refsect1"><a name="d5e4154"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/crc_insert.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_crc_insert"></a><h2>Description</h2><p>The CRC Insert block inserts a CRC value of a certain bit width at a certain bit
+                position inside the data payload of a CAN or CAN-FD frame. In the block mask, the
+                user selects the CRC Type to be computed and the location where it should be
+                inserted in the data payload. The block computes the CRC over the entire payload
+                after excluding the bits where the CRC will be inserted. For example, if the user
+                wants to compute an 8-bit wide CRC over the array [1 2 3 4 5 6 7 8] and insert the
+                computed CRC at the first byte, then the block will only perform the calculation
+                over the array [2 3 4 5 6 7 8], assuming that the first byte is pre-allocated to
+                store the CRC value. The first byte is therefore excluded from the
+                calculation.</p><p>The CRC value is computed internally by the block using any of the CRC algorithms
+                provided, or a custom CRC algorithm. For the CRCs provided, the CRC is calculated
+                using a lookup table to optimize real-time performance. When using a custom CRC
+                algorithm, please refer to the <a href="refentry_custom_crc_usage_notes.html" class="olink"> usage notes</a> for more
+                detailed information.</p><p>The following CRC algorithms are currently available: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CRC8-SAEJ1850</p></li><li class="listitem"><p>CRC8-0x2F</p></li><li class="listitem"><p>CRC8-0x07</p></li><li class="listitem"><p>CRC16-CCITT-FALSE</p></li><li class="listitem"><p>CRC16-ARC</p></li><li class="listitem"><p>CRC32-Ethernet, CRC32-0xF4ACFB13</p></li></ul></div><p>The block inherits the sample time from the CAN or CAN-FD message line connected
+                to its input. </p><p>The user must pay particular attention to the configuration of the CRC width and
+                the CRC location to ensure that no overflow or truncation occur when computing and
+                inserting the CRC into the data payload.</p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the settings configuration
+                in the block mask</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Enable Port</strong></span> in the mask to
+                            enable this input port. The datatype is double. When the <span class="bold"><strong>Enable</strong></span> input signal is 0, the block does not
+                            modify the input message and it mirrors it directly to the message
+                            output port. If <span class="bold"><strong>Enable</strong></span> is not 0 the
+                            block inserts the CRC value in the message data payload according to the
+                            other parameters. </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message Port</span>
+                    </span></dt><dd><p>This output port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a length
+                            inherited from the input) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask. The CAN message,
+                            CAN-FD message or uint8 array with the payload modified by CRC insertion
+                            is output on this port.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>CRC Port</strong></span> in the mask to enable
+                            this input port. This port outputs the CRC value that is computed
+                            internally. The datatype is inherited from the CRC Type selected in the
+                                <span class="bold"><strong>CRC Type</strong></span> mask parameter, or from
+                            the double datatype for custom CRC algorithms.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Port</span>
+                    </span></dt><dd><p>Adds an "Enable" input port to enable/disable the CRC Insert block at
+                            runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">CRC Type </span>
+                    </span></dt><dd><p>Use this parameter to select one of the following CRC computation
+                            methods: <span class="bold"><strong>CRC8-SAEJ1850, CRC8-0x2F, CRC8-0x07,
+                                CRC16-CCITT-FALSE, CRC16-ARC, CRC32-Ethernet, CRC32-0xF4ACFB13,
+                                Custom</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bit Location</span>
+                    </span></dt><dd><p>The location, expressed in bits, where the CRC is inserted in the
+                            payload. <span class="bold"><strong>Bit Location</strong></span> is expressed in
+                            0-based indexing (e.g., if the user wants to insert the CRC in the 2nd
+                            byte, this parameter should be configured to the value 8). This location
+                            must match the start bit for where the CRC value is pre-allocated in the
+                            payload sent through the <span class="bold"><strong>Message Port</strong></span>
+                            input.</p></dd><dt><span class="term">
+                        <span class="guilabel">Custom CRC Bit Width</span>
+                    </span></dt><dd><p>Available when the <span class="bold"><strong>CRC Type</strong></span> option is
+                            set to <span class="bold"><strong>Custom</strong></span>. This parameter is the
+                            width (expressed in bits) of the CRC value generated by the custom CRC
+                            algorithm. The width must match the length of the CRC value
+                            pre-allocated in the payload sent through the <span class="bold"><strong>Message Port</strong></span> input.</p></dd><dt><span class="term">
+                        <span class="guilabel">Custom CRC Function File</span>
+                    </span></dt><dd><p>Available when the <span class="bold"><strong>CRC Type</strong></span> option is
+                            set to <span class="bold"><strong>Custom</strong></span>. This parameter is the .c
+                            or .cpp source file in which the custom CRC algorithm is defined. The
+                            file is specified by name and must be located on the MATLAB path. A
+                            single file can define multiple CRC algorithms.</p></dd><dt><span class="term">
+                        <span class="guilabel">Custom CRC Function Name</span>
+                    </span></dt><dd><p>Available when the <span class="bold"><strong>CRC Type</strong></span> option is
+                            set to <span class="bold"><strong>Custom</strong></span>. This parameter is the
+                            name of the function that defines the custom CRC algorithm to be
+                            applied.</p></dd><dt><span class="term">
+                        <span class="guilabel">Protocol</span>
+                    </span></dt><dd><p>This parameter determines the datatype of the block's input
+                            port.</p></dd></dl></div></div></div></body></html>

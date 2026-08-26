@@ -1,0 +1,30 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_serial_write.html" title="Serial - Write"><link rel="next" href="refentry_io503_pin_mapping.html" title="IO503 Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial - Read</h2><p>Serial - Read &#8212; <span class="phrase">Reads the serial
+                ports</span></p></div><div class="refsect1"><a name="d5e1209"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io50x_read.png"></span></span></p></div><div class="refsect1"><a name="d5e1217"></a><h2>Description</h2><p>This block is part of the Speedgoat Serial driver block set for the Speedgoat
+                Serial modules IO50X and IO581. The Serial Read block reads characters from the I/O
+                module FIFO in the UART.</p><p>It then outputs those characters as the low-order byte of an unsigned 32-bit
+                integer vector. This output vector is large enough to hold the maximum number of
+                characters that the FIFO can hold.</p></div><div class="refsect1"><a name="d5e1221"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Amount of received bytes.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data output signal.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1236"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Module Type</span></span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>This parameter specifies the channel from which this block reads the
+                            data.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Flush HW FIFO on startup </span>
+                    </span></dt><dd><p>Select this check box to flush the FIFO when the device starts
+                            up.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Legacy Mode </span>
+                    </span></dt><dd><p>This checkbox can be used to enable/disable the legacy mode of the
+                            Serial Read block. If this mode is enabled, the Data output contains a
+                            vector where the first element of the vector specifies the number of
+                            data elements in the remainder of the vector.</p></dd></dl></div></div></div></body></html>

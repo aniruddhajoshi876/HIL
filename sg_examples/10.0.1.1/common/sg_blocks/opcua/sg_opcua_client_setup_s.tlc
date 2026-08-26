@@ -1,0 +1,96 @@
+%implements sg_opcua_client_setup_s "C"
+
+%include "sg_opcua.tlc"
+
+%<LibAddToCommonIncludes("%<LibGetModelName()>_opcua.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void 
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+%realformat "CONCISE"
+
+    %<createUniqueBlockId(block)>
+    %<opcuaFileCreation(block)>
+        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %<opcuaCreateRemanentItem(block, "cClientStation", 0)>
+
+    %with block.SFcnParamSettings
+
+    %openfile tmpBuf
+
+    {
+        int32_t ret = 0;
+        opcua::cClientStation* Station = NULL;
+
+        /* Initialize the OPC UA API */
+        opcua::Root.init();
+
+        /* Add one client station */
+        ret = opcua::Root.addStation(%<ClientID>, OPCUA_STATION_TYPE_CLIENT, (opcua::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding OPC UA client station %i failed!", %<ClientID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the client station */
+        ret = Station->init(%<IpAddr>, 0);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing OPC UA client station %i failed!", %<ClientID>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Store station in remanent item */
+        %<opcuaSetRemanentItem(block, "Station", 0)>
+
+        /* Register the model exit callback */
+        sg_add_exit_handler(&ModelExitCb, NULL);
+    }
+
+    %closefile tmpBuf
+
+    %<sgAddInitCode(tmpBuf, "execution")>
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+    
+    {
+        static bool FirstStep = true;
+        static uint64_t StartDelayTimer = 0;
+        if (FirstStep)
+        {
+            StartDelayTimer = getTime();
+            FirstStep = false;
+        }
+        if ((getTime() - StartDelayTimer) > 1000)
+        {
+            Root.Run = true;
+        }
+    }
+
+    %<opcuaFileCompletion(block)>
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+    
+    %<opcuaStop(block)>
+
+%endfunction

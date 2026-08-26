@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO111 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io111_pin_mapping.html" title="IO111 Pin Mapping"><link rel="next" href="refentry_io111_analog_output.html" title="IO111 - Analog Output"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io111_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO111 - Setup</h2><p>IO111 - Setup &#8212; <span class="phrase">Configure the IO111 input/output
+                    blocks</span></p></div><div class="refsect1"><a name="d5e7526"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io111_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e7534"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>The Setup block dialog box allows all of the supported I/O types of this module to
+                be configured and therefore impacts on the Analog output driver block.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e7541"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Parameter Group</span>
+                    </span></dt><dd><p>This control selects an I/O section, the parameters of which are then
+                            shown in the dialog box below the 'Parameter group' field. Possible
+                            groups are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Module setup</p></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Quad-DAC 1 (channels 1 &#8211; 4)</p></li><li class="listitem"><p>Quad-DAC 2 (channels 5 &#8211; 8)</p></li><li class="listitem"><p>Quad-DAC 3 (channels 9 &#8211; 12)</p></li><li class="listitem"><p>Quad-DAC 4 (channels 13 &#8211; 16)</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Module setup</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_analog_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the Initial Values vector is applied to the channel as
+                defined in the Active Channels vector. A scalar value applies to all the channels;
+                for example, for individual values, type "[1 1.5 0 2.5]", and to set all channels to
+                zero, type "0".</p></dd><dt><a name="varlistentry_common_analog_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Quad-DAC n</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Range Channel n</span>
+                    </span></dt><dd><p>Select one of the four available analog output ranges. The selected
+                            range applies to the specified channel only. Each of the 16 channels can
+                            have its own specific range.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Thermal Shutdown</span>
+                    </span></dt><dd><p>When checked, thermal shutdown mode for this Quad-DAC (group of 4
+                            channels) is enabled. The Quad-DAC will automatically go into stand-by
+                            mode if the maximum device temperature is exceeded.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Clamp (20mA Current Limit)</span>
+                    </span></dt><dd><p>When checked, clamp mode for this Quad-DAC (group of 4 channels) is
+                            enabled. The Quad-DAC will limit the output current of each of the four
+                            channels to 20mA.</p></dd></dl></div></div></div></body></html>

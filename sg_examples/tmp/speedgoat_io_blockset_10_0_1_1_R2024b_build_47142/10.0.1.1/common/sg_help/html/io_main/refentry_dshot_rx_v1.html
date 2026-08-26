@@ -1,0 +1,43 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Dshot - Dshot Rx v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_dshot_tx_v1.html" title="Dshot - Dshot Tx v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dshot_rx_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Dshot - Dshot Rx v1</h2><p>Dshot - Dshot Rx v1 &#8212; <span class="phrase">The Dshot Rx receives data according
+                    to the Dshot protocol.</span></p></div><div class="refsect1"><a name="d5e14521"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dshot_rx_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e14529"></a><h2>Description</h2><p>The Dshot Rx block receives Dshot messages according to the selected Dshot mode.
+            </p></div><div class="refsect1"><a name="d5e14532"></a><h2>Ports</h2><p>The Simulink block has 3 outputs ports:</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Rx data</span>
+                    </span></dt><dd><p>The Rx data port represents the received data channels with the 11-bit
+                            throttle without the telemetry and CRC bits. The data type is uint16 and
+                            data is aligned on the LSB (bit 0).</p></dd><dt><span class="term">
+                        <span class="guilabel">Valid </span>
+                    </span></dt><dd><p>The Valid port represents the flag bit for the resulting CRC check.
+                            The value is 1 for a correct transmission and 0 for an erroneous
+                            transmission. The data type is boolean.</p></dd><dt><span class="term">
+                        <span class="guilabel">Telemetry</span>
+                    </span></dt><dd><p>The telemetry port represents the bit for the telemetry setting. The
+                            value is 1 if the telemetry bit is set in the data packet, and 0 if it
+                            is not set. The data type is boolean.</p></dd></dl></div></div><div class="refsect1"><a name="d5e14552"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Dshot</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Dshot Mode</span>
+                    </span></dt><dd><p>Defines which Dshot mode is used. For further information about the
+                            different modes please refer to the Usage Notes.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Dshot 150</p></li><li class="listitem"><p>Dshot 300</p></li><li class="listitem"><p>Dshot 600</p></li><li class="listitem"><p>Dshot 1200</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Use recommended Reset Time </span>
+                    </span></dt><dd><p>When checked a pause pulse of a time period of 21 bits is expected
+                            following the data packet. When not checked, the reset time is tunable.
+                            The time period of one bit depends on the selected Dshot mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset Time</span>
+                    </span></dt><dd><p>If the box "Use recommended Reset Time" is not checked, the reset time
+                            is tunable between 2 and 2^32-1. Otherwise, it is set to the recommended
+                            21 bits.</p></dd></dl></div></div></div></body></html>

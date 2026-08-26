@@ -1,0 +1,72 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: Counter Validation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_counter_insert.html" title="CAN Message Utilities: Counter Insert"><link rel="next" href="refentry_ref_crc_insert.html" title="CAN Message Utilities: CRC Insert"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_counter_validation"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: Counter Validation</h2><p>CAN Message Utilities: Counter Validation &#8212; <span class="phrase">Extracts a previously
+                    inserted counter value from a CAN or CAN-FD message payload and determines its
+                    validity.</span></p></div><div class="refsect1"><a name="d5e4041"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/counter_validation.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_counter_insert"></a><h2>Description</h2><p>The Counter Validation block extracts a Counter value of a certain bit width from
+                a certain bit position of the data payload of a CAN or CAN-FD frame. The alive
+                status and correct sequence of the <span class="emphasis"><em>extracted counter</em></span> are
+                verified to ensure the counter value is valid. The result of both checks are sent
+                through the output ports.</p><p>The block inherits the sample time from the CAN or CAN-FD message line connected
+                to its input. </p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the settings configuration
+                in the block mask</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Extracted Counter</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Extracted Counter Port</strong></span> in the
+                            mask to enable this output port. This port outputs the value of the
+                            counter extracted from the payload (<span class="emphasis"><em>Extracted
+                                Counter</em></span>) from the position defined by <span class="emphasis"><em>Counter
+                                Location (bits)</em></span> and <span class="emphasis"><em>Counter Length
+                                (bits)</em></span> mask parameters.</p></dd><dt><span class="term">
+                        <span class="guilabel">Alive Counter Valid</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Alive Counter Valid Port</strong></span> in
+                            the mask to enable this output port. This port outputs the result of the
+                                <span class="emphasis"><em>Alive Counter</em></span> check: 1 if the
+                                <span class="emphasis"><em>Extracted Counter</em></span> is alive, otherwise 0. The
+                                <span class="emphasis"><em>Extracted Counter</em></span> is considered alive if the
+                            two most recent consecutive messages with distinct timestamps report
+                            different counter values. The port then indicates the alive status of
+                            the most recent message.</p><p>The initial value of this port is always 0 because there is no
+                            preceding message to compare counter values.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sequence Counter Valid</span>
+                    </span></dt><dd><p>Select <span class="bold"><strong>Sequence Counter Valid Port</strong></span> in
+                            the mask to enable this output port. This port outputs the result of the
+                                <span class="emphasis"><em>Sequence Counter</em></span> check: 1 if the
+                                <span class="emphasis"><em>Extracted Counter</em></span> follows the correct
+                            increment, otherwise 0. The <span class="emphasis"><em>Extracted Counter</em></span> is
+                            considered to be correctly incrementing if the two most recent
+                            consecutive messages with distinct timestamps report counter values that
+                            increment according to the counter parameters defined in the mask. The
+                            port then indicates the sequence status of the most recent
+                            message.</p><p>The initial value of this port is always 0 because there is no
+                            preceding message to compare counter values.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Extracted Counter</span>
+                    </span></dt><dd><p>Adds an "Extracted Counter" output port to send the value of the
+                            counter extracted from the message payload.</p></dd><dt><span class="term">
+                        <span class="guilabel">Alive Counter Valid</span>
+                    </span></dt><dd><p>Adds an "Alive Counter Valid" output port to send the result of the
+                                <span class="emphasis"><em>Alive Counter</em></span> check.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sequence Counter Valid</span>
+                    </span></dt><dd><p>Adds a "Sequence Counter Valid" output port to send the result of the
+                                <span class="emphasis"><em>Sequence Counter</em></span> check.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Start Value</span>
+                    </span></dt><dd><p>The initial value of the <span class="emphasis"><em>internal counter</em></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Stop Value</span>
+                    </span></dt><dd><p>The stop value of the <span class="emphasis"><em>internal counter</em></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Step Value</span>
+                    </span></dt><dd><p>The value by which the internal counter is increased at each block
+                            execution.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Location (Bits)</span>
+                    </span></dt><dd><p>The location, expressed in bits, from where the counter is extracted
+                            from the payload. Counter Location is expressed in 0-based indexing (for
+                            example if the user wants to extract the counter from the 2nd byte, this
+                            parameter should be configured to the value 8).</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Length (Bits)</span>
+                    </span></dt><dd><p>The number of bits that are extracted from the message payload to
+                            obtain the <span class="emphasis"><em>Extracted Counter</em></span> value (starting from
+                            the Counter Location parameter).</p></dd><dt><span class="term">
+                        <span class="guilabel">Protocol</span>
+                    </span></dt><dd><p>This parameter determines the datatype of the block's input
+                            port.</p></dd></dl></div></div></div></body></html>

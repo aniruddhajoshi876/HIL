@@ -1,0 +1,36 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor 1553 Encode BC Message</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs6ilqy-16.html" title="Condor 1553 Decode BC Status"><link rel="next" href="bs6ilqy-27.html" title="Condor 1553 Select BM Message"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bs6ilqy-21"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor 1553 Encode BC Message<a name="Condor-1553_EncodeBCMessage"></a></h2><p>Condor 1553 Encode BC Message<a name="Condor-1553_EncodeBCMessage"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg; 1553
+                Encode BC Message block for bus controller (not recommended)<b>MilStd1553Blocks</b><b>CondorEngineering</b></p></div><div class="refsect1"><a name="bs6ilqy-23"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bs6ilqy-24"></a><h2>Description</h2><p>This block fills each message for the time step during which the message is
+                sent.</p><p>The Create BC Message List block allocates an empty list of message buffers in
+                    <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> memory.
+                Use the Encode BC Message block to fill these messages.</p></div><div class="refsect1"><a name="bs6ilqy-25"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Message number</strong></span></span></dt><dd><p>Enter the number of the message to encode. Each BC message needs to
+                            use a unique message number. This is the place in the list to fill with
+                            this message.</p></dd><dt><span class="term"><span class="bold"><strong>Remote Terminal address 1 (Receive if
+                            RT-RT)</strong></span></span></dt><dd><p>From the list, choose a Remote Terminal address 1.</p></dd><dt><span class="term"><span class="bold"><strong>Sub address 1 (Receive if RT-RT)</strong></span></span></dt><dd><p>From the list, choose a Remote Terminal sub address 1. Setting this
+                            parameter to <code class="literal">Send (0) mode command</code> or <code class="literal">Send
+                                (31) mode command</code> disables the <span class="bold"><strong>Message word count</strong></span> parameter.</p></dd><dt><span class="term"><span class="bold"><strong>Remote Terminal address 2 (Transmit if
+                            RT-RT)</strong></span></span></dt><dd><p>From the list, choose a Remote Terminal address 2. This is not used if
+                            the <span class="bold"><strong>Direction</strong></span> is <code class="literal">R
+                                (BC-&gt;RT)</code> or <code class="literal">T (RT-&gt;BC)</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Sub address 2 (Transmit if RT-RT)</strong></span></span></dt><dd><p>From the list, choose a Remote Terminal sub address 2. This is not
+                            used if the <span class="bold"><strong>Direction</strong></span> is <code class="literal">R
+                                (BC-&gt;RT)</code> or <code class="literal">T (RT-&gt;BC)</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Mode command</strong></span></span></dt><dd><p>If the <span class="bold"><strong>Sub address 1 is 0 or 31</strong></span>, from
+                            the list, choose a mode command.</p></dd><dt><span class="term"><span class="bold"><strong>Message word count</strong></span></span></dt><dd><p>Specify the number of <code class="literal">uint16</code> words to send or
+                            receive.</p></dd><dt><span class="term"><span class="bold"><strong>Direction</strong></span></span></dt><dd><p>From the list, choose the encode direction. Choose from</p></dd></dl></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">R (BC-&gt;RT)</code></p></li><li class="listitem"><p><code class="literal">T (RT-&gt;BC)</code></p></li><li class="listitem"><p><code class="literal">RT-&gt;RT</code></p></li></ul></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Inter message gap to next message
+                        (usec)</strong></span></span></dt><dd><p>Specify the minimum amount of time, in microseconds, between
+                            messages.</p></dd><dt><span class="term"><span class="bold"><strong>Output bus</strong></span></span></dt><dd><p>From the list, choose output bus <code class="literal">A</code> or
+                                <code class="literal">B</code> that this message will be sent on.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd></dl></div></div><div class="refsect1"><a name="d5e3557"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                        <a href="bs6ilqy-5.html" class="olink">Create BC
+                            Message List</a>
+                    </p></li><li class="listitem"><p>
+                        <a href="bs6ilqy-11.html" class="olink">Decode BC
+                            Message</a>
+                    </p></li><li class="listitem"><p><a class="link" href="http://www.abaco.com" target="_top">http://www.abaco.com</a></p></li></ul></div></div></div></body></html>

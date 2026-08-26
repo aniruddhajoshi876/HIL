@@ -1,0 +1,13 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.doc</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_configure_ethernet.html" title="speedgoat.configureEthernet"><link rel="next" href="refentry_sgapi_get_target_time.html" title="speedgoat.getTargetTime"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_doc"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.doc</h2><p>speedgoat.doc &#8212; 
+            <span class="phrase">Open the Speedgoat documentation</span>
+         </p></div><div class="refsect1"><a name="d5e598"></a><h2>Description</h2><p>This Speedgoat API function opens the Speedgoat help documentation where you can find
+information such as help pages for all Speedgoat driver blocks, release notes, Speedgoat Tools
+and details on getting started.</p><p>You can also open a specific documentation page by specifying it as an input argument.</p></div><div class="refsect1"><a name="d5e602"></a><h2>Examples</h2><p>Open the Speedgoat help documentation:</p><pre class="programlisting">speedgoat.doc</pre><p>Open the doc page for the IO131 I/O module:</p><pre class="programlisting">speedgoat.doc('IO131')</pre><p>Open the doc page for the EtherCAT protocol:</p><pre class="programlisting">speedgoat.doc('EtherCAT')</pre></div><div class="refsect1"><a name="d5e610"></a><h2>Input Arguments</h2><p>pageName - Documentation page name
+[character vector].
+Specify the doc page name by using the auto-suggestion feature (see notes).</p></div><div class="refsect1"><a name="d5e613"></a><h2>Notes</h2><p>The function either opens the doc page in the integrated doc (from your local Speedgoat
+I/O Blockset installation) or on the online doc (from the Speedgoat website with the latest
+Speedgoat I/O Blockset), depending on your MATLAB settings. To change your preferences go to:
+MATLAB Preferences -&gt; Help -&gt; Documentation Location.</p><p>The list of documentation pages is available when using the auto-suggestion feature: open the
+first left bracket of the function then press the <span class="bold"><strong>Tab</strong></span> key.</p></div></div></body></html>

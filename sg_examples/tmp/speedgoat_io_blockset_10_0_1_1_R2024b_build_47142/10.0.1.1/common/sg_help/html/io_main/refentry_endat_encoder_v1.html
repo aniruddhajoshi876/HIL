@@ -1,0 +1,69 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EnDat - Encoder v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_endat_decoder_v1.html" title="EnDat - Decoder v1"><link rel="next" href="refentry_endat_sniffer_v1.html" title="EnDat - Sniffer v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_endat_encoder_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>EnDat - Encoder v1</h2><p>EnDat - Encoder v1 &#8212; <span class="phrase">The EnDat Encoder code module
+                    acts as the slave implementation of the EnDat communication. The driver block
+                    can be configured for generic support of different EnDat encoders and
+                    setups.</span></p></div><div class="refsect1"><a name="d5e10271"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_endat_encoder_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e10279"></a><h2>Description</h2><p>The EnDat encoder that is implemented on the configurable I/O module acts as the
+                slave implementation of the EnDat communication. The driver block can be configured
+                for generic support of different EnDat encoders and setups. The implemented encoder
+                fully supports all EnDat 2.1 and EnDat 2.2 commands, however the driver itself is
+                only able to set position values and to statically force the F1 error bit. The EnDat
+                encoder implementation contains a fixed map for all the parameters in the different
+                memory areas. Speedgoat can provide different memory contents upon request.</p></div><div class="refsect1"><a name="d5e10282"></a><h2>Ports</h2><p>This EnDat Encoder driver block has two inputs and no output ports.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">TxMSB </span>
+                    </span></dt><dd><p>The upper 32-bit of the data that will be sent upon a position request
+                            from the EnDat master.</p></dd><dt><span class="term">
+                        <span class="guilabel">TxLSB </span>
+                    </span></dt><dd><p>The lower 32-bit of the data that will be sent upon a positoin request
+                            from the EnDat master.</p></dd></dl></div></div><div class="refsect1"><a name="d5e10297"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: EnDat configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position Data Width Vector [bit]</span></span></dt><dd><p>Configures the number of data bits for the position of the EnDat
+                            encoder. Valid range 1 to 32.</p></dd><dt><span class="term">
+                        <span class="guilabel">Distinguishable Revolutions Data Width Vector (multiturn only)
+                        </span></span></dt><dd><p>Configures the number distinguishable revolutions as given by the
+                            datasheet of the EnDat encoder. For single-turn encoder a value of 0
+                            needs to be configured. Valid range 0 to 15.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Position Data Width</strong></span> and the
+                                    <span class="bold"><strong>Distinguishable Revolutions Data
+                                    Width</strong></span> are stored in the encoder to <span class="emphasis"><em>Number
+                                    of clock pulses for transfer of the position value</em></span>
+                                (EnDat Parameter 13, MRS Section A1) and <span class="emphasis"><em>Distinguishable
+                                    revolutions</em></span> (EnDat Parameter 17, MRS Section
+                                A3).</p><p>
+                                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="emphasis"><em>Number of clock pulses for transfer of the
+                                                position value</em></span> = <span class="bold"><strong>Position Data Width</strong></span> + <span class="bold"><strong>Distinguishable Revolutions Data
+                                                Width</strong></span></p></li><li class="listitem"><p><span class="emphasis"><em>Distinguishable revolutions</em></span> =
+                                                2^<span class="bold"><strong>Distinguishable Revolutions
+                                                Data Width</strong></span>-1</p></li></ul></div><p>
+                            </p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Recovery Time tm Vector [s] </span></span></dt><dd><p>Configures the recovery time (tm) of the EnDat Encoder.</p></dd><dt><span class="term">
+                        <span class="guilabel">Rearming Time tR Vector [s] </span></span></dt><dd><p>Configures the rearming time (tR) of the EnDat Encoder.</p></dd><dt><span class="term">
+                        <span class="guilabel">Calculation Time tcal Vector [s]</span></span></dt><dd><p>Configures the calculation time (tcal) of the EnDat Encoder.</p></dd><dt><span class="term">
+                        <span class="guilabel">Delay Propagation Time td Vector [s]</span></span></dt><dd><p>Introduces a certain delay on data line to emulate the delay
+                            propagation of a long cable</p><p>
+                            </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The resolution of the above described timing- parameters
+                                    depends upon the FPGA frequency. The effectively applied times
+                                    are shown in the <span class="bold"><strong>Effective</strong></span>
+                                    values</p></td></tr></table></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Data Signal FPGA Internally Generated </span>
+                    </span></dt><dd><p>Uses FPGA internally generated data (counter) for position requests.
+                            The counter increases at every EnDat frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">Force F1 Error Bit </span>
+                    </span></dt><dd><p>Configures if the F1 error flag is set or not</p></dd><dt><span class="term">
+                        <span class="guilabel">Force CRC Error </span>
+                    </span></dt><dd><p>Forces a CRC error on the communication (inverts the CRC value)</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter is available in EnDat Encoder Driver v1.1 and
+                                subsequent versions.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

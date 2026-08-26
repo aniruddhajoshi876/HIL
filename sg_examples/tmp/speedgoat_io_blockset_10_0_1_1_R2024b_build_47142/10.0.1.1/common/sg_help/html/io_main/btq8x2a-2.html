@@ -1,0 +1,24 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Initialize Curtiss-Wright Shared Nodes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="prev" href="btq8x2a-1.html" title="Create Curtiss-Wright Shared Partitions"><link rel="next" href="btq8x2a-4.html" title="Curtiss-Wright Shared Partition Structure"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="btq8x2a-2"></a>Initialize Curtiss-Wright Shared Nodes</h2></div></div></div><p>In addition to shared memory partitions, you must also define a node initialization
+            structure before using the SCRAMNet+ SC150 shared memory blocks. A node initialization
+            structure describes the shared memory partitions (see <a href="btq8x2a-1.html" class="olink">Create Shared Memory
+                Partitions</a>) and the SCRAMNet+ SC150 board configuration, including interrupt
+            settings. The <a href="btfkdlx-5.html" class="olink">Systran SC150
+                init</a> block requires a shared memory node initialization structure.</p><p>After defining the node initialization structure, you can add SCRAMNet+ SC150 shared
+            memory driver blocks to your <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model. See <a href="btq8x2a-6.html" class="olink">Shared Memory Node Initialization Structure</a> for the
+            complete list of fields in a node initialization.</p><p>The following description refers to the <code class="literal">completenodestruct</code> command.
+            Type</p><pre class="programlisting">help completenodestruct</pre><p>for more information.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Create a node initialization structure in one of the following ways. Using the
+                        <code class="literal">completenodestruct</code> command at the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window,
+                    create a default node initialization structure. For example, type</p><pre class="programlisting">node=completenodestruct([],'scramnet')
+
+node =
+
+     Interface: [1x1 struct]
+    Partitions: [1x1 struct]</pre></li><li class="listitem"><p>Fill in the structure fields. For example:</p><pre class="programlisting">node.interface.NodeID = '128';
+node.Partitions = Partition;</pre></li><li class="listitem"><p>A user-defined node structure, created with <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; code or from the
+                        <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command
+                    Window and supplement the resulting structure with a call to the
+                        <code class="literal">completenodestruct</code> function. For example:</p><pre class="programlisting">node.Interface.NodeID = '128';
+node.Partitions = Partition;
+node = completenodestruct(node,'scramnet');</pre></li></ul></div></div></body></html>

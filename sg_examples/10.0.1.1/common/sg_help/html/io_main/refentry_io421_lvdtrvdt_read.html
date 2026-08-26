@@ -1,0 +1,72 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 - LVDT/RVDT Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_usage_notes.html" title="IO421 Usage Notes"><link rel="next" href="refentry_io421_lvdtrvdt_write.html" title="IO421 - LVDT/RVDT Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_lvdtrvdt_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 - LVDT/RVDT Read</h2><p>IO421 - LVDT/RVDT Read &#8212; 
+                <span class="phrase">Reads the IO421 LVDT/RVDT inputs</span>
+            </p></div><div class="refsect1"><a name="d5e903"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io421_lvdt_read.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e911"></a><h2>Description</h2><p>The IO421-1 sub-module measures up to four Linear or Rotary Variable Differential
+                Transformers. Each channel has separate inputs for the reference (excitation) and
+                the A/B signals.</p><p>The characteristics of the sub-module depend on the factory configuration selected
+                at the time of the order. This information is available in a separate documentation
+                shipped with the device.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="25%" class="col1"><col width="25%" class="col2"><col width="25%" class="col3"><col width="25%" class="col4"></colgroup><thead><tr><th>sub-module code</th><th>Input
+                                    (V<sub>LL</sub>)[V<sub>RMS</sub>
+                                ]</th><th>Ref
+                                    (V<sub>REF</sub>)[V<sub>RMS</sub>
+                                ]</th><th>Frequency [Hz]</th></tr></thead><tbody><tr><td>LB</td><td>2 - 28</td><td>2 - 28</td><td>400 - 1k</td></tr><tr><td>LC</td><td>2 - 28</td><td>2 - 28</td><td>1k - 3k</td></tr><tr><td>LD</td><td>2 - 28</td><td>2 - 28</td><td>3k - 5k</td></tr><tr><td>LE</td><td>2 - 28</td><td>2 - 28</td><td>5k - 7k</td></tr><tr><td>LF</td><td>2 - 28</td><td>2 - 28</td><td>7k - 10k</td></tr><tr><td>LG</td><td>2 - 28</td><td>2 - 28</td><td>10k - 20k</td></tr><tr><td>LX</td><td>x</td><td>x</td><td>x</td></tr></tbody></table></div><p>See section IO421-1 LVDT/RVDT connection methods in the 'Usage notes' section for
+                more information about the various connection methods.</p></div><div class="refsect1"><a name="d5e968"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position n (n is the channel number) </span>
+                    </span></dt><dd><p>The measured position of the ferromagnetic rod during runtime. The
+                            output range is between -1 and +1. The number of these ports is
+                            dependent on the channel count, which is specified by the 'Active
+                            Channels' parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e977"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>A unique module ID must be used for each type of IO421 module block in
+                            your model.</p><p>The module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to link the I/O module
+                                    driver blocks with each other</p></li><li class="listitem"><p>It also has an impact on the PCI slot auto-search feature: if
+                                    only one I/O module is installed, the module ID must be set to
+                                        <span class="bold"><strong>1</strong></span>. If multiple modules are
+                                    installed, it must be in the range 1:n. Not all the I/O modules
+                                    installed in the target machine need to be used</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Slot </span>
+                    </span></dt><dd><p>The carrier board can contain up to three modules. This parameter
+                            indicates where your IO421-1 is located.</p></dd><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Wiring Mode </span>
+                    </span></dt><dd><p>The wiring method used for the connected LVDT/RVDT device. A value of
+                            '0' selects 2-wire mode, '1' selects 3- or 4-wire mode. You can either
+                            use a scalar value, which applies to all channels, or a vector which is
+                            mapped to the Channels vector. See section 'IO421-1 LVDT/RVDT connection
+                            methods' in the 'Usage notes' of this document for information about the
+                            various connection methods.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expected Signal Voltage VLL </span>
+                    </span></dt><dd><p>Enter the expected voltage of the A/B signals in (V RMS). You can
+                            either use a scalar value, which applies to all channels, or a vector
+                            which is mapped to the Channels vector.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expected Signal Voltage VREF </span>
+                    </span></dt><dd><p>Enter the expected voltage of the R signal (reference/excitation) in
+                            (V RMS). You can either use a scalar value, which applies to all
+                            channels, or a vector which is mapped to the Channels vector.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div></div></body></html>

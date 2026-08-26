@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO204 - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io204_setup.html" title="IO204 - Setup"><link rel="next" href="refentry_io204_write.html" title="IO204 - Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io204_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO204 - Read</h2><p>IO204 - Read &#8212; <span class="phrase">Reads the IO204 digital
+                    inputs</span></p></div><div class="refsect1"><a name="d5e1214"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io204_read.png"></span></span></p></div><div class="refsect1"><a name="d5e1222"></a><h2>Description</h2><p>To read the digital inputs, exactly one of these blocks must be added to your
+                model for each module of this type in your target machine.</p></div><div class="refsect1"><a name="d5e1225"></a><h2>Ports</h2><p>This driver block has no input ports. The output ports can be set to 5 different
+                types:</p><p>
+                <span class="bold"><strong>16 ports of type double</strong></span>
+            </p><p>16 output ports of type double are shown. Each port is a scalar with a value of
+                either 0.0 (Low) or 1.0 (High).</p><p><span class="bold"><strong>16 ports of type boolean</strong></span></p><p>16 output ports of type boolean are shown. Each port is a scalar with a value of
+                either 0 (Low) or 1 (High).</p><p><span class="bold"><strong> 1 port with 16 element vector of type double
+                </strong></span></p><p>One output port of type double is shown. The port has a width of 16 with each
+                element having a value of either 0.0 (Low) or 1.0 (High).</p><p><span class="bold"><strong> 1 port with 16 element vector of type boolean</strong></span>
+            </p><p>One output port of type boolean is shown. The port has a width of 16 with each
+                element having a value of either 0 (Low) or 1 (High).</p><p><span class="bold"><strong>1 port with scalar of type uint32</strong></span></p><p>One output port of type uint32 is shown. The port is a scalar containing all 16
+                channels as a single uint32 value.</p></div><div class="refsect1"><a name="d5e1243"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_digital_port_type"></a><span class="term">
+            <span class="guilabel">Port Type</span>
+        </span></dt><dd><p>Select one of the five available port types.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

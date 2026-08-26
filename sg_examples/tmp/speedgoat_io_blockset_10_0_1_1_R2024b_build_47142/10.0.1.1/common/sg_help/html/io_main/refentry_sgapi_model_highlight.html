@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.model.highlight</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_can_db_parser_block_config.html" title="speedgoat.can.DbParserBlockConfig"><link rel="next" href="refentry_sgapi_ip_alias_configuration.html" title="speedgoat.IpAliasConfiguration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_model_highlight"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.model.highlight</h2><p>speedgoat.model.highlight &#8212; 
+            <span class="phrase">Highlight objects in a Simulink model</span>
+         </p></div><div class="refsect1"><a name="d5e1062"></a><h2>Description</h2><p>This function allows you to temporarily highlight blocks, block parameters, subsystems and
+annotations in a Simulink model.</p><p>Using name-value pair arguments, you can in addition open the block mask or subsystem.</p></div><div class="refsect1"><a name="d5e1066"></a><h2>Examples</h2><p>Highlight the "CAN FD Pack_standard" block of the CAN_FDLoopback product example:</p><pre class="programlisting">speedgoat.model.highlight('sgMdl_CAN_FDLoopback/CAN FD Pack_standard')</pre><p>Highlight the "CAN_(FD)_MESSAGE_BUS" subsystem and open it:</p><pre class="programlisting">speedgoat.model.highlight('sgMdl_CAN_FDLoopback/CAN_(FD)_MESSAGE_BUS - Datatypes', 'Open', true)</pre><p>Highlight the "moduleType" mask parameter of the "CAN_Setup" block:</p><pre class="programlisting">speedgoat.model.highlight('sgMdl_CAN_FDLoopback/CAN_Setup', 'Parameter', 'moduleType')</pre><p>Highlight the signal output port N&deg;1 of the "BusSelector_CANFD" block:</p><pre class="programlisting">speedgoat.model.highlight('sgMdl_CAN_FDLoopback/CAN_(FD)_MESSAGE_BUS - Datatypes/BusSelector_CANFD', 'Signal', 1)</pre></div><div class="refsect1"><a name="d5e1076"></a><h2>Input Arguments</h2><p>Path-object path in Simulink
+[character vector | string].
+Path of the block, subsystem or annotation that should be highlighted. The model must
+already be open when this API is executed.</p><p>Name-Value Pair Arguments:
+'Open' - open block mask or subsystem
+[boolean].
+When set to true, the object specified in 'path' will not only be highlighted but also
+opened.
+If the path specifies a block, it will open the block mask.
+If the path specifies a subsystem, it will open that subsystem.</p><p>'Parameter' - Mask parameter
+[character vector | string].
+The mask parameter name that you want to highlight in the specified block. The block
+mask will be opened in any case, and the 'Open' argument does not need to be set to
+true.</p><p>'Signal' - Signal port
+[double].
+The output port of the source block of the signal you want to highlight.</p></div></div></body></html>

@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO131 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io131_analog_output.html" title="IO131 - Analog output"><link rel="next" href="refentry_ref_io132.html" title="IO132"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io131_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO131 Usage Notes</h2><p>IO131 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e12294"></a><h2>Sampling mode</h2><p>This note shows the difference between the two different sample mode
+                configurations of the Analog input block.</p><p>The configuration is made at the analog input tab of the Setup block.</p><p>If the IO131 is configured for manual sampling, a conversion is triggered by the
+                driver block on every sample hit. The driver block then waits for the module to
+                finish the conversation before reading the value.</p><p>If the IO131 is configured for continuous sampling, the driver block only needs to
+                read the latest value from the module. This way, a lot of CPU load can be saved. But
+                the input value is not real-time anymore. In case the latest sample is not yet ready
+                at the moment of the sample-hit, the last sample is used. Especially when a high
+                oversampling factor is configured, the last sample can be up to 320us old. And when
+                the module sample time does not accord with the block sample time, this delay is not
+                constant, which can cause signal deformation.</p><p>The following examples illustrate a use case with oversampling configuration 4,
+                meaning 4 conversions for one sample.</p><p>The input signal is a continuous ramp with a constant slope.</p><p>The block sample time was set to a value that is not a multiple of the module's
+                sample time.</p><p><span class="bold"><strong>Manual sampling</strong></span>
+            </p><p>Choosing a manual sampling mode has the effect that the shape of the signal is
+                conserved. On the other hand, the CPU is occupied by the Analog input driver block
+                for a long time.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_sampling_manual.svg"></span></p><p>
+                <span class="bold"><strong>Continuous sampling</strong></span>
+            </p><p>When choosing a continuous sampling mode, CPU is barely occupied by the Analog
+                input driver block. But a continuously increasing deferral of the used sample
+                against the sample hits is created, until one sample is completely skipped. As an
+                effect, the sampled signal does not have a constant slope anymore.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_sampling_continuous.svg"></span></p></div><div class="refsect1"><a name="d5e12317"></a><h2>DMA Setup</h2><p>Interrupt driven execution</p><p>If DMA is enabled for either outputs or inputs or both, the model or the
+                asynchronous subsystem where the module is located has to be triggered by the
+                modules interrupt.</p><p>This is necessary so the sample hits of the blocks are synchronous to the modules
+                DMA engine.</p><p><a name="para_common_interrupt_setup_information"></a>In DMA mode, the model must contain an
+        Interrupt Setup block that triggers a subsystem or the model. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+            documentation</a> for more information. </p></div><div class="refsect1"><a name="d5e12324"></a><h2>Output DMA latency</h2><p>This note shows the difference between the two different configurations for the
+                latency of the Analog output block in DMA mode.</p><p>The configuration is made at the Analog output tab of the Setup block.</p><p><span class="bold"><strong> Latency as small as possible</strong></span>
+            </p><p>If the latency is kept as small as possible, the module will start to output
+                values immediately after the reception of a frame. However, the transmission time
+                varies. So, the delay of the outputs towards the analog inputs of the module is not
+                clearly defined. If one transmission takes longer, the outputs get stuck after the
+                previous frame is completed.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_asap.svg" width="972"></span></p><p><span class="bold"><strong>Latency 1 frame</strong></span></p><p>If the latency is fixed to 1 frame, the analog outputs only start to output the
+                data of the frame at the next sample hit. This way, the delay of the outputs towards
+                the analog inputs is constant and there is no threat of running out of data at the
+                outputs. The price is the higher latency.</p><p><span class="inlinemediaobject"><img src="././graphics/io13x_use_case_latency_1frame.svg" width="972"></span></p></div></div></body></html>

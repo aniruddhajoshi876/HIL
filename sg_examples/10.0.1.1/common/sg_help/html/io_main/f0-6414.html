@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Bus Controller Operation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="prev" href="f0-6413.html" title="Remote Terminal Operation"><link rel="next" href="f0-6415.html" title="Remote Terminal and Bus Controller Operation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f0-6414"></a>Bus Controller Operation</h2></div></div></div><p>The example in this topic uses PCI-1553 blocks. It describes how you can use a Bus
+            Controller in a model. This model is a simple example of how to set up a short sequence
+            of two messages, send them, and collect the response data.</p><p>You can run this example on a target computer that has a PCI-1553 board. If your
+            target computer uses a different board, such as a QPCI-1553 board, replace the PCI-1553
+            blocks with the blocks for your board.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/qpci_bcsample.png"></div></div><p>The <code class="literal">PCI-1553 Initialize</code> block configures a Bus Controller on
+            channel 1 of the board. This block also tells the board to reserve five message buffers.
+            This number must be at least as large as the longest list of messages that you
+            send.</p><p>The Create BC Message List block allocates an empty list of five message buffers in
+                <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> memory. Each
+            time this block executes, it sets the entire list of message buffers to
+            no-op messages. The Encode BC Message block fills
+            each message for the time step during which the message must be sent. To send only a
+            specific message at a specific time, enclose the <code class="literal">Encode BC Message</code>
+            block in an enabled subsystem.</p><p>The <code class="literal">L</code> signal is the message list, a custom data type consisting of
+            a pointer, message length, and special marker. The model passes the <code class="literal">L</code>
+            signal through the Encode BC Message blocks. From there, the signal goes to the Bus
+            Controller Send block, executing the Encode blocks before the Send block.</p></div></body></html>

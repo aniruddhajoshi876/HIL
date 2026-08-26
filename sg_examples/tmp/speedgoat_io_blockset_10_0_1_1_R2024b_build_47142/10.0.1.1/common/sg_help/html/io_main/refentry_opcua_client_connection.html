@@ -1,0 +1,77 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA - Client Connection</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_opcua_client_setup.html" title="OPC UA - Client Setup"><link rel="next" href="refentry_opcua_client_read.html" title="OPC UA - Client Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_client_connection"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA - Client Connection</h2><p>OPC UA - Client Connection &#8212; <span class="phrase">Connects the local OPC
+                    UA client with one remote OPC UA server</span></p></div><div class="refsect1"><a name="d5e72090"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_opcua_client_connection.png"></span></span></p></div><div class="refsect1"><a name="d5e72098"></a><h2>Description</h2><p>The Connection block connects the local OPC UA client with one remote OPC UA
+                server. Each server connection requires a Connection block in the model. The
+                connection start point is given by the local IP address, entered in the Setup block
+                mask, and a random TCP port. The connection endpoint is given by the IP address and
+                TCP port of the remote server. Enter both remote parameters in the Connection block
+                mask.</p></div><div class="refsect1"><a name="d5e72101"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Connection Status</span>
+                    </span></dt><dd><p>This port outputs the state of the client-server connection as an
+                            array of data type UINT32 and length 3. The first index is the OPC UA
+                            session state. The available values are:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="20%" class=" Code"><col width="80%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>Code</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>0</td><td>UA_SESSIONSTATE_CLOSED</td></tr><tr><td>1</td><td>UA_SESSIONSTATE_CREATE_REQUESTED</td></tr><tr><td>2</td><td>UA_SESSIONSTATE_CREATED</td></tr><tr><td>3</td><td>UA_SESSIONSTATE_ACTIVATE_REQUESTED</td></tr><tr><td>4</td><td>UA_SESSIONSTATE_ACTIVATED</td></tr><tr><td>5</td><td>UA_SESSIONSTATE_CLOSING</td></tr></tbody></table></div><p>The second index is the OPC UA secure channel state. The available
+                            values are:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="11%" class="Code"><col width="44%" class="Description1"><col width="45%" class="Description2"></colgroup><tbody><tr><td><span class="bold"><strong>Code</strong></span></td><td><span class="bold"><strong>Description (before
+                                                v9.9.1)</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>0</td><td>UA_SECURECHANNELSTATE_FRESH</td><td>UA_SECURECHANNELSTATE_CLOSED</td></tr><tr><td>1</td><td>UA_SECURECHANNELSTATE_HEL_SENT</td><td>UA_SECURECHANNELSTATE_REVERSE_LISTENING</td></tr><tr><td>2</td><td>UA_SECURECHANNELSTATE_HEL_RECEIVED</td><td>UA_SECURECHANNELSTATE_CONNECTING</td></tr><tr><td>3</td><td>UA_SECURECHANNELSTATE_ACK_SENT</td><td>UA_SECURECHANNELSTATE_CONNECTED</td></tr><tr><td>4</td><td>UA_SECURECHANNELSTATE_ACK_RECEIVED</td><td>UA_SECURECHANNELSTATE_REVERSE_CONNECTED</td></tr><tr><td>5</td><td>UA_SECURECHANNELSTATE_OPN_SENT</td><td>UA_SECURECHANNELSTATE_RHE_SENT</td></tr><tr><td>6</td><td>UA_SECURECHANNELSTATE_OPEN</td><td>UA_SECURECHANNELSTATE_HEL_SENT</td></tr><tr><td>7</td><td>UA_SECURECHANNELSTATE_CLOSING</td><td>UA_SECURECHANNELSTATE_HEL_RECEIVED</td></tr><tr><td>8</td><td>UA_SECURECHANNELSTATE_CLOSED</td><td>UA_SECURECHANNELSTATE_ACK_SENT</td></tr><tr><td>9</td><td>&nbsp;</td><td>UA_SECURECHANNELSTATE_ACK_RECEIVED</td></tr><tr><td>10</td><td>&nbsp;</td><td>UA_SECURECHANNELSTATE_OPN_SENT</td></tr><tr><td>11</td><td>&nbsp;</td><td>UA_SECURECHANNELSTATE_OPEN</td></tr><tr><td>12</td><td>&nbsp;</td><td>UA_SECURECHANNELSTATE_CLOSING</td></tr></tbody></table></div><p>The third index is an error code. A valid connection is indicated
+                            by</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>OPC UA session state = ACTIVATED and</p></li><li class="listitem"><p>OPC UA secure channel = UA_SECURECHANNELSTATE_OPEN and</p></li><li class="listitem"><p>Error = 0</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e72219"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The Connection ID is used to assign Read and Write blocks to a
+                            particular client-server connection. Connection IDs range between 0 to
+                            65535 and must be unique along all Connections blocks of the client
+                            (these blocks have the same Station ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Address </span>
+                    </span></dt><dd><p>Enter the IP address or URL of the remote OPC UA server. If the
+                                <span class="bold"><strong>Remote TCP Port</strong></span> parameter is 0, the
+                            remote address must be a URL. In all other cases, the remote address
+                            must be an IP address. Examples:</p><p>
+                            <span class="bold"><strong>Remote TCP Port</strong></span> 4840 and <span class="bold"><strong>Remote Address</strong></span> '192.168.1.50' prompts the
+                            client to connect to port 4840 at 192.168.1.50</p><p>
+                            <span class="bold"><strong>Remote TCP Port</strong></span> 0 and <span class="bold"><strong>Remote Address</strong></span> 'opc.tcp://192.168.1.51:4841'
+                            prompts the client to connect to port 4841 at 192.168.1.51 </p></dd><dt><span class="term">
+                        <span class="guilabel">Remote TCP Port </span>
+                    </span></dt><dd><p>Enter the TCP port the remote OPC UA server is listening on for
+                            connection requests.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Security</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Security Policy</span>
+                    </span></dt><dd><p>Select the security policy of the server endpoint to which the client
+                            should connect.</p></dd><dt><span class="term">
+                        <span class="guilabel">Security Mode</span>
+                    </span></dt><dd><p>Select the security mode of the server endpoint to which the client
+                            should connect. If the security policy is <span class="bold"><strong>None</strong></span>, the security mode must also be <span class="bold"><strong>None</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">User Token Policy</span>
+                    </span></dt><dd><p>Select the user token policy for user authentication. If <span class="bold"><strong>Username</strong></span> is selected, enter the user
+                            credentials in the <span class="bold"><strong>Username</strong></span> and
+                                <span class="bold"><strong>Password</strong></span> parameters. Furthermore,
+                            you must provide a certificate and a private key as the remote server's
+                            policy may require username and password encryption.</p></dd><dt><span class="term">
+                        <span class="guilabel">Certificate</span>
+                    </span></dt><dd><p>Define the location of the public application instance certificate on
+                            the host PC. The file must be an X509 DER file with extension *.cer.
+                            During the build process, the file will be packed into the real-time
+                            application and transferred to the target machine. The certificate is
+                            required for security policies other than <span class="bold"><strong>None</strong></span>. The X509v3 Subject Alternative Name property of
+                            the certificate file must match the character array entered in the
+                                <span class="bold"><strong>Application URI</strong></span> parameter. You can
+                            use the certificates included in the OPC UA product examples.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Private Key</span>
+                    </span></dt><dd><p>Define the location of the private key file on the host PC. The file
+                            must be a PEM file with extension *.pem and must relate to the
+                            certificate. During the build process, the file will be packed into the
+                            real-time application and transferred to the target machine. The private
+                            key is required for security policies other than <span class="bold"><strong>None</strong></span>. You can use the private keys included in the OPC
+                            UA product examples.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Username</span>
+                    </span></dt><dd><p>Specify the user name with which the client should log in to the
+                            server.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd><dt><span class="term">
+                        <span class="guilabel">Password</span>
+                    </span></dt><dd><p>Enter the password associated with the username.</p><p><span class="bold"><strong>Data type:</strong></span> Character array</p><p><span class="bold"><strong>Default value:</strong></span> ''</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Identity</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Application URI</span>
+                    </span></dt><dd><p>The Application URI is a common identity property of all OPC UA
+                            devices. When using certificates, the Application URI must match the
+                            X509v3 Subject Alternative Name property of the certificate.</p></dd></dl></div></div></div></body></html>

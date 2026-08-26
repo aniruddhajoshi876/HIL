@@ -1,0 +1,114 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO108 - Analog output (DMA)</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io108_analog_output.html" title="IO108 - Analog output"><link rel="next" href="refentry_ref_io109.html" title="IO109"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io108_analog_output_dma_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO108 - Analog output (DMA)</h2><p>IO108 - Analog output (DMA) &#8212; 
+                <span class="phrase">Writes the IO108 analog outputs (DMA)</span>
+            </p></div><div class="refsect1"><a name="d5e6119"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io108_analog_output_dma_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e6127"></a><h2>Description</h2><p>This driver block can be used to output frame-based data. A Setup block is not
+                required when using the DMA output block.</p><p>This I/O module has 3 function modes:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Asynchronous data output (replay function): frame-based data is/are
+                            replayed to the output. No external clocking needed. The model must be
+                            driven by the IO108 I/O module interrupt.</p></li><li class="listitem"><p>Synchronized with a IO107/IO108 module: the module must be externally
+                            clocked by a IO107/IO108 I/O module and the model must be driven by the
+                            initiator IO107/IO108 I/O module interrupt.</p></li><li class="listitem"><p>Synchronized with the IO109 I/O module: the module must be externally
+                            clocked by the IO109 I/O module and the model must be driven by the
+                            IO109 I/O module interrupt.</p></li></ul></div><p>
+            </p><p><a name="para_common_interrupt_setup_information"></a>In DMA mode, the model must contain an
+        Interrupt Setup block that triggers a subsystem or the model. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+            documentation</a> for more information. </p></div><div class="refsect1"><a name="d5e6141"></a><h2>Ports</h2><p>This block has one input port per output channel. The width of the input is equal
+                to the frame size and each element of this vector is one sample.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number)</span>
+                    </span></dt><dd><p>The value to be output from analog channel X in volts.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e6154"></a><h2>Parameters</h2><p>All the configuration settings of the IO108 I/O module in DMA mode can be found in
+                the two tabs of the DMA output parameter dialog.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID (IO107/IO108)</span>
+                    </span></dt><dd><p>A unique module ID must be used for each type of I/O module Setup
+                            block in your model.</p><p>The module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to link the I/O module
+                                        driver blocks with each other</p></li><li class="listitem"><p>It also has an impact on the PCI slot auto-search feature:
+                                        if only one I/O module is installed, the module ID must be
+                                        set to 1. If multiple modules are installed, it must be in
+                                        the range 1:n. Not all the I/O modules installed in the
+                                        target machine need to be used</p></li></ul></div><p>The IO107 I/O module uses the same module identifiers as the IO108 I/O
+                            module. If your target machine contains both of these modules, assign
+                            different values to each of them.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Auto-Calibration at Download</span>
+                    </span></dt><dd><p>The auto-calibration is enabled by default to obtain maximum
+                            measurement accuracy. The auto-calibration function compensates for
+                            component aging, and minimizes the effects of temperature on accuracy.
+                            The calibration normally takes approximately two seconds, so we
+                            recommend increasing the host-target communication time-out in the model
+                            configuration parameters by the same amount of time. The calibration is
+                            not re-executed during normal start/stop operation once the target
+                            application has been downloaded.</p><p><span class="bold"><strong>Warning:</strong></span> During the calibration
+                            process various signals may be present at the output pins. These signals
+                            will not exceed the configured voltage range.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Remote Ground-Sensing</span>
+                    </span></dt><dd><p>Enable remote ground-sensing to compensate for a ground potential
+                            difference in single-ended mode between the ground connection at the
+                            load and the output return pin. "REM GND SENSE" must be connected to the
+                            remote system ground.</p></dd><dt><span class="term">
+                        <span class="guilabel">Synchronization Mode</span>
+                    </span></dt><dd><p>Set the working mode of the I/O module: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Select "Async (replay function)" to replay data to the
+                                        output without any external I/O module.</p></li><li class="listitem"><p>Select "Sync to IO107/IO108 (external DAC trigger source)"
+                                        to trigger this module using an external DAC signal provided
+                                        by another IO107/IO108 board. Connect "CLOCK I/O" to "DAC
+                                        CLK OUT".</p></li><li class="listitem"><p>Select "Sync to IO109 (external clock source)" to
+                                        synchronize the module with the IO109 I/O module analog
+                                        input (for example, for a Simulink Real-Time audio system
+                                        model). Connect "CLOCK I/O" to "EXT CLK OUT".</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">External Sync Signal Type</span>
+                    </span></dt><dd><p>Select either LVDS or TTL mode for the sync I/Os. In TTL mode, use
+                            only the (+) pins. In addition, the (-) pins should be grounded to
+                            digital return.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size, Sample Rate and Block Sample Time</span>
+                    </span></dt><dd><p>Parameter dependency is as follows: frame size = block sample time &times;
+                            sample rate. By defining two parameters, an equation will determine the
+                            third parameter automatically, provided the parameter value for the
+                            third parameter is set to -1.</p><p>For example: We select a frame size of 32 and a sample rate of
+                            44,100&nbsp;Hz and specify the block sample time as -1. The block sample
+                            time is automatically computed to be 725.6&nbsp;&micro;s. In other words, this
+                            model would execute every 725.6&nbsp;&micro;s, which is every 32 samples at
+                            44.1&nbsp;kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size</span>
+                    </span></dt><dd><p>The number of samples per frame. An interrupt occurs each time the I/O
+                            module acquires a frame. In Async (replay function) mode, the minimum
+                            frame size is 5. Refer to the "Frame Size, Sample Rate and Block Sample
+                            Time" section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Rate</span>
+                    </span></dt><dd><p>The frequency at which the samples are taken. This parameter is in
+                            Hertz, and must be between 172 and 450,000&nbsp;Hz (172&nbsp;Hz to
+                            450&nbsp;kHz). Refer to the "Frame Size, Sample Rate and Block Sample
+                            Time" section for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Block Sample Time</span>
+                    </span></dt><dd><p>The time between frame completions. Note: The block sample time can
+                            only be a multiple of 1/sample rate. Refer to the "Frame Size, Sample
+                            Rate and Block Sample Time" section for more information.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Output Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Active Channels</span>
+                    </span></dt><dd><p>Select the active output channels in a vector. The IO108 I/O module
+                            supports eight channels. The order inside the vector defines the input
+                            port order of the Analog output block.</p><p>Examples:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Change order: "[2 1 4 3]"</p></li><li class="listitem"><p>Simply use all the channels in ascending order:
+                                        "1:8"</p></li><li class="listitem"><p>Only use channels 2 and 3: "[2 3]"</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output Range</span>
+                    </span></dt><dd><p>The voltage range for all analog output channels. This driver does not
+                            allow different ranges for individual channels. The following voltage
+                            ranges are available: &plusmn;1.25&nbsp;V, &plusmn;2.5&nbsp;V, &plusmn;5&nbsp;V,
+                            &plusmn;10&nbsp;V</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial values</span>
+                    </span></dt><dd><p>This parameter is only available in Async mode.</p><p>Define the initial voltage level on the analog outputs after the model
+                            is downloaded and after the model is stopped. The voltages can be set
+                            individually by entering a vector which maps to the active channels'
+                            vector. A scalar value applies to all active channels.</p><p>Examples:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Use individual values: "[-1 -1.5 0 2.5]"</p></li><li class="listitem"><p>Set all channels to 0&nbsp;V: "0"</p></li></ul></div></dd></dl></div></div></div></body></html>

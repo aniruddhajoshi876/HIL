@@ -1,0 +1,41 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO907/IO908 - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_io907_read_interrupt_information.html" title="IO907/IO908 - Read Interrupt Information"><link rel="next" href="refentry_io907_write.html" title="IO907/IO908 - Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io907_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO907/IO908 - Read</h2><p>IO907/IO908 - Read &#8212; <span class="phrase">Reads the shared
+                memory</span></p></div><div class="refsect1"><a name="d5e1544"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io907_read.png"></span></span></p></div><div class="refsect1"><a name="d5e1552"></a><h2>Description</h2><p>Before you begin to configure this block, ensure that you have a predefined shared
+                memory partition structure (refer to the <a href="refentry_io907_usage_notes.html" class="olink">Usage Notes</a>). The Read block
+                requires this structure in order to define how Simulink signal values are mapped in
+                the shared memory. It also uses this structure to determine the total size and
+                address of the shared memory.</p></div><div class="refsect1"><a name="d5e1556"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the data read from the module according to the partition
+                            structure.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Board status byte with the following bits:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Own Data &#8212; The return of the data packet has been
+                                    detected. This indicates that the link is intact</p></li><li class="listitem"><p>1: Bad Data &#8212; Invalid data or data loss detected</p></li><li class="listitem"><p>2: Rx Signal Detect &#8212; Light is detected on the
+                                    receiver</p></li><li class="listitem"><p>3: Latched Sync Loss &#8212; Loss of a valid signal
+                                    detected</p></li><li class="listitem"><p>4: Latched Rx FIFO Almost Full &#8212; Rx FIFO is operating
+                                    at the maximum acceptable rate</p></li><li class="listitem"><p>5: Latched Rx FIFO Full &#8212; Rx FIFO is full. Indicates a
+                                    fault condition due to a board malfunction</p></li><li class="listitem"><p>6: Tx FIFO Almost Full &#8212; Indicates that the Tx FIFO is
+                                    almost full</p></li><li class="listitem"><p>7: Tx FIFO Empty &#8212; Indicates that the Tx FIFO is
+                                    empty</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e1587"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module Type</span>
+                    </span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Partition Struct </span>
+                    </span></dt><dd><p>Enter the name of the predefined shared memory partition structure.
+                            The block uses this structure to specify how Simulink signal values map
+                            into shared memory.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operating Mode </span>
+                    </span></dt><dd><p>When <span class="bold"><strong>Operating Mode</strong></span> is defined as
+                            target, the driver block will read the x86 RAM. Use this option in
+                            conjunction with the Request DMA transfer driver block. When <span class="bold"><strong>Operating mode</strong></span> is defined as initiator, the
+                            driver block will initiate data transfer from the module to Simulink and
+                            then read the data.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Board Status Port </span>
+                    </span></dt><dd><p>Select this checkbox to monitor the board status.</p></dd></dl></div></div></div></body></html>

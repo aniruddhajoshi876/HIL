@@ -1,0 +1,46 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Crank Decoder Event v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_crank_decoder_v1.html" title="Cam and Crank - Crank Decoder v1"><link rel="next" href="refentry_cam_and_crank_cam_decoder_v1.html" title="Cam and Crank - Cam Decoder v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_crank_decoder_event_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Crank Decoder Event v1</h2><p>Cam and Crank - Crank Decoder Event v1 &#8212; <span class="phrase">The crank
+                    decoder event generates a pulse signal depending on the crank decoder
+                    signal.</span></p></div><div class="refsect1"><a name="d5e12443"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_crank_decoder_event_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e12452"></a><h2>Description</h2><p>The crank decoder event generates a pulse signal depending on the crank decoder
+                signal.</p></div><div class="refsect1"><a name="d5e12455"></a><h2>Ports</h2><p>This driver block has no ports:</p></div><div class="refsect1"><a name="d5e12458"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Crank Decoder Event </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Event pulse position vector (deg) </span>
+                    </span></dt><dd><p>This parameter specifies the event pulse position between 0&deg; and 720&deg;.
+                            The units are in degrees (&deg;). This angle has to coincide with a crank
+                            tooth start angle. e.g., for a crank profile with 18 teeth and 2 missing
+                            teeth, possible event pulse position angles are multiples of 360/18 = 20
+                            degrees.</p></dd><dt><span class="term">
+                        <span class="guilabel">Event pulse duration vector (s) </span>
+                    </span></dt><dd><p>This parameter defines the duration of the event pulse duration in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Crank master vector (read only) </span>
+                    </span></dt><dd><p>The corresponding crank decoder master. This parameter is read-only,
+                            and therefor only for information purpose. The crank decoder master is
+                            predefined during the pin layout.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of teeth vector (read only) </span>
+                    </span></dt><dd><p>This parameter defines the number of teeth defined in the crank
+                            decoder master. This parameter is read-only, and therefor only for
+                            information purpose. The number of teeth vector is defined in the crank
+                            decoder mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of missing tooth/teeth vector (read only) </span>
+                    </span></dt><dd><p>This parameter defines the number of missing tooth/teeth defined in
+                            the crank decoder master. This parameter is read-only, and therefor only
+                            for information purpose. The number of missing tooth/teeth vector is
+                            defined in the crank decoder mask.</p></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds will be rounded to the FPGA resolution. For
+                    instance, if FPGA base clock is equal to 75[MHz], then the resolution is
+                    13.33[ns].</p></td></tr></table></div></div></div></body></html>

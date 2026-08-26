@@ -1,0 +1,59 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO612 - CAN Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io612_setup.html" title="IO612 - Setup"><link rel="next" href="refentry_io612_can_read.html" title="IO612 - CAN Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io612_can_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO612 - CAN Write</h2><p>IO612 - CAN Write &#8212; <span class="phrase">Send CAN message to the IO612
+                    output buffer</span></p></div><div class="refsect1"><a name="d5e13957"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io612_can_write.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_can_write"></a><h2>Description</h2><p>Each execution of a "CAN Write" block represents a CAN message being sent to the
+                IO61X output buffer. Multiple instances of the block can be used to send messages at
+                multiple rates.</p><p>The write buffer has the following size:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>Module</th><th>Write Buffer Size</th></tr></thead><tbody><tr><td>IO610</td><td>96 messages</td></tr><tr><td>IO611</td><td>96 messages</td></tr><tr><td>IO612</td><td>101 messages</td></tr><tr><td>IO613</td><td>96 messages</td></tr><tr><td>IO614</td><td>101 messages</td></tr></tbody></table></div><p>Depending on the selected baud rate and the "CAN Write" block sample times, it is
+                important to not let the output buffer overflow. You can use the block status output
+                port to verify this.</p></div><div lang="" class="refsect1"><a name="refsect_ports_can_write"></a><h2>Ports</h2><p>Which inputs are available depends on the "Message type" mask setting: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN: Only CAN message output is available</p></li><li class="listitem"><p>RAW: Data, Identifier, Length, Identifier Type and Timestamp outputs
+                            are available</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The complete CAN message. Please use the "CAN Pack" block to create
+                            this message.</p><p><span class="bold"><strong>Data Types:
+                                </strong></span><code class="literal">CAN_MESSAGE</code></p></dd><dt><span class="term">
+                        <span class="guilabel">ID</span>
+                    </span></dt><dd><p>The CAN message identifier.</p><p><span class="bold"><strong>Data Types:
+                            </strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">EFF</span>
+                    </span></dt><dd><p>The identifier type (Extended Frame Format) of the CAN message. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: 11-bit identifier</p></li><li class="listitem"><p>1: 29-bit extended identifier</p></li></ul></div><p><span class="bold"><strong>Data Types:
+                            </strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">DLC</span>
+                    </span></dt><dd><p>The length of the payload data (Data).</p><p><span class="bold"><strong>Data Types:
+                            </strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The payload data of the CAN message is 8 bytes.</p><p><span class="bold"><strong>Data Types:
+                                </strong></span><code class="literal">uint8(8)</code></p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The Data input ports always expect 8 bytes. When less than 8 bytes
+                                need to be transmitted, the user must pad the input with zeros for
+                                the unused bytes; and set the DLC to the required number of bytes to
+                                transmit.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Indicates if the message supplied to the input ports has been
+                            successfully placed in the module's tx queue. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The message was not successfully written to the send
+                                        buffer.</p></li><li class="listitem"><p>1: The message was successfully written to the send
+                                        buffer.</p></li></ul></div><p> This port can be enabled or disabled from the "Show
+                            status output port" in the dialog box for this driver block.</p><p><span class="bold"><strong>Data Types:
+                            </strong></span><code class="literal">uint32</code></p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_can_write"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Specifies the ID of the IO61X module this driver block should be
+                            connected to. It must correspond to the module ID of the according setup
+                            block. Check the setup block help for more details.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. It can also be set to -1 for inherited sample time. The
+                            units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Send Message with Channel</span>
+                    </span></dt><dd><p>Choose the CAN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type</span>
+                    </span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN: Use "CAN Pack" block to define the CAN
+                                        message.</p></li><li class="listitem"><p>RAW: Manual definition of the CAN message without the "CAN
+                                        Pack" block. Please see the CAN specification for the
+                                        correct input values for the Identifier, Identifier Type,
+                                        Length and Data.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Input as bus</span>
+                    </span></dt><dd><p>Select this option for the block if the input CAN messages is a bus
+                            signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Status Output Port</span>
+                    </span></dt><dd><p>Adds the "Status" output port.</p></dd></dl></div></div></div></body></html>

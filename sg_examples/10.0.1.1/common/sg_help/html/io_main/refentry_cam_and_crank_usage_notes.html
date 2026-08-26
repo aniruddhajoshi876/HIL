@@ -1,0 +1,26 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_cam_and_crank_examples.html" title="IO3xx Cam and Crank - Examples"><link rel="next" href="refentry_cam_and_crank_crank_encoder_v1.html" title="Cam and Crank - Crank Encoder v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank Usage Notes</h2><p>Cam and Crank Usage Notes &#8212; <span class="phrase">Usage information
+                    about the I/O module</span></p></div><div class="refsect1"><a name="refsect_cam_crank_camshaft_signals"></a><h2>Example of crank- and camshaft signals </h2><p>
+                <span class="bold"><strong>Important:</strong></span> Crankshaft teeth per revolution includes
+                all teeth, also the missing tooth/teeth.</p><p>Assuming a crank and a camshaft with the following parameters:</p><p>
+                <span class="bold"><strong>Crankshaft</strong></span>
+            </p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Crankshaft teeth per revolution (incl. missing): 6</p></li><li class="listitem"><p>Missing crankshaft tooth/teeth per revolution: 1</p></li><li class="listitem"><p>Duty Cycle: 50%</p></li></ul></div><p>
+            </p><p>
+                <span class="bold"><strong>Camshaft (only one tooth configured) </strong></span></p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Cam tooth start: 120&deg;</p></li><li class="listitem"><p>Cam tooth length: 180&deg;</p></li></ul></div><p>
+            </p><p>Depending on the parameter missing tooth signal you get an output signal where the
+                even segments are high (and the missing tooth low) or the odd segments are high (and
+                the missing tooth are also high). The segment size theta is 180&deg; divided by
+                crankshaft teeth per revolution, therefore 30&deg; in this case. This is only true for a
+                duty cycle of 50%. For other duty cycles, the segment sizes of high and low
+                segments differ accordingly. Usually various camshafts are connected to one master
+                crankshaft.</p><p><span class="inlinemediaobject"><img src="./graphics/cam_crank_signals.png" width="594"></span>
+            </p><p>
+                <span class="inlinemediaobject"><img src="./graphics/cam_crank_signals_inverted.png" width="594"></span>
+            </p></div><div class="refsect1"><a name="refsect_cam_crank_camshaft_encoder"></a><h2>Example of crank- and camshaft encoder signals </h2><p><span class="inlinemediaobject"><img src="././graphics/crank_cam_scope.png"></span>
+            </p><p>The oscilloscope figure shows the output of a crank encoder (blue) configured with
+                18 teeth and two missing teeth. The second channel (red) is the output of a cam
+                encoder with a cam tooth start every 72&deg; and an increasing cam tooth length from
+                5&deg;-50&deg;. The corresponding Simulink model is shown below.</p><p><span class="inlinemediaobject"><img src="././graphics/crank_cam_model.png" width="432"></span></p></div></div></body></html>

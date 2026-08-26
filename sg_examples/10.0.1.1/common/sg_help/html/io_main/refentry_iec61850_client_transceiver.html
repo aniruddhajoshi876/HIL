@@ -1,0 +1,71 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IEC 61850 - Client Transceiver</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_iec61850_client_connection.html" title="IEC 61850 - Client Connection"><link rel="next" href="refentry_ref_iec61850_goose.html" title="IEC 61850 GOOSE"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_client_transceiver"></a><div class="titlepage"></div><div class="refnamediv"><h2>IEC 61850 - Client Transceiver</h2><p>IEC 61850 - Client Transceiver &#8212; <span class="phrase">Reads/writes data
+                    from and to the input and output port of the block</span></p></div><div class="refsect1"><a name="d5e7782"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_client_transceiver.png"></span></span></p></div><div class="refsect1"><a name="d5e7790"></a><h2>Description</h2><p>This block is used to send and receive data attribute values or to send direct
+                control commands for data objects to the remote MMS Server. Your model can contain
+                multiple IEC 61850 Client Transceiver blocks for each MMS Connection in your target
+                machine. To be able to select data attributes, a .cid file must be imported into the
+                Transceiver from the remote intelligent electronic device (IED).</p></div><div class="refsect1"><a name="d5e7793"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Attribute</span>
+                    </span></dt><dd><p>For each data attribute selected, an input port is created and will
+                            generate write requests to the MMS server.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operate Data Object</span>
+                    </span></dt><dd><p>The Operate port allows the user to manage the direct control command.
+                            This input is only active if the <span class="bold"><strong>Activate Control
+                                Mode</strong></span> checkbox is enabled and at least one data object is
+                            selected. Send a boolean value of 1 to operate or 0 to disable the
+                            transmission of operate commands.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Object</span>
+                    </span></dt><dd><p>A port is created for each data object selected for direct control.
+                            The port takes the value to be sent to the IED for operation. This input is
+                            only active if the <span class="bold"><strong>Activate Control
+                                Mode</strong></span> checkbox is enabled.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Attribute</span>
+                    </span></dt><dd><p>Each output port represents a data attribute and will send read
+                            requests to the MMS server. The data type of the output port is defined
+                            in the <span class="bold"><strong>Transceiver Port Data Type</strong></span>
+                            dropdown list in the block mask.</p><p>Use Byte Unpack blocks to convert to signed values or floating-point
+                            numbers. You can unpack a vector of type uint16 and length 4 to one
+                            double value.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7823"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client Station ID</span>
+                    </span></dt><dd><p>Apply the Client Station ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Polling Time</span>
+                    </span></dt><dd><p>The polling time is the time interval between sending MMS messages to
+                            the server. Must range between 0 and 360,000 ms, which corresponds to a
+                            maximum of 6 minutes. The default value is 50 ms.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Attribute Type</span>
+                    </span></dt><dd><p>This dropdown list defines the data attribute type. The supported data
+                            types are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Double</p></li><li class="listitem"><p>Single</p><p>The port will be a float.</p></li><li class="listitem"><p>Int8 / Uint8</p><p>The port will be a signed or unsigned byte.</p></li><li class="listitem"><p>Int16 / Uint16</p><p>The port will be two signed or unsigned bytes.</p></li><li class="listitem"><p>Int32 / Uint32</p><p>The port will be four signed or unsigned bytes.</p></li><li class="listitem"><p>Boolean</p></li><li class="listitem"><p>ASCII or Unicode String</p><p>The port will be an array of uint8, max. 255 bytes.
+				</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Activate Control Mode</span>
+                    </span></dt><dd><p>Set the Transceiver block to control mode.</p><p>Refer to the <a href="refentry_iec61850_client_usage_notes.html" class="olink">IEC 61850 usage
+                                notes</a> for further information about the control
+                            mode.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e7879"></a><h2>Choose SCL-File</h2><p>There are two ways to load a data model into the block mask:</p><p>
+                <span class="bold"><strong><span class="guilabel">...from Host PC</span></strong></span>
+            </p><p><span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/iec61850_file_selector_host.png"></span>
+                </span></p><p>Search for the .cid file on your host PC that you would like to load into the Data
+                Model Navigator by pressing the button on the right hand side. After the path has
+                been inserted into the edit field, press the button below <span class="bold"><strong>Load
+                    from Host PC</strong></span>.</p><p>
+                <span class="bold"><strong><span class="guilabel">...from Target</span></strong></span>
+            </p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/iec61850_file_selector_target.png"></span>
+                </span>
+            </p><p>When a runtime application with IEC 61850 Client blocks starts, the
+                Connection blocks locally store the data model of each remote IED/Server on the
+                target machine. This facilitates reloading the data model later, even if no remote
+                device is connected to the target machine. Before clicking <span class="bold"><strong>Load from Target</strong></span>, ensure that the Station ID and the ConnectionID
+                above are set correctly.</p><p><span class="bold"><strong>Request Data from IED</strong></span> will create a connection to
+                a previously configured remote IED/Server and sends a single request to get its data
+                model. Once again, ensure that the Station ID and the Connection ID are set
+                correctly.</p></div></div></body></html>

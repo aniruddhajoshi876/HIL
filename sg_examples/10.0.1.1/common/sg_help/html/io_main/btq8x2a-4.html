@@ -1,0 +1,112 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Curtiss-Wright Shared Partition Structure</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="prev" href="btq8x2a-2.html" title="Initialize Curtiss-Wright Shared Nodes"><link rel="next" href="btq8x2a-6.html" title="Curtiss-Wright Shared Node Initialization Structure"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="btq8x2a-4"></a>Curtiss-Wright Shared Partition Structure</h2></div></div></div><p>A shared memory partition structure has the following fields. You do not need to use
+            all the fields of a partition or node
+            initialization structure. However, knowing the possible structure fields is helpful when
+            you are setting up to use shared memory.</p><pre class="programlisting">        Address: '0x0'
+           Type: 'uint32'
+           Size: '1'
+      Alignment: '4'
+            RIE: 'off'
+            TIE: 'off'
+    ExtTrigger1: 'off'
+    ExtTrigger2: 'off'
+          HIPRO: 'off'
+       Internal: [1x1 struct]</pre><p>where</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="21%" class="col1"><col width="79%" class="col2"></colgroup><thead><tr><th><p>Partition Fields</p></th><th><p>Description</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">Address</span></p></td><td><p>Specifies the base address (in hexadecimal) of the memory
+                                partition within the node shared memory space. The default value is
+                                    <code class="literal">'0x0'</code>, the first location in shared memory.
+                                The base address is byte aligned.</p></td></tr><tr><td><p><span class="guilabel">Type</span></p></td><td><p>Specifies the data type of the memory segment. Specify one of
+                                the following types:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">double</code></p></li><li class="listitem"><p><code class="literal">float</code></p></li><li class="listitem"><p><code class="literal">uint8</code></p></li><li class="listitem"><p><code class="literal">int8</code></p></li><li class="listitem"><p><code class="literal">uint16</code></p></li><li class="listitem"><p><code class="literal">int16</code></p></li><li class="listitem"><p><code class="literal">uint32</code></p></li><li class="listitem"><p><code class="literal">int32</code></p></li><li class="listitem"><p><code class="literal">boolean</code> (a single byte represents a
+                                        boolean value)</p></li></ul></div><p>The minimum partition size is 32
+                                bits.</p><p>The default value is
+                                <code class="literal">'uint32'</code>.</p></td></tr><tr><td><p><span class="guilabel">Size</span></p></td><td><p>Specifies the dimension and size of the memory segment. You can
+                                enter a scalar value or a value with the <code class="literal">[m,n]</code>
+                                format. The default value is <code class="literal">'1'</code>.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>scalar &#8212; Treats the <code class="literal">Size</code> entry
+                                        as the specification of the length of a non-oriented array
+                                        or vector</p></li><li class="listitem"><p><code class="literal">[m,n]</code> &#8212; Treats the
+                                            <code class="literal">Size</code> entry as an array dimension. The
+                                        total number of elements in this segment is
+                                            <code class="literal">m*n</code>.</p></li></ul></div></td></tr><tr><td><p><span class="guilabel">Alignment</span></p></td><td><p>Specifies the byte alignment of the next partition (if one is
+                                defined). Enter alignment value in bytes: <code class="literal">1</code>,
+                                    <code class="literal">2</code>, <code class="literal">3</code>,
+                                <code class="literal">4</code>. The alignment value defines the end of the
+                                current segment, and therefore the beginning alignment of the next
+                                segment. The default value is <code class="literal">'4'</code>, forcing a
+                                double word boundary alignment. See <a href="btq8x2a-4.html#btq8x2a-5" class="olink">Alignment
+                                    Examples</a>.</p></td></tr><tr><td><p><span class="guilabel">RIE</span></p></td><td><p>Specifies whether this partition can receive interrupts
+                                (Receive Interrupt Register (RIE)). Specify one of:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">'off'</code> (default) &#8212; Prevents the
+                                        partition from receiving interrupts.</p></li><li class="listitem"><p><code class="literal">'first'</code> &#8212; Allows only the first
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'all'</code>
+                                        &#8212; Allows all
+                                        memory locations of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'last'</code> &#8212; Allows only the last
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li></ul></div></td></tr><tr><td><p><span class="guilabel">TIE</span></p></td><td><p>Specifies whether this partition can transmit interrupts
+                                (Transmit Enable (TIE)). Specify one of:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">'off'</code> (default) &#8212; Prevents the
+                                        partition from transmitting interrupts.</p></li><li class="listitem"><p><code class="literal">'first'</code> &#8212; Allows only the first
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'all'</code>
+                                        &#8212; Allows all
+                                        memory locations of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'last'</code> &#8212; Allows only the last
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li></ul></div></td></tr><tr><td><p><span class="guilabel">ExtTrigger1</span></p></td><td><p>If this partition receives a write access, specifies whether
+                                this partition can generate a trigger signal to an external
+                                connector. Specify one of:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">'off'</code> (default) &#8212; Prevents the
+                                        partition from generating signals.</p></li><li class="listitem"><p><code class="literal">'first'</code> &#8212; Allows only the first
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'all'</code>
+                                        &#8212; Allows all
+                                        memory locations of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li><li class="listitem"><p><code class="literal">'last'</code> &#8212; Allows only the last
+                                        double word of the memory segment to be marked with the
+                                        corresponding Auxiliary Control RAM bit.</p></li></ul></div></td></tr><tr><td><p><span class="guilabel">ExtTrigger2</span></p></td><td><p>If this partition receives a write access, specifies whether
+                                this partition can generate a trigger signal to an external
+                                connector. Specify one of:</p><p><code class="literal">'off'</code>
+                                (default) &#8212; Prevents the partition from generating
+                                signals.</p><p><code class="literal">'first'</code> &#8212; Allows only
+                                the first double word of the memory segment to be marked with the
+                                corresponding Auxiliary Control RAM
+                                    bit.</p><p><code class="literal">'all'</code>
+                                &#8212; Allows all memory
+                                locations of the memory segment to be marked with the corresponding
+                                Auxiliary Control RAM bit.</p><p><code class="literal">'last'</code>
+                                &#8212; Allows only the last double word of the memory segment to
+                                be marked with the corresponding Auxiliary Control RAM
+                            bit.</p></td></tr><tr><td><p><span class="guilabel">HIPRO</span></p></td><td><p>Specifies whether the elements in this partition can be
+                                transmitted as one network message. Specify one
+                                    of:</p><p><code class="literal">'off'</code> (default) &#8212;
+                                Prevents the partition from transmitting the elements as one
+                                message</p><p><code class="literal">'on'</code> &#8212; Allows the
+                                partition to transmit the elements as one message</p></td></tr><tr><td><p><span class="guilabel">Internal</span></p></td><td><p>Reserved for internal use.</p></td></tr></tbody></table></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-5"></a>Alignment Examples</h3></div></div></div><p>This example shows the shared memory map with default alignment values.</p><pre class="programlisting">Partition1(1).Type='int32';
+Partition1(1).Size='1';
+
+Partition1(2).Type='boolean';
+Partition1(2).Size='1';
+
+Partition1(3).Type='uint32';
+Partition1(3).Size='1';
+Partition1 = completepartitionstruct(Partition1,'scramnet');</pre><div class="informalfigure"><div class="mediaobject"><img src="./graphics/partition1.png"></div></div><p>This example shows the shared memory map with alignment value changed from 4 to 1
+                in the second partition.</p><pre class="programlisting">Partition1(1).Type='int32';
+Partition1(1).Size='1';
+Partition1(1).Alignment='4';
+
+Partition1(2).Type='boolean';
+Partition1(2).Size='1';
+Partition1(2).Alignment='1';
+
+Partition1(3).Type='uint32';
+Partition1(3).Size='1';
+Partition1 = completepartitionstruct(Partition1,'scramnet');</pre><div class="informalfigure"><div class="mediaobject"><img src="./graphics/partition2.png"></div></div><p>This example shows the shared memory map with alignment value changed from 4 to 2
+                in the second partition.</p><pre class="programlisting">Partition1(1).Type='int32';
+Partition1(1).Size='1';
+Partition1(1).Alignment='4';
+
+Partition1(2).Type='boolean';
+Partition1(2).Size='1';
+Partition1(2).Alignment='2';
+
+Partition1(3).Type='uint32';
+Partition1(3).Size='1';
+Partition1 = completepartitionstruct(Partition1,'scramnet');</pre><div class="informalfigure"><div class="mediaobject"><img src="./graphics/partition3.png"></div></div></div></div></body></html>

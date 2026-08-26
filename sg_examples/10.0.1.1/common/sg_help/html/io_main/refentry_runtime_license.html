@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Speedgoat Tools</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_speedgoat_api.html" title="Speedgoat Tools"><link rel="next" href="refentry_can_package.html" title="Speedgoat Tools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_runtime_license"></a><div class="titlepage"></div><div class="refnamediv"><h2>Speedgoat Tools</h2><p>Speedgoat Tools &#8212; 
+                <span class="phrase">Runtime Licensing</span>
+            </p></div><div class="refsect1"><a name="refsect1_runtime_license"></a><h2>Runtime Licensing</h2><p>Some I/O modules and protocols require a runtime license on the target
+                machine.</p><p>During model startup, the corresponding driver blocks search the machine&#8217;s file
+                system for a license file. The I/O modules or protocols used in the Simulink model
+                must be listed in that file. Furthermore, the number of licenses for each I/O module
+                or protocol must match the number of I/O module (DUTs) or protocol nodes (clients,
+                servers, etc.) in the model. If the license file does not exist or the licenses do
+                not match the I/O modules or protocols, and the number of nodes used in the model,
+                an error is posted in the machine&#8217;s system log.</p><p>There is only one license file per machine that contains all the licenses
+                purchased. The name of this license file and the content of the file itself must
+                include the machine&#8217;s serial number.</p><p>For new machines, the license file is preinstalled. If you obtain a specific
+                license for an existing machine at a later point, you can install the license file
+                yourself. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>To purchase runtime licenses, please contact <a class="link" href="mailto:sales@speedgoat.ch" target="_blank"> Speedgoat
+                        Sales</a>.</p></td></tr></table></div><p>Download your license file from the customer portal. In the downloads section:
+                navigate to the respective real-time target machine and click <span class="bold"><strong>Runtime License File</strong></span>. The file is located either in the System
+                section or the respective I/O module and protocol sections.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/rtl_customer_portal.png" width="1200"></span>
+            </p><p>In MATLAB, navigate to the folder where you saved the file. Extract the file if it
+                is a .zip. The license filename has the format sgXXXX.lic and contains the serial
+                number of the corresponding machine (sg7074.lic, for example). You can check whether
+                the file does indeed belong to your machine by reading the machine&#8217;s serial number:
+                </p><pre class="programlisting">&gt;&gt; licObj = speedgoat.License;
+&gt;&gt; licObj.getSerialNumber
+ans =
+    '7074'</pre><p>Enter the following in the MATLAB command window to transfer the runtime license
+                file to the target machine:
+                </p><pre class="programlisting">&gt;&gt; licObj.update('FileName', 'sg7074.lic');
+sg7074.lic has been successfully updated on your target machine</pre><p>
+            </p><p>Run a model on the target that uses the corresponding I/O module or protocol
+                driver blocks and check the system log for error messages.</p><p>Refer to the <a href="refentry_sgapi_license.html" class="olink">speedgoat.License</a> API to learn more
+                about handling Speedgoat runtime license files in MATLAB.</p></div></div></body></html>

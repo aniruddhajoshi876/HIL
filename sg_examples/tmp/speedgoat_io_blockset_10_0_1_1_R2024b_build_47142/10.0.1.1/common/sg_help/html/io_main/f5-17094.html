@@ -1,0 +1,69 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN FIFO Read Filter</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f4-6069.html" title="Chapter&nbsp;4.&nbsp;CAN I/O FIFO Blocks No Longer Recommended for Use"><link rel="prev" href="f5-17055.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read"><link rel="next" href="f5-17125.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read XMT Level"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f5-17094"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN FIFO Read Filter<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read-Filter"></a></h2><p>Softing CAN FIFO Read Filter<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read-Filter"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg; CAN
+                FIFO Read Filter block (architecture independent, not recommended)<b>CANFIFOBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e1807"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="f5-18029"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f5-17108"></a><h2>Description</h2><p>The <code class="literal">FIFO Read Filter</code> block is a utility block for the CAN FIFO
+                driver block set. It is used to filter events out of the signal leaving the
+                    <code class="literal">FIFO Read</code> driver block (also known as the event matrix). It
+                is connected to the first output port of the <code class="literal">FIFO Read</code> driver
+                block. Because the <code class="literal">FIFO Read Filter</code> block does not actually
+                access the CAN board or other device, it is independent of the bus architecture of
+                the board.</p><p>The block code walks through the rows of the incoming event matrix signal and
+                looks for events matching the criteria defined in the block parameters. If an event
+                matches, the entire event information (row) is written to the first output port. If
+                more than one row matches the criteria, the later event overwrites the earlier
+                event.</p><p>The block has one input port and two output ports,
+                all of type <code class="literal">double</code>. The
+                input port accepts a matrix signal of size <code class="literal">m*6</code>. The first output
+                port, a row vector of size <code class="literal">1*6</code>, outputs the filtered event. The
+                second, a scalar, outputs the number of matching events the filter block has
+                processed.</p></div><div class="refsect1"><a name="f5-15769"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>CAN port</strong></span></span></dt><dd><p>Defines the filter criterion for the CAN port. From the list, select
+                                <code class="literal">Any</code>,
+                                <code class="literal">1</code>, or <code class="literal">2</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Message type command</strong></span></span></dt><dd><p>Defines the filter criterion for the event types. This entry consists
+                            of a concatenation of space-delimited keywords:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="20%" class="col1"><col width="80%" class="col2"></colgroup><thead><tr><th valign="top">Keyword</th><th valign="top">Description</th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">SDF</code></p>
+                                        </td><td>
+                                            <p>Standard data frame.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">SRF</code></p>
+                                        </td><td>
+                                            <p>Standard remote frame.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">EDF</code></p>
+                                        </td><td>
+                                            <p>Extended data frame.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">ERF</code></p>
+                                        </td><td>
+                                            <p>Extended remote frame.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">EF</code></p>
+                                        </td><td>
+                                            <p>Error frame.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">NE</code></p>
+                                        </td><td>
+                                            <p>No new
+                                                event.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">CBS</code></p>
+                                        </td><td>
+                                            <p>Change of bus state.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Message type selection mode</strong></span></span></dt><dd><p>Defines how the event type (message type) listed in <span class="bold"><strong>Message type command</strong></span> parameter is treated. If
+                            you select <code class="literal">Include</code>, the event type criterion is the
+                            sum of the concatenated keywords. If you select
+                                <code class="literal">Exclude</code>, the event type criterion is equal to
+                            all event types minus the sum of
+                            the concatenated keywords.</p></dd><dt><span class="term"><span class="bold"><strong>Identifier(s)</strong></span></span></dt><dd><p>Defines the filter criterion for the CAN message identifiers. A set of
+                            identifiers can be provided as a row vector.</p></dd><dt><span class="term"><span class="bold"><strong>Identifier selection mode</strong></span></span></dt><dd><p>Defines how the identifier criterion entered in the <span class="bold"><strong>Identifier(s)</strong></span> parameter is treated. If you
+                            select <code class="literal">Include</code>, the identifier criterion is the sum
+                            of all specified identifiers. If
+                            you select <code class="literal">Exclude</code>, the identifier criterion is equal
+                            to all identifiers minus the
+                            specified identifiers.</p></dd></dl></div><p>You can use as many instances of this block in your model as required. Usually,
+                you connect several instances in parallel to the output of the <code class="literal">FIFO
+                    Read</code> driver block to filter out particular messages or events.</p></div><div class="refsect1"><a name="d5e1923"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></li><li class="listitem"><p><a class="link" href="https://company.softing.com" target="_top">https://www.company.softing.com</a></p></li></ul></div></div></div></body></html>

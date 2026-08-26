@@ -1,0 +1,43 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor Q104-1553 Initialize</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs77ehg.html" title="Condor Q104-1553 Bus Monitor"><link rel="next" href="bs77eph.html" title="Condor Q104-1553 RT Initialize"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bs77ell"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor Q104-1553 Initialize<a name="Condor_Q104-1553_Initialize"></a></h2><p>Condor Q104-1553 Initialize<a name="Condor_Q104-1553_Initialize"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg;
+                Q104-1553 Initialize block (not recommended)<b>MilStd1553Blocks</b><b>CondorEngineering</b></p></div><div class="refsect1"><a name="d5e4766"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="bs77d2h-1.html" class="olink">Condor&reg;
+                            Q104-1553</a></p></li></ul></div></div><div class="refsect1"><a name="bs77ea8-14"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bs77ea8-15"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel</strong></span></span></dt><dd><p>From the list of available channels on the board, choose <code class="literal">1</code>,
+                <code class="literal">2</code>, <code class="literal">3</code>, or <code class="literal">4</code>. This channel is
+            initialized for this command stream.</p></dd><dt><span class="term"><span class="bold"><strong>Initialize for Bus Controller operation</strong></span></span></dt><dd><p>Select this check box to perform Bus Controller initialization for this channel.
+            Selecting this check box enables the parameters <span class="bold"><strong>Number of Bus
+                Controller buffers to allocate</strong></span>, <span class="bold"><strong>Enable
+                retries</strong></span>, <span class="bold"><strong>No
+                response timeout (microseconds)</strong></span>, and <span class="bold"><strong>Late response
+                timeout (microseconds)</strong></span>.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Number of Bus Controller buffers to
+                    allocate</strong></span></span></dt><dd><p>Enter the number of buffers to allocate in onboard memory on the board.
+                        This number must be greater than or equal to the longest series of command
+                        buffers that the board is given to process.</p></dd><dt><span class="term"><span class="bold"><strong>Enable retries</strong></span></span></dt><dd><p>Select this check box to enable automatic retries when a message times out
+                        or has an error.</p></dd><dt><span class="term"><span class="bold"><strong>No response timeout
+                        (microseconds)</strong></span></span></dt><dd><p>Enter the number of microseconds the board is to wait for a response from
+                        the Remote Terminal. If the response from the Remote Terminal takes longer
+                        than this timeout value, the board sets the NORESPONSE error condition in
+                        the status returned from the command.</p></dd><dt><span class="term"><span class="bold"><strong>Late response timeout (microseconds)</strong></span></span></dt><dd><p>Enter the number of microseconds the board is to wait for a response from
+                        the Remote Terminal. If the response from the Remote Terminal takes longer
+                        than this timeout value, the board sets the LATERESPONSE error condition in
+                        the status returned from the command.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Initialize for Bus Monitor operation</strong></span></span></dt><dd><p>Select this check box to initialize this channel for Bus Monitor operation. Selecting
+            this check box enables the parameters <span class="bold"><strong>Monitor bus A</strong></span>,
+                <span class="bold"><strong>Monitor bus B</strong></span>, and <span class="bold"><strong>Number of
+                monitor buffers to allocate</strong></span>.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Monitor bus A</strong></span></span></dt><dd><p>Select this check box to monitor bus A. You can monitor either bus A, bus
+                        B, or both.</p></dd><dt><span class="term"><span class="bold"><strong>Monitor bus B</strong></span></span></dt><dd><p>Select this check box to monitor bus B. You can monitor either bus B, bus
+                        A, or both.</p></dd><dt><span class="term"><span class="bold"><strong>Number of monitor buffers to allocate</strong></span></span></dt><dd><p>Enter a number at least as large as the number of messages that you expect
+                        to see between calls to the Bus Monitor block. If more messages arrive than
+                        there are buffers, some messages are lost and not monitored.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Initialize for Remote Terminal operation</strong></span></span></dt><dd><p>Select this check box to prepare the board to operate as a Remote Terminal. If you
+            select this check box, add the RT Initialize block to the model to initialize the Remote
+            Terminal. Connect the RT Initialize block for the Remote Terminal to the
+                <code class="literal">S</code> output of this block.</p><p>Selecting this check box enables the parameter <span class="bold"><strong>RT address 31 is
+                Broadcast</strong></span>.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>RT address 31 is Broadcast</strong></span></span></dt><dd><p>Select this check box to enable the board to see messages to Remote
+                        Terminal 31 as broadcast messages.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>Base address</strong></span></span></dt><dd><p>Enter the base address of the board. This entry must correspond to the DIP switch
+            setting on the board. For example, if the DIP switch setting is 300 (hexadecimal), enter
+                <code class="literal">0x300</code>.</p></dd></dl></div></div></div></body></html>

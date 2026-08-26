@@ -1,0 +1,103 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO644 - Object</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io644_receive.html" title="IO644 - Receive"><link rel="next" href="refentry_io644_pdo.html" title="IO644 - PDO"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io644_object"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO644 - Object</h2><p>IO644 - Object &#8212; <span class="phrase">Adds an object to the module's
+                    object dictionary</span></p></div><div class="refsect1"><a name="d5e50030"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io644_object.png"></span></span></p></div><div class="refsect1"><a name="d5e50038"></a><h2>Description</h2><p>The Object block adds an object to the module's object dictionary. Such an object
+                can be </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>a stand-alone object holding a value</p></li><li class="listitem"><p>a parent object with sub-objects</p></li><li class="listitem"><p>a sub-object holding a value</p></li></ul></div><p> In addition to the base objects defined by the Setup and PDO blocks
+                (index range 0x1000 to 0x1FFF), the Object block is used for application-specific
+                objects. Depending on individual access rights, the remote CANopen master can read
+                and write these objects. Two protocols are defined for this purpose: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>SDO (service data object): The master sends explicit read/write
+                            requests addressing single&nbsp; (sub-)objects. The slave node responds
+                            by sending the actual value of the object. This type of data exchange
+                            has a low priority and is commonly used for reading and writing
+                            parameters.</p></li><li class="listitem"><p>PDO (process data objects): (Sub-)objects are mapped into data
+                            containers (PDO), which are configured for autonomous communication (no
+                            request-response required). All objects defined by Object blocks are
+                            mappable. Their PDOMapping attribute in the EDS file is always set to 1
+                            (true). CANopen nodes transmit PDOs cyclically or on specific events.
+                            This type of data exchange has a high priority and is commonly used for
+                            the transmission of real-time data. RxPDOs are sent from the master to
+                            the slave node. TxPDOs are sent from the slave to the master.</p></li></ul></div><p> Defining an object with the Object block implicitly activates SDO
+                access. For PDO transfer, PDO blocks must be added to the model.</p></div><div class="refsect1"><a name="d5e50053"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Data</span></span></dt><dd><p>Outputs the current value of the object. The port inherits the data
+                            type and dimensions from the <span class="bold"><strong>Init Value</strong></span>
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates a completed SDO write
+                            operation.</p><p><span class="bold"><strong>Data type: </strong></span><code class="literal">uint32
+                                scalar</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The value that should be written to the object. The port inherits the
+                            data type and the dimensions from the <span class="bold"><strong>Init
+                                Value</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block writes data to the object as long as this input port is
+                            TRUE.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This allows event-based writing of the value as well as
+                            immediate updates of the output ports.</p><p><span class="bold"><strong>Data type: </strong></span><code class="literal">boolean
+                                scalar</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e50089"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Object Name</span>
+                    </span></dt><dd><p>The name of the object or sub-object in the EDS file. The EDS
+                            attribute name is ParameterName. This parameter is not considered for
+                            the object dictionary during runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index</span>
+                    </span></dt><dd><p>The index of the object you want to add to the dictionary or the index
+                            of the parent object to which you want to add a sub-object. The index
+                            must be in the range 0x0001 to 0xFFFF.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Sub-Index</span>
+                    </span></dt><dd><p>If the block represents a parent or stand-alone object, the sub-index
+                            is 0.</p><p>For sub-objects, the parameter defines the index of the sub-object
+                            inside the parent object. You define the parent object with another
+                            Object block. The index must be in the range 1 to 255. Sub-indices must
+                            start at 1 and must be continuous. To define an object with three
+                            sub-objects, place four blocks in the model. One for the parent object
+                            with sub-index 0, and three blocks for the sub-objects with sub-index 1,
+                            2, 3.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Object Type</span>
+                    </span></dt><dd><p>The supported object types are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>VAR: The object is a stand-alone object or a sub-object
+                                        holding a value</p></li><li class="listitem"><p>ARRAY: The object is a parent object with sub-objects of
+                                        the same data type</p></li><li class="listitem"><p>RECORD: The object is a parent object with sub-objects of
+                                        different data types</p></li></ul></div><p> Only Objects with Sub-Index 0 can be of type ARRAY and
+                            RECORD. Types NULL and DOMAIN are not supported.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Type</span>
+                    </span></dt><dd><p>The data type of the value the object holds. The parameter is visible
+                            only if <span class="bold"><strong>Object Type</strong></span> is <span class="bold"><strong>VAR</strong></span>.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="CANopen data type"><col width="33%" class="Simulink data type"><col width="34%" class="Dimension"></colgroup><tbody><tr><td><span class="bold"><strong>CANopen Data
+                                            Type</strong></span></td><td><span class="bold"><strong>Simulink Data
+                                            Type</strong></span></td><td><span class="bold"><strong>Dimension</strong></span></td></tr><tr><td>BOOLEAN</td><td>boolean</td><td>scalar</td></tr><tr><td>USIGNED8</td><td>uint8</td><td>scalar</td></tr><tr><td>USIGNED16</td><td>uint16</td><td>scalar</td></tr><tr><td>USIGNED24*</td><td>uint32</td><td>scalar</td></tr><tr><td>USIGNED32</td><td>uint32</td><td>scalar</td></tr><tr><td>USIGNED40*</td><td>uint64</td><td>scalar</td></tr><tr><td>USIGNED48*</td><td>uint64</td><td>scalar</td></tr><tr><td>USIGNED56*</td><td>uint64</td><td>scalar</td></tr><tr><td>USIGNED64</td><td>uint64</td><td>scalar</td></tr><tr><td>INTEGER8</td><td>int8</td><td>scalar</td></tr><tr><td>INTEGER16</td><td>int16</td><td>scalar</td></tr><tr><td>INTEGER24*</td><td>int32</td><td>scalar</td></tr><tr><td>INTEGER32</td><td>int32</td><td>scalar</td></tr><tr><td>INTEGER40*</td><td>int64</td><td>scalar</td></tr><tr><td>INTEGER48*</td><td>int64</td><td>scalar</td></tr><tr><td>INTEGER56*</td><td>int64</td><td>scalar</td></tr><tr><td>INTEGER64</td><td>int64</td><td>scalar</td></tr><tr><td>REAL32</td><td>single</td><td>scalar</td></tr><tr><td>REAL64</td><td>double</td><td>scalar</td></tr><tr><td>VISIBLE_STRING</td><td>uint8</td><td>vector</td></tr><tr><td>OCTET_STRING</td><td>uint8</td><td>vector</td></tr><tr><td>UNICODE_STRING</td><td>uint16</td><td>vector</td></tr><tr><td>DOMAIN</td><td>uint8</td><td>vector</td></tr></tbody></table></div><p>* For CANopen data types whose byte length do not match any
+                            fundamental Simulink type, the next larger type is chosen, and the
+                            remaining bytes are padded with zeros. Types BOOLEAN and DOMAIN are not
+                            supported.</p></dd><dt><span class="term">
+                        <span class="guilabel">Access Rights</span>
+                    </span></dt><dd><p>Defines the rights of the remote master when accessing the object's
+                            value. The parameter is visible only if <span class="bold"><strong>Object
+                                Type</strong></span> is <span class="bold"><strong>VAR</strong></span>.</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="CANopen access type"><col width="84%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>CANopen Access
+                                            Type</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>rw</td><td>readable and writeable</td></tr><tr><td>rww</td><td>readable and writeable; mappable to RxPDOs*</td></tr><tr><td>rwr</td><td>readable and writeable; mappable to TxPDOs*</td></tr><tr><td>wo</td><td>writeable only</td></tr><tr><td>ro</td><td>readable only; value may change during
+                                            runtime</td></tr><tr><td>const</td><td>readable only; value will not change during
+                                            runtime</td></tr></tbody></table></div><p>By applying the CANopen standard less stringently, this parameter only
+                            impacts the SDO communication. For PDO, all objects are mappable to
+                            RxPDOs and TxPDOs.</p><p>* Description according to the CANopen standard. The IO644 handles rw,
+                            rww and rwr the same.</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The object's value right after the model starts. The block outputs the
+                            value in the first model step and holds it until it is overwritten by
+                            either the input port or the remote master. The parameter is visible
+                            only if <span class="bold"><strong>Object Type</strong></span> is <span class="bold"><strong>VAR</strong></span>.</p><p>The <span class="bold"><strong>Init Value</strong></span>'s data type must match
+                            the <span class="bold"><strong>Data Type</strong></span> parameter.
+                            Examples:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="CANopen data Type"><col width="84%" class="Init Value"></colgroup><tbody><tr><td><span class="bold"><strong>CANopen Data
+                                            Type</strong></span></td><td><span class="bold"><strong>Init Value</strong></span></td></tr><tr><td>INTEGER16</td><td>int16(45)</td></tr><tr><td>USIGNED24</td><td>uint32(0x00ABCDEF)</td></tr><tr><td>OCTET_STRING</td><td>uint8([0xAB, 0xCD, 0xEF, 0x01])</td></tr><tr><td>VISIBLE_STRING</td><td>uint8('Hello World')</td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Local Access</span>
+                    </span></dt><dd><p>This parameter defines the local operation on the object's value. You
+                            can read and write the value from Simulink. <span class="bold"><strong>Write
+                            </strong></span> enables the input ports. <span class="bold"><strong>Read
+                            </strong></span> enables the output ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> input port and the <span class="bold"><strong>Status</strong></span> output port. Otherwise, the ports are hidden.
+                        </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

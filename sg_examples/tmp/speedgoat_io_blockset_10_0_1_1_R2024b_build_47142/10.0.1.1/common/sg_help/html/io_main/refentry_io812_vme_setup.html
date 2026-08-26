@@ -1,0 +1,54 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO812 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_zmi4104.html" title="ZMI 4104"><link rel="up" href="book_zmi4104.html" title="ZMI 4104"><link rel="prev" href="book_zmi4104.html" title="ZMI 4104"><link rel="next" href="refentry_io812_syncpos_configuration.html" title="IO812 - Configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io812_vme_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO812 - Setup</h2><p>IO812 - Setup &#8212; 
+                <span class="phrase">Set up the ZMI4104 modules.</span>
+            </p></div><div class="refsect1"><a name="d5e9"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io812_vme_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e17"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input, Digital input and Digital output).</p></div><div class="refsect1"><a name="d5e21"></a><h2>Ports</h2><p>This driver block has two output ports, one port for each ZMI4104 module to
+                configure. Each output port must be connected to one IO812 Configuration block per
+                ZMI4104 module.</p><div class="variablelist"><div class="variablelist-title">Output Ports</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">ZMI4104 (1) and ZMI4104 (2)</span>
+                    </span></dt><dd><p>ZMI4104 (1) for ZMI Card 1, ZMI4104 (2) for ZMI Card 2</p></dd></dl></div></div><div class="refsect1"><a name="d5e31"></a><h2>Parameters</h2><p>The three tabs of the setup parameter dialog box contain the IO812 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">PCI adapter card Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of ZMI4104C</span>
+                    </span></dt><dd><p>Choose up to 2 ZMI Cards per one IO812 module.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">ZMI4104C card 1 Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">ZMI4104C identifier</span>
+                    </span></dt><dd><p>This identifier defines the ZMI card identity and is pre-configured
+                            with 1 for ZMI card one and 2 for ZMI card two. In this case, the value
+                            is 1.</p></dd><dt><span class="term">
+                        <span class="guilabel">VME Address</span>
+                    </span></dt><dd><p>(A23-A20: SW1)</p><p>The VME address is equal to the position of the physical SW1 switch on
+                            each ZMI4104C card. Further information on how to configure this card is
+                            available in the corresponding Zygo User&#8217;s Manual.</p><p>The default setting of SW1 is 0 for card one.</p></dd><dt><span class="term">
+                        <span class="guilabel">VME Address</span>
+                    </span></dt><dd><p>(A19-A16: SW2)</p><p>The VME address is equal to the position of the physical SW2 switch on
+                            each ZMI4104C card. Further information on how to configure this card is
+                            available in the corresponding Zygo User&#8217;s Manual.</p><p>The default setting of SW2 is 0 for card one.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">ZMI4104C card 2 Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">ZMI4104C identifier</span>
+                    </span></dt><dd><p>This identifier defines the ZMI card identity and is pre-configured
+                            with 1 for ZMI card one and 2 for ZMI card two. In this case, the value
+                            is 2.</p></dd><dt><span class="term">
+                        <span class="guilabel">VME Address</span>
+                    </span></dt><dd><p>(A23-A20: SW1)</p><p>The VME address is equal to the position of the physical SW1 switch on
+                            each ZMI4104C card. Further information on how to configure this card is
+                            available in the corresponding Zygo User&#8217;s Manual.</p><p>The default setting of SW1 is 0 for card two.</p></dd><dt><span class="term">
+                        <span class="guilabel">VME Address</span>
+                    </span></dt><dd><p>(A19-A16: SW2)</p><p>The VME address is equal to the position of the physical SW2 switch on
+                            each ZMI4104C card. Further information on how to configure this card is
+                            available in the corresponding Zygo User&#8217;s Manual.</p><p>The default setting of SW2 is 1 for card two.</p></dd></dl></div></div></div></body></html>

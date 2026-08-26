@@ -1,0 +1,159 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SPI Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_spi_examples.html" title="IO3xx SPI - Examples"><link rel="next" href="refentry_spi_masterslave_v1.html" title="SPI - Master / Slave v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_spi_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>SPI Usage Notes</h2><p>SPI Usage Notes &#8212; <span class="phrase">Usage information about the I/O
+                    module</span></p></div><div class="refsect1"><a name="refsect_spi_cpol_cpha"></a><h2>CPOL and CPHA</h2><p>The effect of the CPOL and CPHA parameters on the polarity and phase of the SPI
+                lines:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_cpol_cpha.png" width="850"></span></p><p>The sampling and propagation of the data (for both master and slave) behave as
+                follows:</p><p>At <span class="emphasis"><em>CPOL=0</em></span> the base value of the clock is zero:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For <span class="emphasis"><em>CPHA=0</em></span>, serial data are captured on the
+                            serial clock's rising edge (low&#8594;high transition) and are propagated on a
+                            falling edge (high&#8594;low clock transition)</p></li><li class="listitem"><p>For <span class="emphasis"><em>CPHA=1</em></span>, serial data are captured on the
+                            serial clock's falling edge and are propagated on a rising edge</p></li></ul></div><p>
+            </p><p>At <span class="emphasis"><em>CPOL=1</em></span> the base value of the clock is one (inversion of
+                CPOL=0):</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For <span class="emphasis"><em>CPHA=0</em></span>, serial data are captured on the
+                            serial clock's falling edge and are propagated on a rising edge</p></li><li class="listitem"><p>For <span class="emphasis"><em>CPHA=1</em></span>, serial data are captured on the
+                            serial clock's rising edge and are propagated on a falling edge</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="refsect_spi_timing_diagram"></a><h2>Frame Timing Diagram</h2><p>The following is a sample timing diagram of the signal generated/read by the SPI
+                master/slave module:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_timing.svg" width="1000"></span>
+            </p><p>A complete SPI frame consists of:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>a start delay at the beginning of the SPI frame</p></li><li class="listitem"><p>a specific number of words, with each word consisting of a specific
+                            number of bits (word size)</p></li><li class="listitem"><p>an interword delay that is inserted between all separate words</p></li><li class="listitem"><p>a stop delay at the end of the SPI frame</p></li></ul></div><p>The total data payload of the frame is equal to the number of words
+                multiplied by the number of bits.</p></div><div class="refsect1"><a name="refsect_spi_no_cs"></a><h2>SPI Transfer Without Chip Select</h2><p>If SPI is running in Slave mode and operation without chip select is selected, the
+                transfer start and stop is defined as shown below:</p><p><span class="inlinemediaobject"><img src="././graphics/spi_no_chip_select.png" width="850"></span></p><p>Since the first clock edge is used to detect a frame start,
+                    <span class="emphasis"><em>CPHA=1</em></span> must be selected.</p></div><div class="refsect1"><a name="refsect_spi_timing_master_synchronized"></a><h2>SPI Transfer Timing with Synchronized Master</h2><p>In this mode, a new SPI frame is started at every sample step and the data
+                received from the slave are available in the same sample step.</p><p>The following is a sample timing diagram of the SPI transfer scheme in master mode
+                with the <a href="refentry_spi_masterslave_v2.html#refsect_spi_parameter_sync_mode" class="olink">Sync Mode</a> parameter
+                set:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_real_time_master_sync.png" width="900"></span>
+            </p><p>At every new simulation sample, the master Tx data are written to the FPGA and a
+                new SPI frame is initiated. Simulink actively waits until the complete SPI transfer
+                is finished and continuously polls the Rx data received from the FPGA. When the SPI
+                frame is finished, all Rx data received are available and can be used for further
+                processing in Simulink in the same simulation sample.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This mode is useful if:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>the data received from the SPI slave are available in the same
+                                sample step</p></li><li class="listitem"><p>a high CPU load and the simulation step being greater than the SPI
+                                frame time do not matter</p></li></ul></div><p>The simulation time must be greater than the SPI frame length, otherwise a CPU
+                    overload will occur owing to the CPU being blocked due to data polling during
+                    SPI transfer.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_spi_timing_master_nonsync_sample_time_high"></a><h2>SPI Transfer Timing with Non-Synchronized Master when Sample Time is Greater than
+                SPI Frame Length</h2><p>In this mode, a new SPI frame is started at every sample step and the data
+                received from the slave are available in the next sample step.</p><p>The following is a sample timing diagram of the SPI transfer scheme in master mode
+                with the <span class="bold"><strong>Sync Mode</strong></span> parameter not set and when the
+                sample time is greater than the SPI frame length:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_real_time_master_non_sync_ts_high.png" width="1400"></span>
+            </p><p>At every new simulation sample, the master Tx data are written to the FPGA and a
+                new SPI frame is initiated. All available Rx data received are then read by Simulink
+                from the FPGA. If all the data of a complete frame have been read, Simulink marks
+                the frame data valid signal.</p><p>The following list describes the behavior of the above timing illustration step by step:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Sample 1: A new SPI frame (Frame 1) is started. This is the first
+                            frame and therefore no received data are yet available</p></li><li class="listitem"><p>Sample 2: A new SPI frame (Frame 2) is started. All data of Frame 1
+                            are available and the frame data valid signal is set</p></li><li class="listitem"><p>Sample 3: A new SPI frame (Frame 3) is started. All data of Frame 2
+                            are available and the frame data valid signal is set</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This mode is useful if:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>the CPU is not be blocked during SPI transfer</p></li><li class="listitem"><p>data of the SPI slave do not need to be available in the same
+                                sample step</p></li></ul></div><p>The CPU load is reduced when <span class="bold"><strong>Sync Mode</strong></span> is not
+                    set due to the CPU not actively polling data.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_spi_timing_master_nonsync_sample_time_low"></a><h2>SPI Transfer Timing with Non-Synchronized Master when Sample Time is Less than
+                SPI Frame Length</h2><p>In this mode, a new SPI frame is started at a sample step when the SPI transfer is
+                idle. The data received from the slave are available at different sample steps. As
+                soon as all received data of a complete frame are read, data valid is set.</p><p>The following is a sample timing diagram of the SPI transfer scheme in master mode
+                with the <span class="bold"><strong>Sync Mode</strong></span> parameter not set and when the
+                sample time is less than the SPI frame length:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_real_time_master_non_sync_ts_low.png" width="1400"></span>
+            </p><p>At a simulation sample when the SPI is idle, the master Tx data are written to the
+                FPGA and a new SPI frame is initiated. All available Rx data received are then read
+                by Simulink from the FPGA. If all data of a complete frame have been read, Simulink
+                marks the frame data valid signal.</p><p>The following list describes the behavior of the above timing illustration step by step:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Sample 1: A new SPI frame (Frame 1) is started. This is the first
+                            frame and therefore no received data are yet available.</p></li><li class="listitem"><p>Sample 2: Frame 1 is still ongoing, therefore no new frame is started.
+                            Word 1 of Frame 1 is finished on the SPI transfer and read by Simulink
+                            from the FPGA. The frame data valid signal is not set.</p></li><li class="listitem"><p>Sample 3: Frame 1 is still ongoing, therefore no new frame is started.
+                            All but the last word of Frame 1 is finished on the SPI transfer and
+                            read by Simulink from the FPGA. The frame data valid signal is not set.
+                        </p></li><li class="listitem"><p>Sample 4: SPI is idle, therefore a new SPI (Frame 2) is started. The
+                            last word of Frame 1 is read by Simulink from the FPGA. The frame data
+                            valid signal is set.</p></li><li class="listitem"><p>Sample 5: Frame 2 is still ongoing, therefore no new frame is started.
+                            Word 1 of Frame 2 is finished on the SPI transfer and read by Simulink
+                            from the FPGA. The frame data valid signal is not set.</p></li><li class="listitem"><p>Sample 6: Frame 2 is still ongoing, therefore no new frame is started.
+                            All but the last word of Frame 2 is finished on the SPI transfer and
+                            read by Simulink from the FPGA. The frame data valid signal is not
+                            set.</p></li><li class="listitem"><p>Sample 7: SPI is idle, therefore a new SPI (Frame 3) is started. The
+                            last word of Frame 2 is read by Simulink from the FPGA. The frame data
+                            valid signal is set.</p></li><li class="listitem"><p>Sample 8: Frame 3 is still ongoing, therefore no new frame is started.
+                            Word 1 of Frame 3 is finished on the SPI transfer and read by Simulink
+                            from the FPGA. The frame data valid signal is not set.</p></li><li class="listitem"><p>Sample 9: Frame 3 is still ongoing, therefore no new frame is started.
+                            All but the last word of Frame 3 is finished on the SPI transfer and
+                            read by Simulink from the FPGA. The frame data valid signal is not
+                            set.</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This mode is useful if:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>the CPU is not be blocked during SPI transfer</p></li><li class="listitem"><p>Sample time is less than the SPI frame time</p></li><li class="listitem"><p>data of the SPI slave do not need to be available in the same
+                                sample step</p></li></ul></div><p>The CPU load is reduced when <span class="bold"><strong>Sync Mode</strong></span> is not
+                    set due to the CPU not actively polling
+                    data.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect_spi_timing_slave_sample_time_high"></a><h2>SPI Transfer Timing with Slave when Sample Time is Greater than SPI Frame
+                Length</h2><p>In slave mode, there is no control over the SPI frame timing; the SPI master
+                (which is an external device) cannot be synchronized.</p><p>The following is a sample timing diagram of the SPI transfer scheme in slave mode
+                when the sample time is greater than the SPI frame length:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_real_time_slave_ts_high.png" width="1400"></span>
+            </p><p>During a simulation sample, the slave Tx data are written to the FPGA from
+                Simulink and all available Rx data are read from the FPGA.</p><p>To ensure data consistency, the FPGA places the Tx data from Simulink in the next
+                available SPI frame. If there are several SPI frames within one time sample (no new
+                Tx data for every SPI frame), the last written Tx data are repeated. The Rx data
+                read are always taken from the last complete SPI frame that has been received before
+                Simulink starts reading.</p><p>The following list describes the behavior of the above timing illustration step by step:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Sample 1: After Tx data are written to the FPGA, Frame 1 has already
+                            started, so these Tx data will be placed in Frame 2. At the start of the
+                            Rx data read from the FPGA, Word 1 &amp; 2 of Frame 1 are finished and
+                            therefore read by Simulink. The frame data valid signal is not set (Rx
+                            data yet not complete)</p></li><li class="listitem"><p>Sample 2: After Tx data are written to the FPGA, Frame 2 is still
+                            ongoing, so these Tx data will be placed in Frame 3. At the start of the
+                            Rx data read from the FPGA, pending data of Frame 1 are read by
+                            Simulink. The frame data valid signal is set (Rx data of Frame 1 are
+                            complete)</p></li><li class="listitem"><p>Sample 3: After Tx data are written to the FPGA, Frame 4 has already
+                            started, so these Tx data will be placed in Frame 5. The Tx data of
+                            Frame 4 are the same as the Tx data of Frame 3. At the start of the Rx
+                            data read from the FPGA, Frame 3 was the last completed SPI frame and
+                            therefore all Frame 3 data are read by Simulink and the data valid
+                            signal is set. The Rx data of Frame 2 are skipped in this
+                            situation</p></li><li class="listitem"><p>Sample 4: After Tx data are written to the FPGA, Frame 5 is still
+                            ongoing, so these Tx data will be placed in Frame 6. At the start of the
+                            Rx data read from the FPGA, Frame 4 was the last completed SPI frame and
+                            therefore all Frame 4 data are read by Simulink and the data valid
+                            signal is set</p></li><li class="listitem"><p>Sample 5: After Tx data are written to the FPGA, Frame 6 is still
+                            ongoing, so these Tx data will be placed in Frame 7. At the start of the
+                            Rx data read from the FPGA, Frame 5 was the last completed SPI frame and
+                            therefore all Frame 5 data are read by Simulink and the data valid
+                            signal is set</p></li><li class="listitem"><p>Sample 6: After Tx data are written to the FPGA, Frame 8 has not yet
+                            started, so these Tx data will be placed in Frame 8. At the start of the
+                            Rx data read from the FPGA, Frame 7 was the last completed SPI frame and
+                            therefore all Frame 7 data are read by Simulink and the data valid
+                            signal is set. The Rx data of Frame 6 are skipped in this
+                            situation</p></li></ul></div></div><div class="refsect1"><a name="refsect_spi_timing_slave_sample_time_low"></a><h2>SPI Transfer Timing with Slave when Sample Time is Less than SPI Frame
+                Length</h2><p>In slave mode, there is no control over the SPI frame timing: the SPI master
+                (which is an external device) cannot be synchronized.</p><p>The following is a sample timing diagram of the SPI transfer scheme in slave mode
+                when the sample time is less than the SPI frame length:</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/spi_real_time_slave_ts_low.png" width="1400"></span>
+            </p><p>During a simulation sample, the slave Tx data are written to the FPGA from
+                Simulink and all available Rx data are read from the FPGA.</p><p>To ensure data consistency, the FPGA places the Tx data from Simulink in the next
+                available SPI frame. If a SPI transfer is spread over several sample times, the last
+                complete written Tx data are placed in the next SPI frame. The Rx data read is
+                spread over several samples.</p><p>The following list describes the behavior of the above timing illustration step by
+                step:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Sample 1: After Tx data are written to FPGA, Frame 1 has already
+                            started, so these Tx data will be placed in Frame 2. At the start of the
+                            Rx data read from the FPGA, Word 1 of Frame 1 is finished and therefore
+                            read by Simulink. The frame data valid signal is not set (Rx data not
+                            yet complete)</p></li><li class="listitem"><p>Sample 2: After Tx data are written to FPGA, Frame 1 is still ongoing,
+                            so these Tx data will be placed in Frame 2. The Tx data that have been
+                            written in Sample 1 are overwritten in this case. At the start of the Rx
+                            data read from the FPGA, Word 3 to n-1 of Frame 1 are finished and
+                            therefore read by Simulink. The frame data valid signal is not set (Rx
+                            data not yet complete)</p></li><li class="listitem"><p>Sample 3: After Tx data are written to the FPGA, Frame 2 is still
+                            ongoing, so these Tx data will be placed in Frame 3. At the start of the
+                            Rx data read from the FPGA, Frame 1 is completed and the last word is
+                            read by Simulink. The frame data valid signal is set (Rx data of Frame 1
+                            are complete)</p></li><li class="listitem"><p>Sample 4: After Tx data are written to the FPGA, Frame 3 has not yet
+                            started, so these Tx data will be placed in Frame 3. The Tx data that
+                            have been written in Sample 3 are overwritten in this case. At the start
+                            of the Rx data read from the FPGA, SPI Frame 2 is finished and therefore
+                            read by Simulink. The frame data valid signal is set (Rx data of Frame 2
+                            complete)</p></li><li class="listitem"><p>Sample 5: After Tx data are written to the FPGA, Frame 3 is still
+                            ongoing, so these Tx data will be placed in Frame 4. At the start of the
+                            Rx data read from the FPGA, Word 1 &amp; 2 of Frame 3 are finished and
+                            therefore read by Simulink. The frame data valid signal is not set (Rx
+                            data of Frame 3 not yet complete)</p></li><li class="listitem"><p>Sample 6: After Tx data are written to the FPGA, Frame 4 has already
+                            started, so these Tx data will be placed in Frame 5. At the start of the
+                            Rx data read from the FPGA, all the remaining words of Frame 3 are
+                            finished and therefore read by Simulink. The frame data valid signal is
+                            set (Rx data of Frame 3 are complete).</p></li></ul></div><p>
+            </p></div></div></body></html>

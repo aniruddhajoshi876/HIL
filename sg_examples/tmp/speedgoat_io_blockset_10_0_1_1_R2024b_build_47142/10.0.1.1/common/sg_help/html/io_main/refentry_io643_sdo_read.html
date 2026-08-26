@@ -1,0 +1,59 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO643 - SDO Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io643_receive.html" title="IO643 - Receive"><link rel="next" href="refentry_io643_sdo_write.html" title="IO643 - SDO Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io643_sdo_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO643 - SDO Read</h2><p>IO643 - SDO Read &#8212; <span class="phrase">Reads objects of remote CANopen
+                    slave devices via the SDO (service data object) protocol.</span></p></div><div class="refsect1"><a name="d5e48328"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io643_sdo_read.png"></span></span></p></div><div class="refsect1"><a name="d5e48336"></a><h2>Description</h2><p>This block is used to read objects of remote CANopen slaves via the SDO (service
+                data object) protocol. Use one block for each object you want to read.</p><p>Reading and writing of objects is performed acyclically. Slave response times
+                vary. SDO read and write commands are executed one after another. The more SDO
+                blocks you place in your model the longer you will wait for responses from connected
+                slave devices.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>You need to add one (PDO) Receive block to your model and connect the output
+                    to a terminator block, even if your application does not require PDO
+                    communication and your model only contains SDO Read and Write blocks.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e48342"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block sends out read requests as long as the input port is
+                            TRUE.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This ensures low network traffic but immediate updates
+                            of the output ports once a response is received.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Outputs the current value of the requested object. The data type and
+                            dimensions are defined by the <span class="bold"><strong>Init
+                                Value</strong></span> parameter. The data type and dimensions need not
+                            both match the data type and dimensions of the object in the remote
+                            slave device. This depends on the implementation of the slave device,
+                            and whether it sends the actual data length or indicates an error. The
+                            block outputs the number of bytes received, or truncates the data if it
+                            exceeds the port size.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to 1D-arrays</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates a completed read operation. Either
+                            a response was received and the <span class="bold"><strong>Value</strong></span>
+                            output port was updated or the <span class="bold"><strong>Error</strong></span>
+                            output port provides an error code.</p><p>If the <span class="bold"><strong>Status</strong></span> output does not change,
+                            the read operation is still in progress or the block is idle.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Error</span>
+                    </span></dt><dd><p>Outputs either the error code of the overall read operation or the
+                            error code included in the response.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div></div><div class="refsect1"><a name="d5e48383"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote CAN Node ID</span>
+                    </span></dt><dd><p>The address of the remote slave in the CANopen network. Each slave has
+                            a unique address between 1 and 127. The value must match the address of
+                            the related slave in the network configuration of the master.</p></dd><dt><span class="term">
+                        <span class="guilabel">Object Index</span>
+                    </span></dt><dd><p>Enter the index of the object in the slave's object dictionary. Valid
+                            values are between 0x0000 and 0xFFFF</p></dd><dt><span class="term">
+                        <span class="guilabel">Object Sub-Index</span>
+                    </span></dt><dd><p>Enter the sub-index of the object in the slave's object dictionary.
+                            Valid values are between 0x00 and 0xFF</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The value that the <span class="bold"><strong>Value</strong></span> port outputs
+                            before a read response is received. The parameter's data type and
+                            dimensions define the data type and dimensions of the <span class="bold"><strong>Value</strong></span> output port and specify the length of
+                            the requested data. Fundamental data types from boolean to double are
+                            supported as well as 1D-arrays.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

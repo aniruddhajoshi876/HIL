@@ -1,0 +1,136 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO116 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io116_pin_mapping.html" title="IO116 Pin Mapping"><link rel="next" href="refentry_io116_analog_input.html" title="IO116 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io116_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO116 - Setup</h2><p>IO116 - Setup &#8212; 
+                <span class="phrase">Configure the IO116 input/output blocks</span>
+            </p></div><div class="refsect1"><a name="d5e10514"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io116_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e10522"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input, Analog output, Digital input and Digital output).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e10529"></a><h2>Parameters</h2><p>The five tabs of the Setup block mask contain the IO116 I/O module configuration
+                settings.</p><div class="variablelist"><div class="variablelist-title">Module Setup Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Analog Voltage Range</span>
+                    </span></dt><dd><p>Analog voltage range used for the analog input and output channels.
+                            The range is the same for both inputs and outputs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Current Range</span>
+                    </span></dt><dd><p>Analog current range used for the analog input and output channels.
+                            The range is the same for both inputs and outputs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Autocalibrate</span>
+                    </span></dt><dd><p>Check this box if the module should calibrate itself the next time
+                            this model (target application) is downloaded and initialized. The
+                            autocalibration function compensates for component aging, and minimizes
+                            the effects of temperature on accuracy. We recommend keeping this
+                            enabled. The calibration normally takes approximately 2 seconds, so we
+                            recommend increasing the host-target communication time-out in the model
+                            configuration parameters to allow for this. The status of the
+                            calibration is displayed on the target screen. The calibration is not
+                            re-executed during normal start/stop operation once the target
+                            application has been downloaded. All input channels are calibrated to a
+                            single internal voltage reference. Offset and gain error corrections for
+                            each channel are determined during the autocalibration process, and are
+                            applied to each channel in real-time during data acquisition. </p><div class="warning"><table border="0" summary="Warning"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="images/warning.png"></td><th align="left">Warning</th></tr><tr><td align="left" valign="top"><p>During the calibration process various signals may be present
+                                    at the output pins. These will nonetheless remain within the
+                                    configured voltage range.</p></td></tr></table></div><p>
+                        </p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Inputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Current Transceiver</span>
+                    </span></dt><dd><p>This parameter specifies if the input channels are to be used as
+                            current or voltage inputs. If "off" is selected, then the channels will
+                            be configured as voltage inputs. If "on" is selected, then the channels
+                            will be configured as current inputs. In this case the voltage range of
+                            both inputs and outputs is forced to 0 to +5&nbsp;V and Input Coupling
+                            is set to differential mode regardless of the values selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Voltage Channels/Current Channels</span>
+                    </span></dt><dd><p>The name of this parameter changes depending on the value of Current
+                            Transceiver. It specifies the number of voltage/current channels that
+                            will be used.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Coupling</span>
+                    </span></dt><dd><p>Either differential or single-ended for 8 differential or 16
+                            single-ended channels. Note that single-ended channels can only be used
+                            if Current Transceiver is set to "off".</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Outputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Current Output</span>
+                    </span></dt><dd><p>Analog current outputs ("Analog Current OUT01" to "Analog Current
+                            OUT04") are enabled when this parameter is checked. In this case the
+                            voltage outputs are not disabled: they are set to a range of 0-5&nbsp;V.
+                            The output voltage is scaled according to the current outputs; for
+                            example, if the range is set to 4-20&nbsp;mA, then a value of 0.004 will
+                            cause the I/O module to output 4&nbsp;mA and 0&nbsp;V, a value of 0.012
+                            will output 12&nbsp;mA and 2.5&nbsp;V, and a value of 0.020 will output
+                            20&nbsp;mA and 5&nbsp;V.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Alarm Output</span>
+                    </span></dt><dd><p>This parameter is only available if the Enable Current Output
+                            parameter is active. When checked, the Analog output block displays
+                            "Alarm" ports. The output of these ports will be "1" if an open/floating
+                            line is detected (for example, if the connection to the device is
+                            interrupted/broken).</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector</span>
+                    </span></dt><dd><p>Values between 1 and 4 in a vector. This driver allows individual D/A
+                            channels to be selected in any order. The number of elements defines the
+                            number of D/A channels used. For example, to use two of the analog
+                            output channels, enter "[1,2]". Number the channels beginning with 1,
+                            even if the board manufacturer starts with 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset Vector</span>
+                    </span></dt><dd><p>This field specifies the behavior of the channel at model termination.
+                            Enter a scalar or a vector of the same length as the total number of
+                            channels (e.g. "[1 1 1 1]"), even if not all the channels are used. If a
+                            scalar value is specified, its value will be used for all channels. A
+                            value of 1 causes the corresponding channel to be reset to the value
+                            specified in the Initial Value Vector field. A value of 0 causes the
+                            channel to remain at the last value used while the model was
+                            running.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Value Vector</span>
+                    </span></dt><dd><p>This field specifies the initial voltage values for the output
+                            channels. Enter a scalar or a vector of the same length as the total
+                            number of channels (e.g. "[1 1 1 1]"), even if not all the channels are
+                            used. If a scalar value is specified, its value will be used for all
+                            channels. The channels are set to the initial values between the time
+                            the model is downloaded and the time it is started.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital Inputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel Vector</span>
+                    </span></dt><dd><p>Values between 1 and 8 in a vector. This driver allows individual
+                            digital channels to be selected in any order. The number of elements
+                            defines the number of digital channels used. For example, to use two of
+                            the digital input channels, enter "[1,2]". Number the channels beginning
+                            with 1, even if the board manufacturer starts with 0.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital Outputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel Vector</span>
+                    </span></dt><dd><p>Values between 1 and 8 in a vector. This driver allows individual
+                            digital channels to be selected in any order. The number of elements
+                            defines the number of digital channels used. For example, to use two of
+                            the digital input channels, enter "[1,2]". Number the channels beginning
+                            with 1, even if the board manufacturer starts with 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset Vector</span>
+                    </span></dt><dd><p>This field specifies the behavior of the channel at model termination.
+                            Enter a scalar or a vector of the same length as the total number of
+                            channels (e.g. "[1 1 1 1]"), even if not all the channels are used. If a
+                            scalar value is specified, its value will be used for all channels. A
+                            value of 1 causes the corresponding channel to be reset to the value
+                            specified in the Initial Value Vector field. A value of 0 causes the
+                            channel to remain at the last value used while the model was
+                            running.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Value Vector</span>
+                    </span></dt><dd><p>This field specifies the initial voltage values for the output
+                            channels. Enter a scalar or a vector of the same length as the total
+                            number of channels (e.g. "[1 1 1 1]"), even if not all the channels are
+                            used. If a scalar value is specified, its value will be used for all
+                            channels. The channels are set to the initial values between the time
+                            the model is downloaded and the time it is started.</p></dd></dl></div></div></div></body></html>

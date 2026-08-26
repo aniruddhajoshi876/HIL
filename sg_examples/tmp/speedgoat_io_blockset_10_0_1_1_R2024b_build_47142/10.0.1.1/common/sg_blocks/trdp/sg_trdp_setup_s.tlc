@@ -1,0 +1,78 @@
+%implements sg_trdp_setup_s "C"
+
+%include "sg_trdp.tlc"
+
+%<TrdpCommonIncludes()>
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings
+
+    {
+        int32_t ret = 0;
+        ns_sg_trdp::cStation* Station = NULL;
+
+        /* Initialize the TRDP API */
+        SgTrdp->init();
+
+        /* Add one station */
+        ret = SgTrdp->addStation(%<StationId>, 0, (ns_sg_trdp::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding TRDP station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the station */
+        ret = Station->init(%<IpAddr>, 5555);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing TRDP station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Write the station address to PWork */
+        %<LibBlockPWork(Instance, "", "", 0)> = Station;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+    
+    {
+        {
+            static bool FirstStep = true;
+            static uint64_t StartDelayTimer = 0;
+            if (FirstStep)
+            {
+                StartDelayTimer = ns_sg_trdp::getMicroCounter();
+                FirstStep = false;
+            }
+            if ((ns_sg_trdp::getMicroCounter() - StartDelayTimer) > 1000000)
+            {
+                SgTrdp->launch();
+            }
+        }
+
+        /* Stop model execution if required */
+        if (SgTrdp->IsFaulty == true) {
+            sprintf(pSgErrorStr, "TRDP | Runtime error!");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+    }
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+    
+    SgTrdp->stop();
+
+%endfunction

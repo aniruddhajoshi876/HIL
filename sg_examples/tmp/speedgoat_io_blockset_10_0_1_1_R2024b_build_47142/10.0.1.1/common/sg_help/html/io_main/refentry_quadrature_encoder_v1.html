@@ -1,0 +1,55 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature - Encoder v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_quadrature_decoder_v2.html" title="Quadrature - Decoder v2"><link rel="next" href="refentry_quadrature_decoder_v3.html" title="Quadrature - Decoder v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_encoder_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature - Encoder v1</h2><p>Quadrature - Encoder v1 &#8212; <span class="phrase">The QAE driver block
+                    provides simulation of a quadrature encoder.</span></p></div><div class="refsect1"><a name="d5e5145"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_qae_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e5153"></a><h2>Description</h2><p>The QAE driver block provides simulation of a quadrature encoder.</p></div><div class="refsect1"><a name="d5e5156"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs are equal to the channel count as
+                defined in the channel vector parameter.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">position cmd </span>
+                    </span></dt><dd><p>This port allows the QAE position to be set. This port is
+                            enabled/disabled using the 'Show position input port' parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">speed cmd </span>
+                    </span></dt><dd><p>This port allows the QAE speed to be set. This port is
+                            enabled/disabled using the 'Show speed input port' parameter.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">position </span>
+                    </span></dt><dd><p>This port allows the position of the encoder to be read back. This
+                            port is enabled/disabled using the 'Show position output port'
+                            parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e5178"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Quadrature Encoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Resolution vector </span>
+                    </span></dt><dd><p>The number of segments the encoder emulates (expressed in a power of
+                            two)</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial speed vector (rpm) </span>
+                    </span></dt><dd><p>Encoder speed at model startup.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial position vector </span>
+                    </span></dt><dd><p>The segment the QAE is at at model startup.</p></dd><dt><span class="term">
+                        <span class="guilabel">Free wheel </span>
+                    </span></dt><dd><p>When this parameter is checked, there is no position control.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset current position and speed to init values when model starts
+                        </span>
+                    </span></dt><dd><p>When this parameter is checked, the QAE code module is cleared with
+                            the initial speed and position values, otherwise, it keeps its value
+                            from the previous runtime.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show speed input port </span>
+                    </span></dt><dd><p>Enables/disables the Index found output port. See Input and output
+                            ports section for more information. When this parameter is checked, an
+                            additional input is shown and allows you to modify the QAE speed
+                            constraint.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show position input port </span>
+                    </span></dt><dd><p>When this parameter is checked, an additional input is shown and
+                            allows you to modify the QAE position constraint.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show position output port </span>
+                    </span></dt><dd><p>When this parameter is checked, an additional output is shown and the
+                            current QAE position is available as a readback information.</p></dd></dl></div></div></div></body></html>

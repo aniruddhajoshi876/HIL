@@ -1,0 +1,90 @@
+%% SYSTLC: Speedgoat Real-Time Target Machine \
+%%    TMF: slrealtime_default_tmf MAKE: make_rtw EXTMODE: slrealtime_extmode
+%%
+%% Copyright      2024 Speedgoat GmbH
+%% Copyright 2018-2021 The MathWorks, Inc.
+%% Abstract: System target file for Simulink Real-Time (slrealtime)
+%%
+%selectfile NULL_FILE
+
+%assign TargetType = "RT"
+%assign Language   = "C"
+%assign GenRTModel = 1
+%assign _GRT_      = 1
+%assign TargetRegistMutexOp   = 1
+%assign TargetRegistSynchroOp = 1
+
+%% We support using the enhanced block interface starting with MATLAB R2025a, the same release where
+%% slrealtime.tlc does this change as well. Enabling the support for all MATLAB releases caused the
+%% TCP and UDP blocks to fail (code generation produces an error).
+%assign USE_ENHANCED_BLOCK_INTERFACE = !FEVAL("verLessThan", "matlab", "25.1")
+%if USE_ENHANCED_BLOCK_INTERFACE
+    %assign PreCodeGenExecCompliant = 1
+%endif
+
+%assign ::slrealtime = 1
+
+%assign MATLAB_ROOT = FEVAL("matlabroot")
+%assign PATH_SEP = FEVAL("filesep")
+%addincludepath "%<MATLAB_ROOT>%<PATH_SEP>toolbox%<PATH_SEP>slrealtime%<PATH_SEP>simulink%<PATH_SEP>coder%<PATH_SEP>rtw"
+
+%if USE_ENHANCED_BLOCK_INTERFACE
+    %if EXISTS(::CompiledModel)
+        %include "codegenentrylib.tlc"
+        %if SLibIsPreCodeGenPhase()
+            %include "codegenentry.tlc"
+        %else
+            %% Include any TLC that defines functions you need during code gen before including
+            %% codegenentry.tlc. Don't do any code gen before calling codegenentry.tlc
+            %include "slrealtime_AddArtifacts.tlc"
+            %include "codegenentry.tlc"
+            %include "commonthreadlib.tlc"
+            %include "slrealtime_task_info.tlc"
+            %include "slrealtime_options.tlc"
+            %include "slrealtime_datatypes.tlc"
+            %include "slrealtime_xcp.tlc"
+            %include "slrealtime_cal.tlc"
+        %endif
+    %endif
+%else
+    %% Include any TLC that defines functions you need during code gen before including
+    %% codegenentry.tlc. Don't do any code gen before calling codegenentry.tlc
+    %include "slrealtime_AddArtifacts.tlc"
+    %include "codegenentry.tlc"
+    %include "commonthreadlib.tlc"
+    %include "slrealtime_task_info.tlc"
+    %include "slrealtime_options.tlc"
+    %include "slrealtime_datatypes.tlc"
+    %include "slrealtime_xcp.tlc"
+    %include "slrealtime_cal.tlc"
+%endif
+
+%% The contents between 'BEGIN_RTW_OPTIONS' and 'END_RTW_OPTIONS' in this file
+%% are used to maintain backward compatibility to R13 and preR13 custom target
+%% file only.  If you want to use this file as a template to develop your
+%% own system target file, you need to remove the 'CONFIGSET_TARGET_COMPONENT'
+%% section at the end of this file.
+/%
+    BEGIN_RTW_OPTIONS
+
+    %----------------------------------------%
+    % Configure code generation settings     %
+    %----------------------------------------%
+    rtwgensettings.BuildDirSuffix = '_sg_rtw';
+    rtwgensettings.Version = '1';
+    rtwgensettings.DerivedFrom = 'slrealtime.tlc';
+
+    END_RTW_OPTIONS
+%/
+
+%% The content between 'BEGIN_CONFIGSET_TARGET_COMPONENT' and
+%% 'END_CONFIGSET_TARGET_COMPONENT' is for the MathWorks internal use
+%% only.  You must remove this section if you intend to use this file
+%% as a template for your own system target development.
+/%
+    BEGIN_CONFIGSET_TARGET_COMPONENT
+
+    targetComponentClass = 'slrealtime.SimulinkRealTimeTargetCC';
+
+    END_CONFIGSET_TARGET_COMPONENT
+%/

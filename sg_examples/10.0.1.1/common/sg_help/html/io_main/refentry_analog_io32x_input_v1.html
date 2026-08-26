@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Analog IO32x - Input v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_analog_io32x.html" title="Analog IO32x"><link rel="next" href="refentry_analog_io32x_output_v1.html" title="Analog IO32x - Output v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_analog_io32x_input_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Analog IO32x - Input v1</h2><p>Analog IO32x - Input v1 &#8212; <span class="phrase">This driver block is available for the
+                    IO322 and IO323 modules only.</span></p></div><div class="refsect1"><a name="d5e6874"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ad_read_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e6882"></a><h2>Description</h2><p>This driver block is available for the <span class="phrase">IO322/IO323 I/O modules</span> only.</p><p>Your model can only contain one of these blocks for each I/O module in your target
+                machine.</p></div><div class="refsect1"><a name="d5e6887"></a><h2>Ports</h2><p>This block has as many outputs as defined by the Channel vector parameter, see
+                Dialog fields.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is channel number) </span>
+                    </span></dt><dd><p>The value read from analog input X. Type double.</p></dd></dl></div></div><div class="refsect1"><a name="d5e6897"></a><h2>Parameters</h2><p>The IO32x I/O module provides 4 simultaneous ADC with 8x16-bit sequential channels
+                each. Every ADC on the I/O module can be configured with its channel vector, its
+                Range, its Input coupling mode and its trigger mode.</p><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><span class="term"></span></dt><dd><p>The channel vector must start with channel one and contain consecutive
+                            channels only.</p></dd><dt><span class="term">
+                        <span class="guilabel">Range </span>
+                    </span></dt><dd><p>The Range of the Input channels can be different for every ADC on the
+                            I/O module. Please refer to the <span class="phrase">IO322/</span>IO323 pin mapping section.
+                            Please note, that the selected voltage range is a differential voltage
+                            which is the maximum range of each ADC. The maximum input voltage range
+                            per pin, which can be measured by the ADC is &plusmn;12.288 V. For better
+                            accuracy, small voltages can be amplified - this parameter is used to
+                            indicate the expected input voltage range: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>&plusmn; 24.576 [V] (differential only)</p></li><li class="listitem"><p>&plusmn; 20.48 [V] (differential only)</p></li><li class="listitem"><p>&plusmn; 10.24 [V]</p></li><li class="listitem"><p>&plusmn; 5.12 [V]</p></li><li class="listitem"><p>&plusmn; 2.56 [V]</p></li><li class="listitem"><p>&plusmn; 1.28 [V]</p></li><li class="listitem"><p>&plusmn; 0.56 [V]</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Input coupling </span>
+                    </span></dt><dd><p>The Input coupling can be different for every ADC on the I/O module.
+                            Either Single-ended or Differential. Please refer to the <span class="phrase">IO322/</span>IO323 pin
+                            mapping section. Single-ended: For single-ended channels the reference
+                            of each input is Ground. This configuration provides the maximum number
+                            of input channels. Every ADC provides a maximum of 8 channels
+                            Differential: For differential channels each input channel has a
+                            dedicated associated reference level channel according to the
+                            <span class="phrase">IO322/</span>IO323 pin mapping. Every ADC provides a maximum of 4 channels
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Trigger mode </span>
+                    </span></dt><dd><p>This parameter defines if the model initiates the sampling. When
+                            Initiator is selected, the "ADC trigger" physical pin becomes an output
+                            which propagates this signal. When Target is selected, the sampling is
+                            triggered by an external source and the driver is then configured as
+                            target. In this case the "ADC trigger" physical pin becomes an input
+                            used to read a trigger signal. The trigger input is high-level
+                            sensitive.</p></dd></dl></div></div></div></body></html>

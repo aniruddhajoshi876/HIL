@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2013-2014 The MathWorks, Inc. -->
+
+<?xml-stylesheet href="MessageIcon.css" type="text/css"?><svg
+   width="48"
+   height="48"
+   class="iconDefault"
+   version="1.1"
+   id="svg17"
+   sodipodi:docname="frame.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs21" />
+  <sodipodi:namedview
+     id="namedview19"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="16.000001"
+     inkscape:cx="24.218749"
+     inkscape:cy="20.312499"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1"
+     inkscape:lockguides="false"
+     showguides="false" />
+  <g
+     id="g15">
+    <title
+       id="title2">Layer 1</title>
+    <g
+       id="Mask" />
+    <g
+       id="Layer_1"
+       style="display:inline">
+      <g
+         id="svg_1">
+        <polyline
+           id="svg_2"
+           points="33.017,13.042 40,17 40,38 8,38 8,17 15.005,13.029   "
+           stroke-miterlimit="10"
+           stroke="#231f20"
+           fill="none"
+           style="display:none" />
+        <polyline
+           id="svg_3"
+           points="40,17 23.997,29.931 8,17   "
+           stroke-miterlimit="10"
+           stroke="#231f20"
+           fill="none" />
+        <line
+           id="svg_4"
+           y2="38"
+           x2="40"
+           y1="27.875999"
+           x1="26.684999"
+           stroke-miterlimit="10"
+           stroke="#231f20"
+           fill="none" />
+        <line
+           id="svg_5"
+           y2="27.805"
+           x2="21.405001"
+           y1="38"
+           x1="8"
+           stroke-miterlimit="10"
+           stroke="#231f20"
+           fill="none" />
+      </g>
+      <line
+         id="svg_8-2-2"
+         y2="23.53125"
+         x2="29.015625"
+         y1="23.53125"
+         x1="19.015625"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none" />
+      <path
+         id="svg_6"
+         style="display:none;fill:none;stroke:#231f20;stroke-miterlimit:10"
+         d="M 15,22.947 V 22.489656 22.032312 21.574969 21.117625 20.660281 20.202937 19.745594 19.28825 18.830906 18.373562 17.916219 17.458875 17.001531 16.544187 16.086844 15.6295 15.172156 14.714813 14.257469 13.800125 13.342781 12.885437 12.428094 11.97075 11.513406 11.056062 10.598719 10.141375 9.6840313 9.2266875 C 15.016806,8.3114004 15.53677,8.318199 16.125,8.312 h 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 0.5625 H 24 24.5625 25.125 25.6875 26.25 26.8125 27.375 27.9375 28.5 29.0625 C 32.959446,11.950842 29.04468,8.31655 33,11.97075 v 0.457344 0.457343 0.457344 0.457344 0.457344 0.457344 0.457343 0.457344 0.457344 0.457343 0.457344 0.457344 0.457344 0.457343 0.457344 0.457344 0.457344 0.457343 0.457344 0.457344 0.457344 0.457343 0.457344 0.457344"
+         sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+      <line
+         id="svg_7"
+         y2="11.537"
+         x2="27.422195"
+         y1="11.537"
+         x1="19"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none;stroke-width:0.917725" />
+      <line
+         id="svg_8"
+         y2="17.537001"
+         x2="29"
+         y1="17.537001"
+         x1="19"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none" />
+      <line
+         id="svg_8-2"
+         y2="13.572376"
+         x2="28.996094"
+         y1="13.572376"
+         x1="18.996094"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none" />
+      <line
+         id="svg_8-2-9"
+         y2="15.55635"
+         x2="28.991911"
+         y1="15.55635"
+         x1="18.991911"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none" />
+      <line
+         id="svg_8-2-0"
+         y2="19.600117"
+         x2="29.019533"
+         y1="19.600117"
+         x1="19.019533"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         inkscape:label="svg_8-2-0"
+         style="display:none" />
+      <line
+         id="svg_9"
+         y2="21.537001"
+         x2="29"
+         y1="21.537001"
+         x1="19"
+         stroke-miterlimit="10"
+         stroke="#231f20"
+         fill="none"
+         style="display:none" />
+      <rect
+         style="fill:#0000ae;fill-opacity:0;stroke:#231f20;stroke-opacity:1"
+         id="rect356"
+         width="32.438522"
+         height="21.655148"
+         x="7.8665624"
+         y="16.617008"
+         rx="0.5" />
+    </g>
+  </g>
+</svg>

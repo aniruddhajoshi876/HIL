@@ -1,0 +1,126 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_ref_io50Xio581_examples.html" title="IO50X/IO581 - Examples"><link rel="next" href="refentry_serial_write.html" title="Serial - Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial - Setup </h2><p>Serial - Setup  &#8212; <span class="phrase">Setup of parameters for serial
+                    ports</span></p></div><div class="refsect1"><a name="d5e904"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io50x_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e912"></a><h2>Description</h2><p>This block is part of the Serial driver blockset for the IO50x and IO581 modules.
+                For each of these modules in your target machine there must be exactly one Setup
+                block in your model.</p><p>The Setup block dialog box allows all of the supported Serial modules to be
+                specified and configured. This block therefore has an impact on the other driver
+                blocks (Serial Write and Serial Read).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e919"></a><h2>Block Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Module Type</span></span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term"><span class="guilabel">Oscillator</span></span></dt><dd><p>Select the hardware oscillator frequency that matches your module. The
+                            baud rate calculation in the block mask is based on the selected
+                            frequency. If the wrong frequency is selected, an error will appear in
+                            the target log at the start of the real-time application. For the IO581
+                            I/O module, the frequency is fixed and cannot be changed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transceiver Setup </span>
+                    </span></dt><dd><p>Configuration of the transceiver for each channel. It represents the
+                            physical layer of the serial protocol. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RS232</p></li><li class="listitem"><p>RS422</p></li><li class="listitem"><p>RS422 Multidrop<a href="#ftn.fn_not_available_io581" class="footnote" name="fn_not_available_io581"><sup class="footnote">[4]</sup></a></p></li><li class="listitem"><p>RS485 Half-Duplex</p></li><li class="listitem"><p>RS485 Full-Duplex</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Max. baud rate for RS232 mode is 921.6 kb/s.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channel Setup Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Tx Termination Resistor </span>
+                        <a href="refentry_serial_setup.html#ftn.fn_not_available_io581" class="footnoteref"><sup class="footnoteref">[4]</sup></a>
+                    </span></dt><dd><p>Terminate Tx line with a 120&#8486; termination resistor (this setting is
+                            ignored in RS232 mode).</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Rx Termination Resistor </span>
+                        <a href="refentry_serial_setup.html#ftn.fn_not_available_io581" class="footnoteref"><sup class="footnoteref">[4]</sup></a>
+                    </span></dt><dd><p>Terminate Rx line with a 120&#8486; termination resistor (this setting is
+                            ignored in RS232 mode).</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Tx Message Monitoring</span>
+                    </span></dt><dd><p>This checkbox can be used to enable/disable the reception of an echo
+                            of the own data transmission in the RS485 Half-Duplex mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Auto Turn Around</span>
+                    </span></dt><dd><p>The auto turn around is enabled per default for the RS485 Half-Duplex
+                            mode. In the RS485 Full-Duplex mode it can be enabled if required. In
+                            the RS485 mode, where the transmitters and receivers use the same
+                            differential pair of wires, you can only enable one transmitter at a
+                            time. Therefore the RTS output is routed to the enable input of the
+                            RS485 transmitter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Turn Around Delay</span>
+                    </span></dt><dd><p>The UART automatically asserts RTS when there are characters in the
+                            transmit FIFO. It de-asserts RTS when the transmit FIFO empties and the
+                            RS485 turnaround default delay of 0 to 15 bit time periods elapses. The
+                            transmitter output goes tristate (high impedance) when disabled, which
+                            allows another device to transmit.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use Standard Baud Rates (16x, no prescaling) </span>
+                    </span></dt><dd><p>Check this box if you want to use a standard baud rate</p></dd><dt><span class="term">
+                        <span class="guilabel">Standard Baud Rate </span>
+                    </span></dt><dd><p>Select the baud rate from a list of standard baud rates</p></dd><dt><span class="term">
+                        <span class="guilabel">Baud Rate Divisor</span></span></dt><dd><p>The non-standard baud rate is determined by the following formula: <a href="#ftn.d5e1015" class="footnote" name="d5e1015"><sup class="footnote">[5]</sup></a></p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/non_standard_baudrate_formula.png"></span></span></p><p>The prescaler can be set using the <span class="bold"><strong>Prescaler</strong></span> parameter. The prescaler default is "None"
+                            which equals to "x1". The sampling rate can be either 8 or 16. The
+                            divisor must fall withing range of 1 - 65535. Note that the divisor must
+                            be an integer for the I/O modules IO503,IO504 and IO505.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sampling Rate</span>
+                    </span></dt><dd><p>The sampling rate can be set to 8x or 16x (normal operation). Transmit
+                            and receive data rates will double by selecting 8x sample rate.</p></dd><dt><span class="term">
+                        <span class="guilabel">Prescaler</span>
+                    </span></dt><dd><p>Sets the Prescale value used to calculate a non-standard baud rate.
+                            "None" means the prescaler equals times one (1x). Selecting the 4x from
+                            the dropdown list sets it to times four.</p></dd><dt><span class="term"><span class="guilabel">Baud Rate</span></span></dt><dd><p>If non-standard baud rate mode is selected, this field shows the
+                            calculated baud rate using the parameters from above and the respective
+                            oscillator frequency of the module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Parity </span>
+                    </span></dt><dd><p>Parity is a method for detecting errors during transmission. Options
+                            are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>None</p></li><li class="listitem"><p>Even</p></li><li class="listitem"><p>Odd</p></li><li class="listitem"><p>Mark</p></li><li class="listitem"><p>Space</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Bits </span>
+                    </span></dt><dd><p>The number of data bits for each character. Options are: 5, 6, 7 or 8.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Stop Bits </span>
+                    </span></dt><dd><p>The number of stop bits sent at the end of every character. Options
+                            are: 1 or 2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit FIFO Interrupt Level </span>
+                    </span></dt><dd><p>This parameter specifies the number of characters left in the transmit
+                            FIFO before an interrupt occurs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive FIFO Interrupt Level </span>
+                    </span></dt><dd><p>This parameter specifies the number of characters in the receive FIFO
+                            before an interrupt occurs. Receive interrupts occur at least as often
+                            as this parameter specifies. If a gap of at least 4 character periods
+                            occurs in a data stream, the UART requests an interrupt for the
+                            receiver.</p></dd><dt><span class="term">
+                        <span class="guilabel">Handshake</span>
+                    </span></dt><dd><p>Select if hardware or software handshake should be used. Flow control
+                            is used to prevent data overrun to the local receiver FIFO and remote
+                            receiver FIFO. Hardware handshake can only be used in RS232 mode. If
+                            software flow control is selected, the XOFF character is transmitted
+                            approximately two character time periods after the RX FIFO level has
+                            reached the RX trigger level. The XON character is transmitted when the
+                            RX FIFO level falls below the RX trigger level. If RTS Hysteresis is not
+                            0, the XON character gets transmitted when the RX FIFO level falls below
+                            the RX trigger level minus the selected hysteresis. The following modes
+                            are available for flow control: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>RTS/CTS: Use the RTS/CTS pins for flow control</p></li><li class="listitem"><p>Tx XON/XOFF: Only transmit flow control characters</p></li><li class="listitem"><p>Rx XON/XOFF: Only receive flow control characters</p></li><li class="listitem"><p>Tx/Rx XON/XOFF: Transmit and receive flow control
+                                        characters</p></li></ul></div></dd><dt><span class="term"><span class="guilabel">RTS Hysteresis</span></span></dt><dd><p>Select the amount of characters at which RTS should be de/re-asserted.
+                            Transmission is re-asserted if the RX FIFO level is below the RX FIFO
+                            trigger level minus the selected hysteresis. It de-asserts if the RX
+                            FIFO level is above the RX FIFO trigger level plus the selected
+                            hysteresis.</p></dd><dt><span class="term">
+                        <span class="guilabel">XON Character</span>
+                    </span></dt><dd><p>This parameter defines the XON character. If two characters are
+                            specified they are concatenated into two sequential characters.</p></dd><dt><span class="term">
+                        <span class="guilabel">XOFF Character</span>
+                    </span></dt><dd><p>This parameter defines the XOFF character. If two characters are
+                            specified they are concatenated into two sequential characters.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Software FIFO Size</span>
+                    </span></dt><dd><p>The size of the software FIFO used to buffer transmitted characters.
+                            For each I/O module, a minimum buffer size must be set. Refer to the
+                                <a href="refentry_serial_usage_notes.html" class="olink">serial usage notes</a>
+                            for more information about the FIFO buffer sizes. This parameter also
+                            defines the input port width of the corresponding write block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Software FIFO Size </span>
+                    </span></dt><dd><p>The size of the software FIFO to buffer characters between interrupt
+                            service and periodic execution. For each I/O module, a minimum buffer
+                            size must be set. Refer to the <a href="refentry_serial_usage_notes.html" class="olink">serial usage notes</a>
+                            for more information about the FIFO buffer sizes. This parameter also
+                            defines the output port width of the corresponding read block.</p></dd></dl></div></div><div class="footnotes"><br><hr class="footnote-hr"><div id="ftn.fn_not_available_io581" class="footnote"><p><a href="#fn_not_available_io581" class="para"><sup class="para">[4] </sup></a>Not available for IO581</p></div><div id="ftn.d5e1015" class="footnote"><p><a href="#d5e1015" class="para"><sup class="para">[5] </sup></a>The Base Clock for the IO581 is 125MHz</p></div></div></div></body></html>

@@ -1,0 +1,145 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO421 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io421_pin_mapping.html" title="IO421 Pin Mapping"><link rel="next" href="refentry_io421_lvdtrvdt_read.html" title="IO421 - LVDT/RVDT Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io421_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO421 Usage Notes</h2><p>IO421 Usage Notes &#8212; 
+                <span class="phrase">Usage information about the
+                    I/O module</span>
+            </p></div><div class="refsect1"><a name="refsect1_io421_basics"></a><h2>LVDT/RVDT basics</h2><p>The linear variable differential transformer (LVDT) and rotary variable
+                differential transformer (RVDT) are electromagnetic displacement transducers
+                designed to provide output voltages proportional to linear and rotary displacement
+                respectively.</p><p>The LVDT consists of an AC-excited primary coil and two identical secondary coils
+                on a non-contacting magnetic core, as shown in the cutaway view in the figure below.
+                The RVDT is, in principle, like the LVDT.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/LVDT.png"></span>
+            </p><p>When the core is moved away from the center position, the mutual inductance of the
+                primary coil with one secondary coil increases and with the other secondary coil
+                decreases due to the change in the reluctance paths. The induced voltages are no
+                longer equal and an output voltage appears.</p></div><div class="refsect1"><a name="refsect1_io421_wiring"></a><h2>LVDT/RVDT wiring</h2><p>Concerning how the connections between both secondary coils are implemented, there
+                are three possibilities.</p><p>For each of the output voltage graphics, the primary is excited with a sine-wave
+                voltage that the frequency of which, depending on the design, may be from 47 [Hz] to
+                over 10 [kHz]. As in any transformer, the output voltage is a function of the turns
+                ratio and the coupling efficiency between the primary and secondary windings.</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>In 2-wire (or 4-wire, if the 2-wire of the primaries is counted) LVDT,
+                            where VLL = Va, the connection between the two secondaries is made
+                            within the transducer, and only a two-wire output is available. This
+                            configuration is seldom applied as it highly restricts the choice of
+                            further links in the measuring chain. Output voltage graphics:</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_2w_top.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_2w_center.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_2w_bottom.png"></span>
+                        </p></li><li class="listitem"><p>The configuration in 3-wire (or 5-wire, if the 2-wire of the primaries
+                            is counted and VLL = Vab) LVDT makes it possible to use special
+                            measuring systems that are based on the measurement of the difference
+                            between the two coil voltages. Such systems have certain advantages in
+                            some cases. Output voltage graphics:</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_3w_top.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_3w_center.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_3w_bottom.png"></span>
+                        </p></li><li class="listitem"><p>4-wire (or 6-wire, if the 2-wire of the primaries is counted, with
+                            VLL-a = Va and VLL-b = Vb) LVDT gives the universal configuration, where
+                            both secondary coils have two output connections. Output voltage
+                            graphics:</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_4w_top.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_4w_center.png"></span>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/output_4w_bottom.png"></span>
+                        </p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="refsect1_io421_howto"></a><h2>How to connect your device</h2><p>This section describes connection methods for your measured or simulated
+                LVDT/RVDT/Synchro/Resolver.</p></div><div class="refsect1"><a name="refsect1_io421_lvdtrvdtMeasurement"></a><h2>LVDT/RVDT measurement</h2><p>When measuring an LVDT/RDVT with the IO421-1 submodule, the following
+                connection methods can be used.</p><p>
+                <span class="bold"><strong>2-wire (primary as reference)</strong></span>
+            </p><p>This connection method converts the widest range of LVDT/RVDT sensors and is the
+                most sensitive to excitation voltage variations, temperature and phase shift
+                effects.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/2wire.png"></span>
+            </p><p>
+                <span class="bold"><strong>3-wire (derived reference)</strong></span>
+            </p><p>In this connection method, excitation is on the primary side (as with the 2-wire
+                method) but the converter reference is the sum of A + B, which has a constant
+                amplitude for changing core displacement. This system is not sensitive to
+                temperature effects, phase shifts, or oscillator instability. To use this method,
+                the driver is configured in 4-wire mode and the A LO and B LO inputs are connected
+                together.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/3wire.png"></span>
+            </p><p>
+                <span class="bold"><strong>4-wire (derived reference)</strong></span>
+            </p><p>
+                <span class="inlinemediaobject"><img src="././graphics/4wire.png"></span>
+            </p></div><div class="refsect1"><a name="refsect1_io421_lvdtrvdtsimulation"></a><h2>LVDT/RVDT simulation</h2><p>When simulating an LVDT/RVDT with the IO421-3 submodule, the following
+                connection methods can be used. In all connections, the primary is excited with a
+                sine-wave voltage.</p><p>
+                <span class="bold"><strong>4-wire LVDT</strong></span>
+            </p><p>The default configuration is the 4-wire LVDT/RVDT:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the position of the rod reaches the top in the below diagram (at Va),
+                        then Va outputs a sine wave with the same frequency as the reference
+                        voltage. The amplitude is a function of the turn ratio and the coupling
+                        efficiency between the primary and secondary windings. The Vb output is
+                        almost zero.</p></li><li class="listitem"><p>If the position of the rod reaches the bottom, then Vb outputs a sine wave
+                        with the same frequency as the reference voltage. The amplitude is a
+                        function of the turn ratio and the coupling efficiency between the primary
+                        and secondary windings. The Va output is almost zero.</p></li><li class="listitem"><p>If the rod is in the center, Va and Vb are equal.</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_4wire_lvdt.png"></span>
+            </p><p>
+                <span class="bold"><strong>3-wire LVDT</strong></span>
+            </p><p>To simulate a 3-wire LVDT/RVDT, connect the A LO and B LO pins as shown
+                below:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the position of the rod reaches the top in the below diagram, then Vab
+                        outputs a sine wave with the same frequency as the reference voltage. The
+                        amplitude is a function of the turn ratio and the coupling efficiency
+                        between the primary and secondary windings.</p></li><li class="listitem"><p>If the position of the rod reaches the bottom, then Va outputs a sine wave
+                        180&deg; out of phase compared with the reference voltage. The amplitude is a
+                        function of the turn ratio and the coupling efficiency between the primary
+                        and secondary windings.</p></li><li class="listitem"><p>If the rod is in the center, Vab is almost zero.</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_3wire_lvdt.png"></span>
+            </p><p>
+                <span class="bold"><strong>2-wire LVDT</strong></span>
+            </p><p>To simulate a 2-wire LVDT/RVDT, use A HI and A LO pins only:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the position of the rod reaches the top in the below diagram, then Va
+                        outputs a sine wave with the same frequency as the reference voltage. The
+                        amplitude is a function of the turn ratio and the coupling efficiency
+                        between the primary and secondary windings.</p></li><li class="listitem"><p>If the position of the rod reaches the bottom, then Va outputs a sine wave
+                        180&deg; out of phase compared with the reference voltage. The amplitude is a
+                        function of the turn ratio and the coupling efficiency between the primary
+                        and secondary windings.</p></li><li class="listitem"><p>If the rod is in the center, Va is almost zero.</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_2wire_lvdt.png"></span>
+            </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The phase lock between the excitation and the signal output can take up to 1
+                    second after connecting a valid excitation signal or starting the model.
+                    Consequently, no signals are immediately present at the output.</p></td></tr></table></div></div><div class="refsect1"><a name="refsect1_io421_synchro_resolver"></a><h2>Synchro/Resolver</h2><p>Synchros and resolvers are essentially transformers. They have a primary winding
+                and multiple secondary windings, and like a transformer, their primary winding is
+                driven by an AC signal. Synchros and resolvers are very similar; however, there are
+                some differences. As shown in Figure 1, a synchro has:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1 primary winding</p></li><li class="listitem"><p>3 secondary windings, where each one is mechanically oriented 120&ordm;
+                            apart</p></li></ul></div><p>
+            </p><p>In contrast, as shown in Figure 2, a resolver has:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1 primary winding</p></li><li class="listitem"><p>2 secondary windings, which are oriented at 90&ordm; in relation to each
+                            other</p></li></ul></div><p>
+            </p><p>
+                <span class="bold"><strong>Electrical representation of a Synchro:</strong></span>
+            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Connect the excitation (VREF) to the Rotor (marked with an R, where R1 =
+                        RH and R2 = RL).</p></li><li class="listitem"><p>Connect the signal (VLL) to the Stator (marked with an S). The phase
+                        between the stator windings is 120&ordm;.</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_synchro_config.png"></span>
+            </p><p>Figure 1</p><p>
+                <span class="bold"><strong>Electrical representation of a Resolver:</strong></span>
+            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Connect the excitation (VREF) to the Rotor (marked with an R, where R2 =
+                        RH and R4 = RL).</p></li><li class="listitem"><p>Connect the signal (VLL) to the Stator (marked with an S). The phase
+                        between the stator windings is 90&ordm;.</p></li></ul></div><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_resolver_config.png"></span>
+            </p><p>Figure 2</p><p>While a synchro and resolver are electrically very similar to a transformer, they
+                are mechanically more like a motor. The primary winding in a synchro or resolver can
+                be physically rotated in relation to the secondary windings. For this reason, the
+                primary winding is called the "rotor"; the secondary windings (which are fixed) are
+                called "stators."</p><p>Synchros and resolvers are often used to track the rotary output angle of a
+                closed-loop system, which uses feedback to achieve accuracy and repeatability. A
+                synchro/resolver can be turned continuously and, since its secondary winding outputs
+                are analog signals, it provides "infinite" resolution output. As the shaft of a
+                synchro transmitter is turned, the angular position of its rotor winding changes in
+                relation to its secondary (stator) windings. The relative amplitude of the resulting
+                AC output signals from the secondary (stator) windings indicates the rotary position
+                of the transmitter&#8217;s shaft.</p><p>Two-speed configuration: For better resolution, you can use one channel as
+                "coarse" and the other channel as "fine" dial.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/io421_twoSpeed.png"></span>
+            </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The phase lock between the excitation and the signal output can take up to 1
+                    second after connecting a valid excitation signal or starting the model;
+                    consequently, no signals are immediately present at the output.</p></td></tr></table></div></div></div></body></html>

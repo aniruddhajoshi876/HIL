@@ -1,0 +1,176 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO901/IO902 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_ref_io901_io902.html" title="IO901, IO902"><link rel="next" href="refentry_io901_io902_setup.html" title="IO901/IO902 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io901_io902_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO901/IO902 Usage Notes</h2><p>IO901/IO902 Usage Notes &#8212; <span class="phrase">Usage information
+                    about the I/O module</span></p></div><div class="refsect1"><a name="d5e75"></a><h2>Initialize Shared Memory Nodes</h2><p>To use the IO901/IO902 shared memory I/O module, you must define a node
+                initialization structure. The I/O modules drivers use MATLAB structures to define
+                shared memory node initializations. A node initialization structure describes the
+                shared memory partition and the IO901/IO902 board configuration, including interrupt
+                configurations.</p><p>The initialization can done with an m-file, which is then loaded with your
+                Simulink model
+                (see example
+                io901_io902_init.m). The following usage notes describe the
+                initialization procedure.</p><p><span class="bold"><strong>Memory Partitions</strong></span></p><p>For each variable, a partition must be defined. The example below shows how to
+                define the variables:</p><pre class="programlisting">Partitions(1).Size = '1';
+Partitions(1).Type = 'uint8';
+
+Partitions(2).Size = '2';
+Partitions(2).Type = 'double';
+
+Partitions(3).Size = '1';
+Partitions(3).Type = 'double';
+
+Partitions(4).Size = '1';
+Partitions(4).Type = 'uint8';
+
+Partitions(5).Size = '2';
+Partitions(5).Type = 'double';
+
+Partitions(6).Size = '1';
+Partitions(6).Type = 'double';
+Partitions(6).Address = '0x5000';
+
+Partitions = completepartitionstruct(Partitions,'5565');</pre><p>For further information, function sscgtpartitionstruct can be used.</p><pre class="programlisting">Partition = scgtpartitionstruct(Partition);</pre><p><span class="bold"><strong>Nodes</strong></span></p><p>Each shared memory I/O module installed needs to have a "node ID":</p><p>Target Machine 1 &#8211; Node ID = 1</p><pre class="programlisting">Node1.Interface.NodeID = '1';
+InitiatorNode.Partitions = Partitions;
+InitiatorNode = completenodestruct(InitiatorNode,'5565');</pre><p>Target Machine 2 &#8211; Node ID = 2</p><pre class="programlisting">TargetNode.Interface.NodeID = '2';
+TargetNode.Interface.Interrupts.PendingInt1='on';
+TargetNode.Partitions = Partitions;
+TargetNode = completenodestruct(TargetNode,'5565');</pre><p>Create a node initialization structure for each I/O module with the help of the
+                    <code class="code">scgtnodestruct</code> command. Type</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><pre class="programlisting">help scgtnodestruct</pre></li></ul></div><p>for a description of the
+                command.</p><div class="itemizedlist"><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><pre class="programlisting">node=scgtnodestruct([])
+
+node =
+
+     Interface: [1x1 struct]
+    Partitions: [1x1 struct]
+</pre><p>where</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col class="col1" width="50%"><col class="col2" width="50%"></colgroup><tbody><tr><td><span class="bold"><strong>Node Structure
+                                                Fields</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td><span class="bold"><strong>Interface</strong></span></td><td>Specifies settings for the IO901/IO902. The Interface
+                                            structure has the following fields. Refer to the
+                                            IO901/IO902 product documentation for a description of
+                                            the operation modes.<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: square; "><li class="listitem"><code class="code">NodeID</code><p>-- Configures board node ID (0 - 255, or -1
+                                                  for no change)</p></li><li class="listitem"><code class="code">ActiveInterface</code><p>-- Configures which board interface to use
+                                                  (0, 1, or -1 for no change)</p></li><li class="listitem"><code class="code">Mode</code><p>-- Configures board modes (see Board Mode
+                                                  chapter below)</p></li><li class="listitem"><code class="code">Lasers</code><p>-- Enables/disables the transceiver lasers
+                                                  (see Board Lasers)</p></li><li class="listitem"><code class="code">Interrupts</code><p>-- Enables the board to generate and
+                                                  receive interrupts from the network (see Board
+                                                  Interrupts)</p></li><li class="listitem"><code class="code">Internal</code><p>-- Reserved for internal use</p></li></ul></div></td></tr><tr><td><span class="bold"><strong>Partitions</strong></span></td><td>Stores the shared memory segments </td></tr></tbody></table></div></li></ul></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Using the <code class="code">scgtnodestruct</code> command at the MATLAB Command
+                        Window, create a default node initialization structure. For example,
+                        type</p></li></ul></div></div><div class="refsect1"><a name="d5e143"></a><h2>Create Shared Memory Partitions</h2><p>To use the IO901/IO902 blocks to Read, or Write data, you must define a partition
+                structure. The shared memory drivers use MATLAB structures to define shared memory
+                partitions. A partition structure describes how you want to allocate (or partition)
+                the shared memory. Speedgoat Target allocates shared memory with bundles of data
+                that are packed into memory partitions. Create a shared memory structure with the
+                    <code class="code">scgtpartitionstruct</code> command. Type</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><pre class="programlisting">help scgtpartitionstruct</pre></li></ul></div><p>for a description of the command.</p><div class="itemizedlist"><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><pre class="programlisting">speedgoat_partitionstruct([])
+
+ans =
+
+      Address: '0x0'
+         Type: 'uint32'
+         Size: '1'
+    Alignment: '4'
+     Internal: [1x1 struct]
+</pre></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><pre class="programlisting">Partition(1).Address='0x5000';
+Partition(1).Size='10';
+Partition(2).Size='5';
+Partition(3).Size='3';
+Partition(4).Size='[2, 3]';
+</pre></li></ul></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Using the <code class="code">scgtpartitionstruct</code> command at the MATLAB Command
+                        Window, create a default partition structure. For example, type</p></li><li class="listitem"><p>At the MATLAB Command Window, create a user-defined partition structure.
+                        The easiest way to do this is to create an M-file, partially define a
+                        structure, load that M-file into the MATLAB workspace, and supplement the
+                        resulting structure with a call to the <code class="code">scgtpartitionstruct</code>
+                        function.</p><p>For example</p></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>This example defines a partition with four segments.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>The <code class="code">Address</code> field is optional. Only specify this
+                                field for the first segment of a partition. The elements of a
+                                partition are defined as a continuous memory block from the first
+                                address. The following segments extrapolate their addresses from the
+                                first segment. If you have fragmented memory, use multiple
+                                partitions and SCRAMNet GT Read and Write blocks to work with the
+                                memory.</p></li><li class="listitem"><p>The <code class="code">Size</code> field is required for all fields in the
+                                partition structure.</p></li><li class="listitem"><p>The base addresses of subsequent segments are fully defined by the
+                                size of the preceding segment.</p></li><li class="listitem"><p>You can then call the <code class="code">scgtpartitionstruct()</code> command
+                                to full populate the partition structure.</p><p>You do not need to use all the fields of a partition
+                                initialization structure. However, knowledge of the possible
+                                structure fields will be helpful when you are setting up the
+                                partition structure to use shared memory.</p><p>A shared memory partition structure has the following
+                                fields:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td>Address</td><td>Specifies the base address (in
+                                                hexadecimal, for example, '0x08') of the memory
+                                                partition within the shared memory space of the
+                                                node. The default value is '0x00', the first
+                                                location in the shared memory.</td></tr><tr><td>Type</td><td>
+                                                <p>Specifies the data type of the memory segment.
+                                                  Specify one of the following types:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: square; "><li class="listitem"><p>'single'</p></li><li class="listitem"><p>'double'</p></li><li class="listitem"><p>'uint8'</p></li><li class="listitem"><p>'int8'</p></li><li class="listitem"><p>'uint16'</p></li><li class="listitem"><p>'int16'</p></li><li class="listitem"><p>'uint32'</p></li><li class="listitem"><p>'int32'</p></li><li class="listitem"><p>'boolean' (a single byte represents a
+                                                  boolean value)</p></li></ul></div>
+                                            </td></tr><tr><td>Size</td><td>
+                                                <p>Specifies the dimension and size of the memory
+                                                  segment. You can enter a scalar value or a value
+                                                  with the [m,n] format. The default value is '1'.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: square; "><li class="listitem"><p>scalar &#8212; Treats the Size entry as the
+                                                  specification of the length of a non-oriented
+                                                  array or vector</p></li><li class="listitem"><p>[m,n] &#8212; Treats the Size entry as an
+                                                  array dimension. The total number of elements in
+                                                  this segment is m*n</p></li></ul></div>
+                                            </td></tr><tr><td>Alignment</td><td>If another partition precedes this
+                                                partition, this field defines the byte alignment of
+                                                this segment. Specify one of the following alignment
+                                                values: 1, 2, 3, 4, or 8. The default value is
+                                                '4'.</td></tr></tbody></table></div><p>The variables defined in the memory partition are used for read
+                                and write from all shared memory nodes.</p></li></ul></div></li></ul></div></div><div class="refsect1"><a name="d5e230"></a><h2>Network Wiring</h2><p>Each IO901/IO902 port has two fiber optic connections, RX (receive) and TX
+                (transmit). When connecting two systems, a crossed connection is required. For
+                networks with several nodes, a ring connection is required.</p><p><span class="inlinemediaobject"><img src="././graphics/io907_network.png"></span></p></div><div class="refsect1"><a name="d5e237"></a><h2>Using shared memory to synchronize target machines</h2><p>This section provides information on how to synchronize multiple
+                real-time target machines using Shared/Reflective Memory on IO901/IO902 I/O modules
+                and interrupts. The first target machine works as an initiator, and sets the timing
+                for the other machine(s), using a Network interrupt. This ensures that all the
+                target machines are completely synchronized, and can access the same variables and
+                values at the same time.
+                </p><p>To use the interrupt mode for synchronization of the target machines, the board
+                interrupts need to be activated. When initiating the nodes, add the lines in your
+                initialization procedure:</p><p>Unicast interrupt:</p><p>Target &#8211; Node ID = 2</p><pre class="programlisting">TargetNode.Interface.Interrupts.UnicastInterrupts = 'on';</pre><p>Broadcast interrupt:</p><p>Initiator &#8211; Node ID = 1</p><pre class="programlisting">InitiatorNode.Interface.Interrupts.ChangeBroadcastInterruptMask = 'yes';
+InitiatorNode.Interface.Interrupts.BroadcastInterruptMask = '0xffffffff';</pre><p>Target &#8211; Node ID = 2</p><pre class="programlisting">TargetNode.Interface.Interrupts.ChangeBroadcastInterruptMask = 'yes';
+TargetNode.Interface.Interrupts.BroadcastInterruptMask = '0xffffffff';</pre><p>After configuring the inizalization structure, the Simulink real-time models can
+                be run on each target. For the initiatior node, make sure to use a Send Interrupt
+                block. For more information, refer to <span class="olink">block
+                documentation</span>.</p><p>The Simulink real-time model of the target node requires a Speedgoat Interrupt
+                Block that triggers the application or a subystem. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+                    documentation</a> for more information.</p><p><span class="bold"><strong>Board Interrupts</strong></span></p><p>The IO901/IO902 board allows you to specify the interrupt sources transmitted and
+                received between the nodes of the network. You can set these bits through the
+                    <code class="code">Interface.Interrupts</code> field. The Interface Interrupts fields set the
+                corresponding values on the board. A value of 'nc' does not change the current value
+                on I/O module. To display the board mode fields, type</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><pre class="programlisting">&gt;&gt; node.Interface.Interrupts
+
+ans =
+
+    ChangeBroadcastInterruptMask: 'no'
+          BroadcastInterruptMask: '0x00000000'
+                  SelfInterrupts: 'nc'
+               UnicastInterrupts: 'nc'
+             LinkErrorInterrupts: 'nc'
+</pre></li></ul></div><p>These fields have the following values:</p><p>
+                </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col class="col1" width="33%"><col class="col2" width="33%"><col class="col3" width="34%"></colgroup><tbody><tr><td><span class="bold"><strong>Field</strong></span></td><td><span class="bold"><strong>Values</strong></span></td><td><span class="bold"><strong>Default</strong></span></td></tr><tr><td><span class="bold"><strong>ChangeBroadcastInterruptMask</strong></span></td><td><code class="code">'yes', 'no'</code></td><td><code class="code">'no'</code></td></tr><tr><td><span class="bold"><strong>ChangeBroadcastInterruptMask</strong></span></td><td><code class="code">'0x00000000' - '0xffffffff'</code></td><td><code class="code">'0x00000000'</code></td></tr><tr><td><span class="bold"><strong>SelfInterrupts</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>UnicastInterrupts</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>LinkErrorInterrupts</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr></tbody></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e310"></a><h2>Additional board settings</h2><p><span class="bold"><strong>Board Mode</strong></span></p><p>The IO901/IO902 board has a number of modes that you can set through the
+                    <code class="code">Interface.Mode</code> field. The Interface Mode fields set the
+                corresponding enables on theboard. A value of 'nc' does not change the current value
+                on the board. To display the board mode fields, type</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><pre class="programlisting">&gt;&gt; node.Interface.Mode
+
+ans =
+
+             ReceivePath: 'nc'
+            TransmitPath: 'nc'
+          RetransmitPath: 'nc'
+           WriteLastPath: 'nc'
+      ElectronicWrapPath: 'nc'
+        ByteSwapGTMemory: 'nc'
+        WordSwapGTMemory: 'nc'
+    PCI64bitDataTransfer: 'nc'
+</pre></li></ul></div><p>These modes have the following values:</p><p>
+                </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col class="col1" width="33%"><col class="col2" width="33%"><col class="col3" width="34%"></colgroup><tbody><tr><td><span class="bold"><strong>Field</strong></span></td><td><span class="bold"><strong>Values</strong></span></td><td><span class="bold"><strong>Default</strong></span></td></tr><tr><td><span class="bold"><strong>ReceivePath</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>TransmitPath</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>RetransmitPath</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>WriteLastPath</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>ElectronicWrapPath</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>ByteSwapGTMemory</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>WordSwapGTMemory</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>PCI64bitDataTransfer</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr></tbody></table></div><p>
+            </p><p><span class="bold"><strong>Board Lasers</strong></span></p><p>The IO901/IO902 board allows you to turn on or off the transmit lasers through the
+                    <code class="code">Interface.Lasers</code> field. The Interface Lasers fields set the
+                corresponding enables on the board. A value of 'nc' does not change the current
+                value on I/O module. To display the board mode fields, type</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><pre class="programlisting">&gt;&gt; node.Interface.Lasers
+
+ans =
+
+    ActiveInterfaceLaser: 'nc'
+         Interface0Laser: 'nc'
+         Interface1Laser: 'nc'
+</pre></li></ul></div><p>These fields have the following values:</p><p>
+                </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col class="col1" width="33%"><col class="col2" width="33%"><col class="col3" width="34%"></colgroup><tbody><tr><td><span class="bold"><strong>Field</strong></span></td><td><span class="bold"><strong>Values</strong></span></td><td><span class="bold"><strong>Default</strong></span></td></tr><tr><td><span class="bold"><strong>ActiveInterfaceLaser</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>Interface0Laser</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr><tr><td><span class="bold"><strong>Interface1Laser</strong></span></td><td><code class="code">'nc', 'on', 'off'</code></td><td><code class="code">'nc'</code></td></tr></tbody></table></div><p>
+            </p></div></div></body></html>

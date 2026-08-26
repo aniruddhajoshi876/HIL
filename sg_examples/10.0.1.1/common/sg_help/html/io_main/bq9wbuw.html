@@ -1,0 +1,85 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">General Standards 16AO16 Analog Output</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f44-6069.html" title="Chapter&nbsp;6.&nbsp;General Standards Blocks No Longer Recommended for Use"><link rel="prev" href="bq9u6n6-1.html" title="General Standards PMC66-16AO16"><link rel="next" href="bq9u6mp-1.html" title="General Standards PMC-24DSI12"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bq9wbuw"></a><div class="titlepage"></div><div class="refnamediv"><h2>General Standards 16AO16 Analog Output<a name="GeneralStandards_16AO16_DA"></a></h2><p>General Standards 16AO16 Analog Output<a name="GeneralStandards_16AO16_DA"></a> &#8212; General Standards 16AO16 Analog Output (not recommended)<b>GeneralStandards</b><b>AudioBlocks</b></p></div><div class="refsect1"><a name="d5e7297"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="bq9u6n6-1.html" class="olink">General
+                            Standards PMC66-16AO16</a></p></li></ul></div></div><div class="refsect1"><a name="bq9wbuw-5"></a><h2>Library</h2><p><span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> Library of
+                Drivers No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcgeneralstandardslib</code> in the
+                Command Window.</p></div><div class="refsect1"><a name="bq9wftr-1"></a><h2>Scaling Input to Output</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col class="col1" width="33%"><col class="col2" width="33%"><col class="col3" width="34%"></colgroup><thead><tr><th valign="top">
+                                <p>I/O Module Output</p>
+                            </th><th valign="top">
+                                <p>Block Input Data Type</p>
+                            </th><th valign="top">
+                                <p>Scaling</p>
+                            </th></tr></thead><tbody><tr><td>
+                                <p>Volts</p>
+                            </td><td>
+                                <p>Double</p>
+                            </td><td>
+                                <p>1</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="bq9wgn7-1"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel vector</strong></span></span></dt><dd><p>This is a vector of channels. Specifies the output channels that the
+                            block works on. Each channel can appear only once in this vector. For
+                            example, to use the first, third, and fifth analog output channels,
+                            enter:</p><pre class="programlisting">[1,3,5]</pre></dd><dt><span class="term"><span class="bold"><strong>Output range</strong></span></span></dt><dd><p>From the list, select an output range code for
+                            all D/A channels. This driver does
+                            not allow the selection of a different range for individual channels.</p><p>The following table is a list of the ranges for this driver and the
+                            corresponding range codes.</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="48%" class="col1"><col width="52%" class="col2"></colgroup><thead><tr><th>
+                                            <p>Input Range (V)</p>
+                                        </th><th>
+                                            <p>Range Code</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p>-10 to +10</p>
+                                        </td><td>
+                                            <p>+-10</p>
+                                        </td></tr><tr><td>
+                                            <p>-5 to +5</p>
+                                        </td><td>
+                                            <p>+-5</p>
+                                        </td></tr><tr><td>
+                                            <p>-2.5 to +2.5</p>
+                                        </td><td>
+                                            <p>+-2.5</p>
+                                        </td></tr><tr><td>
+                                            <p>-1.5 to +1.5</p>
+                                        </td><td>
+                                            <p>+-1.5</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Enable output ground sense hardware
+                            correction</strong></span></span></dt><dd><p>Select this check box to enable the <code class="literal">REMOTE GROUND
+                                SENSE</code> bit in the Board Control Register (BCR). See the
+                            manufacturer documentation for more information about this
+                            function.</p></dd><dt><span class="term"><span class="bold"><strong>Frame Size</strong></span>, <span class="bold"><strong>Sample
+                            Rate</strong></span>, and <span class="bold"><strong>Sampletime</strong></span></span></dt><dd><p>These three parameters are not independent but are related by:</p><p><span class="mathphrase"><span class="emphasis"><em>FrameSize</em></span>&nbsp;=&nbsp;<span class="emphasis"><em>Sampletime</em></span>&nbsp;*&nbsp;<span class="emphasis"><em>SampleRate</em></span></span>.</p><p>After you specify two of the parameters, the equation determines the
+                            third parameter. Enter <code class="literal">-1</code> to have the block calculate
+                            that value from the other values.</p><p>For example, if you set <span class="bold"><strong>Frame Size</strong></span> to
+                            64 and <span class="bold"><strong>Sample Rate</strong></span> to 44100, specify
+                                <span class="bold"><strong>Sampletime</strong></span> as
+                            <code class="literal">-1</code>. It is computed internally to 0.001451247165533
+                            seconds. This example model executes every 0.001451247165533 seconds,
+                            which is every 64 samples at 44.1 kHz.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Frame size (samples)</strong></span></span></dt><dd><p>Enter the number of samples in one frame for each channel
+                                        listed in <span class="bold"><strong>Channel vector</strong></span>.
+                                        An interrupt occurs on the board each time the board
+                                        acquires this number of samples.</p></dd><dt><span class="term"><span class="bold"><strong>Sample rate</strong></span></span></dt><dd><p>Enter the frequency at which the samples are taken, in Hz.
+                                        This frequency must be in the range 2000 to 200000 Hz (2 kHz
+                                        to 200 kHz).</p></dd><dt><span class="term"><span class="bold"><strong>Sample time (Frame completion
+                                        time)</strong></span></span></dt><dd><p>Enter the time between frame completions.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Autocal at download</strong></span></span></dt><dd><p>Select this check box to execute the autocalibration cycle as part of
+                            the initial setup when the model is downloaded to the target computer.
+                            You might autocalibrate, for example, if the clock frequency changes
+                            when you download the model to the target computer. You can consider
+                            clearing this check box if you do not need to worry about exact voltage
+                            levels.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The autocalibration cycle requires approximately 5 seconds
+                                        to complete. Refer to the manufacturer documentation for
+                                        further information on autocalibration.</p></li><li class="listitem"><p>Autocalibration on the General Standards 16AO16 board
+                                        might create undesirable output during model
+                                        download.</p></li></ul></div></td></tr></table></div></dd><dt><span class="term"><span class="bold"><strong>External
+                            sync signal type</strong></span></span></dt><dd><p>From the list, select one of the following to select a signal type for
+                            the clock output signal that can be connected to other input boards or
+                            to the PMC66-16AO16 output board.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">LVDS</code></span></dt><dd><p>Low voltage differential signaling. Select this value for
+                                        greater reliability, especially when using the General
+                                        Standards twisted-pair ribbon cables.</p></dd><dt><span class="term"><code class="literal">TTL</code></span></dt><dd><p>See the manufacturer documentation for guidelines on using
+                                        this signal type.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div><div class="refsect1"><a name="d5e7460"></a><h2>Related Links</h2><p><a class="link" href="http://www.generalstandards.com" target="_top">www.generalstandards.com</a></p></div></div></body></html>

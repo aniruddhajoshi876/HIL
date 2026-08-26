@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EV - Isolation Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_ev_isolation_read.html" title="EV - Isolation Read"><link rel="next" href="refentry_ref_ev_precharge_read.html" title="EV - Pre-Charge Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_ev_isolation_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>EV - Isolation Write</h2><p>EV - Isolation Write &#8212; <span class="phrase">Writes data to the EV board
+                    during the Isolation state of the charge cycle.</span></p></div><div class="refsect1"><a name="d5e75647"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ev_isolation_write.png"></span></span></p></div><div class="refsect1"><a name="d5e75655"></a><h2>Description</h2><p>The EV Isolation Write block writes data to the EV charging board during the
+                Isolation state of the charge cycle.</p></div><div class="refsect1"><a name="d5e75658"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Ready</span>
+                    </span></dt><dd><p>Indicates if the EV is ready to charge generally.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: not ready</p></li><li class="listitem"><p>1: ready</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Errorcode</span>
+                    </span></dt><dd><p>Errorcode following enumeration table "DC_EVErrorCodeType" ISO
+                            15118-2: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: EV_NO_ERROR</p></li><li class="listitem"><p>1: EV_FAILED_RESS_TEMPERATURE_INHIBIT</p></li><li class="listitem"><p>2: EV_FAILED_EV_SHIFT_POSITION</p></li><li class="listitem"><p>3: EV_FAILED_CHARGER_CONNECTOR_LOCK_FAULT</p></li><li class="listitem"><p>4: EV_FAILED_EVRESS_MALFUNCTION</p></li><li class="listitem"><p>5: EV_FAILED_CHARGING_CURRENTDIFFERENTIAL</p></li><li class="listitem"><p>6: EV_FAILED_CHARGING_VOLTAGE_OUT_OF_RANGE</p></li><li class="listitem"><p>7: EV_RESERVED_A</p></li><li class="listitem"><p>8: EV_RESERVED_B</p></li><li class="listitem"><p>9: EV_RESERVED_C</p></li><li class="listitem"><p>10: EV_FAILED_CHARGING_SYSTEM_INCOMPATIBILITY</p></li><li class="listitem"><p>11: EV_NO_DATA</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">RESS SOC</span>
+                    </span></dt><dd><p>Current state of charge (SoC) of the EV's rechargeable energy storage
+                            system (RESS).</p></dd></dl></div></div><div class="refsect1"><a name="d5e75707"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Defines the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Defines the Connection ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Enable/Disable Signals Tab</div><p>Some settings, like min. and max. voltage limits, are already set by the Setup
+                    block but can be overwritten during the Parameter Discovery state of the charge
+                    if desired. However, unused signals that remain unconnected are set to zero. To
+                    avoid setting parameters to zero, unused signals should be unchecked here to
+                    disable the write operation.</p><p>The following signals can be disabled:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Errorcode</p></li></ul></div><dl class="variablelist"></dl></div></div></div></body></html>

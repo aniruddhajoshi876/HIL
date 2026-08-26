@@ -1,0 +1,18 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor QPCX-1553 Bus Monitor</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="btw_ttt.html" title="Condor QPCX-1553 Bus Controller Send"><link rel="next" href="btw_t2l.html" title="Condor QPCX-1553 Initialize"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="btw_tzd"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor QPCX-1553 Bus Monitor<a name="Condor_QPCX-1553_Monitor"></a></h2><p>Condor QPCX-1553 Bus Monitor<a name="Condor_QPCX-1553_Monitor"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg;
+                QPCX-1553 Bus Monitor (BM) block (not recommended)<b>MilStd1553Blocks</b><b>CondorEngineering</b></p></div><div class="refsect1"><a name="d5e6270"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="btw_r7h-1.html" class="olink">Condor&reg;
+                            QPCX-1553</a></p></li></ul></div></div><div class="refsect1"><a name="btw_tz2"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="btw_tz_"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel</strong></span></span></dt><dd><p>From the list of available channels on the board, choose <code class="literal">1</code>,
+                <code class="literal">2</code>, <code class="literal">3</code>, or <code class="literal">4</code>. This channel is
+            initialized for this command stream.</p></dd><dt><span class="term"><span class="bold"><strong>Maximum number of messages to receive</strong></span></span></dt><dd><p>Enter the maximum number of messages this block must read from the board.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div></div></body></html>

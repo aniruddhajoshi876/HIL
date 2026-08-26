@@ -1,0 +1,68 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_serial_write_hw_fifo_v1.html" title="Serial - Write HW FIFO v1"><link rel="next" href="refentry_serial_read_hw_fifo_v2.html" title="Serial - Read HW FIFO v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial - Setup v2</h2><p>Serial - Setup v2 &#8212; <span class="phrase">The Serial setup block is used
+                    to configure the serial communication for each channel.</span></p></div><div class="refsect1"><a name="d5e14026"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_serial_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e14034"></a><h2>Description</h2><p>This code module provides support for configurable serial communications
+                implemented on a configurable I/O module. The code module allows bidirectional
+                asynchronous serial communications for standards such as RS232, RS485 and RS422.
+            </p></div><div class="refsect1"><a name="d5e14037"></a><h2>Ports</h2><p>This block has no input or output ports.</p></div><div class="refsect1"><a name="d5e14040"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Bit Rate Setup</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bit Rate Vector </span>
+                    </span></dt><dd><p>This parameter defines the required bit rate, expressed in bits per
+                            second. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The accuracy of the effective bit rate can vary depending on the
+                                FPGA frequency defined in the configuration file. The effective bit
+                                rate and the relative error are shown in the block mask.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Effective Bit Rate </span>
+                    </span></dt><dd><p>This field shows the effective bit rate computed based on the I/O
+                            module performance.</p><p>The effective bit rate will always be an integer division of the I/O
+                            module frequency, which can be verified in the IO3xx Setup block mask.
+                            When selecting higher bit rates, do not overlook the steps between the
+                            possible bit rates. Refer to the table below for the fastest rates
+                            available. </p><p>The effective bitrate can be calculated using this formula: </p><p>
+                            </p><pre class="programlisting">bitrate_effective = (fpga_frequency/clock_divider) / 2;</pre><p>
+                        </p><p> The following table shows the possible bitrates for configuration
+                            files with 75 MHz and 100 MHz I/O module frequencies:</p><p>
+                            </p><div class="table"><a name="d5e14076"></a><div class="table-title">Table&nbsp;1.&nbsp;</div><div class="table-contents"><table class="table" summary="" border="1"><colgroup><col width="17%" class="c2"><col width="12%" class="c3"><col width="13%" class="c4"><col width="15%" class="c5"><col width="14%" class="c6"><col width="14%" class="c7"><col width="15%" class="c8"></colgroup><thead><tr><th>I/O Module Frequency</th><th>Divider = 2</th><th>Divider = 3</th><th>Divider = 4</th><th>Divider = 5</th><th>Divider = 10</th><th>Divider = 100</th></tr></thead><tbody><tr><td>75 MHz</td><td>18.75 Mbit/s</td><td>12.5 Mbit/s</td><td>9.375 Mbit/s</td><td>7.5 Mbit/s</td><td>3.75 Mbit/s</td><td>375 kbit/s</td></tr><tr><td>100 MHz</td><td>25 Mbit/s</td><td>16.66 Mbit/s</td><td>12.5 Mbit/s</td><td>10 Mbit/s</td><td>5 Mbit/s</td><td>500 kbit/s</td></tr></tbody></table></div></div><p><br class="table-break">
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Error (%) </span>
+                    </span></dt><dd><p>This field shows the variation between the defined bit rate and the
+                            effective bit rate. The units are in percentiles. For instance: 0.16
+                            means 0.16%.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: UART Frame </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Parity </span>
+                    </span></dt><dd><p>From the list, choose - None - Even - Odd - Mark - Space. This
+                            parameter defines the receive and transfer parity.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Length Vector</span>
+                    </span></dt><dd><p>This parameter defines the data length in bits of the UART word.
+                            Correct values are in the range 5 to 9.</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop Length Vector</span>
+                    </span></dt><dd><p>This parameter defines how many stop bits are used by the protocol.
+                            Correct values are in the range 1 to 2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Half Duplex Vector</span>
+                        <span class="emphasis"><em>(available from version 2.11 of the Serial
+                        module)</em></span></span></dt><dd><p>The value 1 in this vector enables the half duplex mode: The physical
+                            Tx line of the affected channel turns into Dx (Data Pin). This means
+                            that the Tx line is only actively driving the Tx signal when there are
+                            Tx data to be sent. When there are no Tx data to be sent (after the end
+                            of each Tx frame), the Tx line is not actively driven anymore and
+                            switches over to an Rx line. The physical Rx line becomes unnecessary in
+                            that case and can be left unconnected.</p><p>The value 0 means that the Tx line is constantly driven and therefore,
+                            full duplex with separated Tx and Rx lines is used (default
+                            case).</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Timeout Setup</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Rx Character Timeout Vector</span>
+                    </span></dt><dd><p>This parameter defines the duration after which a character timeout is
+                            detected. The unit is in UART words. For example, a value of 1 would
+                            trigger a timeout interrupt at the end of a frame if one word is
+                            missing. A value of 0 disables the character timeout. With the Serial
+                            Interrupt source <span class="emphasis"><em>Speedgoat IO3xx Serial</em></span> in
+                            combination with the <a href="refentry_serial_read_character_timeout_status_v1.html" class="olink">Read
+                                Character Timeout Status v1</a> driver block, a subsystem or a
+                            complete model can be triggered by the Rx Character Timeout. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Additional important information is available in the <a class="link" href="https://www.speedgoat.com/help/slrt/page/examples/IO3xx_Serial_Loopback_Interrupt" target="_top">IO3xx Serial - Loopback Interrupt</a> example.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

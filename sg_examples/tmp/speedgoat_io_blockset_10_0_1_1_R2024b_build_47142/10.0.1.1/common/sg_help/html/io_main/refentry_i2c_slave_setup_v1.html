@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">I2C - Slave setup v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_i2c_master_write_v1.html" title="I2C - Master write v1"><link rel="next" href="refentry_i2c_slave_read_v1.html" title="I2C - Slave read v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_i2c_slave_setup_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>I2C - Slave setup v1</h2><p>I2C - Slave setup v1 &#8212; <span class="phrase">The I2C Slave setup block
+                    allows an identifier (slaveID) to be assigned to the I2CS blocks. In addition,
+                    the Register Addressing of the I2CS can be enabled or
+                disabled.</span></p></div><div class="refsect1"><a name="d5e11689"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_i2c_slave_setup_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e11697"></a><h2>Description</h2><p>The I2C Slave setup block allows an identifier (slaveID) to be assigned to the
+                I2CS blocks. In addition, the Register Addressing of the I2CS can be enabled or
+                disabled.</p><p>If the <span class="bold"><strong>Skip Register Addressing</strong></span> parameter is
+                unchecked, the I2CS expects to receive a subindex byte prior to a write access on
+                the registers of the I2CS. This subindex byte sets the pointer to the slave register
+                address where the following read or write accesses will be done. An auto-increment
+                flag is enabled so that multiple read or write accesses can be performed on
+                consecutive register addresses. The encoding of the subindex byte for the I2CS
+                implementation looks as follows: - bit 7-0: register address (0..256)</p><p>If <span class="bold"><strong>Skip Register Addressing</strong></span>" is checked, the I2C
+                slave block will no longer expect to receive a sub-index (register address) prior to
+                a write access. Both accesses, write and read, will be performed on the first
+                register of I2CS.</p></div><div class="refsect1"><a name="d5e11704"></a><h2>Ports</h2><p>This block has no inputs and no outputs.</p></div><div class="refsect1"><a name="d5e11707"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel"></a><span class="term">
+            <span class="guilabel">Channel</span>
+        </span></dt><dd><p>The number of the channel which this driver block entity will access. Only one
+                channel per driver block can be addressed. You can specify channels in the range 1-N
+                (N = the number of channels implemented in your specific configuration file defined
+                in the Setup block).</p></dd><dt><span class="term">
+                        <span class="guilabel">Slave Identifier </span>
+                    </span></dt><dd><p>A unique identifier for the slave. The identifier size is 7 bits.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Skip Register Addressing </span>
+                    </span></dt><dd><p>If enabled, the register addressing of the I2CS is skipped. The I2C
+                            slave block will no longer expect to receive a sub-index (register
+                            address) prior to a write access. Both accesses, write and read, will be
+                            performed on the first register of I2CS.</p></dd></dl></div></div></div></body></html>

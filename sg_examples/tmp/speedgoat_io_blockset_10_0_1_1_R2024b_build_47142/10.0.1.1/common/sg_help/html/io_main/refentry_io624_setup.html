@@ -1,0 +1,225 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_usage_notes.html" title="IO624 Usage Notes"><link rel="next" href="refentry_io624_receive.html" title="IO624 - Receive"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Setup</h2><p>IO624 - Setup &#8212; 
+                <span class="phrase">Configure the IO624 I/O module</span>
+            </p></div><div class="refsect1"><a name="d5e20015"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e20023"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on other driver blocks (Send,
+                Receive, Sync Status, Sync Pulses and Wheel Speed (WS) Control).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e20030"></a><h2>Parameters</h2><p>The nine tabs of the Setup block contain the IO624 I/O module configuration
+                settings.</p><p>Refer to the <a href="refentry_ref_io624.html" class="olink">IO624
+                    main page</a> for the cycle time and bit time specifications, as well as
+                details about the max time factor mentioned below.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Channel X</span>
+                    </span></dt><dd><p>The IO624 I/O module supports up to eight channels. Each channel can
+                            be disabled or selected as a PSI5, custom, square wave, PWM, or AK/VDA
+                            sensor emulator.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Monitor</span>
+                    </span></dt><dd><p>The module measures the voltage between the VDD and VSS pins. The main
+                            application is for Sync pulse. The channel selected is in the Receive
+                            block.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channel Tab</div><dl class="variablelist"><dt><span class="term">Current Level Settings</span></dt><dd><p>These common parameters are used by all Sensor Emulators.</p></dd><dt><span class="term">
+                        <span class="guilabel">Current Settings</span>
+                    </span></dt><dd><p>Select between <span class="bold"><strong>Default</strong></span> or <span class="bold"><strong>Custom</strong></span> for the <span class="bold"><strong>High</strong></span>, <span class="bold"><strong>Mid</strong></span>, and
+                                <span class="bold"><strong>Low</strong></span> current parameters. <span class="bold"><strong>Default</strong></span> will set the default current
+                            parameter based on the communication protocol selected. <span class="bold"><strong>Custom</strong></span> enables the configuration parameters.
+                                <span class="bold"><strong>High</strong></span>, <span class="bold"><strong>Mid</strong></span> and/or <span class="bold"><strong>Low</strong></span>
+                            parameters are available depending on the sensor emulator
+                            selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">High [&#956;A]</span>
+                    </span></dt><dd><p>Defines the high current level in microamperes (0 to 75000).</p></dd><dt><span class="term">
+                        <span class="guilabel">Mid [&#956;A]</span>
+                    </span></dt><dd><p>Defines the mid current level in microamperes (0 to 75000).</p></dd><dt><span class="term">
+                        <span class="guilabel">Low [&#956;A]</span>
+                    </span></dt><dd><p>Defines the low current level in microamperes (0 to 75000).</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Base Setting</span>
+                    </span></dt><dd><p>The time base must be multiplied by the time factor to obtain the
+                            cycle time or the bit time in the configuration. If there is no
+                            indication that the time base is fixed, then these are the
+                            options:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>50 ns</p></li><li class="listitem"><p>0.1 us</p></li><li class="listitem"><p>1 us</p></li><li class="listitem"><p>1 ms</p></li></ul></div></dd></dl></div><div class="refsect2"><a name="d5e20122"></a><h3>PSI5 Sensor Emulator</h3><p>These parameters are displayed when <span class="bold"><strong>PSI5 Sensor
+                        Emulator</strong></span> is selected in the Main tab. All the input and output
+                    signals are controlled by the Send, Receive, Sync Status and Sync Pulses
+                    blocks.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Communication Mode</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>PSI5-A
+                                    (Asynchronous)</strong></span>, <span class="bold"><strong>PSI5-U/P
+                                    (Synchronous without Daisy Chain)</strong></span>, <span class="bold"><strong>PSI5-D (Synchronous Daisy Chain)</strong></span> and
+                                    <span class="bold"><strong>PSI5-V (Variable Time Triggered
+                                    Synchronous)</strong></span> communication mode.</p></dd><dt><span class="term">
+                            <span class="guilabel">Number of Bits</span>
+                        </span></dt><dd><p>The Number of Data Frame Bits (1 to 32). <span class="bold"><strong><span class="underline">This value must not include the
+                                        Start bits</span></strong></span>.</p></dd><dt><span class="term">
+                            <span class="guilabel">Start Bit Enable</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>Start Bit Enable</strong></span>,
+                                    <span class="bold"><strong>Start Bit Disable</strong></span> and <span class="bold"><strong>Start Bit Custom</strong></span>.</p></dd><dt><span class="term">
+                            <span class="guilabel">Start Bits [S1, S2]</span>
+                        </span></dt><dd><p>For PSI5 sensor-to-ECU communication, the two start bits are
+                                always coded &#8220;0&#8221;. You can nonetheless disable this parameter or
+                                define a custom configuration.</p></dd><dt><span class="term">
+                            <span class="guilabel">Default Payload</span>
+                        </span></dt><dd><p>Defines the default data frame transferred from the sensor to the
+                                ECU. The payload must include the parity or CRC bits. The bits are
+                                transmitted in ascending order, starting with bit 0. The <span class="bold"><strong>Default Payload</strong></span> is only sent when the
+                                Sensor Send block has no input data. In PSI5-D (Synchronous Daisy
+                                Chain) mode, the default payload is transmitted until the sensor
+                                address is received from the ECU. The default payload length is
+                                32-bit words. Data Type: uint32.</p></dd><dt><span class="term">
+                            <span class="guilabel">Slot Delay [&#956;s]</span>
+                        </span></dt><dd><p>The delay between the start of a synchronization pulse, and the
+                                data frame (0 to MaxFactor). This delay can be used to determine in
+                                which slot the sensor will send its data.</p></dd><dt><span class="term">
+                            <span class="guilabel">ECU to Sensor Communication</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>Tooth Gap</strong></span> and
+                                    <span class="bold"><strong>Pulse Width</strong></span> method.</p><p>Only synchronization pulses within the permitted time window are
+                                recognized. Refer to the usage notes for more information.</p></dd><dt><span class="term">
+                            <span class="guilabel">ECU Data Frame 2 Length</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>Frame 2a Long
+                                    (Nibble)</strong></span> or <span class="bold"><strong>Frame 2b Long
+                                    (Byte)</strong></span> length according to the expected Frame 2 from
+                                the ECU.</p></dd><dt><span class="term">
+                            <span class="guilabel">Signal Sustain Voltage [mV]</span>
+                        </span></dt><dd><p>The voltage that is used to detect sync pulses (0 to 26761). Refer
+                                to the usage notes for more information.</p></dd><dt><span class="term"><span class="guilabel">Bit Rate</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>125 kbps</strong></span>,
+                                    <span class="bold"><strong>189 kbps</strong></span>, and <span class="bold"><strong>Custom</strong></span>. <span class="bold"><strong>Custom</strong></span> enables the <span class="bold"><strong>Bit Time
+                                    Factor</strong></span> parameter.</p></dd><dt><span class="term">
+                            <span class="guilabel">Bit Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the bit time in
+                                microseconds.</p></dd><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor. For the PSI5 sensor
+                                emulator, the time base of the bit time is always 0.1 [&#956;s].</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the cycle time in
+                                microseconds.</p></dd><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor. For the PSI5 Sensor, the
+                                Time Scale of the Cycle Time is always 1 [&#956;s].</p></dd></dl></div></div><div class="refsect2"><a name="d5e20221"></a><h3>Square Wave Sensor Emulator</h3><p>These parameters are displayed when <span class="bold"><strong>Square Wave Sensor
+                        Emulator</strong></span> is selected in the Main tab. All the input signals are
+                    controlled by the WS Sensor Control Block.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Pulse Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the pulse time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the cycle time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Enable Dynamic Timing</span>
+                        </span></dt><dd><p>Adds input ports for the Pulse and Cycle Time on the IO624 WS
+                                Sensor Control block. This allows to tune these values during
+                                runtime.</p></dd></dl></div></div><div class="refsect2"><a name="d5e20255"></a><h3>PWM Sensor Emulator</h3><p>These parameters are displayed when <span class="bold"><strong>PWM Sensor
+                        Emulator</strong></span> is selected in the Main tab. All the input signals are
+                    controlled by the WS Sensor Control Block.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Pulse Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor. For the PWM sensor
+                                emulator, the time base of the pulse time is always 0.1 [&#956;s].</p></dd><dt><span class="term">
+                            <span class="guilabel">Pulse Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the pulse time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the cycle time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Enable Dynamic Timing</span>
+                        </span></dt><dd><p>Adds input ports for the Pulse and Cycle Time on the IO624 WS
+                                Sensor Control block. This allows to tune these values during
+                                runtime.</p></dd></dl></div></div><div class="refsect2"><a name="d5e20289"></a><h3>AK / VDA Sensor Emulator</h3><p>These parameters are displayed when <span class="bold"><strong>AK / VDA Sensor
+                        Emulator</strong></span> is selected in the Main tab. All the input signals are
+                    controlled by the WS Sensor Control Block.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Bit Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor. For the AK / VDA sensor
+                                emulator, the time base of the bit time is always 0.1 [&#956;s].</p></dd><dt><span class="term">
+                            <span class="guilabel">Bit Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the bit time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the cycle time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Speed Pulse</span>
+                        </span></dt><dd><p>Defines the encoding start current level (Speed pulse). Select
+                                between <span class="bold"><strong>Normal (High Current)</strong></span> and
+                                    <span class="bold"><strong>Artificial (Mid
+                                Current)</strong></span>.</p></dd><dt><span class="term">
+                            <span class="guilabel">Enable Dynamic Speed Pulse Level</span>
+                        </span></dt><dd><p>Adds an input port for the Speed Pulse Level (SPLvl) on the IO624
+                                WS Sensor Control block. This allows you to tune the speed pulse
+                                level during runtime.</p></dd><dt><span class="term">
+                            <span class="guilabel">Enable Dynamic Timing</span>
+                        </span></dt><dd><p>Adds input ports for the Bit and Cycle Time on the IO624 WS Sensor
+                                Control block. This allows to tune these values during
+                                runtime.</p></dd></dl></div></div><div class="refsect2"><a name="d5e20335"></a><h3>Custom Sensor Emulator</h3><p>These parameters are displayed when <span class="bold"><strong>Custom Sensor
+                        Emulator</strong></span> is selected in the Main tab. All the input signals are
+                    controlled by the WS Sensor Control Block.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">Mode</span>
+                        </span></dt><dd><p>Select between <span class="bold"><strong>Direct Control</strong></span>,
+                                    <span class="bold"><strong>FIFO-Sequencer</strong></span>, and <span class="bold"><strong>FIFO-Triggered</strong></span>.</p></dd><dt><span class="term">
+                            <span class="guilabel">Direct Control</span>
+                        </span></dt><dd><p>Allows to select which current level is active as the default
+                                output channel current.</p></dd><dt><span class="term">
+                            <span class="guilabel">FIFO-Sequencer</span>
+                        </span></dt><dd><p>Allows to output a frame of current levels, which can hold 16
+                                current-level settings. When a new frame is loaded into the FIFO, it
+                                is automatically output during the next cycle. To output frames
+                                equidistantly, the data must be reloaded after each cycle.</p></dd><dt><span class="term">
+                            <span class="guilabel">FIFO-Triggered</span>
+                        </span></dt><dd><p>Allows to output frames of current levels every sample time. The
+                                number of frames is defined in <span class="bold"><strong>FIFO Number of
+                                    Frames</strong></span>.</p></dd><dt><span class="term">
+                            <span class="guilabel">FIFO Number of Frames</span>
+                        </span></dt><dd><p>Defines the number of FIFO frames to be selected; can be from 1 to
+                                16. The full FIFO can hold up to 256 current-level settings
+                                (16x16).</p></dd><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Pulse Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the pulse time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Time Base</span>
+                        </span></dt><dd><p>Multiplicand of the respective factor.</p></dd><dt><span class="term">
+                            <span class="guilabel">Cycle Time Factor</span>
+                        </span></dt><dd><p>The factor (1 to <a href="refentry_ref_io624.html" class="olink">max time factor</a>) that is
+                                in operation with the respective <span class="bold"><strong>Time
+                                    Base</strong></span> parameter to obtain the cycle time.</p></dd><dt><span class="term">
+                            <span class="guilabel">Enable Dynamic Timing</span>
+                        </span></dt><dd><p>Adds input ports for the bit time on the IO624 WS Sensor Control
+                                driver block. This allows you to tune the values during
+                                runtime.</p></dd></dl></div></div></div></div></body></html>

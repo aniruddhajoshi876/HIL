@@ -1,0 +1,92 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus - Client Transceiver</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mbtcp_client_connection.html" title="Modbus - Client Connection"><link rel="next" href="refentry_mbrtu_landing.html" title="Modbus RTU"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mbtcp_client_transceiver"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus - Client Transceiver</h2><p>Modbus - Client Transceiver &#8212; <span class="phrase">Reads/writes data
+                    from/to the input/output port of the block</span></p></div><div class="refsect1"><a name="d5e69467"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mbtcp_client_transceiver.png"></span></span></p></div><div class="refsect1"><a name="d5e69475"></a><h2>Description</h2><p>This block is used to exchange data with the remote Modbus TCP Server. Your model
+                can contain multiple Modbus TCP Client Transceiver blocks for each Modbus Connection
+                in your target machine.</p></div><div class="refsect1"><a name="d5e69478"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Tx</span>
+                    </span></dt><dd><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            includes the values to be sent to the <span class="bold"><strong>Modbus
+                                Server </strong></span> for the data range specified by the <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span> parameters. The data type depends on the
+                            selected function code.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For Coils and Discrete Inputs, the input port is a vector of
+                                    the BOOLEAN data type where the length of the vector is defined
+                                    by the <span class="bold"><strong>Quantity</strong></span> parameter. Each
+                                    BOOLEAN element of the vector represents one bit.</p></li><li class="listitem"><p>For Holding Registers and Input Registers, the input port is a
+                                    vector of the UINT16 data type where the length of the vector is
+                                    defined by the <span class="bold"><strong>Quantity</strong></span>
+                                    parameter. Each UINT16 element of the vector represents one
+                                    word/register.</p></li></ul></div><p>Use Byte Pack blocks to convert signed values or floating-point
+                            numbers. You can pack one double value to a vector of type uint16 and
+                            length 4.</p></dd><dt><span class="term">
+                        <span class="guilabel">ENA</span>
+                    </span></dt><dd><p>Boolean input to allow the user to manage the handling of Modbus
+                            requests to the defined Modbus Server. This input is only active if the
+                                <span class="bold"><strong>Manage Requests</strong></span> checkbox is enabled.
+                            Send a boolean value of 1 to enable sending or 0 to disable the sending
+                            of Modbus requests. If the sending is stopped, the Transceiver will
+                            still be able to receive data and update its output port.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Rx</span>
+                    </span></dt><dd><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            includes the values received from the <span class="bold"><strong>Modbus
+                                Server </strong></span> for the data range specified by the <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span> parameters. The data type depends on the
+                            selected function code.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For Coils and Discrete Inputs, the output port is a vector of
+                                    the BOOLEAN data type where the length of the vector is defined
+                                    by the <span class="bold"><strong>Quantity</strong></span> parameter. Each
+                                    BOOLEAN element of the vector represents one bit.</p></li><li class="listitem"><p>For Holding Registers and Input Registers, the output port is
+                                    a vector of the UINT16 data type where the length of the vector
+                                    is defined by the <span class="bold"><strong>Quantity</strong></span>
+                                    parameter. Each UINT16 element of the vector represents one
+                                    word/register.</p></li></ul></div><p>Use Byte Unpack blocks to convert to signed values or floating-point
+                            numbers. You can unpack a vector of type uint16 and length 4 to one
+                            double value.</p></dd></dl></div></div><div class="refsect1"><a name="d5e69524"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Client Station ID</span>
+                    </span></dt><dd><p>Apply the Client Station ID of the corresponding Setup block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote Server Unit ID</span>
+                    </span></dt><dd><p>Typical Modbus Servers that do not act as a Modbus RTU gateway have
+                            only one unit. If the Modbus Server is accessed through a bridge or
+                            gateway, then it can contain multiple units. The Unit ID is necessary to
+                            identify the units. Check the official <span class="bold"><strong><a class="link" href="https://modbus.org" target="_blank">
+                                    Implementation Guide</a></strong></span> for more information
+                            about this topic.</p><p>Apply the Unit ID to address the remote Unit in the Modbus TCP Server.
+                            You can assign multiple Transceiver blocks the same Modbus Unit ID. Must
+                            range between 0 and 255.</p><p>According to the Modbus standard, unit ID 255 means NON-SIGNIFICANT.
+                            When addressing a Speedgoat Modbus Server and the unit identifier is set
+                            to 255 but unit 255 is not configured in the server itself, the
+                            requested command is performed on the first unit specified in the server
+                            configuration.</p></dd><dt><span class="term">
+                        <span class="guilabel">Function Code</span>
+                    </span></dt><dd><p>Select the Modbus Function Code you want to use for your
+                            communication. The options are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>FC1 (Read Multiple Coils)</p><p>The output will be an array of booleans.</p></li><li class="listitem"><p>FC2 (Read Multiple Discrete Inputs)</p><p>The output will be an array of booleans.</p></li><li class="listitem"><p>FC3 (Read Multiple Holding Registers)</p><p>The output will be an array of uint16.</p></li><li class="listitem"><p>FC4 (Read Multiple Input Registers)</p><p>The output will be an array of uint16.</p></li><li class="listitem"><p>FC5 (Write Single Coil)</p><p>The input will be a single uint16.</p></li><li class="listitem"><p>FC6 (Write Single Holding Register)</p><p>The input will be a single uint16.</p></li><li class="listitem"><p>FC15 (Write Multiple Coils)</p><p>The input will be an array of uint16.</p></li><li class="listitem"><p>FC16 (Write Multiple Holding Registers)</p><p>The input will be an array of uint16.</p></li></ul></div><p>Refer to the <a href="refentry_mbtcp_usage_notes.html" class="olink">Modbus usage notes</a>
+                            for further information about function codes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Index</span>
+                    </span></dt><dd><p>The first index of the data range you want to send or receive. Must
+                            range between 0 and 65535.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For Coils and Discrete Inputs, the parameter defines the start
+                                    bit.</p></li><li class="listitem"><p>For Holding Registers and Input Registers, the value defines
+                                    the start word.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data Quantity</span>
+                    </span></dt><dd><p>The length of the data range you want to send or receive. <span class="bold"><strong> Index</strong></span> + <span class="bold"><strong>Quantity</strong></span> must not exceed 65536.</p></dd><dt><span class="term">
+                        <span class="guilabel">Polling Interval</span>
+                    </span></dt><dd><p>The polling interval is the time interval between sending Modbus
+                            requests to the server. Must range between 0 and 7,200,000 milliseconds,
+                            which corresponds to a maximum of 2 hours. The default value is 50
+                            ms.</p></dd><dt><span class="term">
+                        <span class="guilabel">Manage Requests</span>
+                    </span></dt><dd><p>Tick this checkbox if you want to control sending Modbus requests.
+                            This activates the <span class="bold"><strong>ENA</strong></span> input port of
+                            the Transceiver block. If the sending is stopped, the Transceiver will
+                            still be able to receive data and update its output port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Update on Change</span>
+                    </span></dt><dd><p>Tick this checkbox if you want to send Modbus requests only when the
+                            data on the <span class="bold"><strong>TX</strong></span> port has changed. This
+                            behavior is only available if function codes FC5, FC6, FC15 or FC16 are
+                            selected. Additionally, the <span class="bold"><strong>Manage
+                                Requests</strong></span> functionality is disabled while using <span class="bold"><strong>Update on Change</strong></span>. The <span class="bold"><strong>Polling Interval</strong></span> is still used as a "minimal" sending
+                            interval. To send as fast as possible set the <span class="bold"><strong>Polling Interval</strong></span> to 1 ms.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

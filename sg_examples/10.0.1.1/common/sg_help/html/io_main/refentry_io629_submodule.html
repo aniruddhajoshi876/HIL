@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO629 - Submodule</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io629_setup.html" title="IO629 - Setup"><link rel="next" href="refentry_io629_bus_monitor.html" title="IO629 - Bus Monitor"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io629_submodule"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO629 - Submodule</h2><p>IO629 - Submodule &#8212; <span class="phrase">Configure the IO629
+                    sub-module</span></p></div><div class="refsect1"><a name="d5e21354"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io629_submodule.png"></span></span></p></div><div class="refsect1"><a name="d5e21362"></a><h2>Description</h2><p>Submodule driver block is used as reference to one of the ARINC 629 modules
+                available in the hardware. The main bus settings can be set in this block's mask.
+            </p></div><div class="refsect1"><a name="d5e21365"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e21368"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Subdevice ID </span>
+                    </span></dt><dd><p>According to the hardware variant of the IO629 I/O module (IO629-2 or
+                            IO629-4) either two or four ARINC 629 modules are available. This value
+                            can be set to 1 or 2 for IO629-2 and 1,2,3,4 for IO629-4.</p></dd><dt><span class="term">
+                        <span class="guilabel">TI (Transmit Interval) </span>
+                    </span></dt><dd><p>This parameter holds the transmit interval of the module. The value is
+                            expressed in microseconds in multiples of 500 microseconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">SG (S ynchronization gap) </span>
+                    </span></dt><dd><p>This parameter holds the synchronization gap of the module.It should
+                            be chosen to be longer than the maximum length Terminal Gap. Options
+                            are: SG of 16 (17.7 us), SG of 32 (33.7 us), SG of 64 (65.7 us), SG of
+                            127 (127.7 us).</p></dd><dt><span class="term">
+                        <span class="guilabel">Interface </span>
+                    </span></dt><dd><p>This parameter holds the module interface, either SIM (Serial
+                            Interface Module) or TTL.</p></dd><dt><span class="term">
+                        <span class="guilabel">Rx Only </span>
+                    </span></dt><dd><p>When enabled, this will prevent any transmission from occurring. This
+                            setting shoud be used in combination with the Rx Only key switch on the
+                            back panel of the I/O module.</p></dd></dl></div></div></div></body></html>

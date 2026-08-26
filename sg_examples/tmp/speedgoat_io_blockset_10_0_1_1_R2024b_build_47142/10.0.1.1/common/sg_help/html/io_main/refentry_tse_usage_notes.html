@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">TSE Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_fiu_usage_notes.html" title="FIU Usage Notes"><link rel="next" href="refentry_ref_bce_examples.html" title="BMTS - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_tse_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>TSE Usage Notes</h2><p>TSE Usage Notes &#8212; <span class="phrase">Usage information about the
+                    Temperature Sensor Emulator</span></p></div><div class="refsect1"><a name="d5e1647"></a><h2>Overview</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BMTS driver block library allows users to configure and operate the Battery
+                Cell Emulator (BCE), Fault Insertion Unit (FIU), and Temperature Sensor Emulator
+                (TSE) with a Speedgoat real-time target machine. These usage notes cover additional
+                topics about using the BMTS driver blocks with the TSE. For hardware-related topics,
+                such as setup and safety instructions, please refer to the respective documents
+                provided with each product.</p></div><div class="refsect1"><a name="d5e1653"></a><h2>Bus Signal Structure</h2><p>The BMTS Read and BMTS Write blocks use Simulink bus signals as in-/outputs. The
+                structure of the bus signal depends on the configured device.</p><p>The Simulink Bus structures are allocated in the MATLAB base workspace, once the
+                parameters for the BMTS Setup, BMTS Read and BMTS Write blocks have been defined.
+                The bus structure for each TSE device depends on the number of channels present in
+                the device.</p><p>The bus structure to set the values of a 4-channel TSE device is called
+                TSE_4Ch_Set and is as follows:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">TSE_4Ch_Set</span></dt><dd><p>TSE_Ch1, TSE_Ch2, [&#8230;], TSE_Ch4</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Resistance: Set the resistance of the TSE channel. Data type:
+                                    double</p></li></ul></div></dd></dl></div><p>The Resistance signal is of type double and can range from 0 to 8039940,
+                indicating the desired resistance in Ohm.</p><p>To set a TSE channel to the <span class="bold"><strong>open circuit</strong></span> fault
+                state, set the Resistance signal to -1.</p><p>To set a TSE channel to the <span class="bold"><strong>short circuit</strong></span> fault
+                state, set the Resistance signal to -2.</p><p>The bus structure to receive data from a 4-channel TSE device is called
+                TSE_4Ch_Get and is as follows:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">TSE_4Ch_Get</span></dt><dd><p>TSE_Ch1, TSE_Ch2, [&#8230;], TSE_Ch4</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Status: Provides status information about the TSE channel.
+                                    Data type: single</p></li></ul></div></dd></dl></div><p>The Status signal is of type single and indicates the resistance set at the
+                channel output. The value may deviate slightly from the required resistance value
+                (&plusmn;0.1% &plusmn; 500m&#937;) and will depend on the factory-calibrated measurement values of the
+                resistor ladder for each channel.</p><p>A Status signal value of -1 indicates that the interlock is inactive, or that an
+                error occurred.</p></div><div class="refsect1"><a name="d5e1682"></a><h2>Assigning Bus Signals</h2><p>There are various ways to handle bus signals in Simulink. One option is to use the
+                    <a href="refentry_bmts_buspack.html" class="olink">BMTS
+                    Bus Pack</a> block block; this workflow is explained below. For other
+                workflows, please refer to the MathWorks <a class="link" href="https://www.mathworks.com/help/simulink/slref/simulink-buses.html" target="_blank">documentation</a>.</p><p>Insert a BMTS Bus Pack block and connect it to the BMTS Write block. In the block
+                mask of the BMTS Bus Pack block, select the correct BMTS device type from the
+                dropdown menu. The corresponding Simulink Bus object is automatically allocated in
+                the MATLAB base workspace.</p><p>By default, input ports are created for all signals inside the bus. To select only
+                a subset of signals and reduce the number of input ports, use the tree view on the
+                    <span class="bold"><strong>Signal Selection</strong></span> tab of the block mask.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/bmts_bus_pack_example_bce.png"></span></span></p></div></div></body></html>

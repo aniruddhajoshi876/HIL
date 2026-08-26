@@ -1,0 +1,121 @@
+%implements sg_mqtt_client_publish_s "C"
+
+%include "sg_mqtt.tlc"
+
+%<MqttCommonIncludes()>
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    {
+        int32_t ret = 0;
+        mqtt::cClientStation* Station = NULL;
+        mqtt::cClientConnection *Connection = NULL;
+        mqtt::cClientTransceiver *Transceiver = NULL;
+
+        /* Add one client station */
+        ret = mqtt::Root.addStation(%<ClientId>, MQTT_STATION_TYPE_CLIENT, (mqtt::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding MQTT client station %i failed!", %<ClientId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one connection to the station */
+        ret = Station->addConnection(%<ConnectionId>, (mqtt::cClientConnection**)&Connection);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding MQTT connection %i to client %i failed!", %<ClientId>, %<ConnectionId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Add one transceiver to the connection */
+        ret = Connection->addTransceiver((mqtt::cClientTransceiver**)&Transceiver);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding MQTT publish block to client %i connection %i failed!", %<ClientId>, %<ConnectionId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Buffer)) * LibBlockDWorkWidth(Buffer)
+
+        /* Initialize the transceiver */
+        ret = Transceiver->init(MQTT_BLOCK_TYPE_CLIENT_PUBLISH, (char*)"%<Topic>", %<QoS>, %<Retain>, (uint8_T*)%<LibBlockDWorkAddr(Buffer,"","",0)>, %<MaxDataLen>);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing MQTT client publish block failed!");
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Write the block address to PWork */
+        %<LibBlockPWork(Instance, "", "", 0)> = Transceiver;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %if LibBlockInputSignalConnected(0)
+
+    {
+        mqtt::cClientTransceiver* Transceiver = (mqtt::cClientTransceiver*)%<LibBlockPWork(Instance, "", "", 0)>;
+                
+        %assign MaxDataLen = LibGetDataTypeSLSizeFromId(LibBlockDWorkDataTypeId(Buffer)) * LibBlockDWorkWidth(Buffer)
+
+        %if Extended
+
+            %if LibBlockInputSignalConnected(1)
+
+                %assign DataLen = MaxDataLen
+                %if LibBlockInputSignalConnected(2)
+                    uint32_t DataLen = %<MaxDataLen>;
+                    if (%<LibBlockInputSignal(2, "", "", 0)> <= %<MaxDataLen>)
+                    {
+                        DataLen = %<LibBlockInputSignal(2, "", "", 0)>;
+                    }
+                    %assign DataLen = "DataLen"
+                    
+                %endif
+
+                if (%<LibBlockInputSignal(1, "", "", 0)> > 0)
+                {
+                    memcpy(%<LibBlockDWorkAddr(Buffer,"","",0)>, \
+                            %<LibBlockInputSignalAddr(0, "", "", 0)>, \
+                            %<DataLen>);
+                    Transceiver->DataLen = %<DataLen>;
+                    Transceiver->HostFlagsTx++;
+                }
+
+            %endif
+
+        %else
+
+            memcpy(%<LibBlockDWorkAddr(Buffer,"","",0)>, \
+                    %<LibBlockInputSignalAddr(0, "", "", 0)>, \
+                    %<MaxDataLen>);
+            Transceiver->HostFlagsTx++;
+        
+        %endif
+        
+    }
+
+    %endif
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

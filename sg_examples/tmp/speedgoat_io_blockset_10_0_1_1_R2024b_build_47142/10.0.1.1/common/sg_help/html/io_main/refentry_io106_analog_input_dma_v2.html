@@ -1,0 +1,124 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO106 - Analog input (DMA)</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io106_read_channels.html" title="IO106 - Read channels"><link rel="next" href="refentry_ref_io107.html" title="IO107"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io106_analog_input_dma_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO106 - Analog input (DMA)</h2><p>IO106 - Analog input (DMA) &#8212; 
+                <span class="phrase">Reads the IO106 analog inputs (DMA)</span>
+            </p></div><div class="refsect1"><a name="d5e5108"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io106_analog_input_dma_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e5116"></a><h2>Description</h2><p>This driver block can be used to read frame-based data. When using this block a
+                setup block is not required.</p><p>Speedgoat recommends this driver block for the following case:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Acquisition rate of analog inputs required to be higher than the model
+                            sample rate. Using DMA, the IO106 I/O module supports an acquisition
+                            rate of up to 200&nbsp;KSPS (kilo-samples per second) per channel. For
+                            example, for a sample acquisition rate of 150&nbsp;kHz, and a model
+                            sample rate of 30&nbsp;kHz, the frame-size for each active channel would
+                            be 5. Each acquired frame is transferred by DMA to the target machine's
+                            RAM. The IO106 I/O module driver then issues an interrupt to pace the
+                            model execution at 30&nbsp;kHz (the frame rate). In the model you could
+                            "throw away" 4 of the 5 samples but for example use the entire frame to
+                            store the data away.</p></li></ul></div><p>
+            </p><p><a name="para_common_interrupt_setup_information"></a>In DMA mode, the model must contain an
+        Interrupt Setup block that triggers a subsystem or the model. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">block
+            documentation</a> for more information. </p></div><div class="refsect1"><a name="d5e5126"></a><h2>Ports</h2><p>This driver block has n double-type output ports with the length of the frame
+                size, where n is the number of selected analog input channels. Each port (signal)
+                returns the analog value in volts.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number)</span>
+                    </span></dt><dd><p>The value from analog channel X in volts.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e5139"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Autocalibration</span>
+                    </span></dt><dd><p>The autocalibration is enabled by default to obtain maximum
+                            measurement accuracy. The autocalibration function compensates for
+                            component aging and minimizes the effects of temperature on accuracy.
+                            The calibration normally takes approximately 2 seconds, so we recommend
+                            increasing the host-target communication time-out in the model
+                            configuration parameters to allow for this. The calibration is not
+                            re-executed during normal start/stop operation once the target
+                            application has been downloaded. All input channels are calibrated to a
+                            single internal voltage reference. Offset and gain error corrections for
+                            each channel are determined during the autocalibration process and are
+                            applied to each channel in real-time during data acquisition.</p><p><span class="bold"><strong>Warning: Disabling the autocalibration can cause
+                                wrong values after a change of the input range.</strong></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Input Range</span>
+                    </span></dt><dd><p>The input range for all A/D channels. This driver does not allow
+                            different ranges for individual channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Coupling</span>
+                    </span></dt><dd><p>Either Single-ended, Pseudo-differential or Differential.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Single-ended: For single-ended channels, each input signal
+                                        is measured with respect to the common input return. That
+                                        is, each channel reports the difference between the input
+                                        signal voltage and the voltage present on the common input
+                                        return. This configuration provides the maximum number of
+                                        inputs channels but allows noise and other forms of
+                                        interference on the common return line to appear in the
+                                        signal measurement.</p></li><li class="listitem"><p>Pseudo-differential: In this mode the first channel is
+                                        designated as the reference for all other channels, and it
+                                        is sampled value subtracted from the sampled values of all
+                                        other channels. With this arrangement, noise and
+                                        interference on the common return line is essentially
+                                        canceled, and the first input line can be used as a "remote
+                                        sense" line for channels 1 to 31.</p></li><li class="listitem"><p>Differential: Each input channel has a dedicated
+                                        associated reference level channel.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Number of Channels</span>
+                    </span></dt><dd><p>Defines the number of channels to be acquired. The count starts with
+                            the first channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Inter-Module Synchronization</span>
+                    </span></dt><dd><p>Select either Initiator (default) or Target. If Initiator is selected,
+                            A/D conversions are initiated by this module and the module outputs a
+                            pulse train to optionally trigger other IO106 I/O modules where
+                            "Inter-Module Synchronization" is set to Target. The pulse train is sent
+                            on the I/O connector SYNC I/O pin. Ground is on the SYNC RTN pin (see
+                            the I/O pin mapping section for pin numbers).</p><p>If your target machine contains a single IO106 I/O module, then
+                            Initiator must be selected. If Target is selected, the module itself
+                            does not start its A/D conversions, but instead triggers them using a
+                            pulse train from another IO106 I/O module where "Inter-Module
+                            Synchronization" is set to Initiator. The pulse train is received on the
+                            SYNC I/O pin (ground is on the SYNC RTN pin). With this setting, there
+                            must be at least one other IO106 I/O module present with "Inter-Module
+                            Synchronization" set to Initiator, and the modules' SYNC I/O and SYNC
+                            RTN pins must be physically wired together (SYNC I/O to SYNC I/O, SYNC
+                            RTN to SYNC RTN). To use this feature with more than two IO106 I/O
+                            modules, all SYNC I/O pins and all SYNC RTN pins must be wired together
+                            (see the I/O pin mapping section for pin numbers). Exactly one IO106 I/O
+                            module must be set to Initiator and all the others to Target.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size, Sample Rate and Sample Time</span>
+                    </span></dt><dd><p>Parameter dependency is as follows: frame size = sample time &times; sample
+                            rate. By defining two parameters, an equation will determine the third
+                            parameter automatically, provided that parameter value for the third
+                            parameter is set to -1.</p><p>Example: "Frame Size" of 32 and "Sample Rate" of 44100 and specifying
+                            "Sample Time" as -1. "Sample Time" is computed automatically to be
+                            0.0007256 seconds. In other words, this model would execute every
+                            0.0007256 seconds, which is every 32 samples at 44&nbsp;kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size</span>
+                    </span></dt><dd><p>The number of samples per frame. An interrupt occurs each time the I/O
+                            module acquires a frame.</p></dd><dt><span class="term">
+                        <span class="guilabel">ADC Clock</span>
+                    </span></dt><dd><p>The frequency at which the samples are taken. This parameter is in
+                            Hertz, and must be between 763 and 200000&nbsp;Hz (763&nbsp;Hz to
+                            200&nbsp;kHz). Note: The ADC clock is calculated internally by dividing
+                            the base clock on the module by an integer value. This defines the
+                            available frequencies. The calculation is depicted on the right hand
+                            side of the sample clock field (base clock / clock divider = sample
+                            clock).</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>The time between frame completions. Note: Sample time can only be a
+                            multiple of ADC clocks.</p></dd></dl></div></div></div></body></html>

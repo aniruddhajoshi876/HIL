@@ -1,0 +1,80 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature - Encoder v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_quadrature_decoder_v5.html" title="Quadrature - Decoder v5"><link rel="next" href="refentry_ref_resolver.html" title="Resolver"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_encoder_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature - Encoder v3</h2><p>Quadrature - Encoder v3 &#8212; <span class="phrase">The QAE driver block provides the
+                    simulation functionality for a quadrature encoder.</span></p></div><div class="refsect1"><a name="d5e5839"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_qae_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e5847"></a><h2>Description</h2><p>The QAE driver block provides the simulation functionality for a quadrature
+                encoder.</p><p>In QAE version 3, the number of slots per revolution can be an integer number
+                between1 and 2<sup>26</sup>.</p><p>In addition, the A and B signals can be configured individually.</p></div><div class="refsect1"><a name="d5e5853"></a><h2>Ports</h2><p>The width of all the inputs and all the outputs is equal to the channel count as
+                defined in the <span class="bold"><strong>Channel Vector</strong></span> parameter.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed [Rpm]</span>
+                    </span></dt><dd><p>This port sets the QAE speed in RPM (Revolutions per Minute). A
+                            positive value results in CW (clockwise) quadrature signals, a negative
+                            value results in CCW (counterclockwise) quadrature signals (for details
+                            see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding" class="olink">Quadrature Encoding
+                            </a>).</p></dd><dt><span class="term">
+                        <span class="guilabel">Disturb Signal A</span></span></dt><dd><p>This port is only visible if <span class="bold"><strong>Enable</strong></span>
+                            in the <span class="bold"><strong>Disturb Signal A</strong></span> parameter is
+                            set. Depending upon the settings of <span class="bold"><strong>Single</strong></span> and <span class="bold"><strong>Dismiss High</strong></span>
+                            in the <span class="bold"><strong>Disturb Signal A</strong></span> parameter, this
+                            input interrupts the quadrature A signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Disturb Signal B</span></span></dt><dd><p>This port is only visible if <span class="bold"><strong>Enable</strong></span>
+                            in the <span class="bold"><strong>Disturb Signal B</strong></span> parameter is
+                            set. Depending upon the settings of <span class="bold"><strong>Single</strong></span> and <span class="bold"><strong>Dismiss High</strong></span>
+                            in the <span class="bold"><strong>Disturb Signal B</strong></span> parameter, this
+                            input interrupts the quadrature B signal.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position [Number of Slot]</span>
+                    </span></dt><dd><p>This port shows the current position of the QAE. This output is an
+                            integer number between 0 and the number set in the <span class="bold"><strong>Number of Slots Vector</strong></span> parameter minus 1 (for details
+                            see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding_outputs" class="olink">Quadrature Encoding
+                            </a>). This output is only visible if the <span class="bold"><strong>Show
+                                Position Output Port</strong></span> parameter is set.</p></dd><dt><span class="term">
+                        <span class="guilabel">Slot Position</span>
+                    </span></dt><dd><p>This port shows the position within the current slot. The output is a
+                            fraction between 0 and 1 (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding_outputs" class="olink">Quadrature Encoding
+                            </a>)and is only visible if the <span class="bold"><strong>Show Slot
+                                Position Output Port</strong></span> parameter is set.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Using the output ports introduces additional latency.</p></td></tr></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e5904"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Quadrature Encoder</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of Slots Vector</span></span></dt><dd><p>The number of slots per revolution (for details see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding" class="olink">Quadrature Encoding</a>)</p></dd><dt><span class="term">
+                        <span class="guilabel">Signal A Switch-On Vector [deg]</span></span></dt><dd><p>The phase angle where the Signal A switches on.</p></dd><dt><span class="term">
+                        <span class="guilabel">Signal B Switch-Off Vector[deg]</span></span></dt><dd><p>The phase angle where the Signal B switches off.</p></dd><dt><span class="term">
+                        <span class="guilabel">Signal B Switch-On Vector[deg]</span></span></dt><dd><p>The phase angle where the Signal B switches on.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>for details on the Switch-On and Switch-Off times, see <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding_signal_timing" class="olink">Quadrature
+                                    Encoding Signal Timing</a></p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Initial Position Vector</span></span></dt><dd><p>The position of the Encoder at model start. The parameter is only
+                            visible if the configuration file supports QAE v3.3 or newer.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The initial position cannot be higher than the parameter <span class="bold"><strong>Number of Slots</strong></span>. This parameter is a
+                                fractional number where the number itself represents the slot number
+                                minus one and the fraction represents the position within the slot.
+                                As an example, if the initial position of the encoder shall be in
+                                the middle of the second slot, the initial position must be set to
+                                    <span class="emphasis"><em>1.5</em></span>. In other words, the initial position
+                                is now one and a half slots from the zero-position</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Disturb Signal A</span></span></dt><dd><p>If the <span class="bold"><strong>Enable</strong></span> parameter is set, the
+                            quadrature A signal can be interrupted. The type of interruption depends
+                            upon the following parameters (see also <a href="refentry_quadrature_usage_notes.html#refsect_quadrature_encoding_interrupt_signals" class="olink">Quadrature
+                                Encoding Interrupt Signals</a> for details):</p><p><span class="bold"><strong>Dismiss High</strong></span> parameter:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Set: Setting <span class="bold"><strong>Disturb Signal A</strong></span>
+                                    input will dismiss the logical <span class="italic">high</span> level of the quadrature A signal</p></li><li class="listitem"><p>Not Set: Setting <span class="bold"><strong>Disturb Signal
+                                        A</strong></span> input will dismiss the logical <span class="italic">low</span> level of the quadrature A
+                                    signal</p></li></ul></div><p><span class="bold"><strong>Single</strong></span> parameter:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Set: A rising edge on the <span class="bold"><strong>Disturb Signal
+                                        A</strong></span> input will perform a single dismiss of the
+                                    quadrature A signal level which is selected on the <span class="bold"><strong>Dismiss High</strong></span> parameter described
+                                    above</p></li><li class="listitem"><p>Not Set: Setting the <span class="bold"><strong>Disturb Signal
+                                        A</strong></span> input permanently dismisses the quadrature A
+                                    signal level which is selected on the <span class="bold"><strong>Dismiss High</strong></span> parameter described above</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Disturb Signal B</span></span></dt><dd><p>Same settings as the <span class="bold"><strong>Disturb Signal A</strong></span>
+                            parameter but valid for the quadrature B signal.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Position Output Port</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Position [Number
+                                of Slot]</strong></span> output is shown.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Slot Position Output Port</span></span></dt><dd><p>When this parameter is set, the <span class="bold"><strong>Slot
+                                Position</strong></span> output is shown.</p></dd></dl></div></div></div></body></html>

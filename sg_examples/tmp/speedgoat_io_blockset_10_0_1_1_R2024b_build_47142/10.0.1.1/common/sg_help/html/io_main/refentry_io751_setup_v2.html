@@ -1,0 +1,79 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO751 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io751_setup.html" title="IO751 - Setup"><link rel="next" href="refentry_io751_send.html" title="IO751 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io751_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO751 - Setup v2</h2><p>IO751 - Setup v2 &#8212; <span class="phrase">Configure the IO751 IO
+                    module</span></p></div><div class="refsect1"><a name="d5e59752"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io751_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e59760"></a><h2>Description</h2><p>The Setup block configures the protocol stack of the related I/O module and
+                enables the send and receive blocks to exchange data on the network.</p><p>During initialization of the real-time application, the block reads a
+                configuration file from the hard drive of the target machine and configures the
+                PROFINET Controller protocol stack. This file is automatically packed into the
+                real-time application by the build process and unpacked during the initialization of
+                the real-time application on the target. Please read the usage notes to learn how to
+                use the SYCON.net configuration tool to create such a file.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e59767"></a><h2>Parameters </h2><div class="variablelist"><div class="variablelist-title">Tab: Configuration </div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_comms_pciSlot_autoSearch_hilscher_master"></a><span class="term">
+                            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+                        </span></dt><dd><p>There are two approaches for mapping the block to a specific I/O
+                                module installed in your target machine. All modules of the same
+                                family (see Module ID above) must be configured using the same
+                                method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be
+                                        automatically located in the target machine. If you have
+                                        multiple modules of the same family, the Module ID defines
+                                        which module is associated with this block. To see how each
+                                        I/O module maps to a Module ID, use this Speedgoat API:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li><li class="listitem">Explicit Addressing: to explicitly define the logical
+                                        address of the I/O module in the target machine, you can
+                                        provide the PCI bus and slot numbers as a vector: [bus,
+                                        slot]. To determine these numbers, run the following command
+                                        in the MATLAB command window:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre>Note
+                                        that the PCI address can change whenever an I/O module is
+                                        added or removed. Usually, auto-search is the best
+                                        option.</li></ul></div></dd><dt><a name="varlistentry_config_file"></a><span class="term">
+                <span class="guilabel">Configuration File</span>
+            </span></dt><dd><p>The path to the SYCON.net configuration file on the host PC. Enter an absolute
+                    path to the file or use a function to obtain a relative path.</p><pre class="programlisting">'C:\projects\config.nxd'</pre><pre class="programlisting">[pwd, '\..\config.nxd']</pre><p><span class="bold"><strong>Type:</strong></span>
+                    <code class="literal">char</code></p></dd><dt><a name="varlistentry_config_file_select"></a><span class="term">
+                <span class="guilabel">Select</span>
+            </span></dt><dd><p>Instead of typing the path to the configuration file manually, click this
+                    button and simply select the configuration file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Optimize Acyclic Data Transfer</span>
+                    </span></dt><dd><p>This parameter impacts the Record Read and Write blocks. Reading and
+                            writing records of external PROFINET devices is referred to as "acyclic
+                            communication". </p><p>If cleared (default), acyclic messages are processed in real-time
+                            according to the <span class="bold"><strong>Sample time</strong></span> entered in
+                            the Send and Receive blocks. In this mode, cyclic and acyclic messaging
+                            share the same real-time thread. To prevent runtime violations (e.g.,
+                            CPU overloads), Record blocks are processed sequentially; therefore,
+                            only one Record can be read/written per real-time step. The more Record
+                            blocks in the model, the longer it takes to send all record requests and
+                            receive the corresponding record responses. </p><p>For example, with a sample time of 10 ms in the Send, Receive, and
+                            Record blocks, it will take 30 ms for three Record Read blocks to output
+                            new data (i.e., Record block 1: 10 ms, Record block 2: 10 ms, Record
+                            block 3: 10 ms), assuming all remote devices respond within 10
+                            ms.</p><p>If selected, acyclic data throughput can be increased. Both the cyclic
+                            and acyclic messaging are moved to a free-running background thread with
+                            lower priority. Record read/write requests are sent out as fast as
+                            possible, depending on the source connected to the Enable input port and
+                            the sample time of the Record block. </p><p>With a sample time of 10 ms in the Send, Receive, and Record blocks,
+                            the three Record blocks will output new data right in the next 10 ms
+                            step, assuming the remote devices respond within 10/3 ms.</p><p>Note: due to the fact that the cyclic data exchange is also handled in
+                            that background thread, the additional data buffering required for
+                            consistency may introduce latencies in cyclic signal paths. </p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>In IRT mode, you must not select this checkbox or use Record
+                                blocks at all!</p></td></tr></table></div></dd></dl></div></div></div></body></html>

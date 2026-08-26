@@ -1,0 +1,17 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Timeouts When Receiving CAN Messages</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="prev" href="f2-6483.html" title="CAN Data Frames"><link rel="next" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f2-6492"></a>Timeouts When Receiving CAN Messages</h2></div></div></div><p>The model in this topic supports the CAN_MESSAGE data type.</p><p>The <code class="literal">Receive</code> blocks for the supported CAN boards allow you to output
+            the timestamp at which the latest corresponding CAN message was received. This
+            information can be used to detect that another CAN node is not sending CAN messages and
+            special action must be taken. Assume that a CAN message is expected from another CAN
+            node every 2 milliseconds. If a new message is not received within 10 milliseconds, the
+            other CAN node is considered faulty, and the <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; real-time application must
+            proceed accordingly.</p><p>The CAN blockset in the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O block library provides a utility block called
+                <code class="literal">CAN Timeout Detection</code>. This subsystem uses the timestamp
+            information to calculate the timeout condition.</p><p>To use this block:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Select the <span class="guilabel">Output timestamp</span> check box of a <code class="literal">CAN
+                        Unpack</code> block.</p></li><li class="listitem"><p>Connect the <code class="literal">Timestamp</code> output port to the input port of a
+                        <code class="literal">CAN Timeout Detection</code> block.</p></li><li class="listitem"><p>Connect the output port of the <code class="literal">CAN Timeout Detection</code> block
+                    to a sink, such as a real-time <code class="literal">Scope</code> block.</p></li><li class="listitem"><p>Set the <span class="guilabel">Timeout</span> value to the required value, such as
+                        <code class="literal">0.01</code> s.</p></li></ol></div><p>Applying these steps results in the model shown in the figure.</p><div class="informalfigure"><div class="mediaobject"><img src="././graphics/xpccanpcis_timeout.png"></div></div></div></body></html>

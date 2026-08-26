@@ -1,0 +1,94 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Pulse Counter v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_pulse_counter_examples.html" title="IO3xx Pulse Counter - Examples"><link rel="next" href="refentry_ref_sent.html" title="SENT"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_pulse_counter_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Pulse Counter v1</h2><p>Pulse Counter v1 &#8212; <span class="phrase">The Pulse Counter block
+                    configures pulse counting functionality for an input signal in a configurable
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e2623"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_pulse_counter_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e2631"></a><h2>Description</h2><p>The pulse counter is a signed 31-bit counter which can be configured to count
+                rising, falling, or both edges of a pulse signal in either an increasing or
+                decreasing direction.</p></div><div class="refsect1"><a name="d5e2634"></a><h2>Ports</h2><p>This driver block has two input and two output ports:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Reset </span>
+                    </span></dt><dd><p>Resets the counter value of all channels to 0.</p><p>This port can be disabled in the Input and Output Configuration
+                            tab.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction </span>
+                    </span></dt><dd><p>Defines the counting direction of the individual channels.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>0</strong></span>: Decreasing</p></li><li class="listitem"><p><span class="bold"><strong>1</strong></span>: Increasing</p></li></ul></div><p>
+                        </p><p>This port can be disabled in the Input and Output Configuration tab.
+                            If disabled, the count direction can be set on the Pulse Counter tab
+                            with the Direction Source and Direction parameters.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Pin Status </span>
+                    </span></dt><dd><p>Debounced value of the pulse input signal.</p><p>This signal allows the pulse input to be used as a standard digital
+                            input in addition to the pulse counting functionality. As with other
+                            digital inputs, changes in the digital input signal with a duration less
+                            than the driver block sample time may not be propagated to the driver
+                            block output. However, these changes will still be detected by the pulse
+                            counter.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Counter Value </span>
+                    </span></dt><dd><p>Current value of the signed 31-bit counter.</p><p>The counter is free-running and will overflow at its minimum (-2^30)
+                            or maximum (2^30-1) value.</p></dd></dl></div></div><div class="refsect1"><a name="d5e2674"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Pulse Counter </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Operating Mode</span>
+                    </span></dt><dd><p>Defines the operating mode of the counter.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Rising Edge</strong></span> (Default):
+                                        Count rising edges of pulse input.</p></li><li class="listitem"><p><span class="bold"><strong>Falling Edge</strong></span>: Count
+                                        falling edges of pulse input.</p></li><li class="listitem"><p><span class="bold"><strong>Rising + Falling Edge</strong></span>:
+                                        Count both rising and falling edges of pulse input.</p></li></ul></div><p>
+                        </p><p>If Channel Configuration is set to Individual Channels, this parameter
+                            is replaced with the parameters Rising Edge Channels, Falling Edge
+                            Channels, and Rising + Falling Edge Channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Configuration</span>
+                    </span></dt><dd><p>Defines how channel operating mode and direction configuration is
+                            applied.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>All Channels</strong></span> (Default):
+                                        Operating Mode and Direction (if Direction input is
+                                        disabled) are applied to all enabled channels.</p></li><li class="listitem"><p><span class="bold"><strong>Individual Channels</strong></span>:
+                                        Operating Mode and Direction can be set for each channel
+                                        independently.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Direction Source</span>
+                    </span></dt><dd><p>Defines the source of the counter direction. Only available when
+                            Direction input is disabled on the Input and Output Configuration
+                            tab.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Model</strong></span> (Default): Counter
+                                        direction determined by the Direction parameter.</p></li><li class="listitem"><p><span class="bold"><strong>External Signal</strong></span>: Counter
+                                        direction determined by external signal input in the
+                                        module.</p></li></ul></div><p>
+                        </p><p>To set the Direction Source on a per-channel basis, create one Pulse
+                            Counter for the channels with source Model and one for the channels with
+                            source External Signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction</span>
+                    </span></dt><dd><p>Defines counting direction. Only available when the Direction input
+                            port is disabled and the Direction Source is set to Model.</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Increasing</strong></span> (Default):
+                                        Pulse counter counts up from 0.</p></li><li class="listitem"><p><span class="bold"><strong>Decreasing</strong></span>: Pulse counter
+                                        counts down from 0.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Debounce Duration [s]</span></span></dt><dd><p>Defines the time in seconds during which the pulse counter input
+                            signal must be stable before an edge is detected. Defaults to 100e-9
+                            (100 ns).</p><p>The range and resolution of the debounce duration depend on the module
+                            frequency configured in the Setup block. The <span class="bold"><strong>Effective Debounce Duration</strong></span> therefore indicates the
+                            applied duration at the module level.</p><p>To disable debouncing, enter the value 0.</p><p>The debounce vector sets the debounce time for the capture inputs.
+                            Correct values are in the range 0 to 2^8-1 ticks (e.g. 3.413
+                            microseconds at a frequency of 75 MHz). The parameter must be a scalar
+                            value which applies to all channels defined in the <span class="bold"><strong>Channel Vector</strong></span></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Port Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Reset</span>
+                    </span></dt><dd><p>Enables the Reset input port. Enabled by default.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Direction</span>
+                    </span></dt><dd><p>Enables the Direction input port. Enabled by default.</p><p>If this port is disabled, the count direction can be set on the Pulse
+                            Counter tab with the Direction Source and Direction parameters.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Pin Status</span>
+                    </span></dt><dd><p>Enables the Pin Status output port. Enabled by default.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Counter Value</span>
+                    </span></dt><dd><p>Enables the Counter Value output port. Enabled by default.</p></dd></dl></div></div></div></body></html>

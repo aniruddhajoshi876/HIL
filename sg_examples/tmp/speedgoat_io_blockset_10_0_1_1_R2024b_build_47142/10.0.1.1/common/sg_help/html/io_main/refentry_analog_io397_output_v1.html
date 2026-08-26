@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Analog IO397 - Output v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_analog_io397_input_v1.html" title="Analog IO397 - Input v1"><link rel="next" href="refentry_ref_interrupt.html" title="Interrupt"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_analog_io397_output_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Analog IO397 - Output v1</h2><p>Analog IO397 - Output v1 &#8212; <span class="phrase">This driver block is
+                    available for the IO397-50k module only.</span></p></div><div class="refsect1"><a name="d5e9466"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_da_write_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e9474"></a><h2>Description</h2><p>This driver block is available for the IO397-50k module only.</p><p>Your model can only contain one of these blocks for each I/O module in your target
+                machine.</p></div><div class="refsect1"><a name="d5e9478"></a><h2>Ports</h2><p>This block has as many inputs as defined by the channel vector.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is channel number) </span>
+                    </span></dt><dd><p>The value to set the analog output X to. Type double.</p></dd></dl></div></div><div class="refsect1"><a name="d5e9488"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_analog_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the Initial Values vector is applied to the channel as
+                defined in the Active Channels vector. A scalar value applies to all the channels;
+                for example, for individual values, type "[1 1.5 0 2.5]", and to set all channels to
+                zero, type "0".</p></dd><dt><a name="varlistentry_common_analog_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Span </span>
+                    </span></dt><dd><p>This is the setting for the voltage span of the DAC. The DAC is
+                            capable of outputting values within one of several voltage ranges as
+                            specified by this parameter: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>&plusmn; 10 [V]</p></li><li class="listitem"><p>&plusmn; 5 [V]</p></li><li class="listitem"><p>+ 5[V]</p></li><li class="listitem"><p>+ 10 [V]</p></li></ul></div><p>
+                        </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

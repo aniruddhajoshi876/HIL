@@ -1,0 +1,192 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO750 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io750_setup.html" title="IO750 - Setup"><link rel="next" href="refentry_io750_send.html" title="IO750 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io750_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO750 - Setup v2</h2><p>IO750 - Setup v2 &#8212; <span class="phrase">Configure the IO750 I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e57193"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io750_setup_v2.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e57201"></a><h2>Description</h2><p>The Setup block configures the protocol stack of the related I/O module and
+                enables the Send and Receive blocks to exchange data on the network.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e57207"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Ethercat </div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Bus Start</span></span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Automatic: The device starts the communication immediately
+                                        after the initialization of the real-time application on the
+                                        target. The communication is maintained even if the
+                                        real-time application stops.</p></li><li class="listitem"><p>Application controlled: After initialization of the
+                                        real-time application on the target, the communication of
+                                        the subordinate device with the network is off. The device
+                                        starts the communication immediately after the real-time
+                                        application has been started. The device stops the
+                                        communication on the network when the real-time application
+                                        stops.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term"><span class="guilabel">DC Synchronous Mode</span></span></dt><dd><p>This parameter lets you synchonize your model or parts of it to
+                            incoming EtherCAT PDO frames. If checked, you must place the related
+                            IO750 Send and Receive blocks in a function-call subsystem connected to
+                            an Interrupt Setup block. Refer to the <a href="refentry_ref_interrupt_setup.html" class="olink">Utilities
+                                documentation</a> for more information on this block.</p><p>In the Interrupt Setup block, please select the same Module ID as in
+                            the IO750 Setup block. Do not forget to activate <span class="bold"><strong>Distributed Clocks</strong></span> in your EtherCAT main device
+                            configuration and be aware of the DC timings you adjust there.</p></dd><dt><span class="term"><span class="guilabel">Vendor Name</span></span></dt><dd><p>The name of the vendor of the emulated EtherCAT device. If you do not
+                            want to emulate a real device then leave the default value <span class="bold"><strong>'Hilscher'</strong></span>. You will find the specified
+                            vendor name in node &lt;EtherCATInfo&gt;&lt;Vendor&gt;&lt;Name&gt; of
+                            the exported ESI file.</p></dd><dt><span class="term"><span class="guilabel">Group Name</span></span></dt><dd><p>The name of the ESI device group which the emulated EtherCAT device
+                            belongs to. If you do not want to emulate a real device then leave the
+                            default value <span class="bold"><strong>'netX'</strong></span>. You will find the
+                            specified group name in node
+                            &lt;EtherCATInfo&gt;&lt;Descriptions&gt;&lt;Groups&gt;&lt;Group&gt;&lt;Name&gt;
+                            of the exported ESI file.</p></dd><dt><span class="term"><span class="guilabel">Type Name</span></span></dt><dd><p>The name of the emulated EtherCAT device. If you do not want to
+                            emulate a real device then leave the default value <span class="bold"><strong>'netX'</strong></span>. You will find the specified type name in node
+                            &lt;EtherCATInfo&gt;&lt;Descriptions&gt;&lt;Groups&gt;&lt;Group&gt;&lt;Type&gt;
+                            of the exported ESI file.</p></dd><dt><span class="term"><span class="guilabel">Vendor ID</span></span></dt><dd><p>The ID of the vendor of the emulated EtherCAT device. If you do not
+                            want to emulate a real device then leave the default value (0xE0000044).
+                            After the real-time application has been started the vendor ID can be
+                            read by the EtherCAT main device at SDO 0x1018 subindex 1. It is also
+                            part of the SII. You will find the specified vendor ID value in node
+                            &lt;EtherCATInfo&gt;&lt;Vendor&gt;&lt;Id&gt; of the exported ESI file.
+                        </p></dd><dt><span class="term"><span class="guilabel">Product Code</span></span></dt><dd><p>The product code of the emulated EtherCAT device. If you do not want
+                            to emulate a real device then leave the default value (0x00000001).
+                            After the real-time application has been started the product code can be
+                            read by the EtherCAT main device at SDO 0x1018 subindex 2. It is also
+                            part of the SII. You will find the specified product code value in node
+                            &lt;EtherCATInfo&gt;&lt;Descriptions&gt;&lt;Devices&gt;&lt;Device&gt;
+                            &lt;ProductCode&gt; of the exported ESI file.</p></dd><dt><span class="term"><span class="guilabel">Revision Number</span></span></dt><dd><p>The revision number of the emulated EtherCAT device. If you do not
+                            want to emulate a real device then leave the default value (0x00020004).
+                            After the real-time application has been started the revision number can
+                            be read by the EtherCAT main device at SDO 0x1018 subindex 3. It is also
+                            part of the SII. You will find the specified product code value in node
+                            &lt;EtherCATInfo&gt;&lt;Descriptions&gt;&lt;Devices&gt;&lt;Device&gt;
+                            &lt;RevisionNo&gt; of the exported ESI file.</p></dd><dt><span class="term"><span class="guilabel">Serial Number</span></span></dt><dd><p>The serial number of the emulated EtherCAT device. If you do not want
+                            to emulate a real device then leave the default value (0x00000000).
+                            After the real-time application has been started the serial number can
+                            be read by the EtherCAT main device at SDO 0x1018 subindex 4. It is also
+                            part of the SII.</p></dd><dt><span class="term"><span class="guilabel">Station Address Alias</span></span></dt><dd><p>The explicit node address of the subordinate device in the EtherCAT
+                            network. Normally, EtherCAT main devices automatically increment and
+                            assign subordinate device addresses depending on the position of the
+                            subordinate device in the EtherCAT network. Besides, main devices can
+                            activate explicit addressing. In this mode, the main device reads the
+                            address alias from the subordinate device's EEPROM to identify the
+                            device in the network. Refer to the main device configuration manual to
+                            learn how to enable this addressing mode.</p><p>The value must range between 0 and 65535. The value must be unique in
+                            the EtherCAT network. If 0, no alias will be written to the EEPROM.
+                        </p></dd><dt><span class="term"><span class="guilabel">Device Identification Value</span></span></dt><dd><p>A unique identification value that allows the EtherCAT main device to
+                            clearly identify the subordinate device in the EtherCAT network. During
+                            startup, the EtherCAT main device reads the value from the subordinate
+                            device's EEPROM and compares it with the related identifier in the main
+                            device's IO configuration. This check is optional. Please refer to the
+                            main device configuration manual for more information.</p><p>The value must range between 0 and 65535. If 0, no identification
+                            value will be written to the EEPROM.</p></dd><dt><span class="term"><span class="guilabel">Export ESI</span></span></dt><dd><p>Creates an EtherCAT Slave Information (ESI) file according to the
+                            identification parameters and PDO configuration. You usually copy the
+                            file to C:\TwinCAT\3.1\Config\Io\EtherCAT to use it in TwinCAT.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Rx PDO </div><dl class="variablelist"><dt><span class="term"><span class="guilabel">RxPDO Mapping</span></span></dt><dd><p>This table defines the process data objects the subordinate device
+                            receives from the main device. They can be read using the IO750 Receive
+                            block. One PDO consists of one to multiple application objects
+                            (=signals). Use the buttons to add, move or delete rows. Depending on
+                            the table content, a CoE object dictionary will be created during the
+                            initialization of the real-time application on the target. The main
+                            device can read that dictionary in order to check the PDO configuration.
+                            The RxPDO sync manager is always at object 0x1C12. It manages PDO
+                            mapping objects starting at 0x1600 which are linked to application
+                            objects starting at 0x2000.</p><p><a name="para_io750_padding"></a> The length of one PDO must be a multiple
+                            of one byte. Since you can define boolean signals, the Setup block
+                            always fills a bitstream to become a full byte. You cannot see those
+                            padding bits in the PDO table but you have to consider them when valuing
+                            the total byte length of your process data image. Bits will be inserted
+                            in the following cases: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>A signal of a non-boolean data type comes right after a
+                                        bitstream which is shorter than 8 bits</p></li><li class="listitem"><p>A new PDO comes right after a bitstream which is shorter
+                                        than 8 bits</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Tx PDO </div><dl class="variablelist"><dt><span class="term"><span class="guilabel">TxPDO Mapping</span></span></dt><dd><p>This table defines the process data objects the subordinate device
+                            sends to the main device. They can be written using the IO750 Send
+                            block. One PDO consists of one to multiple application objects
+                            (=signals). Use the buttons to add, move or delete rows. Depending on
+                            the table content, a CoE object dictionary will be created during the
+                            initialization of the real-time application on the target. The main
+                            device can read that dictionary in order to check the PDO configuration.
+                            The TxPDO sync manager is always at object 0x1C13. It manages PDO
+                            mapping objects starting at 0x1A00 which are linked to application
+                            objects starting at 0x3000.</p><p>Byte padding is handle as described in RxPDO mapping.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SDO </div><dl class="variablelist"><dt><span class="term"><span class="guilabel">SDO Mapping</span></span></dt><dd><p>This table defines the service data objects of the subordinate device.
+                            Use the buttons to add, move or delete rows. Depending on the table
+                            content, a CoE object dictionary will be created during the
+                            initialization of the real-time application on the target. The main
+                            device can read and write that dictionary via the EtherCAT protocol. On
+                            the Simulink side, use the SDO Read and Write blocks to read and write
+                            the values of the objects in the dictionary.</p><p>An object can either be a simple variable (called VAR in the EtherCAT
+                            specification) or a root object with sub-objects (called RECORD in the
+                            EtherCAT specification). One row of the SDO table is either an object or
+                            a sub-object.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/io750_sdo_table_1.png"></span></p><p>
+                            </p><div class="itemizedlist"><div class="itemizedlist-title">SDO Properties</div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Enter the <span class="bold"><strong>Index</strong></span> of the
+                                        (sub-) object. The <span class="bold"><strong>Index</strong></span>
+                                        must have 4 digits in hexadecimal format without any leading
+                                        or trailing format identifiers. Sub-objects with the same
+                                            <span class="bold"><strong>Index</strong></span> belong to the
+                                        same object. Valid values are between 0x0000 and
+                                        0xFFFF</p></li><li class="listitem"><p>Enter the <span class="bold"><strong>Sub-Index</strong></span> of
+                                        the (sub-) object. The <span class="bold"><strong>Sub-Index</strong></span> must have two digits in
+                                        hexadecimal format without any leading or trailing format
+                                        identifiers'. A <span class="bold"><strong>Sub-Index</strong></span>
+                                        of 0 determines a row to be an object. A <span class="bold"><strong>Sub-Index</strong></span> greater than 0
+                                        determines a row to be a sub-object. Valid values are
+                                        between 0x00 and 0xFF</p><p>If only <span class="bold"><strong>Sub-Index</strong></span> = 0
+                                        exists for a given <span class="bold"><strong>Index</strong></span>
+                                        this object will become a simple variable (VAR).</p><p>If there are additional <span class="bold"><strong>Sub-Indices</strong></span> then the row with <span class="bold"><strong>Sub-Index</strong></span> = 0 will become the
+                                        root object (RECORD). In this case the properties Data Type,
+                                        Init Value, Access Rights and Access Mode will not be
+                                        recognized.</p></li><li class="listitem"><p>Enter the <span class="bold"><strong>Name</strong></span> of the
+                                        (sub-) object. The <span class="bold"><strong>Name</strong></span> can
+                                        also be read by the main device over EtherCAT</p></li><li class="listitem"><p>Enter the <span class="bold"><strong>Data Type</strong></span> of
+                                        the (sub-) object. Only fundamental types are supported even
+                                        though more data types are defined in the EtherCAT
+                                        specification</p></li><li class="listitem"><p>The <span class="bold"><strong>Access Rights</strong></span>
+                                        determines the permission for an EtherCAT main device when
+                                        accessing the (sub-) object.</p></li><li class="listitem"><p>The <span class="bold"><strong>Access Mode</strong></span>
+                                        determines how to access the (sub-) object from the
+                                        real-time application side </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Select <span class="bold"><strong>none</strong></span>
+                                                  to define the (sub-) object in the dictionary
+                                                  without reading and writing during runtime
+                                                </p></li><li class="listitem"><p>Select <span class="bold"><strong>read</strong></span>
+                                                  to read the value of a (sub-) object which has
+                                                  been written by the EtherCAT main device. The
+                                                  related output port will then be automatically
+                                                  added</p></li><li class="listitem"><p>Select <span class="bold"><strong>write</strong></span>
+                                                  to write the value of a (sub-) object which the
+                                                  EtherCAT main device can then read. The related
+                                                  input port will then be automatically added
+                                                </p></li><li class="listitem"><p>Select <span class="bold"><strong>read-write</strong></span> to read and write. The SDO
+                                                  Read and the SDO Write blocks will then
+                                                  automatically get one more port each</p></li></ul></div><p>
+                                    </p></li></ul></div><p>
+                        </p></dd></dl></div><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>Please consider the following limitations:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>On IO750 the total amount of process data is limited to 512 bytes (RX
+                            + TX)</p></li><li class="listitem"><p>The number of PDOs is limited to 254 in each direction</p></li><li class="listitem"><p>The number of application objects (signals) per PDO is limited to 200
+                        </p></li><li class="listitem"><p>The total number of application objects (signals) is limited to 1024
+                            in each direction</p></li><li class="listitem"><p>The total number of SDOs is limited to 4096</p></li></ul></div></td></tr></table></div></div></div></body></html>

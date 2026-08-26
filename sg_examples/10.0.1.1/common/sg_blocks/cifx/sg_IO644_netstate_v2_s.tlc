@@ -1,0 +1,100 @@
+%implements sg_IO644_netstate_v2_s "C"
+
+%include "sg_IO644.tlc"
+
+%<cosAddCommonIncludes()>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void      
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0] 
+
+    {
+
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+    COS_PARAM_T* Param = NULL;
+
+    /* Find corresponding node structure in global driver array */
+    if (Channel == NULL)
+    {
+        CIFX_NODE_T* Node = NULL;
+
+        if (0 != Cifx_FindNode(%<ModuleId>, 0, &Node))
+        {
+            %<outputError(block, ModuleId, 0, "\"Cannot attach to I/O Module due to missing Setup block\"")>
+            return;
+        }
+
+        Channel = Node->Channels[0];
+        %<LibBlockPWork(Channel, "", "", 0)> = Channel;     
+    }
+
+    COS_UpdateState(Channel, %<ExtDiag>);
+
+    Param = (COS_PARAM_T*)(Channel->Param);
+
+    %if StateCtrl != 0
+        %if LibBlockInputSignalConnected(0)
+            if (%<LibBlockInputSignal(0, "", "", 0)> != 0)
+            {
+                if (%<LibBlockInputSignal(0, "", "", 0)> != Param->Status.NodeStateCtrl)
+                {
+                    Param->Status.NodeStateCtrl = %<LibBlockInputSignal(0, "", "", 0)>;
+                    Param->StateChangeReq = true;
+                } 
+            }
+        %endif
+    %endif
+
+    %assign PortIdx = 0
+
+    %if LibBlockOutputSignalConnected(PortIdx)
+        %<LibBlockOutputSignal(PortIdx, "", "", 0)> = Param->Status.NodeState;
+    %endif
+
+    %assign PortIdx = PortIdx + 1
+
+    %if StateInd != 0
+        %if LibBlockOutputSignalConnected(PortIdx)
+            %<LibBlockOutputSignal(PortIdx, "", "", 0)> = Param->Status.NodeStateCmd;
+        %endif
+        %assign PortIdx = PortIdx + 1
+    %endif
+ 
+    %if ExtDiag != 0
+        %if LibBlockOutputSignalConnected(PortIdx)
+            memcpy(%<LibBlockOutputSignalAddr(PortIdx, "", "", 0)>, &Param->Status.ExtDiag, sizeof(Param->Status.ExtDiag));
+        %endif
+        %assign PortIdx = PortIdx + 1
+    %endif
+
+    %if Monitoring != 0
+        %if LibBlockOutputSignalConnected(PortIdx)
+            memcpy(%<LibBlockOutputSignalAddr(PortIdx, "", "", 0)>, &Param->Status.Monitoring, sizeof(Param->Status.Monitoring));
+        %endif
+    %endif
+
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

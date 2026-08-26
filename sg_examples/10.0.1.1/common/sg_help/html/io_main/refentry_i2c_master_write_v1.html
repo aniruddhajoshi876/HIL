@@ -1,0 +1,59 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">I2C - Master write v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_i2c_master_read_v1.html" title="I2C - Master read v1"><link rel="next" href="refentry_i2c_slave_setup_v1.html" title="I2C - Slave setup v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_i2c_master_write_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>I2C - Master write v1</h2><p>I2C - Master write v1 &#8212; <span class="phrase">The I2C Master write driver
+                    block allows data to be written to a device supporting the I2C slave protocol.
+                    One block is required for each channel to be written. Multi-master mode and
+                    clock stretching are currently not supported.</span></p></div><div class="refsect1"><a name="d5e11598"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_i2c_master_write_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e11606"></a><h2>Description</h2><p>The I2C Master write driver block allows data to be written to a device supporting
+                the I2C slave protocol.</p><p>One block is required for each channel to be written. Multi-master mode and clock
+                stretching are currently not supported.</p></div><div class="refsect1"><a name="d5e11610"></a><h2>Ports</h2><p>This driver block has three inputs port.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Slave ID </span>
+                    </span></dt><dd><p>7-bit identifier to access the I2C Slave node.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bytes to Write </span>
+                    </span></dt><dd><p>Defines the number of bytes to write, meaning the number of data
+                            vector elements that are transmitted. This value must be between 0 and
+                            256.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data </span>
+                    </span></dt><dd><p>Vector of data to transmit. The vector size is 256. Each element of
+                            the vector represents one byte. Values between 0 and 255 are allowed.
+                            The number of bytes written to the bus is defined in the <span class="bold"><strong>Number of Bytes to Write</strong></span> parameter, starting
+                            from the first element of the vector. Unused elements of the vector are
+                            ignored.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Ack Error </span>
+                    </span></dt><dd><p>Displays the error flag related to I2C acknowledge. This port is only
+                            available when the <span class="bold"><strong>Show Acknowledge Error
+                                Port</strong></span> parameter is enabled.</p></dd></dl></div></div><div class="refsect1"><a name="d5e11639"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel"></a><span class="term">
+            <span class="guilabel">Channel</span>
+        </span></dt><dd><p>The number of the channel which this driver block entity will access. Only one
+                channel per driver block can be addressed. You can specify channels in the range 1-N
+                (N = the number of channels implemented in your specific configuration file defined
+                in the Setup block).</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: I2CM </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">I2C Clock Rate </span>
+                    </span></dt><dd><p> Configures the I2C transmission clock rate. When selecting <span class="bold"><strong> Custom</strong></span>, any rate between
+                                f<sub>FPGA</sub>/8 and f<sub>FPGA</sub>/
+                                (2<sup>16</sup> &#8722; 1) can be specified. The rate is
+                            derived from the FPGA frequency using a clock divider; therefore, exact
+                            rates across the full specified range cannot always be achieved. The
+                            effective rate and the corresponding relative error are
+                            displayed.</p><p>Example: If the FPGA frequency is 75 MHz, then the corresponding
+                            frequency range is approximately 9.375 MHz to 1.144 kHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Acknowledge Error Port </span>
+                    </span></dt><dd><p>By checking this parameter, an additional output becomes available
+                            which indicates the status of the acknowledge flag (1: error, 0: no
+                            error).</p></dd><dt><span class="term">
+                        <span class="guilabel">Read Value From Previous Model Step </span>
+                    </span></dt><dd><p>This parameter is only visible if <span class="bold"><strong>Show
+                                Acknowledge Error Port</strong></span> is selected. By checking this
+                            parameter, the driver output <span class="bold"><strong>Ack Error</strong></span>
+                            contains the I2C ack error state from the previous model step. This
+                            option reduces the TET. Otherwise, the driver actively waits for the I2C
+                            transfer (which increases the TET) to be finished and then the output
+                                <span class="bold"><strong>Ack Error</strong></span> contains the I2C ack
+                            error state from the current model step.</p></dd></dl></div></div></div></body></html>

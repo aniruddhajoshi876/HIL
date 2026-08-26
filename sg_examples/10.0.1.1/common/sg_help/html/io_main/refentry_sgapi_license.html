@@ -1,0 +1,36 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.License</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_ip_alias_configuration.html" title="speedgoat.IpAliasConfiguration"><link rel="next" href="refentry_sgapi_migrate_target.html" title="speedgoat.migrateTarget"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_license"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.License</h2><p>speedgoat.License &#8212; 
+            <span class="phrase">Provide licensing tools for your Speedgoat real-time target machine.</span>
+         </p></div><div class="refsect1"><a name="d5e1142"></a><h2>Description</h2><p>This Speedgoat API class provides all the required functionality to view and update the
+licensing information on your Speedgoat real-time target machine.</p></div><div class="refsect1"><a name="d5e1145"></a><h2>Syntax</h2><p>Construct the API class:</p><pre class="programlisting">licObj = speedgoat.License()</pre><p>
+         </p><p>Construct the API class using additional options and one or more name-value pair arguments:</p><pre class="programlisting">licObj = speedgoat.License(___, name, value)</pre><p>
+         </p><p>Get the current runtime license file of your target machine:</p><pre class="programlisting">licObj.getFile()</pre><p>
+         </p><p>Get the serial number of your target machine:</p><pre class="programlisting">licObj.getSerialNumber()</pre><p>
+         </p><p>Automatically update the runtime license of your target machine (user confirmation is
+required):</p><pre class="programlisting">licObj.update()</pre><p>
+         </p><p>Update the runtime license of your target machine with one name-value pair argument (for
+scripting):</p><pre class="programlisting">licObj.update(name, value)</pre><p>
+         </p></div><div class="refsect1"><a name="d5e1159"></a><h2>Examples</h2><p>Construct the license object for the default target machine:</p><pre class="programlisting">licObj = speedgoat.License</pre><p>Construct the license object for a specified target machine using the target name
+(for example, 'TargetPC1'):</p><pre class="programlisting">licObj = speedgoat.License(___, 'TargetName', 'TargetPC1')</pre><p>Construct the license object for a specified target machine using the target object
+(for example, tg):</p><pre class="programlisting">licObj = speedgoat.License(___, 'TargetObject', tg)</pre><p>Get the current runtime license file of your target machine:</p><pre class="programlisting">licObj.getFile</pre><p>Get the serial number of your target machine:</p><pre class="programlisting">licObj.getSerialNumber</pre><p>Automatically update the runtime license of your target machine (user confirmation is
+required). A dialog box explorer opens if the license file cannot be found:</p><pre class="programlisting">licObj.update</pre><p>Update the runtime license of your target machine with the file (sg1234.lic) located
+in your MATLAB Current Folder (for scripting):</p><pre class="programlisting">licObj.update('FileName', 'sg1234.lic')</pre><p>Update the runtime license of your target machine with the complete file path (for
+script version):</p><pre class="programlisting">licObj.update('FilePath', 'C:\runtimelicense\sg1234.lic')</pre><p>Update the runtime license of your target machine with the folder path. The function will
+automatically take the correct one (for scripting):</p><pre class="programlisting">licObj.update('FilePath', 'C:\runtimelicense')</pre></div><div class="refsect1"><a name="d5e1179"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p><p>'FileName' - Runtime license filename
+[character vector].
+The runtime license filename in the following format: 'sg1234.lic'</p><p>'FilePath' - Runtime license file path
+[character vector].
+It could either be the full file path (including the filename):
+'C:\runtimelicense\sg1234.lic'. Or the folder path containing the file:
+'C:\runtimelicense'. In the latter case, the correct license file is automatically
+taken.</p></div><div class="refsect1"><a name="d5e1185"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p><p>Finally, the 'FileName' argument takes precedence: if both arguments are supplied,
+'FilePath' will therefore be ignored.</p></div></div></body></html>

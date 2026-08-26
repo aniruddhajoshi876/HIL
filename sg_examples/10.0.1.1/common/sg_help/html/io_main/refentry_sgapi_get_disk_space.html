@@ -1,0 +1,24 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.getDiskSpace</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_get_target_time.html" title="speedgoat.getTargetTime"><link rel="next" href="refentry_sgapi_get_io_interfaces.html" title="speedgoat.getIoInterfaces"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_get_disk_space"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.getDiskSpace</h2><p>speedgoat.getDiskSpace &#8212; 
+            <span class="phrase">Get information about disk usage of your Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e658"></a><h2>Description</h2><p>This Speedgoat API function retrieves information about the status of your Speedgoat real-time
+target machine's disk.</p></div><div class="refsect1"><a name="d5e661"></a><h2>Examples</h2><p>Get the available space on the default target machine's disk in bytes:</p><pre class="programlisting">free = speedgoat.getDiskSpace</pre><p>Get the available space as well as the total capacity of the target machine's disk in bytes:</p><pre class="programlisting">[free, total] = speedgoat.getDiskSpace</pre><p>Get the available space, the total capacity, and the percentage of disk space used:</p><pre class="programlisting">[free, total, used] = speedgoat.getDiskSpace</pre><p>Display disk information for the default target machine:</p><pre class="programlisting">speedgoat.getDiskSpace</pre><pre class="screen">&gt;&gt; Disk space: 102.3 GB of 128.0 GB available (20.1% used)</pre><p>Get disk usage information for a specific target using the target name (e.g., 'TargetPC1'):</p><pre class="programlisting">[___] = speedgoat.getDiskSpace('TargetName', 'TargetPC1')</pre><p>Get disk usage information for a specific target using the target object (e.g., tg):</p><pre class="programlisting">[___] = speedgoat.getDiskSpace('TargetObject', tg)</pre></div><div class="refsect1"><a name="d5e676"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e680"></a><h2>Output Arguments</h2><p>free - Free disk space
+[double].
+Free disk space in bytes.</p><p>total - Total disk space
+[double].
+Total disk space in bytes.</p><p>used - Used disk space
+[double].
+Percentage of disk space used.</p></div><div class="refsect1"><a name="d5e685"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. The 'TargetObject' argument takes precedence if both arguments are supplied and
+'TargetName' is ignored.</p><p>For dual-boot systems, the output varies depending on the running MATLAB release.
+The total disk space shown on MATLAB R2020b up to R2025b is the space allocated to the 
+currently active operating system. In MATLAB R2026a and later, it is the size of the entire 
+disk. The free disk space is the space available for logging, excluding the 16 GB reserved 
+for Antelope RTOS.</p></div></div></body></html>

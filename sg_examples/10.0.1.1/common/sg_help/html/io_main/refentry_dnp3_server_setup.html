@@ -1,0 +1,71 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DNP3 - Server Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_dnp3_server.html" title="DNP3 Server"><link rel="next" href="refentry_dnp3_server_point.html" title="DNP3 - Server Point"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dnp3_server_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>DNP3 - Server Setup</h2><p>DNP3 - Server Setup &#8212; <span class="phrase">Configures the DNP3 server
+                    software stack</span></p></div><div class="refsect1"><a name="d5e6204"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dnp3_server_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e6212"></a><h2>Description</h2><p>The Setup block configures the DNP3 server protocol stack, opens the ports for
+                incoming connection requests and enables the Point blocks to exchange data on the
+                network.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e6218"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Server ID</span>
+                    </span></dt><dd><p>This is the DNP3 address of the server. DNP3 addresses must be unique
+                            in a network and range between 0 to 65519.</p></dd><dt><span class="term">
+                        <span class="guilabel">IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the DNP3 server. This step does not assign the
+                            IP address to an Ethernet interface. Instead, it binds the Setup block
+                            to an IP address which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for
+                            further information.</p><p>You can define multiple servers acting on the same IP address but
+                            different TCP ports. Insert the number of required Setup blocks in the
+                            model and apply the same IP address but different TCP ports. Specify a
+                            unique Server ID for each Setup block.</p><p>Furthermore, you can assign additional IP addresses to the same
+                            Ethernet interface by using IP aliasing. These addresses must be in the
+                            same subnet. Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for
+                            further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">TCP Port</span>
+                    </span></dt><dd><p>The TCP port the server listens on for connection requests from the
+                            client. The default port is 20000. For a custom port address, select
+                            between the range 0 and 65535. The reserved ports should not be used.</p><p><a class="link" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers</a>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Deadband</span>
+                    </span></dt><dd><p>Refers to analog points only.</p><p>Defines the absolute threshold that the change of an analog point
+                            value must exceed in order to trigger an event. Default deadband is 0
+                            (every change triggers an event).</p><p><span class="bold"><strong>Data type:</strong></span> single</p></dd><dt><span class="term">
+                        <span class="guilabel">Device Attributes</span>
+                    </span></dt><dd><p>Defines the attributes in DNP3 group 0. Must be a 2-by-n cell array.
+                            The first element represents the data type of the attribute, the second
+                            element represents the value. In addition to fundamental data types,
+                            group 0 also supports char. The maximum number of attributes is 256. The
+                            variation of an attribute results from its position in the cell array.
+                            The first attribute is assigned to variation number 0, the last one to
+                            255.</p><p>Example: {'uint32',1234;'char','Speedgoat'} creates two device
+                            attributes. The serial number 1234 has data type uint32 and can be read
+                            by the client with variation number 0. The manufacturer name Speedgoat
+                            is a string and can be read with variation number 1.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Points</div><p>This group of parameters sizes the DNP3 point and event groups.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Binary Input Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 1 and 2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Binary Input Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in group 2 (event
+                            history).</p></dd><dt><span class="term">
+                        <span class="guilabel">Double-Binary Input Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 3 and 4.</p></dd><dt><span class="term">
+                        <span class="guilabel">Double-Binary Input Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in group 4 (event
+                            history).</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Input Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 20, 21, 22 and 23.</p></dd><dt><span class="term">
+                        <span class="guilabel">Counter Input Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in groups 22 and 23 (event
+                            history).</p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Input Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 30, 31, 32 and 33.</p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Input Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in groups 32 and 33 (event
+                            history).</p></dd><dt><span class="term">
+                        <span class="guilabel">Binary Output Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 10, 11, 12 and 13.</p></dd><dt><span class="term">
+                        <span class="guilabel">Binary Output Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in groups 12 and 13 (event
+                            history).</p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Output Points</span>
+                    </span></dt><dd><p>Defines the number of points in groups 40, 41, 42 and 43.</p></dd><dt><span class="term">
+                        <span class="guilabel">Analog Output Events</span>
+                    </span></dt><dd><p>Defines the number of events for each point in groups 42 and 43 (event
+                            history).</p></dd></dl></div></div></div></body></html>

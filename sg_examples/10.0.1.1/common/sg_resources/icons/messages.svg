@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="22"
+  height="22"
+  viewBox="-1.5875 -1.5875 5.8208333 5.8208332">
+
+  <defs>
+    <g id="letter-symbol"
+       stroke="#666666"
+       stroke-miterlimit="10"
+       stroke-width="1">
+
+      <rect
+        x="8"
+        y="13"
+        width="32"
+        height="21"
+        fill="#ffffff" />
+
+      <polyline
+        points="40,13 23.997,25.931 8,13"
+        fill="none" />
+
+      <line
+        x1="26.685"
+        y1="23.876"
+        x2="40"
+        y2="34" />
+
+      <line
+        x1="8"
+        y1="34"
+        x2="21.405"
+        y2="23.805" />
+    </g>
+  </defs>
+
+  <!-- Back copy: 6 px up-left -->
+  <g transform="translate(-1.5875 -1.5875)">
+    <g transform="matrix(0.12312322 0 0 0.14871034 -0.82061392 -0.91825)">
+      <use href="#letter-symbol" />
+    </g>
+  </g>
+
+  <!-- Middle copy: 3 px up-left -->
+  <g transform="translate(-0.79375 -0.79375)">
+    <g transform="matrix(0.12312322 0 0 0.14871034 -0.82061392 -0.91825)">
+      <use href="#letter-symbol" />
+    </g>
+  </g>
+
+  <!-- Original letter symbol, drawn last so it is visually in front -->
+  <g transform="matrix(0.12312322 0 0 0.14871034 -0.82061392 -0.91825)">
+    <use href="#letter-symbol" />
+  </g>
+
+</svg>

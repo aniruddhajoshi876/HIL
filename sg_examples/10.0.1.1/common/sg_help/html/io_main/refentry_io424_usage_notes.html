@@ -1,0 +1,39 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO424 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io424_pin_mapping.html" title="IO424 Pin Mapping"><link rel="next" href="refentry_io424_setup.html" title="IO424 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io424_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO424 Usage Notes</h2><p>IO424 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e2837"></a><h2>Status Error bits description</h2><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                            <span class="bold"><strong>QUAD</strong></span>: Quadrant-Detection Error. While
+                            at '1', Angle/Stroke and Velocity <span class="underline">are not
+                                valid</span>. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> 180 deg jump</p></li><li class="listitem"><p> Excessive rotation speed</p></li><li class="listitem"><p> Excessive offsets</p></li><li class="listitem"><p> Excessive phase shifts (&gt; 45 deg)</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p>
+                            <span class="bold"><strong>LOS</strong></span>: SIN/COS Loss-of-Signal. While at
+                            '1', Angle/Stroke and Velocity <span class="underline">are valid, but
+                                may be degraded</span>. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> Sum of SIN and COS signal is below 1/16 of the selected
+                                        input range</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p><span class="bold"><strong>CLIP SIN</strong></span>: SIN Clipping. While at '1',
+                            Angle/Stroke and Velocity <span class="underline">are not
+                                valid</span>. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> Clipping is position dependent</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p>
+                            <span class="bold"><strong>CLIP COS</strong></span>: COS Clipping. While at '1',
+                            Angle/Stroke and Velocity <span class="underline">are not
+                                valid</span>. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> Clipping is position dependent</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p>
+                            <span class="bold"><strong>EXC LOW</strong></span>: Excitation Frequency too low. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> f_Exc &lt; 400 Hz in Synchro, f_Exc &lt; 1 kHz for the
+                                        others. If set while "Excitation Frequency too high" is also
+                                        set, the frequency is within limits <span class="underline">but not stable</span>.</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p>
+                            <span class="bold"><strong>EXC HIGH</strong></span>: Excitation Frequency too
+                            high. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> f_Exc &lt; 20 kHz. If set while "Excitation Frequency too
+                                        low" is also set, the frequency is within limits <span class="underline">but not stable</span>.</p></li></ul></div><p>
+                        </p></li><li class="listitem"><p>
+                            <span class="bold"><strong>AMP OT</strong></span>: Excitation Output
+                            Overtemperature Flag. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p> It signals an overtemperature in the excitation
+                                        amplifier. When set, it disables the excitation output.
+                                        Restart the application if this status bit is raised.</p></li></ul></div><p>
+                        </p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e2895"></a><h2>Connection methods</h2><p>This section describes the different connection methods for the IO424.</p><p><span class="bold"><strong>Resolver, with external or internal
+                reference.</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/io424_resolver.svg" width="1000"></span></p><p><span class="bold"><strong>LVDT/RVDT Differential configuration, with external or
+                    internal reference.</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/io424_lvdt_differential.svg" width="1000"></span></p><p><span class="bold"><strong>LVDT/RVDT Ratiometric configuration, with external or
+                    internal reference.</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/io424_ratiometric.svg" width="1000"></span></p><p><span class="bold"><strong>Synchro configuration, works only with external
+                    reference.</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/io424_synchro.svg" width="550"></span></p></div></div></body></html>

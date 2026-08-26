@@ -1,0 +1,39 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO112 - Start conversion</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io112_analog_input.html" title="IO112 - Analog input"><link rel="next" href="refentry_io112_read_channels.html" title="IO112 - Read channels"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io112_start_conversion"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO112 - Start conversion</h2><p>IO112 - Start conversion &#8212; 
+                <span class="phrase">Start conversion of IO112</span>
+            </p></div><div class="refsect1"><a name="d5e8171"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io112_start_conversion.png"></span></span></p></div><div class="refsect1"><a name="d5e8179"></a><h2>Description</h2><p>This driver block together with the Read channels driver block can be used as an
+                alternative to the Analog input driver block. The Start conversion block initiates
+                the conversion of the analog input channels. It does not read and return these
+                channels. This is done using a separate Read channels driver block. The separation
+                of "start conversion" and "read channels" is mainly used for situations where more
+                than one IO112 I/O module is present in a target machine, and the acquisition of the
+                overall input channels is synchronized across the various IO112 I/O modules.</p><p>As the execution of this block and the Read channels block(s) must be done in a
+                well-defined (deterministic) manner, these blocks provide special synchronization
+                (SYNC) input and output ports which can be turned on and off depending on the
+                block's dialog box settings (see below).</p></div><div class="refsect1"><a name="d5e8183"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">S (SYNC input port)</span>
+                    </span></dt><dd><p>The block is executed if the signal value is TRUE, and not executed
+                            otherwise. Connection to a preceding block ensures that this block is
+                            executed after the preceding block. This port is enabled if the
+                                <span class="bold"><strong>Show Input Synchronization Port</strong></span> box
+                            in the block mask is checked.</p><p>Data Type: <code class="literal">logical</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">S (SYNC output port)</span>
+                    </span></dt><dd><p>If the driver block's SYNC input port is not enabled, the value of
+                            this port is TRUE. Otherwise it takes the value (TRUE or FALSE) entered
+                            for the block's SYNC input port. Connection to a subsequent block
+                            ensures that this block is executed before the subsequent block. This
+                            port is enabled if the <span class="bold"><strong>Show Output Synchronization
+                                Port</strong></span> box in the block mask is checked.</p><p>Data Type: <code class="literal">logical</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e8205"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the Setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Input Synchronization Port</span>
+                    </span></dt><dd><p>If checked, the block shows an input port to accept a boolean SYNC
+                            signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Output Synchronization Port</span>
+                    </span></dt><dd><p>If checked, the block shows an output port which provides the boolean
+                            SYNC signal.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

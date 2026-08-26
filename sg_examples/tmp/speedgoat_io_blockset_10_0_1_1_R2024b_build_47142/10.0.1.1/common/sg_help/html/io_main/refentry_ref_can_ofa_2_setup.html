@@ -1,0 +1,82 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO61X - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_can_ofa_2_usage_notes.html" title="IO61X Usage Notes"><link rel="next" href="refentry_ref_can_ofa_2_write.html" title="IO61X - CAN Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_2_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO61X - Setup</h2><p>IO61X - Setup &#8212; <span class="phrase">Setup of parameters for CAN, CAN-FD and LIN channels
+                </span></p></div><div class="refsect1"><a name="d5e2926"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_canlin_ofa2_io61x_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e2934"></a><h2>Description</h2><p>This CAN and LIN Setup driver block is part of the generic block library for the
+                IO610, IO611, IO612, IO613 and IO614 I/O modules. Your model must contain one CAN
+                and LIN Setup driver block for each module in your target machine.</p><p>The Setup block dialog box allows all of the supported CAN I/O modules (IO610,
+                IO612, IO613) and CAN and LIN I/O modules (IO611, IO614) to be configured. It
+                therefore has an impact on all the other driver blocks (CAN Write, CAN Read or LIN
+                Write, LIN Read).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e2941"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>The Module ID has two functions:</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block
+                                        and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot
+                                        parameter. If only one I/O module of this type is installed,
+                                        the Module ID must be set to <span class="bold"><strong>1</strong></span>. If n modules are installed, it must be in
+                                        the range 1:n. Not all the I/O modules installed in the
+                                        target machine need to be used.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term"><span class="guilabel">Module Type</span></span></dt><dd><p>Select the type of your I/O module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">CAN Channel Operation Mode Selection</span>
+                    </span></dt><dd><p>Configuration of the respective protocol mode for each channel. The
+                            available options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled</p></li><li class="listitem"><p>CAN (HS)</p></li><li class="listitem"><p>CAN-FD</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>CAN (HS) according to ISO 11898-2 and CAN-FD according to ISO
+                                11898-1</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">LIN Channel Operation Mode Selection</span>
+                    </span></dt><dd><p>Configuration of the respective protocol mode for each channel. The
+                            available options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Disabled</p></li><li class="listitem"><p>Slave</p></li><li class="listitem"><p>Master</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>LIN Channel Operation Mode Selection is only visible if the
+                                    <span class="bold"><strong>Module Type</strong></span> is set to IO611 or
+                                IO614.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Initialization Structures</span>
+                    </span></dt><dd><p>Defines CAN messages sent during initialization of the Setup block.
+                            For more information, refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage
+                            notes</a></p></dd><dt><span class="term">
+                        <span class="guilabel">Termination Structures </span>
+                    </span></dt><dd><p>Defines CAN messages sent during termination of the Setup block. For
+                            more information, refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage
+                            notes</a></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">CAN Channel Setup Tab</div><p>The tab for a CAN channel is visible only if the respective CAN channel is
+                    enabled in the <span class="bold"><strong>Main</strong></span> tab.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Nominal Baud Rate</span>
+                    </span></dt><dd><p>Select the baud rate for CAN (HS) or the arbitration baud rate for
+                            CAN-FD. The options are defined according to the hardware
+                            configuration.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>User defined</strong></span> option should be
+                                used if a baud rate is required that is not configured by default or
+                                if a certain sample point is required. Selecting <span class="bold"><strong>User defined</strong></span> enables the <span class="bold"><strong>[BRP, SJW, TSEG1, TSEG2]</strong></span> parameter. Refer
+                                to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage notes</a>
+                                for more information.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">[BRP, SJW, TSEG1, TSEG2]</span>
+                    </span></dt><dd><p>If the <span class="bold"><strong>User defined</strong></span> option has been
+                            selected with the <span class="bold"><strong>Standard Baud Rate</strong></span>
+                            parameter, this parameter is used to configure the bit timing. The
+                                <span class="bold"><strong>[BRP, SJW, TSEG1, TSEG2]</strong></span> parameter
+                            is a vector with the following elements: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Bit Rate Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization Jump Width (SJW)</p></li><li class="listitem"><p>Time Segment 1 (TSEG1)</p></li><li class="listitem"><p>Time Segment 2 (TSEG2)</p></li></ul></div><p>
+                        </p><p>Refer to the <a href="refentry_can_ofa_2_usage_notes.html" class="olink"> usage notes</a> for
+                            more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Flexible Data Baud Rate</span>
+                    </span></dt><dd><p>This parameter is only available if the CAN-FD option is chosen with
+                            the <span class="bold"><strong>CAN Channel</strong></span> parameter. The options
+                            are defined according to the Hardware configuration.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>User defined</strong></span> option should be
+                                used if a baud rate is required that is not configured by default or
+                                if a certain sample point is required. Selecting <span class="bold"><strong>User defined</strong></span> enables the <span class="bold"><strong>[BRP, SJW, TSEG1, TSEG2]</strong></span>
+                                parameter.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">[BRP, SJW, TSEG1, TSEG2]</span>
+                    </span></dt><dd><p>The principle is the same as for <span class="bold"><strong> Nominal Baud
+                                Rate</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">LIN Channel Setup Tab</div><p>The tab for a LIN channel is visible only if the respective LIN channel is
+                    enabled in the <span class="bold"><strong>Main</strong></span> tab.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Baud Rate</span>
+                    </span></dt><dd><p>This parameter is valid for Master and Slave operation. Range between
+                            1 000 and 20 000</p></dd></dl></div></div></div></body></html>

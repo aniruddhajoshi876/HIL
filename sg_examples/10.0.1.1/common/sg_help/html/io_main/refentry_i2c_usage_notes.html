@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">I2C Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_i2c_examples.html" title="IO3xx I2C - Examples"><link rel="next" href="refentry_i2c_master_read_v1.html" title="I2C - Master read v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_i2c_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>I2C Usage Notes</h2><p>I2C Usage Notes &#8212; <span class="phrase"><span class="bold"><strong>Usage
+                        information about the I/O module</strong></span></span></p></div><div class="refsect1"><a name="refsect_i2c_code_module_description"></a><h2>Code Module Description</h2><p>Speedgoat provides two I2C master and two I2C slave code modules for the
+                configurable I/O modules. This chapter explains, how to use them</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="refentry_i2c_master_read_v1.html" class="olink">Master Read v1</a> - The I2C
+                        Master read driver block allows data to be read from a slave device
+                        supporting the I2C slave protocol.</p></li><li class="listitem"><p><a href="refentry_i2c_master_write_v1.html" class="olink">Master Write v1</a> - The
+                        I2C Master write driver block allows data to be written to a device
+                        supporting the I2C slave protocol.</p></li><li class="listitem"><p><a href="refentry_i2c_slave_setup_v1.html" class="olink">Slave setup v1</a> - The I2C
+                        Slave setup block allows an identifier (slaveID) to be assigned to the I2CS
+                        blocks</p></li><li class="listitem"><p><a href="refentry_i2c_slave_read_v1.html" class="olink">Slave read v1</a> - The I2C Slave read driver block allows the
+                        register bank of the code module to be read</p></li><li class="listitem"><p><a href="refentry_i2c_slave_write_v1.html" class="olink">Slave write v1</a> - The I2C
+                        Slave write driver block allows data to be written to any register in the
+                        register bank of the code module</p></li></ul></div></div><div class="refsect1"><a name="refsect_i2c_master_write_without_subindex_present_step"></a><h2>I2C Master Read without Subindex, Read Value from Current Model Step</h2><p>The image below illustrates the basic timing interaction between the CPU, the FPGA
+                and the I2C slave device without subindex and present model step data (<span class="bold"><strong>Enable Subindex Configuration</strong></span> is OFF / <span class="bold"><strong>Read Value from Previous Model Step</strong></span> is OFF).</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/i2c_master_read_no_subindex_present_step.png" width="864"></span>
+            </p><p>The driver sets the Device ID and then starts the I2C read transfer. The driver
+                actively waits until this I2C read transfer is finished and updates the model-block
+                    <span class="bold"><strong>Data</strong></span> output with the I2C data that just have
+                been transferred.</p></div><div class="refsect1"><a name="refsect_i2c_master_write_with_subindex_present_step"></a><h2>I2C Master Read with Subindex, Read Value from Current Model Step</h2><p>The image below illustrates the basic timing interaction between the CPU, the FPGA
+                and the I2C slave device with subindex and present model step data (<span class="bold"><strong>Enable Subindex Configuration</strong></span> is ON / <span class="bold"><strong>Read Value from Previous Model Step</strong></span> is OFF).</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/i2c_master_read_with_subindex_present_step.png" width="864"></span>
+            </p><p>The driver sets the Device ID and the subindex (Reg Addr) and then first starts a
+                I2C write transfer. This transfer writes the register address to read from to the
+                I2C device. At the end of this write transfer (active wait), the driver immediately
+                starts an I2C read transfer where data from the I2C - with the first read address
+                just written before - are received by the code module. The driver actively waits
+                until this I2C read transfer is finished and updates the model-block <span class="bold"><strong>Data</strong></span> output with I2C data that just have been
+                transferred.</p></div><div class="refsect1"><a name="refsect_i2c_master_write_without_subindex_previous_step"></a><h2>I2C Master Read without Subindex, Read Value from Previous Model Step</h2><p>The image below illustrates the basic timing interaction between the CPU, the FPGA
+                and the I2C slave device without subindex and previous model step data (<span class="bold"><strong>Enable Subindex Configuration</strong></span> is OFF / <span class="bold"><strong>Read Value from Previous Model Step</strong></span> is ON).</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/i2c_master_read_no_subindex_previous_step.png" width="864"></span>
+            </p><p>The driver sets the Device ID and then starts the I2C read transfer. The driver
+                does not actively wait for this I2C read transfer and therefore updates the
+                model-block <span class="bold"><strong>Data</strong></span> output with the I2C data from the
+                previous step. This reduces the TET.</p></div><div class="refsect1"><a name="refsect_i2c_master_write_with_subindex_previous_step"></a><h2>I2C Master Read with Subindex, Read Value from Previous Model Step</h2><p>The image below illustrates the basic timing interaction between the CPU, the FPGA
+                and the I2C slave device with subindex and previous model step data (<span class="bold"><strong>Enable Subindex Configuration</strong></span> is ON / <span class="bold"><strong>Read Value from Previous Model Step</strong></span> is ON).</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/i2c_master_read_with_subindex_previous_step.png" width="864"></span>
+            </p><p>The driver sets the Device ID and the subindex (Reg Addr) and then first starts a
+                I2C write transfer. This transfer writes the register address to read from to the
+                I2C device. At the end of this write transfer (active wait), the driver immediately
+                starts an I2C read transfer where data from the I2C - with the first read address
+                just written before - are received by the code module. The driver does not actively
+                wait for this I2C read transfer and therefore updates the model-block <span class="bold"><strong>Data</strong></span> output with the I2C data from the previous step.
+                This reduces the TET.</p></div></div></body></html>

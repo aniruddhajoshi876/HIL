@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_pin_mapping.html" title="IO672 Pin Mapping"><link rel="next" href="refentry_io672_bus_controller_send.html" title="IO672 - Bus Controller Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Setup</h2><p>IO672 - Setup &#8212; <span class="phrase">Configure the IO672 I/O
+                    Module</span></p></div><div class="refsect1"><a name="d5e51252"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e51260"></a><h2>Description</h2><p>Your model can contain only one Setup block as only one IO672 I/O module is
+                supported per target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e51266"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">IO672 Variant </span>
+                    </span></dt><dd><p>Selects the variant of the IO672 module. The number after IO672 is 1,
+                            2 or 4 channels. SF = single function (per channel), MF = multi-function
+                        </p></dd><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd></dl></div></div></div></body></html>

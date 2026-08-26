@@ -1,0 +1,62 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Adlink PCI-6208A Analog Output</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f24-6010.html" title="Chapter&nbsp;1.&nbsp;Adlink Blocks No Longer Recommended for Use"><link rel="prev" href="bqmb0dv-11.html" title="Adlink PCI-6208"><link rel="next" href="bqmb0dv-20.html" title="Adlink PCI-6208A Digital Input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bqmb0dv-15"></a><div class="titlepage"></div><div class="refnamediv"><h2>Adlink PCI-6208A Analog Output<a name="Adlink_6208A_DA"></a></h2><p>Adlink PCI-6208A Analog Output<a name="Adlink_6208A_DA"></a> &#8212; Adlink PCI-6208A Analog Output block (not recommended)<b>Adlink</b><b>DACBlocks</b></p></div><div class="refsect1"><a name="d5e83"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="bqmb0dv-11.html" class="olink">Adlink
+                            PCI-6208</a></p></li></ul></div></div><div class="refsect1"><a name="bqmb0dv-17"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpcadlinklib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bqmb0dv-18"></a><h2>Scaling Output to Input</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col width="35%" class="col1"><col width="33%" class="col2"><col width="32%" class="col3"></colgroup><thead><tr><th>
+                                <p>I/O Module Output</p>
+                            </th><th>
+                                <p>Block Input Data Type</p>
+                            </th><th>
+                                <p>Scaling</p>
+                            </th></tr></thead><tbody><tr><td>
+                                <p>ma</p>
+                            </td><td>
+                                <p>Double</p>
+                            </td><td>
+                                <p>1</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="bqmb0dv-19"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel vector</strong></span></span></dt><dd><p>Enter a vector of numbers to specify the output channels.</p><p>For example, to use the first and second analog output (D/A) channels
+                            enter</p><pre class="programlisting">[1, 2]</pre><p>The channel numbers can occur in arbitrary order. Number the channels
+                            beginning with 1 even if this board manufacturer numbers them beginning
+                            with 0. The maximum allowable channel number is 4.</p></dd><dt><span class="term"><span class="bold"><strong>Range</strong></span></span></dt><dd><p>From the list, choose</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">0 to 20 ma</code></p></li><li class="listitem"><p><code class="literal">5 to 25 ma</code></p></li><li class="listitem"><p><code class="literal">4 to 20 ma</code></p></li></ul></div><p>Signal input to the block is in milliamperes (mA). The output voltage
+                            maximum is 10 volts. If the resistance is too large to get the chosen
+                            current, the voltage measured across the output load will
+                            saturate.</p><p>For example, assume an input sine wave with:</p><pre class="programlisting">Input = 10*sin(omega*t) + 10</pre><p>If you set the range to <code class="literal">0 to 20 ma</code>, the current
+                            should oscillate from 0 to 20 ma at <code class="literal">omega</code> radians per
+                            second. The current will only reach 20 ma if the load resistance is less
+                            than or equal to 500 ohms. If the load resistance is 1000 ohms, the
+                            maximum current that 10 volts can drive is only 10 ma. The top half of
+                            the sine wave will be clipped off.</p><p>Note the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>This block is scaled for the current output ports, not the
+                                    voltage output ports.</p></li><li class="listitem"><p>This block limits output to positive values only. This is in
+                                    response to the manufacturer documentation, which cautions that
+                                    driving a negative voltage from the D/A converter to the voltage
+                                    to current output board might cause damage to the current
+                                    output.</p></li></ul></div></dd><dt><span class="term"><span class="bold"><strong>Reset vector</strong></span></span></dt><dd><p>The reset vector controls the behavior of the channel at model
+                            termination. Enter a scalar or a vector that is the same length as the
+                            channel vector. If you specify a scalar value, that setting is
+                            replicated over the channel vector. If you specify a value of 1, the
+                            corresponding channel is reset to the value specified in the initial
+                            value vector. If you specify a value of 0, the channel remains at the
+                            last value attained while the model was running. For example, if
+                                <span class="bold"><strong>Channel vector</strong></span> is <code class="literal">[1
+                                2]</code> and the <span class="bold"><strong>Reset vector</strong></span>
+                            is <code class="literal">[1]</code>, the action taken will be the same as if Reset
+                            vector was set to <code class="literal">[1 1]</code>. Both channels will be reset
+                            to their initial values when model execution is stopped.</p></dd><dt><span class="term"><span class="bold"><strong>Initial value vector</strong></span></span></dt><dd><p>The initial value vector contains the initial current values for the
+                            output channels. Enter a scalar or a vector that is the same length as
+                            the channel vector. If you specify a scalar value, that value is
+                            replicated as initial value over the channel vector. The channels are
+                            set to the initial values between the time the model is downloaded and
+                            the time it is started. When model execution is stopped, the
+                            corresponding position in <span class="bold"><strong>Reset vector</strong></span>
+                            is checked. Depending on that value, the channel is either reset to the
+                            initial value or remains at the last value attained while the model was
+                            running. For example, assume that <span class="bold"><strong>Channel
+                                vector</strong></span> is <code class="literal">[1 2]</code>, <span class="bold"><strong>Reset vector</strong></span> is <code class="literal">[1 0]</code>, and <span class="bold"><strong>Initial value vector</strong></span> is [2.3 5.6]. On initial
+                            download, channel 1 is set to 2.3 ma and channel 2 to 5.6 ma. When the
+                            model is stopped, channel 1 resets to 2.3 ma and channel 2 remains at
+                            the last value attained.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd></dl></div></div><div class="refsect1"><a name="d5e185"></a><h2>Related Links</h2><p><a class="link" href="http://www.adlinktech.com" target="_top">http://www.adlinktech.com</a></p></div></div></body></html>

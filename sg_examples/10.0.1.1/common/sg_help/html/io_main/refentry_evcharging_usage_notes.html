@@ -1,0 +1,48 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EV Charging Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_evcharging.html" title="EV Charging"><link rel="next" href="refentry_ref_ev_evse.html" title="EV EVSE"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_evcharging_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>EV Charging Usage Notes</h2><p>EV Charging Usage Notes &#8212; <span class="phrase">Usage information about
+                    the EV Charging solution</span></p></div><div class="refsect1"><a name="d5e73248"></a><h2>Description</h2><p>The section contains information about how to use the Speedgoat EV Charging
+                solution and the respective Simulink driver blocks.</p></div><div class="refsect1"><a name="d5e73251"></a><h2>Charge Cycle Flowchart</h2><p>The following flowchart illustrates a typical charging sequence with the charging
+                states of an ISO/DIN charging session.</p><p><span class="inlinemediaobject"><img src="././graphics/evcharging_flowchart_drawio.png" width="650"></span></p></div><div class="refsect1"><a name="d5e73258"></a><h2>Best Practices for DC Charging</h2><p>The following description summarizes all major steps to provide a charge control
+                algorithm for DC-charging:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Check if the EV is plugged and a CP connection is established (CP State
+                        'B' received over topic TOPIC_CHARGE_CP_STATUS and TOPIC_CHARGE_TCP_STATUS
+                        with "connected" ('1' tcp or '2' tcp with tls)</p></li><li class="listitem"><p>Observe the CP States and the TCP connection status throughout the whole
+                        charging session</p></li><li class="listitem"><p>Use the status topics to indicate the current Charging state</p></li><li class="listitem"><p>Analyse the subscribed MQTT EV topics and handle the EVSE topics according
+                        to the standard (ISO 15118 / DIN 70121)</p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Initialization State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Handled automatically</p></li><li class="listitem"><p>During the initialization state, the <span class="bold"><strong>Base Configuration</strong></span> parameters are set
+                                        according to the configuration in the Setup block</p></li></ul></div></li><li class="listitem"><p>Authentication State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Handled automatically</p></li><li class="listitem"><p>Currently, only <span class="bold"><strong>free</strong></span>
+                                        charging is supported</p></li></ul></div></li><li class="listitem"><p>Parameter Discovery State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the charge parameter state has finished on EVSE side,
+                                        the EVSE Processing parameter of the "PARAMETER" state needs
+                                        to be set to "Finished" ('0') and the EVSE Statuscode shall
+                                        be set to "EVSE_Ready" ('1')</p></li><li class="listitem"><p>If EVSE Processing was set to "Finished" ('0') the
+                                        connector has to be locked on EV-side</p></li><li class="listitem"><p>In ISO 15118, an SA-schedule must be sent over topic EVSE
+                                        SA-Schedule. One schedule is already pre-configured by the
+                                        charging-stack, but this one should be adapted with valid
+                                        data. A list entry can be overwritten by using the
+                                        SA-Schedule inputs of the Simulink block. The pre-configured
+                                        SA-schedule is using SA-Schedule Tuple ID '1'</p></li></ul></div></li><li class="listitem"><p>Isolation State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the EVSE is performing the isolation check, the
+                                        Statuscode shall be set to "EVSE_IsolationMonitoringActive"
+                                        ('4')</p></li><li class="listitem"><p>If the cable status is successfully checked, the
+                                        Isolationstatus should be set to "Valid" ('1') or whatever
+                                        its result is. The isolation status should be observed and
+                                        updated throughout the whole Charging state. If the
+                                        isolation status is "valid" ('1') or "warning" ('2'), the
+                                        EVSE Statuscode must be set to "EVSE_Ready" ('1')</p></li><li class="listitem"><p>If the isolation check has finished on EVSE side, the EVSE
+                                        Processing parameter of the "ISOLATION" state needs to be
+                                        set to "Finished" ('0')</p></li></ul></div></li><li class="listitem"><p>Pre-Charge State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>If the EVSE is ready, the Statuscode shall be set to
+                                        "Ready" ('1')</p></li><li class="listitem"><p>The EVSE Present Voltage must be ramped up to the
+                                        requested EV Target Voltage</p></li><li class="listitem"><p>The pre charge state is finished by the EV when it
+                                        considers the voltage to be successfully adjusted</p></li></ul></div></li><li class="listitem"><p>Charging State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The EVSE shall follow the requested EV target voltage and
+                                        target current under the conditions of the handled maximum
+                                        and minimum limits</p></li><li class="listitem"><p>The topic EV Ready to Charge State indicates the current
+                                        charge progress of the EV. If it is set to "Start" ('0') or
+                                        "Stop" ('1'), the EV requests to start or stop the energy
+                                        flow. If it is set to "Renegotiate" ('2'), the EV requests
+                                        the renegotiation process. (Only relevant for ISO
+                                        15118)</p></li></ul></div></li><li class="listitem"><p>Welding State</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>At the end of a charging session the EV can perform a
+                                        welding detection to ensure that the contactors are not
+                                        welded. It is a sequence of opening and closing of the
+                                        contactors and simultaneous observing the voltage</p></li><li class="listitem"><p>If the EVSE is ready, the Statuscode shall be set to
+                                        "Ready" ('1')</p></li><li class="listitem"><p>During the Welding state, it is advised to drop the actual
+                                        EVSE voltage to zero</p></li><li class="listitem"><p>The EV decides when it is ready to leave the state</p></li></ul></div></li></ol></div></li><li class="listitem"><p>Initiate a shutdown of the power electronics, if the EV indicates to stop
+                        charging or for EVSE emergency reasons</p></li><li class="listitem"><p>The charging session is terminated by receiving the status topic TCP with
+                        "disconnected" ('0') and status topic CP with state 'A'</p></li></ol></div></div></div></body></html>

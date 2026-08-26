@@ -1,0 +1,52 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO614 - CAN Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io614_can_write.html" title="IO614 - CAN Write"><link rel="next" href="refentry_io614_can_status.html" title="IO614 - CAN Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io614_can_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO614 - CAN Read</h2><p>IO614 - CAN Read &#8212; <span class="phrase">Read CAN message from one channel
+                    of the IO614 input queue</span></p></div><div class="refsect1"><a name="d5e16237"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io614_can_read.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_can_read"></a><h2>Description</h2><p>The "CAN Read" block reads messages from one channel of the IO61X input queue.</p><p>In each execution step it reads one message and indicates if more messages are
+                available.</p><p>See the "Usage Notes" to find out how this block can be used in a "do...while"
+                subsystem to prevent a possible overflow of the read buffer.</p><p>The read buffer has a capacity of 501 messages per channel.</p></div><div lang="" class="refsect1"><a name="refsect_ports_can_read"></a><h2>Ports</h2><p>Which output ports are available depends on the "Message type" mask setting: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN: Only CAN message output is available.</p></li><li class="listitem"><p>RAW: Data, Identifier, Length, Identifier Type and Timestamp outputs
+                            are available.</p></li><li class="listitem"><p>RAW &amp; CAN: All output ports are available.</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data Present</span>
+                    </span></dt><dd><p>Status signal is "1" if new data is available and "0" otherwise.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">boolean</code></p></dd><dt><span class="term">
+                        <span class="guilabel">CAN Msg</span>
+                    </span></dt><dd><p>The complete CAN message. Please use the "CAN Unpack" block to resolve
+                            the data.</p><p><span class="bold"><strong>Data
+                                Types:</strong></span><code class="literal">CAN_MESSAGE</code></p></dd><dt><span class="term">
+                        <span class="guilabel">ID</span>
+                    </span></dt><dd><p>The CAN message identifier.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">EFF</span>
+                    </span></dt><dd><p>The identifier type (Extended Frame Format) of the CAN message. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: 11-bit identifier</p></li><li class="listitem"><p>1: 29-bit extended identifier</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">DLC</span>
+                    </span></dt><dd><p>Length of the payload data.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>The timestamp for receipt of the CAN message. The resolution is 1&micro;s,
+                            so in order to get a double value in seconds, the block output must be
+                            converted to double and multiplied by 1e-6. This 1&micro;s resolution is given
+                            by the hardware implementation of the IO61X module. The time is reset to
+                            zero at each model start.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The payload data of the CAN message.</p><p><span class="bold"><strong>Data
+                                Types:</strong></span><code class="literal">uint8(8)</code></p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_can_read"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Specifies the ID of the IO61X module this driver block should be
+                            connected to. It must correspond to the module ID of the according setup
+                            block. Check the setup block help for more details.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. It can also be set to -1 for inherited sample time. The
+                            units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read Message from Channel</span>
+                    </span></dt><dd><p>Choose the CAN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type</span>
+                    </span></dt><dd><p>Defines how the CAN message is represented at the block outputs. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN: Only one "CAN Msg" output port is available. It will
+                                        always be connected to one or multiple "CAN Unpack" blocks.
+                                    </p></li><li class="listitem"><p>RAW: The message content is presented through five output
+                                        ports: "Data", "ID", "DLC", "FF" and "Timestamp".</p></li><li class="listitem"><p>CAN + RAW: Both versions are displayed.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output as bus</span>
+                    </span></dt><dd><p>Select this option for the block to output CAN messages as a bus
+                            signal.</p></dd></dl></div></div></div></body></html>

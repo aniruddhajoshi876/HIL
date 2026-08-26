@@ -1,0 +1,175 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA - Client Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_opcua_client_connection.html" title="OPC UA - Client Connection"><link rel="next" href="refentry_opcua_client_write.html" title="OPC UA - Client Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_client_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA - Client Read</h2><p>OPC UA - Client Read &#8212; <span class="phrase">Reads the value of an OPC UA
+                    variable node in the remote server</span></p></div><div class="refsect1"><a name="d5e72329"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_opcua_client_read.png"></span></span></p></div><div class="refsect1"><a name="d5e72337"></a><h2>Description</h2><p>The Read block reads the value attribute of specific variable nodes in the remote
+                server. When the block is triggered by the input port, it sends out read requests
+                and updates the output ports according to the response received. As an option, the
+                block can ask the server for unsolicited transmission of current values
+                (subscriptions). You can read multiple nodes with one Read block. </p></div><div class="refsect1"><a name="d5e72340"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the current values of the requested nodes. The port type can
+                            be: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Scalar, if one scalar node is configured</p></li><li class="listitem"><p>Vector, if one node of type vector is configured</p></li><li class="listitem"><p>Matrix, if one node of type matrix is configured</p></li><li class="listitem"><p>Vector, if multiple scalar nodes of the same data type are
+                                        configured</p></li><li class="listitem"><p>Bus, if Bus Output is selected</p></li></ul></div><p>The data type and dimensions are either defined by the
+                                <span class="bold"><strong>Init Value</strong></span> parameter or by the
+                            DataType and Dimension elements of the struct defined in the <span class="bold"><strong>Nodes</strong></span> parameter. Both the data type and
+                            dimensions must match the data type and dimensions of the node's value
+                            attribute in the remote server. Otherwise, the <span class="bold"><strong>Status</strong></span> port outputs an error.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to 2D-arrays</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Outputs either the status code of the local send operation or the
+                            status code included in the response. Successful data exchange is
+                            indicated by 0. This port is visible if the <span class="bold"><strong>Additional Outputs</strong></span> parameter is selected and the
+                                <span class="bold"><strong>Bus Output</strong></span> parameter is cleared.
+                            Otherwise, the port is hidden. </p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Time</span>
+                    </span></dt><dd><p>Outputs the local time a read response was received. A timestamp is
+                            represented by the number of milliseconds since 1-Jan-1970 00:00:00 UTC.
+                            Discover the OPC UA product examples and find out how to decode the
+                            timestamp. This port is visible if the <span class="bold"><strong>Additional
+                                Outputs</strong></span> parameter is selected and the <span class="bold"><strong>Bus Output</strong></span> parameter is cleared. Otherwise,
+                            the port is hidden. </p><p>This port can be used to check for a new response message received. A
+                            Detect Change block connected with the <span class="bold"><strong>Time</strong></span> output port indicates if the <span class="bold"><strong>Value</strong></span> output port has been updated.</p><p><span class="bold"><strong>Data type:</strong></span> uint64</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block sends out read requests as long as the input port is TRUE.
+                            The transmission of a request happens at each sample hit according to
+                            the block's sample time.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This ensures low network traffic but immediate updates
+                            of the output ports once a response is received. Discover the OPC UA
+                            product examples and find out how a Pulse Generator in conjunction with
+                            a Detect Change block serve as a cyclic trigger.</p><p>Since explicit read requests are not required if subscriptions are
+                            used, the port is hidden if the <span class="bold"><strong>Create
+                                Subscription</strong></span> parameter is selected. </p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd></dl></div></div><div class="refsect1"><a name="d5e72399"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Node Configuration</span>
+                    </span></dt><dd><p>If selected, Nodes must be configured in the <span class="bold"><strong>Nodes</strong></span> parameter instead of the <span class="bold"><strong>Node</strong></span> tab.</p></dd><dt><span class="term">
+                        <span class="guilabel">Nodes</span>
+                    </span></dt><dd><p>As an alternative to configuring a node in the <span class="bold"><strong>Node</strong></span> tab, the node properties can be passed as a struct
+                            to this parameter. The <span class="bold"><strong>Extended Node
+                                Configuration</strong></span> parameter must be selected for this
+                            purpose. Define an array of struct for reading multiple nodes. The
+                            required struct elements are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Namespace (see Namespace parameter)</p></li><li class="listitem"><p>IdentifierType (see Identifier Type parameter)</p></li><li class="listitem"><p>Identifier (see Identifier parameter)</p></li><li class="listitem"><p>Dimension: The dimension(s) of the node. Possible values
+                                        are </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>1 for scalar values</p></li><li class="listitem"><p>n for vectors</p></li><li class="listitem"><p>[m, n] for 2D-arrays</p></li></ul></div></li><li class="listitem"><p>DataType: The data type of the node. Must be passed as a
+                                        character array. Possible options are: double, single,
+                                        uint32, int32, uint16, int16, uint8, int8, boolean</p></li><li class="listitem"><p>SamplingInterval: The interval at which the remote server
+                                        should check for value changes. Required if the Create
+                                        Subscription parameter is selected.</p></li></ul></div><p>
+                        </p><p>You can create the struct in the base workspace, the model workspace
+                            or in a data dictionary and pass the variable name to the mask
+                            parameter. Example:
+                            </p><pre class="programlisting">
+Nodes(1).Namespace = 1; 
+Nodes(1).IdentifierType = 'Numeric';
+Nodes(1).Identifier = 2081;
+Nodes(1).Dimension = 1;
+Nodes(1).DataType = 'uint8';
+Nodes(1).SamplingInterval = 100;
+                    
+Nodes(end+1).Namespace = 2;
+Nodes(end).IdentifierType = 'String';
+Nodes(end).Identifier = 'Speed';
+Nodes(end).Dimension = 10;
+Nodes(end).DataType = 'single';
+Nodes(end).SamplingInterval = 100;
+
+Nodes(end+1).Namespace = 2;
+Nodes(end).IdentifierType = 'String';
+Nodes(end).Identifier = 'Torque';
+Nodes(end).Dimension = [3,4];
+Nodes(end).DataType = 'double';
+Nodes(end).SamplingInterval = 100;</pre><p>
+                        </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/opcua_bus_01.png"></span>
+                        </p><p>As an alternative, you can directly define the struct in the mask
+                            parameter. Example:
+                            </p><pre class="programlisting">
+[struct('Namespace',1,'IdentifierType','Numeric','Identifier',2081,'Dimension',1,'DataType','uint8','SamplingInterval',100), ...
+ struct('Namespace',2,'IdentifierType','String','Identifier','Speed','Dimension',10,'DataType','single','SamplingInterval',100), ...
+ struct('Namespace',2,'IdentifierType','String','Identifier','Torque','Dimension',[3,4],'DataType','double','SamplingInterval',100)]</pre><p>
+                        </p><p>It is not possible to define init values for the <span class="bold"><strong>Data</strong></span> output port or the value element in the data bus.
+                            Instead, 0 is indicated in all data elements when the real-time
+                            application starts. If an init value is required, place a dedicated Read
+                            block for the specific node and use the <span class="bold"><strong>Node</strong></span> tab for configuration.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Output</span>
+                    </span></dt><dd><p>If selected, the value, status and timestamp information of the
+                            requested nodes are output as a bus. The corresponding Simulink Bus
+                            object is automatically created in the base workspace. Each defined node
+                            is represented by a bus element whose name is derived from the node
+                            identifier. The matlab.lang.makeValidName function is called to convert
+                            the identifier into a string that works with code generation. For long
+                            strings, increase the <span class="bold"><strong>Maximum Identifier
+                                Length</strong></span>. If the <span class="bold"><strong>Additional
+                                Outputs</strong></span> parameter is cleared, this bus element holds the
+                            value received. If the <span class="bold"><strong>Additional
+                                Outputs</strong></span> parameter is selected, each bus element has
+                            sub-elements for value, status and timestamp. </p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/opcua_bus_02.png"></span></p><p>To ensure unique bus element names, use separate blocks for reading
+                            nodes with the same identifier but different namespaces.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Name</span>
+                    </span></dt><dd><p>The name for the Simulink Bus object to be created in the base
+                            workspace. The name must be a character array. An empty character array
+                            results in an automatically created bus name based on the block name.
+                            The matlab.lang.makeValidName function is called to convert the name
+                            into a string that works with code generation. For long names, increase
+                            the <span class="bold"><strong>Maximum Identifier Length</strong></span> model
+                            parameter. The parameter is visible if the <span class="bold"><strong>Bus
+                                Output</strong></span> parameter is selected. Otherwise, the parameter is
+                            hidden.</p></dd><dt><span class="term">
+                        <span class="guilabel">Additional Outputs</span>
+                    </span></dt><dd><p>If selected, status and timestamp information of the read operation is
+                            either output via the <span class="bold"><strong>Status</strong></span> and
+                                <span class="bold"><strong>Time</strong></span> output ports or included in
+                            the data bus depending on whether the <span class="bold"><strong>Bus
+                                Output</strong></span> parameter is checked or not.</p></dd><dt><span class="term">
+                        <span class="guilabel">Create Subscription</span>
+                    </span></dt><dd><p>If selected, the client asks the server to create a subscription and
+                            adds the defined nodes as so-called monitored items to this
+                            subscription. According to the items' sampling intervals, the server
+                            checks for data changes and autonomously sends the current values to the
+                            client (unsolicited transmission). Such publish messages are never sent
+                            more often than the <span class="bold"><strong>Publishing Interval</strong></span>
+                            parameter in the <span class="bold"><strong>Subscription</strong></span> tab
+                            allows. </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Node</div><p>This tab is visible if the <span class="bold"><strong>Extended Node
+                        Configuration</strong></span> parameter is cleared. Otherwise, the tab is hidden.
+                    On the <span class="bold"><strong>Node</strong></span> tab you can configure one single
+                    node for reading.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Namespace </span>
+                    </span></dt><dd><p>The index of the namespace to which the node is related.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier Type </span>
+                    </span></dt><dd><p>Defines the format of the <span class="bold"><strong>Node
+                                Identifier</strong></span> parameter. Refer to the <a href="refentry_opcua_server_node.html" class="olink">OPC UA
+                                Server Node</a> block content for further information about this
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier</span>
+                    </span></dt><dd><p>The unique identifier of the node within the specified namespace.
+                            Refer to the <a href="refentry_opcua_server_node.html" class="olink">OPC UA Server Node</a>
+                            block content for further information about this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The value that the <span class="bold"><strong>Data</strong></span> output port
+                            or the value element in the data bus holds before a read or a publish
+                            response is received. The parameter value's data type and dimensions
+                            define the data type and dimensions of the <span class="bold"><strong>Data</strong></span> port or the bus element and must match the data
+                            type and dimensions of the node's value in the remote server.
+                            Fundamental data types from boolean to double are supported as well as
+                            dimensions from scalar values to 2D-arrays.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interpret Vector Parameters as 1-D</span>
+                    </span></dt><dd><p>When you select this check box, the block outputs a vector of length
+                            N, provided the <span class="bold"><strong>Init Value</strong></span> parameter
+                            evaluates to an N-element row or column vector. When you clear this
+                            check box, the block outputs a matrix of dimension 1-by-N or
+                            N-by-1.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Subscription</div><p>This tab is visible if the <span class="bold"><strong>Create
+                        Subscription</strong></span> parameter is selected. Otherwise, the tab is
+                    hidden.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Publishing Interval</span>
+                    </span></dt><dd><p>The interval at which the remote server should send the current values
+                            of the monitored items.</p></dd></dl></div></div></div></body></html>

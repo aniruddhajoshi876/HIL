@@ -1,0 +1,78 @@
+%implements sg_IO644_pdo_s "C"
+
+%include "sg_IO644.tlc"
+
+%<cosAddCommonIncludes()>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void    
+    %<cosAddBlock(block)>
+    %<cosAddModule(block)>
+    %<cosAddPdo(block)>
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %assign PdoTypeIdx = CAST("Number", PdoType) - 1
+
+    %openfile tmpBuf
+
+    %assign PdoName = "CosPdo_%<CosModuleIdx>_%<PdoTypeIdx>_%<CosPdoIdx>"
+
+    %if EXISTS(Map_P)
+        %assign MapDim = %<LibBlockParameterDimensions(Map_P)>
+    %else
+        %assign MapDim = [0, 0]
+    %endif
+
+    /* %<cosPdoType2Str(PdoType-1)> PDO %<CAST("Number", PdoId)> of module %<CAST("Number", ModuleId)> */
+    COS_PDO_T %<PdoName> = {%<PdoType>, %<PdoId>, %<CobId>, %<TransType>, %<TransRate>, %<InhibitTime>, %<EventTimer>, %<SyncStart>, 0, %<MapDim[0]>, {NULL}, \
+    { \
+    %foreach r = MapDim[0]
+        { \
+        %<LibBlockParameterValue(Map_P, r)> \
+        , \
+        %<LibBlockParameterValue(Map_P, r+MapDim[0])> \
+        } \
+        %if r != 8-1 
+            , \
+        %endif 
+    %endforeach
+    %foreach r = 8 - MapDim[0]
+        {0, 0} \
+        %if r != 8-MapDim[0]-1
+            , \
+        %endif 
+    %endforeach
+    }, {0}};
+ 
+    %closefile tmpBuf
+    %<LibSetSourceFileSection(cFile, "Definitions", tmpBuf)>
+
+    {
+
+    /* Initialize work vectors **/
+    %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+
+    }
+
+    %endwith
+
+    %<doLastBlockStuff(block)>
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

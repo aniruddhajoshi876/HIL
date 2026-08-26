@@ -1,0 +1,27 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO754 - Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io754_setup_v2.html" title="IO754 - Setup v2"><link rel="next" href="refentry_io754_send_v2.html" title="IO754 - Send v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io754_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO754 - Send</h2><p>IO754 - Send &#8212; <span class="phrase">Transmits cyclic data from the
+                    Controller to the Modbus TCP network</span></p></div><div class="refsect1"><a name="d5e64517"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io754_send.png"></span></span></p></div><div class="refsect1"><a name="d5e64525"></a><h2>Description</h2><p>This block is used to transmit cyclic data from the Controller to the Modbus TCP
+                network.</p><p>You can only use one Modbus TCP Server Send block for each physical module
+                installed.</p></div><div lang="" class="refsect1"><a name="refsect_ports_snippet_send"></a><h2>Ports</h2><p>Depending on the value of the "Port type" parameter, this block will have:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>n input ports of type uint8, where n is defined by the "Output Data Bytes"
+                        parameter, or</p></li><li class="listitem"><p>1 input port which is a vector with n elements, where n is defined by the
+                        "Output Data Bytes" parameter.</p></li></ul></div><div class="variablelist"><div class="variablelist-title">Inputs (n ports of type uint8)</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">1</span>
+                    </span></dt><dd><p>Data byte to send. Type uint8.</p></dd><dt><span class="term">
+                        <span class="guilabel">X (X is the port number, between 1 and the value of the "Output
+                            Data Bytes" parameter)</span>
+                    </span></dt><dd><p>Data byte to send. Type uint8.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs (1 port with n vector elements)</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Out</span>
+                    </span></dt><dd><p>A vector of data bytes to send. The number of elements in the vector
+                            is defined by the "Output Data Bytes" parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e64556"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>This ID defines the link to the corresponding Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port type </span>
+                    </span></dt><dd><p>The type of the input ports. Options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>n ports of type UINT8 to have an input port for each
+                                        signal.</p></li><li class="listitem"><p>1 port with n element vector of type UINT8 to have a
+                                        single vector with an element for each signal.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Output data bytes </span>
+                    </span></dt><dd><p>The number of bytes that are sent to the Modbus TCP device. TIP: Use
+                            the "Byte Pack" block to send the data.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample time [s] </span>
+                    </span></dt><dd><p>Defines how often this block is updated.</p></dd></dl></div></div></div></body></html>

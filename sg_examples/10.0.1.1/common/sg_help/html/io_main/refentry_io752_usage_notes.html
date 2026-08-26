@@ -1,0 +1,73 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO752 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io752_previous_versions.html" title="Previous Versions"><link rel="next" href="refentry_io752_usage_notes_v3.html" title="IO752 Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io752_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO752 Usage Notes</h2><p>IO752 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e60611"></a><h2>Description</h2><p>This section describes how to configure the PROFINET network.</p></div><div class="refsect1"><a name="d5e60614"></a><h2>GSDML File</h2><p>To set up PROFINET communication, you must import the device description files of
+                PROFINET devices (GSDML file) into your PROFINET controller configuration tool or
+                PLC programming tool (refer to Step 7). Find the GSDML file of the IO752 PROFINET
+                Device module here:</p><p><code class="literal">&gt;&gt; [speedgoatroot, '\sg_blocks\cifx\eds\GSDML-V2.33-HILSCHER-CIFX RE
+                    PNS-20170919.xml']</code>.</p><p>This GSDML file contains multiple Device Access Points. Always select <span class="bold"><strong>CIFX RE/PNS V3.5.35 - V3.x</strong></span>.</p><p>If you use warmstart parameters to simulate a PROFINET device of a different
+                vendor, you must import the GSDML file of that particular device into your
+                controller configuration tool. The GSDML file is generally available on the vendor's
+                website.</p></div><div class="refsect1"><a name="d5e60622"></a><h2>I/O Module configuration from Simulink</h2><p>The warmstart mode allows the PROFINET device to be configured in Simulink using
+                the Setup driver block.</p><p>This approach offers more options than Sycon.net and rules out having to generate
+                and handle configuration files.</p><div class="refsect2"><a name="refsect_io752_usage_note_example"></a><h3>Example</h3><p>This example shows how to configure an IO752 node which acts as a Siemens
+                    Sinamics CU320-PN with one Control Unit and two drives exchanging data via
+                    Telegram 1.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Example_Mask.png"></span>
+                    <span class="inlinemediaobject"><img src="././graphics/io752_Sinamics_Config.png"></span>
+                </p></div></div><div class="refsect1"><a name="d5e60636"></a><h2>I/O Module configuration with SYCON.net</h2><p>During initialization of the real-time application, the IO752 Setup block reads a
+                configuration file from the hard drive of the target machine and configures the
+                PROFINET Device protocol stack. Use the SYCON.net configuration tool to create such
+                a file.</p><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>Download the SYCON.net configuration tool from the Speedgoat Customer Portal.
+                    Login to your <a class="link" href="https://www.speedgoat.com/extranet#/Login" target="_blank">Speedgoat</a> account. In the Downloads section,
+                    navigate to Software and click SYCON.net (v1.400 Build 170125).</p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Only SYCON.net <span class="bold"><strong>V1.400 Build 170125</strong></span> has been
+                    tested. There is no guarantee therefore that other versions will work with the
+                    Speedgoat I/O Blockset.</p></td></tr></table></div><p>In addition to this short introduction, please read the SYCON.net help
+                documentation for detailed information about how to set up a PROFINET device and
+                export the module configuration file.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Open SYCON.net and locate the "CIFX RE/PNS" device. Drag and drop the
+                        device to the main panel and also add the required PROFINET devices for a
+                        complete fieldbus network configuration.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Sycon_1.png"></span></p></li><li class="listitem"><p>Double-click on the icon to open the Configuration window of the
+                        controller.</p></li><li class="listitem"><p>Go to Configuration and then General. These are the parameters that you
+                        can use to setup the PROFINET device name.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Sycon_2.png"></span></p></li><li class="listitem"><p>Go to Configuration and then Modules. These are the parameters that you
+                        can use to setup the PROFINET device input and output ports.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Sycon_3.png"></span></p></li><li class="listitem"><p>Go to Configuration and then device Settings. These are the parameters
+                        that you can use to setup the PROFINET device.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Sycon_4.png"></span></p></li><li class="listitem"><p>Apply the configuration and close the windows. Right-click on the
+                        controller icon and select Additional Functions, Export and then
+                        DBM/nxd.</p><p><span class="inlinemediaobject"><img src="././graphics/io752_Sycon_5.png"></span></p></li><li class="listitem"><p>Select a name for the file, for example, "my_device.nxd" and save.</p></li><li class="listitem"><p>In MATLAB, locate the file and use the following script to load the
+                        configuration to the target machine.</p><pre class="programlisting">IO752             = sg_IO75X_struct();     % Define default structure
+
+IO752.protocol    = 'IO752';               % Protocol Speedgoat ID
+IO752.cardid      = '1';                   % Card ID as defined in the model
+IO752.configfiles = '2';                   % Number of configuration files
+IO752.configPath  = 'C:\Tests\Profinet';   % Absolute file path or '' for current directory
+IO752.configfile1 = 'my_device.nxd';       % Name of first configuration file
+IO752.configfile2 = 'my_device_nwid.nxd';  % Name of second configuration file
+
+sg_IO75X_loadconfig(IO752);</pre><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using v2 blocks, the protocol must be set to "IO752_V2".</p></td></tr></table></div><pre class="programlisting">IO752             = sg_IO75X_struct();     % Define default structure
+
+IO752.protocol    = 'IO752_V2';            % Protocol Speedgoat ID
+IO752.cardid      = '1';                   % Card ID as defined in the model
+IO752.configfiles = '2';                   % Number of configuration files
+IO752.configPath  = 'C:\Tests\Profinet';   % Absolute file path or '' for current directory
+IO752.configfile1 = 'my_device.nxd';       % Name of first configuration file
+IO752.configfile2 = 'my_device_nwid.nxd';  % Name of second configuration file
+
+sg_IO75X_loadconfig(IO752);</pre></li><li class="listitem"><p>Configure the driver blocks according to the configuration defined in
+                        SYCON.net. In the Setup driver block select "Configuration mode:
+                        Configuration file".</p></li><li class="listitem"><p>When you build the model, the firmware and configuration are loaded to the
+                        IO752 PROFINET device I/O module.</p></li></ol></div><div class="refsect2"><a name="d5e60691"></a><h3>IRT Mode</h3><p>Check <span class="olink">IRT
+                        Mode</span> how to configure the IRT mode.</p></div></div><div class="refsect1"><a name="d5e60695"></a><h2>Front Plate Description</h2><div class="variablelist"><div class="variablelist-title">IO752 PCI and PCIe modules</div><p>The IO752 acts as one PROFINET Device exclusively. The two RJ45 connectors
+                    simply serve to build up a line-based network structure. Plug the cable from the
+                    PROFINET Controller or the previous Device into the first socket. Connect the
+                    second socket with the next PROFINET Device. The LEDs described below indicate
+                    the communication status of the single PROFINET Device.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_pci_front.png" width="486"></span>
+                        </p><p><a name="para_common_rotary_switch_note"></a>The rotary switch has no functional role.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO752 mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_mpci_front.png" width="270"></span>
+                        </p><p><a name="para_common_mPCIe_error_LED_reversed"></a>Note that in some real-time target machines,
+        the mPCIe module is reversed; that is, the Error LED appears on the right.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO752-32 Multi-node simulator</div><p>The IO752-32 simulates 32 PROFINET Device nodes, split into two clusters with
+                    16 protocol chips each. Within a cluster, the nodes represent a line-based
+                    network structure. Build up a combined network by connecting both center
+                    sockets. Each node has two LEDs that indicate the communication status.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_32_front.png" width="1080"></span>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="d5e60734"></a><h2>LED Status Description</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>SYS</td><td>Green</td><td>On</td><td>Operating system running</td></tr><tr><td>&nbsp;</td><td>Green/Yellow</td><td>Blinking</td><td>Second stage bootloader is waiting for firmware</td></tr><tr><td>&nbsp;</td><td>Yellow</td><td>On</td><td>Bootloader netX (= romloader) is waiting for second stage
+                                bootloader</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Power supply for the device is missing or hardware defect</td></tr><tr><td>SF/COM1</td><td>Off</td><td>Off</td><td>No error</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Flashing (1 Hz, 3 s) </td><td>DCP signal service is initiated via the bus</td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>Watchdog timeout; channel, generic or extended diagnosis
+                                present; system error </td></tr><tr><td>BF/COM2</td><td>Off</td><td>Off</td><td>No error</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Flashing (2 Hz) </td><td>No data exchange </td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>No configuration; or low speed physical link; or no physical
+                                link </td></tr></tbody></table></div><p>Note that only the IO752 PCI and PCIe modules have the SYS LED. This LED does not
+                feature on the IO752 mPCIe module and the IO752-32 multi-node simulator.</p></div><div class="refsect1"><a name="d5e60803"></a><h2>Status Codes</h2><p>For the list of status codes, please refer to <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for Protocols Supported
+                with the IO64x/IO75x Modules</a>.</p></div></div></body></html>

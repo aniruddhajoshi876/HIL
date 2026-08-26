@@ -1,0 +1,69 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Wheel Speed Control</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_frame.html" title="IO624 - Frame"><link rel="next" href="refentry_io624_sync_pulses.html" title="IO624 - Sync Pulses"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_control"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Wheel Speed Control</h2><p>IO624 - Wheel Speed Control &#8212; 
+                <span class="phrase">Wheel Speed Control</span>
+            </p></div><div class="refsect1"><a name="d5e20648"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_control.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e20660"></a><h2>Ports</h2><p>The number of elements of the input depends on the protocol of the wheel speed
+                sensor selected in the setup block and on whether the <span class="bold"><strong>Enable
+                    Dynamic Timing</strong></span> parameter is enabled or not. If this parameter is
+                enabled, additional inputs are available to tune the timing of the respective
+                protocol during runtime.</p><p>Refer to the <a href="refentry_ref_io624.html" class="olink">IO624
+                    main page</a> for the cycle time and bit time specifications.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the wheel speed channel number)</span>
+                    </span></dt><dd><p><span class="bold"><strong>Square Wave Sensor Emulator</strong></span>. </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><span class="bold"><strong>ChX SW: Enable</strong></span> Controls
+                                        whether the output of this channel is enabled (1) or disabled
+                                        (0). When disabled, the output will remain at a low current
+                                        level. <span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">boolean</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX SW: Pulse Time</strong></span> If
+                                        enabled, this is the time at MID Current Level in seconds.
+                                            <span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">double</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX SW: Cycle Time</strong></span> If
+                                        enabled, this is the cycle time in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                        <code class="literal">double</code></p></li></ol></div><p><span class="bold"><strong>PWM Sensor Emulator</strong></span></p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>
+                                    <span class="bold"><strong>ChX PWM: Multiplier</strong></span> The pulse
+                                    length multiplier values are from 0 to 63, where 0 is no high
+                                    time; from 1 to 63 will multiply the pulse time. Refer to the
+                                    usage notes for more information. <span class="bold"><strong>Data
+                                        Type:</strong></span>
+                                    <code class="literal">double</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX PWM: Pulse Time</strong></span> If
+                                    enabled, this is the pulse time in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX PWM: Cycle Time</strong></span> If
+                                    enabled, this is the cycle time in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li></ol></div><p><span class="bold"><strong>AK / VDA Sensor Emulator</strong></span></p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>
+                                    <span class="bold"><strong>ChX AK/VDA: Size</strong></span> Specifies the
+                                    number of bits to transmit. Valid values range from 0 to 9,
+                                    where 0 indicates no bits will be transmitted. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">uint16</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX AK/VDA: Data</strong></span> The data to
+                                    transmit depending on the previous input. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">uint16</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX AK/VDA: SPLvl</strong></span> If enabled,
+                                    this controls the speed pulse level. False (0) for <span class="bold"><strong>Normal (High Current)</strong></span> and True (1 or
+                                    more) for <span class="bold"><strong>Artificial (Mid
+                                        Current)</strong></span>. <span class="bold"><strong>Data
+                                        Type:</strong></span>
+                                    <code class="literal">boolean</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX AK/VDA: Bit Time</strong></span> If
+                                    enabled, this is the time for one bit in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX AK/VDA: Cycle Time</strong></span> If
+                                    enabled, this is the cycle time in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li></ol></div><p><span class="bold"><strong>Custom Sensor Emulator</strong></span>: <span class="bold"><strong>Direct Control</strong></span></p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><span class="bold"><strong>ChX AK/VDA: Direct Control</strong></span>
+                                    Defines which current level is active as the default output
+                                    channel current. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">uint32</code></p><p>The possible values are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Off</p></li><li class="listitem"><p>1: Low</p></li><li class="listitem"><p>2: Mid</p></li><li class="listitem"><p>3: High</p></li></ul></div></li></ol></div><p><span class="bold"><strong>Custom Sensor Emulator</strong></span>: <span class="bold"><strong>FIFO-Sequencer</strong></span></p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>
+                                    <span class="bold"><strong>ChX CS: FIFO Frame</strong></span> Defines
+                                    which current levels are active as the default output channel
+                                    current. The input is a frame of current levels. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">uint32</code></p><p>Frame bit description:</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io624_wss_cp_fifo.png"></span></span></p></li><li class="listitem"><p><span class="bold"><strong>ChX CS: Bit Time</strong></span> If enabled
+                                    this is the time for one bit in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li></ol></div><p><span class="bold"><strong>Custom Sensor Emulator</strong></span>: <span class="bold"><strong>FIFO-Triggered</strong></span></p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>
+                                    <span class="bold"><strong>ChX CS: FIFO Frame</strong></span> Defines which
+                                    current levels are active as the default output channel current.
+                                    The inputs are frames of current levels. The frame bit
+                                    description is the same as in FIFO-Sequencer. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">uint32</code></p></li><li class="listitem"><p><span class="bold"><strong>ChX CS: Bit Time</strong></span> If enabled
+                                    this is the time for one bit in seconds. <span class="bold"><strong>Data Type:</strong></span>
+                                    <code class="literal">double</code></p></li></ol></div></dd></dl></div></div><div class="refsect1"><a name="d5e20791"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

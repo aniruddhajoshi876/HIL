@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.model.createFromEds</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_get_target_authentication.html" title="speedgoat.getTargetAuthentication"><link rel="next" href="refentry_sgapi_model_create_from_eni.html" title="speedgoat.model.createFromEni"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_model_create_from_eds"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.model.createFromEds</h2><p>speedgoat.model.createFromEds &#8212; 
+            <span class="phrase">Autogenerate Simulink models from CANopen EDS files</span>
+         </p></div><div class="refsect1"><a name="d5e788"></a><h2>Description</h2><p>This Speedgoat API function reads CANopen Electronic Data Sheets (EDS) and autogenerates a
+communication interface in Simulink ready for use with the IO644 CANopen Slave I/O module. During
+runtime, the module simulates the device the EDS file represents and allows data to be exchanged
+with devices connected to the I/O module, such as the CANopen master.</p><p>According to the objects defined in the EDS file, the function places the IO644 Setup, PDO and
+Object driver blocks into the model and automatically sets the block parameters according to the
+objects' data types and values.</p></div><div class="refsect1"><a name="d5e792"></a><h2>Examples</h2><p>Autogenerate the Simulink model by selecting the EDS file using the file dialog:</p><pre class="programlisting">speedgoat.model.createFromEds</pre><p>Autogenerate the Simulink model by specifying the EDS file as an argument:</p><pre class="programlisting">speedgoat.model.createFromEds('FileName', 'MyCanOpenDevice.eds')</pre><p>Prevent two objects from being represented by Object blocks in the model and in the resulting object
+dictionary during runtime:</p><pre class="programlisting">speedgoat.model.createFromEds(___, 'ExcludeObjects', [0x6040, 0x6041])</pre></div><div class="refsect1"><a name="d5e800"></a><h2>Input Arguments</h2><p>Name-Value Pair Arguments:
+'FileName' - Name of the EDS file including the file extension
+[character vector].
+Pass the file name if the corresponding directory is the current working directory or
+is included in the MATLAB path. Otherwise, pass the full or relative path of the file.</p><p>'CanNodeId' - CANopen Node ID
+[numeric]. The address of the device in the CANopen network in the range 1 to 127. The
+number is passed to the CAN Node ID parameter of the Setup block created. If not
+defined, the default Node ID is 1.</p><p>'ModuleId' - Module ID
+[numeric]. The Module ID of the relevant IO644 I/O module. The number is passed to the
+Module ID parameter of all the IO644 driver blocks added to the model. If not defined,
+the default Module ID is 1.</p><p>'ExcludeObjects' - Objects to be excluded from the object dictionary created
+[numeric vector]. The object indices for which no Object blocks should be added to the
+model.</p></div></div></body></html>

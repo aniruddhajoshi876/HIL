@@ -1,0 +1,6 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#pragma once
+#include <atomic>
+#include "IO601_fcn.h"
+typedef struct z958202a4e2{unsigned int z787fcfe334:(0xe59+607-0x10b7);unsigned int zdc0b977329:(0x18d5+1772-0x1fc0);unsigned int zaae2cd1378:(0xcb3+740-0xf96);unsigned int zf2008ed5e1:(0x73b+3813-0x161f);unsigned int za978b3e9be:(0x8ea+5039-0x1c98);unsigned int z7159ca38e3:(0x16f+4133-0x1193);unsigned int z11a8412f0c:(0x8bd+80-0x90c);unsigned int zcf452bf3c7:(0x1c72+2200-0x2509);}z1a5c8e314b;typedef union z8f05d4bf1c{unsigned char b;z1a5c8e314b u;}z91a279cf13;class z75eb4775d3{public:z75eb4775d3(sg_IO601_Module_T*,unsigned char);virtual~z75eb4775d3();double z7fee924cc4(){return z20ee2ecb2d.load(std::memory_order_acquire);}void zdf8cb6e79e(double ts){z20ee2ecb2d.store(ts,std::memory_order_release);}virtual bool z7e9a628da0()=0;virtual bool zc6404ed94c(int=-(0x5ac+5148-0x19c7))=0;virtual bool zc897337106(int,void*)=0;virtual int ze0625a3479(bool=true,unsigned int=0)=0;virtual bool ze75d150153()=0;bool z35ed3b04c7();void zdb58049eea();void z054b93aada(double);int z6c8415406c();protected:sg_IO601_Module_T*za80e00a3a2;unsigned char z04ff90940a;private:std::atomic<double>z20ee2ecb2d;std::atomic_flag z3eb822ce62;};

@@ -1,0 +1,84 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SSI - Master v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ssi_usage_notes.html" title="SSI Usage Notes"><link rel="next" href="refentry_ssi_slave_v2.html" title="SSI - Slave v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ssi_master_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>SSI - Master v2</h2><p>SSI - Master v2 &#8212; <span class="phrase">The SSI Master driver block
+                    enables data to be read from an SSI encoder.</span></p></div><div class="refsect1"><a name="d5e3819"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ssi_master_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e3827"></a><h2>Description</h2><p>The SSI Master (Decoder) driver block enables data to be read from a SSI Slave
+                (Encoder).</p><p>At each time step of the Simulink model, the driver block reads the most recent
+                value that has been received.</p></div><div class="refsect1"><a name="d5e3831"></a><h2>Ports</h2><p>This driver has a number of output ports corresponding to the number of active
+                channels.</p><p>The output ports provide the value read by the SSI Master module.</p></div><div class="refsect1"><a name="d5e3835"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: SSIM configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Decoding </span>
+                    </span></dt><dd><p>Whether the input signal is coded in Binary or Gray code.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data Size </span>
+                    </span></dt><dd><p>The number of bits used in the transmission (32 or 64 bits maximum
+                            depending on the module version). This value must consider the number of
+                            all the bits read by the master, including possible start/stop and
+                            parity bits (see <a href="refentry_ssi_usage_notes.html" class="olink">Timing Diagram</a>).</p></dd><dt><span class="term">
+                        <span class="guilabel">Frequency </span>
+                    </span></dt><dd><p>Configures the SSI clock rate in Hz. The maximum frequency is the FPGA
+                            frequency divided by 10.</p><p>Example: FPGA frequency is 75 MHz &#8594; the corresponding maximum
+                            frequency is 7.5 MHz.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time pause </span>
+                    </span></dt><dd><p>The length of the T<sub>P</sub> delay (see <a href="refentry_ssi_usage_notes.html#refsect_ssi_timing_diagram" class="olink">Timing Diagram</a>) in seconds. This must be greater than a
+                            single SSI data period (greater than 1/<span class="bold"><strong>Frequency</strong></span>).</p></dd><dt><span class="term">
+                        <span class="guilabel">Time low </span>
+                    </span></dt><dd><p>The length of the T<sub>L</sub> delay (see <a href="refentry_ssi_usage_notes.html#refsect_ssi_timing_diagram" class="olink">Timing Diagram</a>) in seconds. This parameter is only
+                            available if <span class="bold"><strong>SSI2 Decoding</strong></span> is selected.
+                            This time must be greater than a single SSI data period (greater than
+                                1/<span class="bold"><strong>Frequency</strong></span>).</p></dd><dt><span class="term">
+                        <span class="guilabel">SSI2 Decoding </span>
+                    </span></dt><dd><p>Check this box if the SSI Master module will be used to read an SSI2
+                            encoder. In this case the MSB and LSB of the read frame are reversed
+                            compared to a standard SSI encoder.</p></dd><dt><span class="term">
+                        <span class="guilabel">Mode </span>
+                    </span></dt><dd><p><span class="bold"><strong>Free run:</strong></span>If selected, the SSI Master
+                            continuously generates the SSI clock signal that defines the SSI frame.
+                            As soon as the <span class="bold"><strong>Time pause</strong></span> (TP) is
+                            finished, the next frame starts immediately. The SSI frame is not
+                            synchronized to the model sample rate of the driver block in this
+                            mode.</p><p>Every time the driver block is executed in a simulation step, the SSI
+                            data received from the previously completed SSI frame will be available
+                            on the RX-values output port. See <a href="refentry_ssi_usage_notes.html#refsect_ssi_mode_free_run" class="olink">Timing Diagram of Free run
+                                mode</a></p><p><span class="bold"><strong>Synchronization (no waiting time):</strong></span> If
+                            selected, the SSI Master starts the transmission of a single SSI frame
+                            every time the driver block is executed during a simulation step and if
+                            the SSI frame is idle. If the SSI frame is not idle, no new SSI frame is
+                            triggered, and the ongoing SSI frame is not aborted.</p><p>Every time the driver block is executed in a simulation step, the SSI
+                            data received from the previously completed SSI frame will be available
+                            on the RX-values output port. Refer to the following timing diagrams:
+                                <a href="refentry_ssi_usage_notes.html#refsect_ssi_mode_sync_no_wait_time_smallframe" class="olink">Synchronization No Waiting Time (t<sub>FrameSSI</sub>
+                                <span class="bold"><strong>&lt;
+                                </strong></span>t<sub>Sample</sub>)</a> and <a href="refentry_ssi_usage_notes.html#refsect_ssi_mode_sync_no_wait_time_bigframe" class="olink">Synchronization No Waiting Time
+                                    (t<sub>FrameSSI</sub><span class="bold"><strong>
+                                    &gt;</strong></span> t<sub>Sample</sub>)</a></p><p><span class="bold"><strong>Synchronization (waiting time
+                                applicable):</strong></span> If selected, the SSI Master starts the
+                            transmission of a single SSI frame every time the driver block is
+                            executed during a simulation step. The driver block then actively waits
+                            until the SSI frame is finished. The SSI data from this frame are then
+                            available on the RX-values output port within the same simulation
+                            step.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This mode represents fully synchronized behavior. The task
+                                execution time is higher due to the driver actively waiting for the
+                                complete SSI frame to be finished. The simulation step time must
+                                therefore be greater than the duration of a complete SSI frame
+                                (including <span class="bold"><strong>Time pause</strong></span>), otherwise a
+                                CPU-overload will occur.</p></td></tr></table></div></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left"><a name="common_note_tick"></a>Note</th></tr><tr><td align="left" valign="top"><p>The FPGA clock frequency and the corresponding time of a tick can be found in the
+            Setup block.</p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Values expressed in seconds and hertz will be rounded to the FPGA resolution.
+                    For instance, if FPGA base clock is equal to 75[MHz], then the resolution is
+                    13.33[ns].</p></td></tr></table></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p> From version v2.7 and later, the output data type will be uint64 if the
+                        <span class="bold"><strong>Data Size</strong></span> parameter is &gt; 32bit. This is
+                    considered a fixed-point data type by Simulink and cannot be interpreted by the
+                    scope block. Either use the data conversion block or view the output data in the
+                    data inspector.</p></td></tr></table></div></div></div></body></html>

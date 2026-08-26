@@ -1,0 +1,17 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Create BC Message List</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_rt_receive.html" title="IO672 - RT Receive"><link rel="next" href="refentry_io672_decode_bc_message.html" title="IO672 - Decode BC Message"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_create_bc_message_list"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Create BC Message List</h2><p>IO672 - Create BC Message List &#8212; <span class="phrase">Allocates space for
+                    a BC Message List</span></p></div><div class="refsect1"><a name="d5e51867"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_create_bc_message.png"></span></span></p></div><div class="refsect1"><a name="d5e51875"></a><h2>Description</h2><p>This block allocates space for a BC Message List. It sets the messages in the list
+                to no-op. This implies that the execution of a message on a given time step requires
+                an Encode BC Message block to execute on that time step. The Create BC Message List
+                block performs a clearing operation that allows you to control when a message is
+                sent by placing Encode BC Message blocks in enabled subsystems.</p></div><div class="refsect1"><a name="d5e51878"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>BC Message List.</p></dd></dl></div></div><div class="refsect1"><a name="d5e51887"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Number of message buffers </span>
+                    </span></dt><dd><p>The number of message buffers for the list. This block allocates an
+                            empty list for these buffers in Simulink Real-Time memory.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This value must be equal to or less than the number specified in
+                                    <span class="bold"><strong>Number of Bus Controller buffers to
+                                    allocate</strong></span> from the IO672 Initialize block.</p></td></tr></table></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

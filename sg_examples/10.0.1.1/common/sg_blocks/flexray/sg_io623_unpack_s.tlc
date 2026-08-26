@@ -1,0 +1,68 @@
+%implements sg_io623_unpack_s "C"
+
+%% Function: BlockTypeSetup ===============================================
+%function BlockTypeSetup (block, system) void
+    %<LibAddToCommonIncludes("sg_io623_flexray_type.h")>
+    %<LibAddToCommonIncludes("sg_io623_unpack.h")>
+%endfunction
+
+%% Function: Start ========================================================
+%function Start (block, system) Output
+    %assign numOutputPorts = LibBlockNumOutputPorts(block)
+
+    {
+        Io623_UnpackFilter *unpackFilter = (Io623_UnpackFilter *) malloc(sizeof(Io623_UnpackFilter));
+        Io623_OutputPortAssignment *outputAssignment = (Io623_OutputPortAssignment *) malloc(sizeof(Io623_OutputPortAssignment));
+
+        /* Prepare unpack filter */
+        unpackFilter->frameId = %<SFcnParamSettings.ParFrameId>;
+        unpackFilter->channels = %<SFcnParamSettings.ParChannels>;
+        unpackFilter->ignoreNullFrames = %<SFcnParamSettings.ParIgnoreNullFrames>;
+        %<LibBlockPWork(UNPACK_FILTER, "", "", 0)> = unpackFilter;
+
+        /* Prepare output assignment */
+        outputAssignment->numPorts = %<numOutputPorts>;
+        outputAssignment->addrs = (void **) malloc(%<numOutputPorts> * sizeof(void *));
+        outputAssignment->types = (int *) malloc(%<numOutputPorts> * sizeof(int));
+        %foreach idx = numOutputPorts
+            outputAssignment->addrs[%<idx>] = %<LibBlockOutputSignalAddr(idx, "", "", 0)>;
+            outputAssignment->types[%<idx>] = %<SFcnParamSettings.ParOutputPorts[idx]>;
+        %endforeach
+        %<LibBlockPWork(OUTPUT_PORT_ASSIGNMENT, "", "", 0)> = outputAssignment;
+    }
+%endfunction
+
+%% Function: Outputs ======================================================
+%function Outputs (block, system) Output
+    /* %<Type> Block: %<Name> */
+    %assign unpackFilter = LibBlockPWork(UNPACK_FILTER, "", "", 0)
+    %assign inputPort = LibBlockInputSignalAddr(0, "", "", 0)
+    %assign inputWidth = LibBlockInputSignalWidth(0)
+    %assign outputAssignment = LibBlockPWork(OUTPUT_PORT_ASSIGNMENT, "", "", 0)
+
+    io623_unpackFrame((Io623_UnpackFilter *)%<unpackFilter>,
+                      (Io623_FlexrayFrame *)%<inputPort>,
+                      %<inputWidth>,
+                      (Io623_OutputPortAssignment *)%<outputAssignment>);
+%endfunction
+
+%% Function: Terminate ====================================================
+%function Terminate (block, system) Output
+    %assign unpackFilter = LibBlockPWork(UNPACK_FILTER, "", "", 0)
+    %assign outputAssignment = LibBlockPWork(OUTPUT_PORT_ASSIGNMENT, "", "", 0)
+
+    {
+        Io623_OutputPortAssignment *outputAssignment = (Io623_OutputPortAssignment *) %<outputAssignment>;
+
+        if (%<unpackFilter> != NULL)
+        {
+            free(%<unpackFilter>);
+        }
+        if (outputAssignment != NULL)
+        {
+            free(outputAssignment->addrs);
+            free(outputAssignment->types);
+            free(outputAssignment);
+        }
+    }
+%endfunction

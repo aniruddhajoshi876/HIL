@@ -1,0 +1,207 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO821 - Time Reference</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io821_pin_mapping.html" title="IO821 Pin Mapping"><link rel="next" href="refentry_io821_read_interrupt.html" title="IO821 - Read Interrupt"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io821_time_reference"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO821 - Time Reference</h2><p>IO821 - Time Reference &#8212; <span class="phrase">Configure the IO821 I/O
+                    module to trigger your model</span></p></div><div class="refsect1"><a name="d5e67888"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io821_time_reference.png"></span></span></p></div><div class="refsect1"><a name="d5e67896"></a><h2>Description</h2><p>The time reference block enables you to configure the IO821 I/O module to trigger
+                your model. It can also report the current time and date as well as status
+                information.</p></div><div class="refsect1"><a name="d5e67899"></a><h2>Ports</h2><p>The Time Reference driver block provides a set of output ports which can all be
+                disabled to optimize the execution time.</p><p>More details about the execution time can be found in the "Dialog fields"
+                section.</p><div class="variablelist"><div class="variablelist-title">Output</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Active Ref </span>
+                    </span></dt><dd><p>Shows the number of the reference table entry which is currently
+                            selected by the module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sync State </span>
+                    </span></dt><dd><p>Shows if the internal clock is in a synchronized state. This state is
+                            also indicated by the green LED on the front of the module. The module
+                            is synchronized when both the time and the pps inputs of an enabled
+                            reference table entry are considered valid.</p></dd><dt><span class="term">
+                        <span class="guilabel">Holdover State </span>
+                    </span></dt><dd><p>Shows if the internal clock is in a holdover state. This state is also
+                            indicated by the orange LED on the front of the module. The module is in
+                            a holdover state when the time and/or pps inputs have been lost for a
+                            certain time and the module is running on its internal clock.</p></dd><dt><span class="term">
+                        <span class="guilabel">Alarm State </span>
+                    </span></dt><dd><p>Shows if the module is in an alarm state. This state is also indicated
+                            by the red LED on the front of the module. The module can be in an alarm
+                            state for any of the following reasons: Frequency Error, Software Error,
+                            1&nbsp;PPS is not in specification, Hardware Error.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Datenum/Time Array</span>
+                    </span></dt><dd><p>Represents the current date and time down to a resolution of 1 second
+                            read from the IO821 in MATLAB's datenum format (see 'doc datenum')
+                            Alternatively, an array output format can be selected, displaying the
+                            timing information in a [YYYY,MM,DD,hh,mm,ss] format.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Subsec/Time Usec of Year </span>
+                    </span></dt><dd><p>Represents the fraction of the current second read from the IO821 with
+                            a resolution of 5&nbsp;ns. Can take values from 0.000000000 to
+                            0.999999995. When the array output format is selected, this output gives
+                            the value of the number microseconds of the current year.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPI0 Trig Datenum/GPI0 Trig Array</span>
+                    </span></dt><dd><p>Outputs the latest timestamp value received on the GPI0 Input.
+                            Displayed in either MATLAB datenum or time array format. (Refer to the
+                            "Time Datenum/Time Array" section above).</p></dd><dt><span class="term">
+                        <span class="guilabel">GPI0 Trig Subsec/GPI0 Trig Usec</span>
+                    </span></dt><dd><p>Outputs the subsec/microseconds of the current year value of the
+                            latest GPI0 timestamp value.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPI1 Trig Datenum/GPI1 Trig Array</span>
+                    </span></dt><dd><p>Outputs the latest timestamp value received on the GPI1 Input.
+                            Displayed in either MATLAB datenum or time array format. (Refer to the
+                            "Time datenum/Time Array" section).</p></dd><dt><span class="term">
+                        <span class="guilabel">GPI1 Trig Subsec/GPI1 Trig Usec</span>
+                    </span></dt><dd><p>Outputs the subsec/microseconds of the current year value of the
+                            latest GPI1 timestamp value.</p><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e67956"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main</div><dl class="variablelist"><dt><a name="varlistentry_common_pciSlot"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same type, you must
+                            use explicit addressing.</p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">IO821 Module Identifier </span>
+                    </span></dt><dd><p>This setting is currently not used because only one IO821 per target
+                            machine is supported.</p></dd><dt><span class="term">
+                        <span class="guilabel">Generate Periodic Interrupt </span>
+                    </span></dt><dd><p>If this is enabled, the IO821 generates a precise periodic interrupt.
+                            The model settings must be adapted to run on the "Speedgoat IO821 INT"
+                            instead of the "Timer". When this option is enabled, the interrupt is
+                            present as a 5&nbsp;V square wave on the External HW Sync Output pin,
+                            where the rising edge indicates the interrupt. This can be used to
+                            trigger an external system to run on the same sample rate as the
+                            Simulink Real-Time model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Period in Nanoseconds </span>
+                    </span></dt><dd><p>Defines the time period between two consecutive interrupts in integer
+                            nanoseconds. An interrupt every ts seconds is generated by setting the
+                            period in nanoseconds to 1e9.</p></dd><dt><span class="term">
+                        <span class="guilabel">Duty Cycle in % </span>
+                    </span></dt><dd><p>Defines the percentage value of the generated square wave signal based
+                            on the selected interrupt. Accepted values range from 5 to 95 %.</p></dd><dt><span class="term">
+                        <span class="guilabel">Periodic Interrupt Lead Time [s]</span>
+                    </span></dt><dd><p>This value in seconds delays the first spike of the periodic
+                            interrupt, triggering the model start. If the IO821 is selected as
+                            interrupt source for the model, this can be used to ensure that the
+                            entire initialization, for example, of external hardware, can happen
+                            before the model is started.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Synchronization State </span>
+                    </span></dt><dd><p>If enabled, a boolean output port is added to the driver block. It
+                            shows if the internal clock is in a synchronized state. This state is
+                            also indicated by the green LED on the front of the module. The module
+                            is synchronized when both the time and the 1&nbsp;PPS inputs of an
+                            enabled reference table entry are considered valid. See the Input
+                            References tab below. Keep in mind that up to 25&nbsp;&micro;s are added to
+                            the model execution time when this feature is enabled. Without any
+                            output ports it executes in less than 1&nbsp;&micro;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Holdover State </span>
+                    </span></dt><dd><p>If enabled, a boolean output port is added to the driver block. It
+                            shows if the internal clock is in a holdover state. This state is also
+                            indicated by the orange LED on the front of the module. The module is in
+                            holdover state when there are no valid timing inputs or GNSS available
+                            for phase-locking and the crystal oscillator is "freewheeling". Bear in
+                            mind that up to 7&nbsp;ms are added to the model execution time when
+                            this feature is enabled. Without any output ports it executes in less
+                            than 1&nbsp;&micro;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Alarm State </span>
+                    </span></dt><dd><p>If enabled, a boolean output port is added to the driver block. It
+                            shows if the module is in an alarm state. This state is also indicated
+                            by the red LED on the front of the module. The module may be in an alarm
+                            state for any of the following reasons: Frequency Error, Software Error,
+                            1&nbsp;PPS is not specified, Hardware Error. Bear in mind that up to
+                            10&nbsp;ms are added to the model execution time when this feature is
+                            enabled (this includes getting the current time as well). Without any
+                            output ports it executes in less than 1&nbsp;&micro;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Current Time </span>
+                    </span></dt><dd><p>If enabled, two output ports of type double are added to the driver
+                            block. They represent the current time reported by the module when the
+                            IO821 Time Reference block is executed. 'Time datenum' represents the
+                            date and time in MATLAB's datenum format (see 'doc datenum'). The values
+                            are always rounded down to the next whole second. 'Time subsec'
+                            represents the fraction of the current second with a resolution of
+                            5&nbsp;ns. It ranges from 0.000000000 to 0.999999995. Bear in mind that
+                            up to 25&nbsp;&micro;s are added to the model execution time when this feature
+                            is enabled (this includes getting the sync state as well). Without any
+                            output ports it executes in less than 1&nbsp;&micro;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Current Time Output Format</span>
+                    </span></dt><dd><p>This option defines the format of the current time output. Either
+                            [YYYY,MM,DD,hh,mm,ss]/microseconds of year or MATLAB datenum/subsec can
+                            be selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Zone and DST Offset in Hours </span>
+                    </span></dt><dd><p>This parameter defines the combined offset from UTC, including both
+                            time zone and daylight saving time. It is used for setting the initial
+                            module time and for representing the time on the output ports.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Module Time [datenum] </span>
+                    </span></dt><dd><p>This parameter can be used to set the module's time and date using
+                            MATLAB's datenum format. The datenum function can be used here for
+                            convenience. The setting is applied when the model execution is started.
+                            If the value is zero, the module is not updated.</p></dd><dt><span class="term">
+                        <span class="guilabel">Activate GPI0 Edge Detection</span>
+                    </span></dt><dd><p>This activates the Edge detection feature on GPI 0. Whenever a change
+                            of the voltage level on the input according to the selected signal edge
+                            occurs, the timestamp value can be read out at the GPI0 block output.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Activate GPI1 Edge Detection</span>
+                    </span></dt><dd><p>This activates the Edge detection feature on GPI 1. Whenever a change
+                            of the voltage level on the input according to the selected signal edge
+                            occurs, the timestamp value can be read out at the GPI1 block output.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Edge Detection Output Format</span>
+                    </span></dt><dd><p>This option defines the format of the edge detection timestamp
+                            outputs. Either [YYYY,MM,DD,hh,mm,ss]/microseconds of year or MATLAB
+                            datenum/subsec can be selected.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPI0 Signal Edge</span>
+                    </span></dt><dd><p>Arms the edge detection on GPI 0 on either rising or falling edge.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">GPI1 Signal Edge</span>
+                    </span></dt><dd><p>Arms the edge detection on GPI 1 on either rising or falling edge.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Enable GPO2 HW Trigger</span>
+                    </span></dt><dd><p>This Checkbox enables the Hardware Trigger on the GPO2 Pin. Note that
+                            this feature only works if the IO821 is used as an interrupt
+                            source.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPO2 HW Trigger Lead Time [s]</span>
+                    </span></dt><dd><p>This value in seconds controls the time of the HW Trigger on GPO2. At
+                            the given value in seconds, the HW Trigger produces a rising edge burst
+                            with a 5 seconds high state time, before returning to low state.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable GPO3 HW Trigger</span>
+                    </span></dt><dd><p>This Checkbox enables the Hardware Trigger on the GPO3 Pin. Note that
+                            this feature only works if the IO821 is used as an interrupt
+                            source.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPO2 HW Trigger Lead Time [s]</span>
+                    </span></dt><dd><p>This value in seconds controls the time of the HW Trigger on GPO2. At
+                            the given value in seconds, the HW Trigger produces a rising edge burst
+                            with a 5 seconds high state time, before returning to low state.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable IRIG Output</span>
+                    </span></dt><dd><p>If enabled, the IO821 outputs an IRIG AM and IRIG DCLS signal on the
+                            respective output pins.</p></dd><dt><span class="term">
+                        <span class="guilabel">IRIG Output Lead Time [s]</span>
+                    </span></dt><dd><p>This value in seconds delays the start of the IRIG AM output. This can
+                            be used to ensure that the entire initialization, for example, of
+                            external hardware, can happen before the hardware receives any timing
+                            information.</p></dd><dt><span class="term">
+                        <span class="guilabel">IRIG Expression</span>
+                    </span></dt><dd><p>This dropdown defines the IRIG expression format.</p></dd><dt><span class="term">
+                        <span class="guilabel">Control Field Configuration</span>
+                    </span></dt><dd><p>This dropdown defines the IRIG control field configuration.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Input Reference</div><p>This tab contains the configuration of the module's input reference table.
+                    The IO821 will always use the entry where both the time and the 1&nbsp;PPS
+                    reference are considered valid. If this is true for more than one entry, the
+                    driver chooses the entry with the highest priority (lowest number).</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable </span>
+                    </span></dt><dd><p>Defines if the entry is enabled. It will not be selected otherwise.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Priority </span>
+                    </span></dt><dd><p>Defines the priority of the entry. A value of '1' is the highest
+                            priority. Do not use the same number twice.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Ref </span>
+                    </span></dt><dd><p>Defines which input reference is used for time and date. Only 'GNSS'
+                            provides complete date information including the year. 'Initial Module
+                            Time' refers to the parameter on the main tab. If this is not enabled,
+                            the setting at model start will fail.</p></dd><dt><span class="term">
+                        <span class="guilabel">1PPS Ref </span>
+                    </span></dt><dd><p>Defines which timing input is used for phase-locking the internal
+                            crystal oscillator.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Active Reference </span>
+                    </span></dt><dd><p>If enabled, an output port is added to the driver block, which
+                            represents the table entry number which is currently selected by the module.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>Bear in mind that up to 7&nbsp;ms are added to the model
+                                    execution time when this feature is enabled. Without any output
+                                    ports, the model executes in less than 1&nbsp;us.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

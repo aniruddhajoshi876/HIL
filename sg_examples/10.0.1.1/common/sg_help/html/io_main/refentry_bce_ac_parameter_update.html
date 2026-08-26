@@ -1,0 +1,81 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BCE AC Signal Modulation Parameter Update</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_bmts_buspack.html" title="BMTS Bus Pack"><link rel="next" href="refentry_bce_pin_mapping.html" title="BCE Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bce_ac_parameter_update"></a><div class="titlepage"></div><div class="refnamediv"><h2>BCE AC Signal Modulation Parameter Update</h2><p>BCE AC Signal Modulation Parameter Update &#8212; <span class="phrase">Update the AC signal modulation
+                    parameters of the BCE at runtime</span></p></div><div class="refsect1"><a name="d5e926"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_bce_ac_sm_update.png"></span></span></p></div><div class="refsect1"><a name="d5e934"></a><h2>Description</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BCE AC SM Parameter Update block allows the user to update the AC Signal
+                Modulation parameters of a battery cell emulator (BCE) while the simulation is
+                running on the real-time target machine.</p><p>The AC signal modulation data file can only be changed in the BMTS Setup block and
+                requires re-compilation of the model. Parameters such as the <span class="bold"><strong>AC Signal Modulation Time Step</strong></span>, <span class="bold"><strong>Start Time
+                    Delay</strong></span>, and <span class="bold"><strong>Gain Adjustment Value</strong></span> for
+                each cell can be updated on the fly using this block.</p><p>It is best to stop the AC signal modulation output before updating the
+                parameters.</p><p>This block is backward compatible with BCE firmware versions up to 1.1.2.0.
+                Please note that for parameter updates on these firmware versions, AC signal
+                modulation is paused and the transfer of new parameters is slow.</p><p>To enable parameter updates (without stopping the AC signal modulation output),
+                and faster data transfer, a BCE firmware update to version 1.1.3.0 or later is
+                required.</p></div><div class="refsect1"><a name="d5e947"></a><h2>Ports</h2><p>This driver block has one input and one output port.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>When the Enable signal is 0, the block is disabled. Set the Enable
+                            signal to 1 to start transferring the new AC signal modulation
+                            parameters. The Status output indicates when the transfer is
+                            done.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">boolean</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>The Status port outputs a boolean signal indicating when the updated
+                            parameters have been transferred to the BCE. After enabling the block,
+                            the Status switches from 0 to 1 when the data transfer is
+                            completed.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">boolean</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e970"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">EtherCAT Network Parameters</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">EtherCAT Network Index</span>
+                    </span></dt><dd><p>The EtherCAT Network Index is a user-defined ID to associate the BCE
+                            AC SM Parameter Update block with the corresponding BMTS Setup block.
+                            The value must be an integer between 0 and 11.</p></dd><dt><span class="term">
+                        <span class="guilabel">EtherCAT Device</span>
+                    </span></dt><dd><p>Selects the BCE device to which the BCE AC SM Parameter Update block
+                            will send data. </p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p> Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to -1 for inherited sample
+                            time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e989"></a><h2>Configuration</h2><div class="variablelist"><div class="variablelist-title">BCE AC Signal Modulation Parameters</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Cell-Specific AC Signal Modulation Settings</span>
+                    </span></dt><dd><p>Select a cell from the list on the left-hand side to configure
+                            additional settings for this cell.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Step</span>
+                    </span></dt><dd><p>Set the time step after which the AC signal modulation outputs the
+                            next sample from the signal data array. The unit can be set to
+                            milliseconds or microseconds. The minimum value is 7 &#956;s.</p></dd><dt><span class="term">
+                        <span class="guilabel">Output Path</span>
+                    </span></dt><dd><p>Select whether the AC signal modulation data is applied to the cell voltage
+                            or to the cell sink current.</p></dd><dt><span class="term">
+                        <span class="guilabel">Start Time Delay</span>
+                    </span></dt><dd><p>Add an AC signal modulation start time delay for this cell. To achieve
+                            exact synchronization or time offsets between cells, the AC signal must
+                            be started simultaneously for all cells from Simulink. Each cell will
+                            start AC data output after its start time delay has passed.</p></dd><dt><span class="term">
+                        <span class="guilabel">Stop after X Passes Through the Data File</span>
+                    </span></dt><dd><p>To stop AC signal modulation deterministically after a certain number
+                            of iterations, enter the number of passes through the data file after
+                            which to stop AC signal modulation. When stopped, the cell returns to
+                            normal operation mode.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gain Adjustment Value</span>
+                    </span></dt><dd><p>Add an additional gain factor to apply to the data points from the AC
+                            signal data file. The gain value must be in the range of 0 to 2.0.
+                            Setting it to 1 disables the gain adjustment.</p></dd><dt><span class="term">
+                        <span class="guilabel">Gain Sweep Mode</span>
+                    </span></dt><dd><p>This mode allows the gain value applied to the AC signal modulation
+                            data to change periodically. When enabled, the gain adjustment is
+                            updated each time the number of entered time steps have elapsed. The
+                            current gain adjustment value defines the starting point (1 if
+                            disabled); the gain sweep limit value defines the endpoint. Counting
+                            occurs between these two boundaries. If one boundary is reached, the
+                            counting direction reverses. The current gain value is adjusted
+                            (increased or decreased) by the update step value.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timer Sweep Mode</span>
+                    </span></dt><dd><p>This mode allows the AC signal modulation output update time step (or
+                            frequency) to change periodically. When enabled, the time step is
+                            updated each time the number of entered time steps have elapsed. The
+                            current time step value defines the starting point; the timer sweep
+                            limit value defines the endpoint. Counting occurs between these two
+                            boundaries. If one boundary is reached, the counting direction reverses.
+                            The current timer value is adjusted (increased or decreased) by the
+                            update step value.</p></dd></dl></div></div></div></body></html>

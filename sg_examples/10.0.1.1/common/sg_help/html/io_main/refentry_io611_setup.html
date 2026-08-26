@@ -1,0 +1,130 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO611 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io611_usage_notes.html" title="IO611 Usage Notes"><link rel="next" href="refentry_io611_can_write.html" title="IO611 - CAN Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io611_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO611 - Setup</h2><p>IO611 - Setup &#8212; <span class="phrase">This block allows the IO611 module
+                    to be configured</span></p></div><div class="refsect1"><a name="d5e11294"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io611_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e11302"></a><h2>Description</h2><p>Your model must contain one "CAN &amp; LIN Setup" driver block for each IO611
+                module in your target machine. This block allows all of the supported I/O types of
+                this module to be configured and therefore impacts on all the other driver blocks.
+            </p></div><div class="refsect1"><a name="d5e11305"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e11308"></a><h2>Parameters </h2><div class="variablelist"><div class="variablelist-title">Module setup </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID </span>
+                    </span></dt><dd><p>The Module ID must be unique among all IO611 Setup blocks in your
+                            model. It has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection to associate the Setup,
+                                        Read and Write blocks with each other.</p></li><li class="listitem"><p>It is relevant for the PCI slot auto-search feature: If
+                                        only one IO611 is installed, the Module ID must be set to 1.
+                                        If n modules are installed, it must be in the range 1:n. Not
+                                        all the modules installed in the target machine need be
+                                        used.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Drive letter on target machine </span>
+                    </span></dt><dd><p>Choose on which drive the driver block should look for the firmware to
+                            load on the module, once the model is downloaded to the machine. The
+                            default setting for this parameter is 'C:', as the firmware will be
+                            located on the C drive by default.</p></dd><dt><span class="term">
+                        <span class="guilabel">PCI slot (-1:autosearch) </span>
+                    </span></dt><dd><p>There are two approaches for mapping the blocks to a specific IO611
+                            module installed in the target machine. All IO611 modules must be
+                            configured using the same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="emphasis"><em>Auto-Search:</em></span> The default value '-1'
+                                        lets the real-time target machine auto-search for the I/O
+                                        module. The priority is defined by the Module ID. The module
+                                        with the lowest PCI bus/slot number is associated with
+                                        Module ID 1, the next module found is associated to Module
+                                        ID 2, and so on. Please refer to your target machine manual
+                                        for the specific slot sequence.</p></li><li class="listitem"><p><span class="emphasis"><em>Explicit Addressing:</em></span> The location of
+                                        the module inside the target machine can be explicitly
+                                        defined using the format '[BusNumber, SlotNumber]'. To
+                                        determine these numbers, type
+                                        speedgoat.showInstalledIoModules in the MATLAB command
+                                        window.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Channel Selection </span>
+                    </span></dt><dd><p>In this group box, you can specify the configuration for each channel.
+                            Note that the LIN channels are called 3 &amp; 4 although they are
+                            located on the same physical connectors as the CAN channels, as
+                            described in section I/O pin mapping.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">CAN</div><p>This tab is only visible, if at least one CAN channel is enabled. There will
+                    be one group box per enabled CAN channel, labeled with the number of the
+                    channel. There is also one additional group box called Init./Term. Structures,
+                    where you can define CAN messages sent during initialization and termination of
+                    the CAN write driver blocks.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Operation Mode: </span>
+                    </span></dt><dd><p>Choose High Speed or Low Speed operation. Low Speed operation is
+                            according to ISO 11898-3. High Speed operation is according to ISO
+                            11898-2.</p></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>The baud rate for this CAN channel. This control allows the most
+                            commonly used values to be selected. If special bit timing is needed,
+                            then select "User defined" here and use the <span class="bold"><strong>User
+                                defined baud rate </strong></span> parameter below.</p></dd><dt><span class="term">
+                        <span class="guilabel">User defined baud rate </span>
+                    </span></dt><dd><p>If "User defined" has been selected in the <span class="bold"><strong>Baud
+                                rate</strong></span> parameter above, this parameter is used to configure
+                            the bit timing. The parameter is a vector with the following elements: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization-Jump-Width (SJW)</p></li><li class="listitem"><p>Time-Segment-1 (TSEG1)</p></li><li class="listitem"><p>Time-Segment-2 (TSEG2)</p></li></ul></div><p> For an explanation and calculation of the bit-timing
+                            values, check the free individual bit-timing table on <a class="link" href="http://www.bittiming.can-wiki.info/" target="_blank">can-wiki, info</a> using the following parameters: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Table for: IFI CAN FD arbitration, in ISO mode</p></li><li class="listitem"><p>Clock Rate: 80MHz</p></li><li class="listitem"><p>Sample point: 87.5</p></li><li class="listitem"><p>SJW: 1</p></li></ul></div><p> Note that the Bitrate indicated on this website is in
+                            thousands (for example, Bitrate = 1000 accords to 1Mbaud).</p></dd><dt><span class="term">
+                        <span class="guilabel">Standard Acceptance Mask </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with a standard ID (11 bits)
+                            is accepted on this channel. The message is accepted if the following
+                            rule is true: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; StdMask) == StdCode)</p></li></ul></div><p> Set the StdMask element to zero (the default) to disable
+                            the rule. Note that this parameter takes a decimal value. See the "Usage
+                            notes" section for examples of how to set this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Acceptance Mask </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with an extended ID (29 bits)
+                            is accepted on this channel. The message is accepted if either of the
+                            following rules is true: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; ExtMask) == ExtCode)</p></li></ul></div><p> Set the ExtMask element to zero (the default) to disable
+                            the rule. Note that this parameter takes a decimal value. See the "Usage
+                            notes" section for examples of how to set this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initialization Structures </span>
+                    </span></dt><dd><p>Defines CAN messages sent during initialization of the Setup block.
+                            For more information, see: <a href="refentry_io611_usage_notes.html#refsect1_io611_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Termination Structures </span>
+                    </span></dt><dd><p>Defines CAN messages sent during termination of the Setup block. For
+                            more information, see: <a href="refentry_io611_usage_notes.html#refsect1_io611_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">CAN-FD</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Arbitration baud rate </span>
+                    </span></dt><dd><p>The baud rate that is used in the arbitration section of the CAN
+                            message. This control allows the most commonly used values to be
+                            selected. If special bit timing is needed, then select the User defined
+                            here and use the "User defined baud rate" parameter below.</p></dd><dt><span class="term">
+                        <span class="guilabel">User defined arbitration baud rate </span>
+                    </span></dt><dd><p>If the defined User has been selected in the "Arbitration baud rate"
+                            parameter above, this parameter is used to configure the bit timing. The
+                            parameter is a vector with the following elements: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization-Jump-Width (SJW)</p></li><li class="listitem"><p>Time-Segment-1 (TSEG1)</p></li><li class="listitem"><p>Time-Segment-2 (TSEG2)</p></li></ul></div><p> For an explanation and calculation of the bit-timing
+                            values, check the free individual bit-timing table on <a class="link" href="http://www.bittiming.can-wiki.info/" target="_blank">can-wiki, info</a> using the following parameters: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Table for: IFI CAN FD arbitration, in ISO mode</p></li><li class="listitem"><p>Clock Rate: 80MHz</p></li><li class="listitem"><p>Sample point: 87.5</p></li><li class="listitem"><p>SJW: 1</p></li></ul></div><p> Note that the Bitrate indicated on this website is in
+                            thousands (for example, Bitrate = 1000 accords to 1Mbaud).</p></dd><dt><span class="term">
+                        <span class="guilabel">Data baud rate </span>
+                    </span></dt><dd><p>The baud rate used in the data section of the CAN message. This
+                            control allows the most commonly used values to be selected. If special
+                            bit timing is needed, then select "User defined" here and use the
+                                <span class="bold"><strong>User defined baud rate</strong></span> parameter
+                            below.</p></dd><dt><span class="term">
+                        <span class="guilabel">User defined data baud rate </span>
+                    </span></dt><dd><p>If "User defined" has been selected in the <span class="bold"><strong>Data
+                                baud rate</strong></span> parameter above, this parameter is used to
+                            configure the bit timing. The parameter is a vector with the following
+                            elements: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization-Jump-Width (SJW)</p></li><li class="listitem"><p>Time-Segment-1 (TSEG1)</p></li><li class="listitem"><p>Time-Segment-2 (TSEG2)</p></li><li class="listitem"><p>Sample Point</p></li><li class="listitem"><p>Baud rate (Bit rate)</p></li></ul></div><p> For an explanation and calculation of the bit-timing
+                            values, check the free individual bit-timing table on <a class="link" href="http://www.bittiming.can-wiki.info/" target="_blank">can-wiki, info</a> using the following parameters: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Table for: IFI CAN FD fast data phase, in ISO mode</p></li><li class="listitem"><p>Clock Rate: 80MHz</p></li><li class="listitem"><p>Sample point: 75</p></li><li class="listitem"><p>SJW: 1</p></li></ul></div><p> Note that the Bitrate indicated on this website is in
+                            thousands (for example, Bitrate = 1000 accords to 1Mbaud).</p></dd><dt><span class="term">
+                        <span class="guilabel">Standard Acceptance Mask </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with a standard ID (11 bits)
+                            is accepted on this channel. The message is accepted if the following
+                            rule is true: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; StdMask) == StdCode)</p></li></ul></div><p> Set the StdMask element to zero (the default) to disable
+                            the rule. Note that this parameter takes a decimal value. See the "Usage
+                            notes" section for examples of how to set this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Acceptance Mask </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with an extended ID (29 bits)
+                            is accepted on this channel. The message is accepted if either of the
+                            following rules is true: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; ExtMask) == ExtCode)</p></li></ul></div><p> Set the ExtMask element to zero (the default) to disable
+                            the rule. Note that this parameter takes a decimal value. See the "Usage
+                            notes" section for examples of how to set this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initialization Structures </span>
+                    </span></dt><dd><p>Defines CAN messages sent during initialization of the Setup block.
+                            For more information, see: <a href="refentry_io611_usage_notes.html#refsect1_io611_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Termination Structures </span>
+                    </span></dt><dd><p>Defines CAN messages sent during termination of the Setup block. For
+                            more information, see: <a href="refentry_io611_usage_notes.html#refsect1_io611_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">LIN</div><p>In this tab, there will be one group box per enabled LIN channel, labeled
+                    with the number of the channel.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Operation Mode </span>
+                    </span></dt><dd><p>The IO611 can be configured to act as a master or a slave. In the LIN
+                            topology, only one master is allowed per network</p></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>This parameter is valid for master and slave operation. Range between
+                            1 000 and 20 000.</p></dd></dl></div></div></div></body></html>

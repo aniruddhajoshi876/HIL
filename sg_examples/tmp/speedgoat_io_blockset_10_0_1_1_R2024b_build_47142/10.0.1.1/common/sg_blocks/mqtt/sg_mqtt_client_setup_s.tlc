@@ -1,0 +1,82 @@
+%implements sg_mqtt_client_setup_s "C"
+
+%include "sg_mqtt.tlc"
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%<MqttCommonIncludes()>
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings
+
+    %openfile tmpBuf
+
+    {
+        int32_t ret = 0;
+        mqtt::cClientStation* Station = NULL;
+
+        /* Initialize the MQTT API */
+        mqtt::Root.init();
+
+        /* Add one client station */
+        ret = mqtt::Root.addStation(%<StationId>, MQTT_STATION_TYPE_CLIENT, (mqtt::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Adding MQTT client station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Initialize the client station */
+        ret = Station->init((char*)"%<ClientIdentifier>", %<IpAddr>, 0);
+        if (ret != 0)
+        {
+            sprintf(pSgErrorStr, "Initializing MQTT client station %i failed!", %<StationId>);
+            %<LibSetRTModelErrorStatus("pSgErrorStr")>;
+            return;
+        }
+
+        /* Register the model exit callback */
+        sg_add_exit_handler(&mqtt::ModelExitCb, NULL);
+    }
+
+    %closefile tmpBuf
+    %<sgAddInitCode(tmpBuf, "execution")>
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+    
+    {
+        {
+            static bool FirstStep = true;
+            static uint64_t StartDelayTimer = 0;
+            if (FirstStep)
+            {
+                StartDelayTimer = mqtt::getTime();
+                FirstStep = false;
+            }
+            if ((mqtt::getTime() - StartDelayTimer) > 1000)
+            {
+                mqtt::Root.Run = true;
+            }
+        }
+        
+		if (mqtt::Root.Stop)
+		{
+			%<LibSetRTModelErrorStatus("\"MQTT error! Check system log for further information!\"")>;
+		}
+    }
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+    
+    %<MqttTerminate(block)>
+
+%endfunction

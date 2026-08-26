@@ -1,0 +1,146 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO207 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_digital.html" title="Digital I/O"><link rel="up" href="book_digital.html" title="Digital I/O"><link rel="prev" href="refentry_io207_pin_mapping.html" title="IO207 Pin Mapping"><link rel="next" href="refentry_io207_read.html" title="IO207 - Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io207_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO207 - Setup</h2><p>IO207 - Setup &#8212; <span class="phrase">Configure the IO207 read/write
+                    block</span></p></div><div class="refsect1"><a name="d5e2503"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io207_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e2511"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e2517"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Front Channels Setup</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enabled Channels</span>
+                    </span></dt><dd><p>This field enables either the first half of the channels (the rest of
+                            the channels will be disabled) or all the channels. The value <span class="bold"><strong>IO1&nbsp;...&nbsp;IO32</strong></span> only enables the
+                            channels 1 to 32, and the value <span class="bold"><strong>IO1&nbsp;...&nbsp;IO64</strong></span> enables all the channels 1 to 64.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Simultaneous Update</span>
+                    </span></dt><dd><p>Available only when all the channels are enabled (see <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>). When set to <span class="bold"><strong>OFF</strong></span>, the first group of channels, 1 to 32,
+                            and the second group of channels, 33 to 64, are updated sequentially.
+                            When set to <span class="bold"><strong>ON</strong></span>, all 64 channels are
+                            updated simultaneously. Enabling this option leads to greater latencies.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Directions</span>
+                    </span></dt><dd><p>This field specifies whether the enabled channels act as inputs or
+                            outputs. Enter a scalar or a vector with a width of either four or eight
+                            (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>
+                            field). When a scalar value is specified, its value is used for all
+                            enabled channels. When a vector is specified, one value of this vector
+                            represents a group of eight channels (in sequential order, see the
+                                <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of
+                                <span class="bold"><strong>0</strong></span> defines the group of channels as
+                            input, and a value of <span class="bold"><strong>1</strong></span> defines the
+                            group of channels as output. Examples with all channels enabled: a
+                            scalar of 1 will set all channels as output, and a vector of
+                            [1&nbsp;1&nbsp;1&nbsp;1&nbsp;0&nbsp;0&nbsp;0&nbsp;0] will set the first
+                            four groups as output (channels 1 to 32) and set the next 4 groups as
+                            input (channels 33 to 64).</p></dd><dt><span class="term">
+                        <span class="guilabel">Pull Resistors</span>
+                    </span></dt><dd><p>This field configures the pull-up/-down resistors of the enabled
+                            channels. Enter a scalar or a vector with a width of either four or
+                            eight (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span> field). When a scalar value is
+                            specified, its value is used for all enabled channels. When a vector is
+                            specified, one value of this vector represents a group of eight channels
+                            (in sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> specifies a pull-down resistor, and a value of
+                                <span class="bold"><strong>1</strong></span> specifies a pull-up resistor of
+                            5&nbsp;V, <span class="bold"><strong>2</strong></span> specifies a pull-up
+                            resistor of 3.3&nbsp;V and <span class="bold"><strong>3</strong></span> specifies
+                            a floating line. Examples with all channels enabled: a scalar of 1 will
+                            set a pull-up resistor of 5&nbsp;V to all channels, and a vector of
+                            [0&nbsp;0&nbsp;3&nbsp;3&nbsp;2&nbsp;2&nbsp;2&nbsp;2] will set channels 1
+                            to 16 with pull-down resistors, channels 17 to 32 with floating lines
+                            and channels 33 to 64 with pull-up resistors of 3.3&nbsp;V.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Values</span>
+                    </span></dt><dd><p>This field specifies the initial value of the channels after the model
+                            has downloaded. Enter a scalar or a vector with a width of either 32 or
+                            64 (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span> field). When a scalar value is
+                            specified, its value is used for all enabled channels. When a vector is
+                            specified, one value of this vector represents one channel (in
+                            sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> causes the corresponding channel to output a low
+                            level, and a value of <span class="bold"><strong>1</strong></span> causes the
+                            corresponding channel to output a high level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset to Initial Values</span>
+                    </span></dt><dd><p>This field specifies the behavior of the channels at model
+                            termination. Enter a scalar or a vector with a width of either 32 or 64
+                            (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>
+                            field). When a scalar value is specified, its value is used for all
+                            enabled channels. When a vector is specified, one value of this vector
+                            represents one channel (in sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> causes the channel to remain at the last
+                            used value when the model was running, and a value of <span class="bold"><strong>1</strong></span> causes the corresponding channel to be
+                            reset to the value specified in the <span class="bold"><strong>Initial&nbsp;Values</strong></span> field.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Rear Channels Setup </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enabled Channels</span>
+                    </span></dt><dd><p>This field enables either the first half of the channels (the rest of
+                            the channels will be disabled) or all the channels. The value <span class="bold"><strong>IO65&nbsp;...&nbsp;IO96</strong></span> only enables channels
+                            65 to 96 and the value <span class="bold"><strong>IO65&nbsp;...&nbsp;IO128</strong></span> enables all the channels 65 to
+                            128.</p></dd><dt><span class="term">
+                        <span class="guilabel">Simultaneous Update</span>
+                    </span></dt><dd><p>Available only when all the channels are enabled (see <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>). When set to <span class="bold"><strong>OFF</strong></span>, the first group of channels, 65 to 96,
+                            and the second group of channels, 97 to 128, are updated sequentially.
+                            When set to <span class="bold"><strong>ON</strong></span>, all 64 channels are
+                            updated simultaneously. Enabling this option leads to greater latencies.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Directions</span>
+                    </span></dt><dd><p>This field specifies whether the enabled channels act as inputs or
+                            outputs. Enter a scalar or a vector with a width of either four or eight
+                            (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>
+                            field). When a scalar value is specified, its value is used for all
+                            enabled channels. When a vector is specified, one value of this vector
+                            represents a group of eight channels (in sequential order, see the
+                                <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of
+                                <span class="bold"><strong>0</strong></span> defines the group of channels as
+                            input, a value of <span class="bold"><strong>1</strong></span> defines the group
+                            of channels as output. Examples with all channels enabled: a scalar of 1
+                            will set all channels as output, and a vector of
+                            [1&nbsp;1&nbsp;1&nbsp;1&nbsp;0&nbsp;0&nbsp;0&nbsp;0] will set the first
+                            four groups as output (channels 65 to 96) and the next four groups as
+                            input (channels 97 to 128).</p></dd><dt><span class="term">
+                        <span class="guilabel">Pull Resistors</span>
+                    </span></dt><dd><p>This field configures the pull-up/-down resistors of the enabled
+                            channels. Enter a scalar or a vector with a width of either four or
+                            eight (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span> field). When a scalar value is
+                            specified, its value is used for all enabled channels. When a vector is
+                            specified, one value of this vector represents a group of eight channels
+                            (in sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> specifies a pull-down resistor, <span class="bold"><strong>1</strong></span> specifies a pull-up resistor of 5&nbsp;V, <span class="bold"><strong>2</strong></span> specifies a pull-up resistor of 3.3&nbsp;V
+                            and <span class="bold"><strong>3</strong></span> specifies a floating line.
+                            Examples with all channels enabled: a scalar of 1 will set a pull-up
+                            resistor of 5&nbsp;V to all channels, and a vector of
+                            [0&nbsp;0&nbsp;3&nbsp;3&nbsp;2&nbsp;2&nbsp;2&nbsp;2] will set channels
+                            65 to 80 with pull-down resistors, channels 81 to 96 with floating
+                            lines, and channels 97 to 128 with pull-up resistors of 3.3&nbsp;V.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Values</span>
+                    </span></dt><dd><p>This field specifies the initial value of the channels after the model
+                            has downloaded. Enter a scalar or a vector with a width of either 32 or
+                            64 (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span> field). When a scalar value is
+                            specified, its value is used for all enabled channels. When a vector is
+                            specified, one value of this vector represents one channel (in
+                            sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> causes the corresponding channel to output a low
+                            level, a value of <span class="bold"><strong>1</strong></span> causes the
+                            corresponding channel to output a high level.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset to Initial Values</span>
+                    </span></dt><dd><p>This field specifies the behavior of the channels at model
+                            termination. Enter a scalar or a vector with a width of either 32 or 64
+                            (depending on the <span class="bold"><strong>Enabled&nbsp;Channels</strong></span>
+                            field). When a scalar value is specified, its value is used for all
+                            enabled channels. When a vector is specified, one value of this vector
+                            represents one channel (in sequential order, see the <span class="bold"><strong>Pin&nbsp;Mapping</strong></span>). A value of <span class="bold"><strong>0</strong></span> causes the channel to remain at the last
+                            used value when the model was running, and a value of <span class="bold"><strong>1</strong></span> causes the corresponding channel to be
+                            reset to the value specified in the <span class="bold"><strong>Initial&nbsp;Values</strong></span> field.</p></dd></dl></div></div></div></body></html>

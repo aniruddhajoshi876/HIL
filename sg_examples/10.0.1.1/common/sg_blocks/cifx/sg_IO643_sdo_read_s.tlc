@@ -1,0 +1,98 @@
+%implements sg_IO643_sdo_read_s "C"
+
+%<LibAddToCommonIncludes("cifxapi.h")>
+%<LibAddToCommonIncludes("COM_api.h")>
+%<LibAddToCommonIncludes("cifx_common.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+    
+    {
+    %if LibBlockOutputSignalConnected(0)
+        /* Copy the init value to the output port */  
+        %assign rollVars  = ["P", "Y"]
+        %roll sigIdx=RollRegions, lcv = RollThreshold, block, "Roller", rollVars
+            %<LibBlockAssignOutputSignal(0, "", lcv, sigIdx, LibBlockParameter(Init_P, "", lcv, sigIdx))>
+        %endroll 
+    %endif
+
+    /* Initialize work vectors **/
+    %<LibBlockDWork(Enable,"","",0)> = 0;
+    %<LibBlockPWork(Channel, "", "", 0)> = NULL;
+    %<LibBlockIWork(BlockId, "", "", 0)> = 0;
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+
+    %% Write to model file
+    {
+    boolean_T* Enable = (boolean_T*)%<LibBlockDWorkAddr(Enable,"","",0)>;
+    uint32_T BlockId = (uint32_t)%<LibBlockIWork(BlockId, "", "", 0)>;
+    CIFX_CHANNEL_T* Channel = (CIFX_CHANNEL_T*)%<LibBlockPWork(Channel, "", "", 0)>;
+
+    /* Find corresponding node structure in global driver array */
+    if (Channel == NULL)
+    {
+        CIFX_NODE_T* Node = NULL;
+
+        if (0 != Cifx_FindNode(%<ModuleId>, %<NodeId>, &Node))
+        {
+            %<LibSetRTModelErrorStatus("\"Cannot find Speedgaot IO module %<ModuleId>\"")>;
+            return;
+        }
+
+        Channel = Node->Channels[0];
+        %<LibBlockPWork(Channel, "", "", 0)> = Channel;
+
+        COM_SdoAddBlock(Channel, &BlockId);
+        %<LibBlockIWork(BlockId, "", "", 0)> = BlockId;
+    }
+
+
+    if (%<LibBlockInputSignal(0, "", "", 0)> != 0)
+    {
+        *Enable = true;
+    }
+
+    %assign DataLen = LibGetDataTypeSLSizeFromId(LibBlockOutputSignalDataTypeId(0)) * LibBlockOutputSignalWidth(0)
+
+    COM_SdoUpdateBlock(
+        Channel,
+        COM_SDO_BLOCK_TYPE_READ,
+        BlockId,
+        (bool*)Enable,
+        %<CanNodeId>,
+        %<SdoIndex>,
+        %<SdoSubIndex>,
+        %<LibBlockOutputSignalAddr(1, "", "", 0)>,
+        %<LibBlockOutputSignalAddr(2, "", "", 0)>,
+        %<DataLen>,
+        %<LibBlockOutputSignalAddr(0, "", "", 0)>
+    );
+
+    }
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

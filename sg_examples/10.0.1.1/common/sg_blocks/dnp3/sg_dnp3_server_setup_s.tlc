@@ -1,0 +1,180 @@
+%implements sg_dnp3_server_setup_s "C"
+
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+%<LibAddToCommonIncludes("%<LibGetModelName()>_dnp3.h")>
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+
+    %assign ::cFileDnp3 = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_dnp3.cpp")
+    %assign ::hFileDnp3 = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_dnp3.h")
+
+    %openfile tmpBuf
+
+    #include <stdint.h>
+    #include "%<LibGetMdlPubHdrBaseName()>.h"
+    #include "sg_common.h"
+    #include "dnp3.h"
+
+    %closefile tmpBuf
+  
+    %<LibSetSourceFileSection(cFileDnp3, "Includes", tmpBuf)>
+
+    %openfile tmpBuf
+
+    #include <stdint.h>
+    #include "dnp3.h"
+
+    %closefile tmpBuf
+  
+    %<LibSetSourceFileSection(hFileDnp3, "Includes", tmpBuf)>
+
+    %openfile tmpBuf
+
+    using namespace dnp3;
+
+    %closefile tmpBuf
+  
+	%<LibSetSourceFileSection(cFileDnp3, "Includes", tmpBuf)>
+    
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+%realformat "CONCISE"
+
+    %with block.SFcnParamSettings
+
+    %assign ServID = CAST("Number", ServerID)
+    
+    %openfile tmpBuf
+    
+    const GROUP0_VALUE_t DNP3_Serv%<ServID>Grp0[] = {
+
+        %foreach i = NumDevAttr 
+            %if ISEQUAL("GROUP0_ELEM_VSTR", "%<DevAttrTypes[i]>")
+                %<DevAttrTypes[i]>("%<DevAttrValues[i]>"),
+            %else
+                %<DevAttrTypes[i]>(%<DevAttrValues[i]>),
+            %endif
+        %endforeach
+
+        GROUP0_END
+    };
+
+    extern constexpr OUTSTATION_CONFIG_t DNP3_Serv%<ServID>Config = { %<ServID>, DNP3_Serv%<ServID>Grp0,
+                                                %<PointConfig[0]>,%<PointConfig[1]>,
+                                                %<PointConfig[2]>,%<PointConfig[3]>,
+                                                %<PointConfig[4]>,%<PointConfig[5]>,
+                                                %<PointConfig[6]>,%<PointConfig[7]>,
+                                                %<PointConfig[8]>,%<PointConfig[9]>,
+                                                %<PointConfig[10]>,%<PointConfig[11]> };
+
+    COutstationInst<DNP3_Serv%<ServID>Config, cServerCallback> DNP3_Server%<ServID>;
+    
+    %closefile tmpBuf
+    
+	%<LibSetSourceFileSection(cFileDnp3, "Definitions", tmpBuf)>
+
+    %endwith
+        
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings
+
+    %assign ServID = CAST("Number", ServerID)
+    %assign NetID = CAST("Number", NetworkID)
+    %assign FunctionName = "dnp3_setup_%<NetID>_%<ServID>_init"
+
+    %% Write to early init file
+
+    %openfile tmpBuf
+
+    /* Initialize DNP3 stack */
+    dnp3::Root.init();
+
+    %closefile tmpBuf
+    %<sgAddInitCode(tmpBuf, "execution")>
+
+    %% Write to dnp3 header file
+
+    %openfile tmpBuf
+
+    extern int32_t %<FunctionName>(void);
+
+    %closefile tmpBuf
+
+    %<LibSetSourceFileSection(hFileDnp3, "Definitions", tmpBuf)>
+
+    %% Write to dnp3 source file
+
+    %openfile tmpBuf
+
+    /* Init function of %<block.Name> */
+    int32_t %<FunctionName>(void){
+
+        int32_t ret = 0;
+        dnp3::cServerStation *Station = NULL;
+
+        /* Add one server station */
+        ret = dnp3::Root.addStation(%<ServerID>, 0, (dnp3::cStation**)&Station);
+        if (ret != 0)
+        {
+            sprintf((char_T*)%<LibBlockDWorkAddr(ErrMsg,"","",0)>, "Failed to add station %i", %<ServerID>);
+            rtmSetErrorStatus(%<LibGetModelName()>_M,(char_T*)%<LibBlockDWorkAddr(ErrMsg,"","",0)>);
+            return(ret);
+        }
+
+        Station->Deadband = %<Deadband>;
+
+        /* Initialize the server station */
+        ret = Station->init(%<IpAddr>, %<TcpPort>, &DNP3_Server%<ServID>);
+        if (ret != 0)
+        {
+            sprintf((char_T*)%<LibBlockDWorkAddr(ErrMsg,"","",0)>, "Failed to initialize station %i", %<ServerID>);
+            rtmSetErrorStatus(%<LibGetModelName()>_M,(char_T*)%<LibBlockDWorkAddr(ErrMsg,"","",0)>);
+            return(ret);
+        }
+
+        /* Register the model exit callback */
+        sg_add_exit_handler(&dnp3::ModelExitCb, NULL);
+
+        return(0);
+    }
+
+    %closefile tmpBuf
+
+    %<LibSetSourceFileSection(cFileDnp3, "Functions", tmpBuf)>
+
+    if (%<FunctionName>() != 0) return;
+
+    %endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+    
+    {
+        static bool FirstStep = true;
+        static uint64_t StartDelayTimer = 0;
+        if (FirstStep)
+        {
+            StartDelayTimer = dnp3::getTime();
+            FirstStep = false;
+        }
+        if ((dnp3::getTime() - StartDelayTimer) > 1000)
+        {
+            dnp3::Root.launch();
+        }
+    }
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+%endfunction

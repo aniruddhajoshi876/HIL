@@ -1,0 +1,6 @@
+<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="10.5" y="10.5" width="10" height="10" rx="1" transform="rotate(180 10.5 10.5)" stroke="var(--mw-icon-object-primary, #616160)"/>
+<rect x="9" y="8" width="7" height="1" transform="rotate(180 9 8)" fill="var(--mw-icon-object-primary, #616160)"/>
+<path d="M2 3L9 3L5.5 7L2 3Z" fill="var(--mw-icon-object-primary, #616160)"/>
+<use href="#expandBottomUI" />
+</svg>

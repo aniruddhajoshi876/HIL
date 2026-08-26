@@ -1,0 +1,92 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - RT Initialize</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_initialize.html" title="IO672 - Initialize"><link rel="next" href="refentry_io672_rt_send.html" title="IO672 - RT Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_rt_initialize"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - RT Initialize</h2><p>IO672 - RT Initialize &#8212; <span class="phrase">Initializes a MIL-1553
+                    remote termimal</span></p></div><div class="refsect1"><a name="d5e51532"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_rt_initialize.png"></span></span></p></div><div class="refsect1"><a name="d5e51540"></a><h2>Description</h2><p>Add an RT Initialize block for each Remote Terminal address for which you want
+                this board to accept commands. Because each of these blocks must execute after the
+                global board initialization, connect the Init Struct input to either the:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Main IO672 Initialize block for this board</p></li><li class="listitem"><p>Another IO672 RT Initialize block that is connected to the main IO672
+                            Initialize block</p></li></ul></div><p>
+            </p></div><div class="refsect1"><a name="d5e51549"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Init Struct</span></span></dt><dd><p>Vector that contains information for RT Initialize block.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Init Struct</span></span></dt><dd><p>Vector that contains information for RT Initialize block (Information
+                            passed through from input).</p></dd></dl></div></div><div class="refsect1"><a name="d5e51565"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Remote Terminal </span>
+                    </span></dt><dd><p>From the list, choose a Remote Terminal from 0 to 31. The remote
+                            terminal number configured in RT Send and RT Receive must match that
+                            specified by the corresponding RT Initialize block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connect to bus A </span>
+                    </span></dt><dd><p>Select this check box to have this Remote Terminal listen on bus A. If
+                            a message can come in on either bus, choose both A and B.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connect to bus B </span>
+                    </span></dt><dd><p>Select this check box to have this Remote Terminal listen on bus B. If
+                            a message can come in on either bus, choose both A and B.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial status </span>
+                    </span></dt><dd><p>The value to which the board should initialize the status before it
+                            executes commands. The board maintains a status word that it sends to
+                            the Bus Controller after it executes a command.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial BIT word </span>
+                    </span></dt><dd><p>The initial value of the Built In Test (BIT) word. The Remote Terminal
+                            sends this word in response to the Transmit BIT Word mode code.</p></dd><dt><span class="term">
+                        <span class="guilabel">Inhibit terminal flag </span>
+                    </span></dt><dd><p>Selecting this check box inhibits the Remote Terminal flag. This value
+                            is the initial value of the Inhibit Terminal Flag bit. This value can be
+                            changed from the Bus Controller with the Inhibit Terminal and Override
+                            Inhibit Terminal mode codes. The terminal bit is one of the bits in the
+                            status word that is maintained by the I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit sub addresses </span>
+                    </span></dt><dd><p>A vector of sub addresses to which this Remote Terminal must respond.
+                            These sub addresses are the sub addresses that can transmit data when
+                            requested. Each element of the vector must correspond to the
+                            corresponding element of the Legal transmit message lengths vector. To
+                            enable the sub address for the Remote Terminal, include the sub address
+                            in the vector. A Remote Terminal accepts a message only if it has been
+                            directed to accept messages of the same length. During initialization,
+                            the board must receive a list of valid message lengths for each Remote
+                            Terminal number.</p></dd><dt><span class="term">
+                        <span class="guilabel">Legal transmit message lengths </span>
+                    </span></dt><dd><p>A vector of transmit message lengths. This vector is a vector of bit
+                            masks. Each mask bit corresponds to a single message length. Construct
+                            the transmit message length vector as follows: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Each element of the vector corresponds to the
+                                        corresponding element of the Transmit sub addresses
+                                        vector.</p></li><li class="listitem"><p>Each element of the vector corresponds to the
+                                        corresponding element of the Legal receive message lengths.
+                                        Failure to do so prevents the sub address on this Remote
+                                        Terminal from responding.</p></li></ul></div><p> A message can have a length of from 1 to 32 words,
+                            selected by setting one or more bits in a 32-bit mask. </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="33%" class="col2"><col width="34%" class="col3"></colgroup><thead><tr><th>Bit Position</th><th>Mask Value (hex)</th><th>Word Length (words)</th></tr></thead><tbody><tr><td>0</td><td>0x00000001</td><td>32</td></tr><tr><td>1</td><td>0x00000002</td><td>1</td></tr><tr><td>2</td><td>0x00000004</td><td>2</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>30</td><td>0x40000000</td><td>30</td></tr><tr><td>31</td><td>0x80000000</td><td>31</td></tr></tbody></table></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Use the hex2dec function to specify the bit mask in
+                                        hexadecimal.</p></li><li class="listitem"><p>The message length is expressed by bit position in the
+                                        mask, not by mask value. The value 0xffffffff enables all
+                                        message lengths from 1 to 32.</p></li><li class="listitem"><p>The board does not accept a message with a disallowed
+                                        length. The board sends an error to the Bus Controller by
+                                        returning a status with the Message Error bit set.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Receive sub addresses </span>
+                    </span></dt><dd><p>A vector of the sub addresses that can accept a receive message. Each
+                            element of the vector must correspond to the corresponding element of
+                            the Legal receive message lengths vector. To enable the sub address for
+                            the Remote Terminal, include the sub address in the vector. A Remote
+                            Terminal accepts a message only if it has been directed to accept
+                            messages of the same length. During initialization, the board must
+                            receive a list of valid message lengths for each Remote Terminal number.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Legal receive message lengths </span>
+                    </span></dt><dd><p>A vector of receive message lengths. This vector is a vector of bit
+                            masks. Each mask bit corresponds to a single message length. Construct
+                            the receive message length vector as follows: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Each element of the vector corresponds to the
+                                        corresponding element of the Transmit sub addresses
+                                        vector.</p></li><li class="listitem"><p>Each element of the vector corresponds to the
+                                        corresponding element of the Receive sub addresses
+                                        vector.</p></li><li class="listitem"><p>Each element of the vector corresponds to the
+                                        corresponding element of the Legal receive message lengths.
+                                        Failure to do so prevents the sub address on this Remote
+                                        Terminal from responding.</p></li></ul></div><p> A message can have a length of from 1 to 32 words,
+                            selected by setting one or more bits in a 32-bit mask. </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="33%" class="col1"><col width="33%" class="col2"><col width="34%" class="col3"></colgroup><thead><tr><th>Bit Position</th><th>Mask Value (hex)</th><th>Word Length (words)</th></tr></thead><tbody><tr><td>0</td><td>0x00000001</td><td>32</td></tr><tr><td>1</td><td>0x00000002</td><td>1</td></tr><tr><td>2</td><td>0x00000004</td><td>2</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>30</td><td>0x40000000</td><td>30</td></tr><tr><td>31</td><td>0x80000000</td><td>31 </td></tr></tbody></table></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Use the hex2dec function to specify the bit mask in
+                                        hexadecimal.</p></li><li class="listitem"><p>The message length is expressed by bit position in the
+                                        mask, not by mask value. The value 0xffffffff enables all
+                                        message lengths from 1 to 32.</p></li><li class="listitem"><p>The board does not accept a message with a disallowed
+                                        length. The board sends an error to the Bus Controller by
+                                        returning a status with the Message Error bit set.</p></li></ul></div></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable input bus A</span>
+                    </span></dt><dd><p>Select this check box to control bus A through an input port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable input bus B</span>
+                    </span></dt><dd><p>Select this check box to control bus B through an input port.</p></dd></dl></div></div></div></body></html>

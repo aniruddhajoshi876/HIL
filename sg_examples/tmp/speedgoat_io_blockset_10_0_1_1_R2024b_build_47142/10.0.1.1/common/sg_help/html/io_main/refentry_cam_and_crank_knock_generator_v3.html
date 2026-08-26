@@ -1,0 +1,45 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Knock Generator v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_events_capture_v3.html" title="Cam and Crank - Events Capture v3"><link rel="next" href="refentry_cam_and_crank_crank_encoder_analog_v3.html" title="Cam and Crank - Crank Encoder Analog v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_knock_generator_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Knock Generator v3</h2><p>Cam and Crank - Knock Generator v3 &#8212; <span class="phrase">This Knock
+                    Generator code module is an extension to the Crank Encoder v3 code module. It
+                    generates a knock signal at the analog output of the configurable I/O module
+                    once per 720&deg; iteration of the crankshaft.</span></p></div><div class="refsect1"><a name="d5e12854"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_knock_generator_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e12863"></a><h2>Description</h2><p>This Knock Generator code module receives the crankshaft angle from the
+                corresponding Crank Encoder v3 code module channel. A knock pulse is generated once
+                per 720&deg; iteration. The knock pulse waveform is a cosine with exponential decay.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="./graphics/equation_knock_generator_v3.png" width="324"></span></span></p><p>This driver block must be used in combination with a Crank Encoder v3 block as
+                well as an Analog Output block to enable and parameterize the corresponding Crank
+                encoder and Analog output channels.</p></div><div class="refsect1"><a name="d5e12872"></a><h2>Ports</h2><p>This driver block has two input ports:</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Knock Angle </span>
+                    </span></dt><dd><p>Defines the angle between 0 and 720&deg; at which the knock pulse occurs.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Knock Enable </span>
+                    </span></dt><dd><p>A signal level 1 at this input enables the knock pulse. The pulse is
+                            disabled with a 0 at this input.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12887"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Vector </span>
+                    </span></dt><dd><p>A vector of Knock Generator channels this driver block entity will
+                            access. Channels can be specified in the range 1 to N (N is the number
+                            of crank encoder channels in the configuration file). The order of
+                            channels can be freely mixed, but the same channel should not be used
+                            more than once. The width of this vector also defines the resulting size
+                            of some of the following parameters if scalar expansion applies. The
+                            length of the channel vector defines the dimension of the input signals.
+                        </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Knock Generator </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Amplitude </span>
+                    </span></dt><dd><p>This parameter defines the amplitude [V] of the knock signal
+                            oscillation. It can be a scalar or vector. The vector length must match
+                            the number of enabled channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frequency </span>
+                    </span></dt><dd><p>This parameter defines the frequency [Hz] of the knock signal
+                            oscillation. It can be a scalar or vector. The vector length must match
+                            the number of enabled channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Constant </span>
+                    </span></dt><dd><p>This parameter defines the time constant [s] of the exponential decay
+                            of the knock signal. It can be a scalar or vector. The vector length
+                            must match the number of enabled channels.</p></dd></dl></div></div></div></body></html>

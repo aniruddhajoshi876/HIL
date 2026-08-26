@@ -1,0 +1,26 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO611 - LIN Status v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io611_lin_slave_read_v2.html" title="IO611 - LIN Slave Read v2"><link rel="next" href="refentry_io611_can-fd_read.html" title="IO611 - CAN-FD Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io611_lin_status_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO611 - LIN Status v2</h2><p>IO611 - LIN Status v2 &#8212; <span class="phrase">This block provides status
+                    information from the LIN channel</span></p></div><div class="refsect1"><a name="d5e13088"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io611_lin_status_v2.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_lin_status"></a><h2>Description</h2><p>This block provides status information from the LIN channel.</p></div><div lang="" class="refsect1"><a name="refsect_ports_lin_status"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Op_Mode</span>
+                    </span></dt><dd><p>This port can have the following values: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: the board acts as a slave</p></li><li class="listitem"><p>3: the board acts as a master</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Baud Rate</span>
+                    </span></dt><dd><p>The current configured baud rate.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">BusLoad</span>
+                    </span></dt><dd><p>The current percentage (0..100) of LIN bus load.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data_Overrun</span>
+                    </span></dt><dd><p>1 if data overrun occurred.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Init_Mode_Act</span>
+                    </span></dt><dd><p>1 if LIN controller is still in init mode.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e13148"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">Get status for channel</span></dt><dd><p>Choose the LIN channel to which this driver block should be
+                            connected.</p></dd><dt><span class="term">Enable OP Mode</span></dt><dd><p>Enables the output port for operation mode information.</p></dd><dt><span class="term">Enable Baud rate</span></dt><dd><p>Enables the output port for baud rate information.</p></dd><dt><span class="term">Enable Busload</span></dt><dd><p>Enables the output port for busload information.</p></dd><dt><span class="term">Enable Data Overrun</span></dt><dd><p>Enables the output port for data overrun information.</p></dd><dt><span class="term">Enable init mode active</span></dt><dd><p>Enables the output port for init mode information.</p></dd></dl></div></div></div></body></html>

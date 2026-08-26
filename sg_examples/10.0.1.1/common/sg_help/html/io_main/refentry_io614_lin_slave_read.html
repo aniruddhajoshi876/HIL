@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO614 - LIN Slave Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io614_lin_slave_write.html" title="IO614 - LIN Slave Write"><link rel="next" href="refentry_io614_lin_status.html" title="IO614 - LIN Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io614_lin_slave_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO614 - LIN Slave Read</h2><p>IO614 - LIN Slave Read &#8212; <span class="phrase">Read messages from the LIN
+                    channel</span></p></div><div class="refsect1"><a name="d5e16871"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io614_lin_slave_read.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_lin_slave_read"></a><h2>Description</h2><p>Read messages from the LIN channel.</p></div><div lang="" class="refsect1"><a name="refsect_ports_lin_slave_read"></a><h2>Ports</h2><p>All the input and output ports of this block are vectors with as many elements as
+                messages are configured to be read. Except the number of elements of the data output
+                port is 8 times the number of configured messages.</p><p>The input ports of this driver block are used to filter incoming messages. Note
+                that the Checksum can be changed at runtime, whereas the Message IDs cannot.</p><p>The outputs will always show the last received message that complies with the
+                relevant filter configured with the inputs.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Prot.ID</span>
+                    </span></dt><dd><p>Message ID for the message filter</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Checksum</span>
+                    </span></dt><dd><p>Checksum for the message filter</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Len</span>
+                    </span></dt><dd><p>Data length for the message filter</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Prot.ID</span>
+                    </span></dt><dd><p>The LIN identifier received. Range 0 to 63. Parity P0 and P1 are
+                            removed by the driver.</p><p>If an Error message has been received (See output "Msg Type" below),
+                            this output will contain the error code. The following error codes are
+                            possible: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: no error</p></li><li class="listitem"><p>1: bit error</p></li><li class="listitem"><p>2: checksum error</p></li><li class="listitem"><p>3: parity error</p></li><li class="listitem"><p>4: no answer from slave</p></li><li class="listitem"><p>5: Sync break error</p></li><li class="listitem"><p>6: Inconsistent sync break field</p></li><li class="listitem"><p>7: More data expected</p></li><li class="listitem"><p>8: Timeout after start of sync break field</p></li><li class="listitem"><p>9: Timeout after sync break field</p></li><li class="listitem"><p>10: Timeout after sync field</p></li><li class="listitem"><p>11: Slave didn't start</p></li><li class="listitem"><p>12: LIN parameter error</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Msg Type</span>
+                    </span></dt><dd><p>This port can take three possible values: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Dataframe message</p></li><li class="listitem"><p>2: Error message</p></li><li class="listitem"><p>3: Wakeup message</p></li></ul></div><p> If the message type is "Error message", the error code
+                            is written to the "Prot.ID" output. The error codes are listed
+                            above.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Checksum</span>
+                    </span></dt><dd><p>Checksum version used in the received message:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Classic Checksum (LIN 1.1, LIN 1.2, LIN 1.3)</p></li><li class="listitem"><p>1: Enhanced Checksum (LIN 2.0, LIN 2.1, LIN 2.2)</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Len</span>
+                    </span></dt><dd><p>Data length code (DLC) of the received message. Range 0 to 8</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data Overrun</span>
+                    </span></dt><dd><p>State of the received message queue. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 if normal operation</p></li><li class="listitem"><p>1 if the buffer is overrun</p></li></ul></div><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Timestamp</span>
+                    </span></dt><dd><p>The timestamp for receipt of the LIN message. The resolution is 1&micro;s,
+                            so in order to get a double value in seconds, the block output must be
+                            converted to double and multiplied by 1e-6. This 1&micro;s resolution is given
+                            by the hardware implementation of the IO61X modules. The time is reset
+                            to zero at each model start.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The message data. The LIN protocol allows for messages with up to
+                            eight data bytes. If N messages filtered for, this vector will simply be
+                            sized N * 8.</p><p><span class="bold"><strong>Data
+                            Types:</strong></span><code class="literal">uint8</code></p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_lin_slave_read"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Specifies the ID of the IO61X module this driver block should be
+                            connected to. It must correspond to the module ID of the according setup
+                            block. Check the setup block help for more details.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. It can also be set to -1 for inherited sample time. The
+                            units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Read Message from Channel</span>
+                    </span></dt><dd><p>Choose the LIN channel to which this driver block should be connected.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Number of LIN Messages</span>
+                    </span></dt><dd><p>This field configures how many LIN messages to filter for. This
+                            parameter directly sets the input and output port widths. Range is
+                            between 1 and 50.</p></dd></dl></div></div></div></body></html>

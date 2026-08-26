@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO907/IO908 - Broadcast</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_io907_setup.html" title="IO907/IO908 - Setup"><link rel="next" href="refentry_io907_read_interrupt_information.html" title="IO907/IO908 - Read Interrupt Information"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io907_broadcast"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO907/IO908 - Broadcast</h2><p>IO907/IO908 - Broadcast &#8212; <span class="phrase">Generates a network
+                    interrupt</span></p></div><div class="refsect1"><a name="d5e1421"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io907_broadcast.png"></span></span></p></div><div class="refsect1"><a name="d5e1429"></a><h2>Description</h2><p>The Broadcast driver block generates a network interrupt that other boards in the
+                shared memory network can detect.</p></div><div class="refsect1"><a name="d5e1432"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">En </span>
+                    </span></dt><dd><p>This input port is a Boolean input that can enable or disable the
+                            transmission of a network interrupt. For continuous interrupts. connect
+                            this input port to a Constant block with a Boolean value of true (1). If
+                            you want to enable interrupts only part of the time, you can use another
+                            kind of input, such as a pulse generator.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data </span>
+                    </span></dt><dd><p>This input port allows you to transmit a data value (uint32) with the
+                            interrupt.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1446"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module Type</span>
+                    </span></dt><dd><p>Select the type of your I/O Module installed in your target
+                            machine.</p></dd><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">TargetNode (-1: Global) </span>
+                    </span></dt><dd><p>Enter the node ID of the node to which to broadcast the interrupt.
+                            Enter -1 to broadcast the interrupt to the nodes in the shared memory
+                            network. You cannot broadcast the interrupt to another subset of nodes.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Interrupt Number </span>
+                    </span></dt><dd><p>Enter the shared IRQ number. This value is the special interrupt
+                            number that two boards use between each other for synchronization (refer
+                            to the <a href="refentry_io907_usage_notes.html" class="olink">Usage Notes</a>). This
+                            value must match the value of X in a line like the following, which you
+                            can specify for the receiving end of the shared memory network:</p><pre class="programlisting">node.Interface.Interrupts.PendingIntX</pre></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

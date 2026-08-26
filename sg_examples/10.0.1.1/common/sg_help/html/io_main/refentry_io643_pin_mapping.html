@@ -1,0 +1,18 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO643/IO644 Pin Mapping</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io643_usage_notes.html" title="IO643 Usage Notes"><link rel="next" href="refentry_io643_setup.html" title="IO643 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io643_pin_mapping"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO643/IO644 Pin Mapping</h2><p>IO643/IO644 Pin Mapping &#8212; <span class="phrase">Reference information about
+                    the I/O module connector</span></p></div><div class="refsect1"><a name="d5e48052"></a><h2>I/O Pin Mapping for CANopen</h2><p>The 9-pin Male D-Sub connector provides one isolated CANopen interface according
+                to ISO 11898.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/io643_connector.png" width="270"></span>
+            </p><div class="informaltable"><table class="informaltable" border="1" width="500"><colgroup><col width="16%" class="col1"><col width="84%" class="col2"></colgroup><thead><tr><th>Pin </th><th>DB9 Connector Signal </th></tr></thead><tbody><tr><td>1 </td><td>Do not connect!</td></tr><tr><td>2 </td><td><span class="bold"><strong>CAN-low</strong></span></td></tr><tr><td>3 </td><td><span class="bold"><strong>GND</strong></span></td></tr><tr><td>4 </td><td>Do not connect!</td></tr><tr><td>5 </td><td>Do not connect!</td></tr><tr><td>6 </td><td>Do not connect!</td></tr><tr><td>7 </td><td><span class="bold"><strong>CAN-high</strong></span></td></tr><tr><td>8 </td><td>Do not connect!</td></tr><tr><td>9 </td><td>Do not connect!</td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e48100"></a><h2>Wiring</h2><p>Use a standard CAN cable with female sockets to connect the I/O module with
+                external CANopen devices. CANopen devices are connected in a line topology with each
+                other (from A to B, B to C, and so on). As almost every CANopen device has only one
+                connector, use Y split cables to connect multiple devices to the network.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/io643_cable.png" width="459"></span>
+            </p><p>For proper operation, a CANopen topology requires 120 ohm terminating resistors
+                on both ends. The IO643 and IO644 I/O modules do not include termination resistors.
+                Instead, Speedgoat provides standard termination adapters which can be inserted
+                between the I/O module and the CAN cable. Termination resistors are not mandatory
+                for very short distances.</p><p>
+                <span class="inlinemediaobject"><img src="././graphics/io643_topo.png" width="702"></span>
+            </p></div></div></body></html>

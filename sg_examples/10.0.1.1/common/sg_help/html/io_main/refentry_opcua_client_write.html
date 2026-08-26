@@ -1,0 +1,105 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA - Client Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_opcua_client_read.html" title="OPC UA - Client Read"><link rel="next" href="refentry_mvb_landing.html" title="MVB"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_client_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA - Client Write</h2><p>OPC UA - Client Write &#8212; <span class="phrase">Writes the value of an OPC UA
+                    variable node in the remote server</span></p></div><div class="refsect1"><a name="d5e72553"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_opcua_client_write.png"></span></span></p></div><div class="refsect1"><a name="d5e72561"></a><h2>Description</h2><p>The Write block writes the value attribute of a specific variable node in the
+                remote server. When the block is triggered by the input port, it sends out write
+                requests and updates the output ports according to the response received. You can
+                write multiple nodes with one Write block.</p></div><div class="refsect1"><a name="d5e72564"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The values that should be written to the nodes in the remote server.
+                            The port type can be </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Scalar, if one scalar node is configured</p></li><li class="listitem"><p>Vector, if one node of type vector is configured</p></li><li class="listitem"><p>Matrix, if one node of type matrix is configured</p></li><li class="listitem"><p>Vector, if multiple scalar nodes of the same data type are
+                                        configured</p></li><li class="listitem"><p>Bus, if Bus Input is selected</p></li></ul></div><p>The data type and dimensions are either inherited from
+                            the connected source block or by the DataType and Dimension elements of
+                            the struct defined in the <span class="bold"><strong>Nodes</strong></span>
+                            parameter. Both the data type and dimensions must match the data type
+                            and dimensions of the node's value in the remote server. Otherwise, the
+                                <span class="bold"><strong>Status</strong></span> port outputs an
+                            error.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to 2D-arrays</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block sends out write messages as long as the input port is TRUE.
+                            The transmission of a message happens at each sample hit according to
+                            the block's sample time.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This ensures low network traffic and immediate updates
+                            of the output ports once a response is received. Discover the OPC UA
+                            product examples and learn how a Pulse Generator in conjunction with a
+                            Detect Change block serve as a cyclic trigger.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>Outputs the status code included in the confirmation message received
+                            from the server. Successful data exchange is indicated by 0. This port
+                            is visible if the <span class="bold"><strong>Additional Outputs</strong></span>
+                            parameter is selected. Otherwise, the port is hidden.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Time</span>
+                    </span></dt><dd><p>Outputs the time included in the confirmation message received from
+                            the server. A timestamp is represented by the number of milliseconds
+                            since 1-Jan-1970 00:00:00 UTC. Refer to the <a class="link" href="https://www.speedgoat.com/help/slrt/page/io_main/refentry_ref_opcua_examples" target="_top">OPC UA product examples</a> to find out how to convert the
+                            timestamp. This port is visible if the <span class="bold"><strong>Additional
+                                Outputs</strong></span> parameter is selected. Otherwise, the port is
+                            hidden.</p><p><span class="bold"><strong>Data type:</strong></span> uint64</p></dd></dl></div></div><div class="refsect1"><a name="d5e72616"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">General</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Node Configuration</span>
+                    </span></dt><dd><p>Changes the mode of node configuration. Nodes to be written can be
+                            defined either with parameters in the <span class="bold"><strong>Node</strong></span> tab or with structs in the <span class="bold"><strong>Nodes</strong></span> parameter. If selected, the <span class="bold"><strong>Nodes</strong></span> parameter is visible and the <span class="bold"><strong>Node</strong></span> tab is hidden.</p></dd><dt><span class="term">
+                        <span class="guilabel">Nodes</span>
+                    </span></dt><dd><p>As an alternative to configuring a node in the <span class="bold"><strong>Node</strong></span> tab, the node properties can be passed as a struct
+                            to this parameter. The <span class="bold"><strong>Extended Node
+                                Configuration</strong></span> parameter must be selected for this
+                            purpose. Define an array of struct for writing multiple nodes. The
+                            required struct elements are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Namespace (see Namespace parameter)</p></li><li class="listitem"><p>IdentifierType (see Identifier Type parameter)</p></li><li class="listitem"><p>Identifier (see Identifier parameter)</p></li><li class="listitem"><p>Dimension: The dimension(s) of the node. Possible values
+                                        are </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>1 for scalar values</p></li><li class="listitem"><p>n for vectors</p></li><li class="listitem"><p>[m, n] for 2D-arrays</p></li></ul></div></li><li class="listitem"><p>DataType: The data type of the node. Must be passed as a
+                                        character array. Possible options are: double, single,
+                                        uint32, int32, uint16, int16, uint8, int8, boolean</p></li></ul></div><p>
+                        </p><p>You can create the struct in the base workspace, the model workspace
+                            or in a data dictionary and pass the variable name to the mask
+                            parameter. As an alternative, you can directly define the struct in the
+                            mask parameter. Refer to the <a href="refentry_opcua_client_read.html" class="olink">OPC UA Client Read</a>
+                            block content for further information about this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Input</span>
+                    </span></dt><dd><p>If selected, the values to be written are required as a bus signal.
+                            The corresponding Simulink Bus object is automatically created in the
+                            base workspace. Each defined node is represented by a bus element whose
+                            name is derived from the node identifier. The matlab.lang.makeValidName
+                            function is called to convert the identifier into a string that works
+                            with code generation. For long strings, increase the <span class="bold"><strong>Maximum Identifier Length</strong></span> model parameter.
+                            The bus element holds the value to be written. Use Bus Assignment blocks
+                            to write values to the bus elements.</p><p>
+                            <span class="inlinemediaobject"><img src="././graphics/opcua_bus_03.png"></span></p><p>To ensure unique bus element names, use separate blocks for writing
+                            nodes with the same identifier but different namespaces.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Name</span>
+                    </span></dt><dd><p>The name for the Simulink Bus object to be created in the base
+                            workspace. The name must be a character array. An empty character array
+                            results in an automatically created bus name based on the block name.
+                            The matlab.lang.makeValidName function is called to convert the name
+                            into a string that works with code generation. For long names, increase
+                            the <span class="bold"><strong>Maximum Identifier Length</strong></span> model
+                            parameter. The parameter is visible if the <span class="bold"><strong>Bus
+                                Input</strong></span> parameter is selected. Otherwise, the parameter is
+                            hidden.</p></dd><dt><span class="term">
+                        <span class="guilabel">Additional Outputs</span>
+                    </span></dt><dd><p>If selected, the <span class="bold"><strong>Status</strong></span> and <span class="bold"><strong>Time</strong></span> ports output status and timestamp
+                            information of the write operation.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Node</div><p>This tab is visible if the <span class="bold"><strong>Extended Node
+                        Configuration</strong></span> parameter is cleared. Otherwise, the tab is hidden.
+                    On the <span class="bold"><strong>Node</strong></span> tab you can configure one single
+                    node for writing.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Namespace </span>
+                    </span></dt><dd><p>The index of the namespace to which the node is related.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier Type </span>
+                    </span></dt><dd><p>Defines the format of the <span class="bold"><strong>Node
+                                Identifier</strong></span> parameter. Refer to the <a href="refentry_opcua_server_node.html" class="olink">OPC UA
+                                Server Node</a> block content for further information about this
+                            parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier</span>
+                    </span></dt><dd><p>The unique identifier of the node within the specified namespace.
+                            Refer to the <a href="refentry_opcua_server_node.html" class="olink">OPC UA Server Node</a>
+                            block content for further information about this parameter.</p></dd></dl></div></div></div></body></html>

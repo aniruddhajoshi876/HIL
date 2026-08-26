@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO750 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io750_usage_notes.html" title="IO750 Usage Notes"><link rel="next" href="refentry_io750_setup.html" title="IO750 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io750_usage_notes_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO750 Usage Notes</h2><p>IO750 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e56970"></a><h2>Description</h2><p>This section provides further information about how to configure the IO750
+                EtherCAT subordinate device module.</p></div><div class="refsect1"><a name="d5e56973"></a><h2>Add PDOs and SDOs programmatically</h2><p>Write MATLAB code to fill the PDO and SDO tables of the Setup block. This enables you to define
+                objects in mat or csv files, import the data into MATLAB and write the content to
+                the tables. You use the get_param and set_param functions to read and write the
+                tables. The names of the corresponding block parameters are rxPdoMapping,
+                txPdoMapping and sdoMapping. The parameter value is a cell array packed in a
+                character array or string.</p><p>Run the following code to add entries to the RxPDO mapping table of the Setup
+                block selected. Extend the cell array at the beginning to add more objects.</p><pre class="programlisting">
+data = {'rxServo',  'ControlWord',  'uint16';
+        'rxServo',  'ControlSpeed', 'double';
+        'rxUtil',   'Alive',        'uint32'};
+
+t = "{";
+for m = 1 : size(data,1)
+    t = t + "'" + data{m,1} + "','" + data{m,2} + "','" + data{m,3} + "';";
+end
+t = extractBefore(t, strlength(t));
+t = t + "}";
+
+set_param(gcb, 'rxPdoMapping', t);</pre><p>Run the following in the MATLAB command window to read the RxPDOs of the Setup
+                block selected:</p><pre class="programlisting">
+&gt;&gt; get_param(gcb, 'rxPdoMapping')</pre></div><div class="refsect1"><a name="d5e56980"></a><h2>Front Plate Description</h2><div class="variablelist"><div class="variablelist-title">IO750 PCI and PCIe modules</div><p>The IO750 acts as one EtherCAT subordinate device exclusively. The two RJ45
+                    connectors simply serve to build up a line-based network structure. Plug the
+                    cable from the EtherCAT main device or the previous subordinate device into the
+                    first socket. Connect the second socket with the next EtherCAT subordinate
+                    device. The LEDs described below indicate the communication status of the single
+                    EtherCAT subordinate device.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_pci_front.png" width="486"></span>
+                        </p><p><a name="para_common_rotary_switch_note"></a>The rotary switch has no functional role.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO750 mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io75x_mpci_front.png" width="270"></span>
+                        </p><p><a name="para_common_mPCIe_error_LED_reversed"></a>Note that in some real-time target machines,
+        the mPCIe module is reversed; that is, the Error LED appears on the right.</p></dd></dl></div></div><div class="refsect1"><a name="d5e57007"></a><h2>LED Status Description</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>SYS</td><td>Green</td><td>On</td><td>Operating system running</td></tr><tr><td>&nbsp;</td><td>Green/Yellow</td><td>Blinking</td><td>Second stage bootloader is waiting for firmware</td></tr><tr><td>&nbsp;</td><td>Yellow</td><td>On</td><td>Bootloader netX (= romloader) is waiting for second stage
+                                bootloader</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Power supply for the device is missing or hardware defect</td></tr><tr><td>RUN/COM1</td><td>Off</td><td>Off</td><td>INIT: The device is in state INIT</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Blinking (2,5 Hz)</td><td>PRE-OPERATIONAL: The device is in PRE-OPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Single flash </td><td>SAFE-OPERATIONAL: The device is in SAFE-OPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>On</td><td>OPERATIONAL: The device is in OPERATIONAL state</td></tr><tr><td>ERR/COM2</td><td>Off</td><td>Off</td><td>No error: The EtherCAT communication of the device is in working
+                                condition </td></tr><tr><td>&nbsp;</td><td>Red</td><td>Blinking (2,5 Hz) </td><td>Invalid configuration: General Configuration Error. Possible
+                                reason: State change commanded by main device is impossible due to
+                                register or object settings </td></tr><tr><td>&nbsp;</td><td>Red</td><td>Single flash</td><td>Local error: Subordinate device application has changed the
+                                EtherCAT state autonomously. Possible reason 1: A host watchdog
+                                timeout has occurred. Possible reason 2: Synchronization Error,
+                                device enters Safe-Operational automatically </td></tr><tr><td>&nbsp;</td><td>Red</td><td>Double flash </td><td>Application watchdog timeout: An application watchdog timeout
+                                has occurred. Possible reason: Sync Manager Watchdog timeout.
+                            </td></tr></tbody></table></div><p>Note that only the IO750 PCI and PCIe modules have the SYS LED. This LED does not
+                feature on the IO750 mPCIe module.</p></div><div class="refsect1"><a name="d5e57086"></a><h2>Status Codes</h2><p>For the list of status codes, please refer to <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for Protocols Supported
+                    with the IO64x/IO75x Modules</a>.</p></div></div></body></html>

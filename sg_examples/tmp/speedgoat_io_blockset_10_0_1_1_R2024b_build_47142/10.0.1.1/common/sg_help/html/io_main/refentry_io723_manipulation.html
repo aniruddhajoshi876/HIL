@@ -1,0 +1,27 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO723 - Manipulation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io723_write_interface.html" title="IO723 - Write Interface"><link rel="next" href="refentry_ref_io723_examples.html" title="IO723 - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io723_manipulation"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO723 - Manipulation</h2><p>IO723 - Manipulation &#8212; 
+                <span class="phrase">Controls the configured manipulations</span>
+            </p></div><div class="refsect1"><a name="d5e56472"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io723_manipulation.png"></span></span></p></div><div class="refsect1"><a name="d5e56481"></a><h2>Description</h2><p>This block controls the configured manipulations from the database. Each
+                manipulation can be controlled individually or combined in a sequence of
+                manipulations.</p></div><div class="refsect1"><a name="d5e56484"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Manipulation (boolean)</span>
+                    </span></dt><dd><p>Enable the manipulation indicated by the block port label.</p></dd><dt><span class="term">
+                        <span class="guilabel">Manipulation (Bus)</span>
+                    </span></dt><dd><p>Control the manipulation indicated by the block port label. If the
+                            source of the manipulation values is the block input port, a bus with
+                            the following elements is used:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Enable</p></li><li class="listitem"><p>Value1</p></li><li class="listitem"><p>Value2</p></li><li class="listitem"><p>Value3</p></li></ul></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Depending on the manipulation type, not all manipulation values
+                                are used.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Sequence</span>
+                    </span></dt><dd><p>Select one of the configured sequences. A value of 0 disables all
+                            sequences; if a specified sequence is selected, the manipulation enable
+                            input has no effect.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56514"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Manipulation Value Source</span>
+                    </span></dt><dd><p>Select whether the manipulation values should be taken from the
+                            database or read from the block input port.</p></dd></dl></div></div></div></body></html>

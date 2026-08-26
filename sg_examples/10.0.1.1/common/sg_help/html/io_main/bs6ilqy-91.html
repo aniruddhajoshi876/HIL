@@ -1,0 +1,39 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor QPCI-1553 RT Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs6ilqy-85.html" title="Condor QPCI-1553 RT Receive"><link rel="next" href="btw_r7h-1.html" title="Condor QPCX-1553"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bs6ilqy-91"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor QPCI-1553 RT Send<a name="bqmbtf1-90"></a><a name="Condor_QPCI-1553_RTSend"></a></h2><p>Condor QPCI-1553 RT Send<a name="bqmbtf1-90"></a><a name="Condor_QPCI-1553_RTSend"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg;
+                QPCI-1553 RT Send block for remote terminal (not recommended)<b>MilStd1553Blocks</b><b>CondorEngineering</b></p></div><div class="refsect1"><a name="d5e5974"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="btw0pb1-1.html" class="olink">Condor&reg;
+                            QPCI-1553</a></p></li></ul></div></div><div class="refsect1"><a name="bs6ilqy-94"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="bs6ilqy-95"></a><h2>Description</h2><p>A <code class="literal">Remote Terminal</code> sends data only if it receives a transmit
+                command from the <code class="literal">Bus Controller</code>. The <code class="literal">Remote
+                    Terminal</code> block prepares the board for the next transmit command. It
+                gets its channel, Remote Terminal number, and sub address from the
+                    <code class="literal">Initialize</code> and <code class="literal">RT Initialize</code>
+                blocks.</p><p>The data vector signal input to this block is copied to the board message buffer
+                that corresponds to the specified address. The input data vector must have the same
+                length as specified in the <span class="bold"><strong>Number of words to send</strong></span>
+                parameter. The input vector can be either 16-bit or 32-bit signed or unsigned data.
+                The block sends only the bottom 16 bits of each element.</p><p>Your model can have multiple Remote Terminal Send blocks. To help you locate a
+                particular block, the Remote Terminal Send block displays the channel number and
+                address parameters. The address display has the format:</p><pre class="programlisting">remote terminal-T-sub address-number of words</pre><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Remote terminal &#8212; Is the <span class="bold"><strong>Remote
+                            Terminal</strong></span> parameter</p></li><li class="listitem"><p><code class="literal">T</code> &#8212; Indicates transmit (or send) command</p></li><li class="listitem"><p>Subaddress &#8212; Is the <span class="bold"><strong>Sub address</strong></span>
+                        parameter</p></li><li class="listitem"><p>Number of words &#8212; Is the <span class="bold"><strong>Number of words to
+                            receive</strong></span> parameter</p></li><li class="listitem"><p>A transmit command for RT <code class="literal">1</code>, sub address
+                            <code class="literal">3</code> to send <code class="literal">2</code> words has the layout
+                            <code class="literal">1-T-3-2</code>.</p></li></ul></div></div><div class="refsect1"><a name="bs6ilqy-96"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Channel</strong></span></span></dt><dd><p>From the list of available channels on the board, choose <code class="literal">1</code>,
+                <code class="literal">2</code>, <code class="literal">3</code>, or <code class="literal">4</code>. This channel is
+            initialized for this command stream.</p></dd><dt><span class="term"><span class="bold"><strong>Remote Terminal</strong></span></span></dt><dd><p>From the list, choose a Remote Terminal from <code class="literal">0</code> to
+                <code class="literal">31</code>. The remote terminal number configured in RT Send and RT
+            Receive must match that specified by the corresponding RT Initialize block.</p></dd><dt><span class="term"><span class="bold"><strong>Sub address</strong></span></span></dt><dd><p>From the list, choose a sub address from <code class="literal">0</code> to
+            <code class="literal">31</code>. Select the sub address for this message.</p></dd><dt><span class="term"><span class="bold"><strong>Number of words to send</strong></span></span></dt><dd><p>Enter the number of 16-bit integers to send as the data part of this message. This
+            number must be between 1 and 32. The input data vector must have the same vector
+            width.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd><dt><span class="term"><span class="bold"><strong>PCI slot (-1:autosearch)</strong></span></span></dt><dd><p>If only one board of this type is in the target computer, enter <code class="literal">-1</code>
+            to locate the board.</p><p>If two or more boards of this type are in the target computer, enter the bus number
+            and the PCI slot number of the board associated with this driver block. Use the format
+                <code class="literal">[BusNumber,SlotNumber]</code>.</p><p>To determine the bus number and the PCI slot number, type:
+            </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'installed')</pre></dd></dl></div></div></div></body></html>

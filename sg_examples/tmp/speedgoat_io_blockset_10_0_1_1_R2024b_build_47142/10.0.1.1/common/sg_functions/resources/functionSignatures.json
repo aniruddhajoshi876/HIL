@@ -1,0 +1,154 @@
+{
+  "_schemaVersion": "1.0.0",
+  "_comment": "Copyright Speedgoat",
+
+  "speedgoat.openProductExample":
+  {
+     "inputs":
+     [
+        {"name":"exampleName", "kind":"ordered", "type":["choices=sg.public.getJsonList('speedgoat.openProductExample')"], "purpose":"Product Examples available"}
+     ]
+  },
+  "speedgoat.getDiskSpace":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.getDiskSpace')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.getMemoryInfo":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.getMemoryInfo')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.getTargetAuthentication":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.getTargetAuthentication')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.getTargetTime":
+  {
+     "inputs":
+     [
+        {"name":"NumberFormat", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"},
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.getTargetTime')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.IpAliasConfiguration":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.IpAliasConfiguration')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.License":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.License')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.mex":
+  {
+     "inputs":
+     [
+        {"name":"Skip", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.mex')"], "purpose":"Option"}
+     ]
+  },
+  "speedgoat.setDefaultBootOption":
+  {
+     "inputs":
+     [
+        {"name":"release", "kind":"required", "type":["choices=sg.public.getJsonList('speedgoat.setDefaultBootOption', 'Release')"],"purpose":"E.g., current release"},
+        {"name":"DualBootTimeout", "kind":"namevalue", "type":["numeric"],"purpose":"Dual Boot Timeout [s]"},
+        {"name":"AutoReboot", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"},
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.setDefaultBootOption', 'TargetName')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.setTargetTime":
+  {
+     "inputs":
+     [
+        {"name":"newTime", "kind":"required", "type":["numeric"],"purpose":"Value [datenum]"},
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.setTargetTime')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.showBitstreamContent":
+  {
+     "inputs":
+     [
+        {"name":"bitStream", "kind":"required", "type":["char"],"purpose":"Bit stream mat-file"}
+     ]
+  },
+  "speedgoat.showInstalledIoModules":
+  {
+     "inputs":
+     [
+        {"name":"Type", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.showInstalledIoModules', 'Type')"],"purpose":"Option"},
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.showInstalledIoModules', 'TargetName')"], "purpose":"Defined target names"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  },
+  "speedgoat.getIoInterfaces":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.getIoInterfaces', 'TargetName')"], "purpose":"Defined target names"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"},
+        {"name":"Advanced", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"}
+     ]
+  },
+  "speedgoat.showPtpInterfaces":
+  {
+     "inputs":
+     [
+        {"name":"TargetName", "kind":"namevalue", "type":["choices=sg.public.getJsonList('speedgoat.showPtpInterfaces')"], "purpose":"Target Name available"},
+        {"name":"TargetObject", "kind":"namevalue", "type":["slrealtime.Target"], "purpose":"Target Object type (slrealtime.Target)"}
+     ]
+  }, 
+  "speedgoat.doc":
+  {
+     "inputs":
+     [
+        {"name":"docPage", "kind":"ordered", "type":["choices=sg.public.getJsonList('speedgoat.doc')"], "purpose":"Doc page available"}
+     ]
+  }, 
+  "speedgoat.model.createFromSycon":
+  {
+     "inputs":
+     [
+        {"name":"fileName", "kind":"required", "type":["char"], "purpose":"Sycon config file name"},
+        {"name":"ShowStatusSignals", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"}
+     ]
+  },
+  "speedgoat.model.highlight":
+  {
+     "inputs":
+     [
+        {"name":"path", "kind":"required", "type":["char"], "purpose":"Specifiy path to object to highlight"},
+        {"name":"Open", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Open path?"},
+		{"name":"Parameter", "kind":"namevalue", "type":["char"],"purpose":"Name of parameter in blockmask"},
+		{"name":"Signal", "kind":"namevalue", "type":["double"],"purpose":"Signal port number"}
+     ]
+  },
+  "speedgoat.uninstall":
+  {
+     "inputs":
+     [
+        {"name":"Force", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"}
+     ]
+  }
+
+}

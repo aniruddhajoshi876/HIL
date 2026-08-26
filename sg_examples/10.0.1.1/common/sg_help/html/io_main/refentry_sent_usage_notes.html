@@ -1,0 +1,78 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SENT Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_sent_examples.html" title="IO3xx SENT - Examples"><link rel="next" href="refentry_sent_tx_v1.html" title="SENT - SENT Tx v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_sent_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>SENT Usage Notes</h2><p>SENT Usage Notes &#8212; <span class="phrase">Usage information about the
+                    protocol and the code module</span></p></div><div class="refsect1"><a name="refsect_sent_protocol_description"></a><h2>Protocol Description</h2><p>SENT is a unidirectional communication standard where data from a sensor is
+                consecutively transmitted, without any intervention from the data receiving device.
+                A new transmission starts immediately after the previous transmission ends (the
+                trailing falling edge of the SENT CRC nibble is also the leading falling edge of the
+                next Synchronization/Calibration pulse).</p><p>One transmission consists of a series of pulses, where the time between
+                consecutive falling edges defines the 4-bit data nibble transmitted. The 4-bit data
+                nibble represents values 0 to 15. A SENT communication unit of time (tick) can be in
+                the range 3 &micro;s to 90 &micro;s. The maximum clock variation allowed for the sensor is &plusmn;20 %
+                from the nominal tick time.</p><p>The transmission sequence consists of the following pulses:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Calibration/Synchronization pulse (56 tick times)</p></li><li class="listitem"><p>4-bit Status nibble pulse (12 to 27 tick times)</p></li><li class="listitem"><p>A sequence of two to six 4-bit Data nibble pulses (12 to 27 tick times
+                        each)</p></li><li class="listitem"><p>4-bit Checksum nibble pulse (12 to 27 tick times)</p></li><li class="listitem"><p>One optional pause pulse (12 to 768 tick times)</p></li></ul></div><p><span class="inlinemediaobject"><img src="./graphics/sent_frame_format.png" width="800"></span></p><div class="refsect2"><a name="d5e2872"></a><h3>Synchronization/Calibration Pulse</h3><p>The SENT specification allows a &plusmn;20 % clock deviation from the nominal unit
+                    time, the Synchronization/Calibration pulse provides information on the current
+                    transmitter tick period. The time between the falling edges of the
+                    Synchronization/Calibration pulse defines 56 ticks. The SENT RX can calculate
+                    the current unit time period of the sensor from the pulse width and can
+                    therefore resynchronize on each start of a frame.</p></div><div class="refsect2"><a name="d5e2875"></a><h3>Status Nibble Pulse</h3><p>The Status nibble contains 4-bit status information on the sensor and it is
+                    also used to transmit enhanced serial messages (see below for more information).
+                    The width of the Status nibble pulse depends on the nibble value.</p></div><div class="refsect2"><a name="d5e2878"></a><h3>Data Nibble Pulse</h3><p>A single data nibble pulse carries 4-bit data. A maximum of 6 data nibbles can
+                    be transmitted in one SENT transmission. The total number of data nibbles
+                    depends on the protocol used by the sensor. The width of the data nibble pulse
+                    depends on the nibble value. The next figure depicts the format of the data
+                    nibble pulse. The pulse starts with the falling edge and remains low for at
+                    least four ticks. The remainder of the pulse width is driven high. The total
+                    data pulse width in the number of unit times is defined by the following
+                    equation: Data Nibble Pulse Width = 12+Nibble Value</p><p><span class="inlinemediaobject"><img src="./graphics/sent_pulse.png" width="700"></span></p></div><div class="refsect2"><a name="d5e2885"></a><h3>Checksum Nibble Pulse</h3><p>The checksum nibble contains a 4-bit CRC value. The checksum is calculated
+                    using a
+                        x<sup>4</sup>+x<sup>3</sup>+x<sup>2</sup>+1
+                    polynomial with the seed value of 5 (0b0101) and the reset value of 3
+                    (0b0011).</p><p>For older devices (2008 and earlier), the legacy CRC generation was used where
+                    all but the last data nibbles are calculated through the CRC polynomial and the
+                    last data nibble is only bitwise XOR operated with the CRC result of the
+                    previous data nibbles.</p><p>Newer devices use the recommended CRC generation where all data nibbles are
+                    calculated through the CRC polynom.</p></div><div class="refsect2"><a name="d5e2893"></a><h3>Pause Pulse (optional)</h3><p>At the end of each frame, an optional pause pulse can be added. The pause
+                    pulse can vary between 12 ticks and 768 ticks.</p></div><div class="refsect2"><a name="d5e2896"></a><h3>Variable LOW Time</h3><p>Most devices keep the LOW time fixed and vary the HIGH time of the SENT
+                    signal, as depicted above. Since the SENT standard only defines the minimum LOW
+                    width of a pulse, there are also devices that keep the HIGH time fixed and vary
+                    the LOW time instead:</p><p><span class="inlinemediaobject"><img src="./graphics/sent_variable_HIGH_LOW.png" width="800"></span></p></div></div><div class="refsect1"><a name="refsect_sent_spc"></a><h2>SENT SPC</h2><p>The SPC protocol enhances the SENT protocol by introducing a half-duplex
+                synchronous communication. To initiate a transmission, the receiver device generates
+                a Trigger pulse (green part in in the next Figure) by driving the communication line
+                LOW for a defined amount of time (t<sub>MT</sub>). The transmitter
+                device measures the pulse width and only responds if the pulse width is within
+                defined limits (see Master Pulse Requirements).</p><p>When the transmitter responds, it starts driving the line HIGH until
+                    t<sub>MTR</sub> is reached. The transmitter continues driving the
+                SENT signal (blue part in the next Figure). A pause pulse is also transmitted in
+                order to provide a trailing falling edge for the CRC nibble pulse. The transmitter
+                then stops driving the communication line and the receiver is able to generate a new
+                Trigger pulse. The figure below depicts the SENT SPC frame format:</p><p><span class="inlinemediaobject"><img src="./graphics/sent_spc_frame_format.png" width="700"></span></p><div class="refsect2"><a name="d5e2913"></a><h3>Master Pulse Requirements</h3><p>There are several types of SPC initiations which are described in the
+                    following chapters.</p></div><div class="refsect2"><a name="d5e2916"></a><h3>Synchronous Transmission</h3><div class="informaltable"><table class="informaltable" border="1" width="50%"><colgroup><col width="20%" class="col1"><col width="20%" class="col2"><col width="20%" class="col3"><col width="20%" class="col4"><col width="20%" class="col5"></colgroup><thead><tr><th rowspan="2">Parameter</th><th colspan="3" align="center">Limit
+                                    Values</th><th rowspan="2">Unit</th></tr><tr><th>min.</th><th>typ.</th><th>max.</th></tr></thead><tbody><tr><td>t<sub>MT</sub></td><td>1.5</td><td>2.75</td><td>4</td><td>ticks</td></tr><tr><td>t<sub>MTR</sub></td><td>10.8</td><td>13</td><td>16.3</td><td>ticks</td></tr></tbody></table></div></div><div class="refsect2"><a name="d5e2949"></a><h3>Synchronous Transmission Including Range Selection</h3><p>The low time duration of the synchronization pulse can be used to select the
+                    magnetic range of the sensor in SPC dynamic range selection mode:</p><p>
+                    </p><div class="informaltable"><table class="informaltable" border="1" width="50%"><colgroup><col width="23%" class="col1"><col width="15%" class="col2"><col width="16%" class="col3"><col width="15%" class="col4"><col width="15%" class="col5"><col width="16%" class="col6"></colgroup><thead><tr><th rowspan="2">Parameter</th><th colspan="3" align="center">Limit
+                                        Values</th><th rowspan="2">Unit</th><th rowspan="2">Notes</th></tr><tr><th>min.</th><th>typ.</th><th>max.</th></tr></thead><tbody><tr><td rowspan="3">t<sub>MT</sub></td><td>1.5</td><td>3.25</td><td>5</td><td>ticks</td><td>Range = 200mT</td></tr><tr><td>9</td><td>12</td><td>15</td><td>ticks</td><td>Range = 100mT</td></tr><tr><td>24</td><td>31.5</td><td>39</td><td>ticks</td><td>Range = 50mT</td></tr><tr><td>t<sub>MTR</sub></td><td>46.6</td><td>56</td><td>70</td><td>ticks</td><td>&nbsp;</td></tr></tbody></table></div><p>
+                </p></div><div class="refsect2"><a name="d5e3000"></a><h3>Synchronous Mode with ID Selection</h3><p>This functionality is similar to the previous mode, but instead of switching
+                    the range of one sensor, one of up to four sensors can be selected on a bus (1
+                    master with up to 4 slaves). This allows the parallel connection of up to 4
+                    sensors using three lines only. In this mode, the sensor starts to transfer a
+                    package only after a master low pulse, including its ID, have been
+                    received.</p><p>
+                    </p><div class="informaltable"><table class="informaltable" border="1" width="50%"><colgroup><col width="23%" class="col1"><col width="15%" class="col2"><col width="16%" class="col3"><col width="15%" class="col4"><col width="15%" class="col5"><col width="16%" class="col6"></colgroup><thead><tr><th rowspan="2">Parameter</th><th colspan="3" align="center">Limit
+                                        Values</th><th rowspan="2">Unit</th><th rowspan="2">Notes</th></tr><tr><th>min.</th><th>typ.</th><th>max.</th></tr></thead><tbody><tr><td rowspan="4">t<sub>MT</sub></td><td>9</td><td>10.5</td><td>12</td><td>ticks</td><td>ID = 0</td></tr><tr><td>19</td><td>21</td><td>23</td><td>ticks</td><td>ID = 1</td></tr><tr><td>35.5</td><td>38</td><td>40.5</td><td>ticks</td><td>ID = 2</td></tr><tr><td>61.5</td><td>64.5</td><td>67.5</td><td>ticks</td><td>ID = 3</td></tr><tr><td>t<sub>MT</sub></td><td>75</td><td>90</td><td>113</td><td>ticks</td><td>&nbsp;</td></tr></tbody></table></div><p>
+                </p></div></div><div class="refsect1"><a name="refsect_sent_enhanced_message"></a><h2>Enhanced Serial Message (Slow Message)</h2><p>If the enhanced serial message format is used (also called <span class="emphasis"><em>Slow
+                    Message</em></span>), serial data is transmitted in the bits 3 and 2 of the
+                status nibble. An enhanced serial message frame stretches over 18 consecutive SENT
+                data messages from the transmitter as shown in the next figure. All 18 frames must
+                be successfully received (no errors, calibration pulse variation, data nibble CRC
+                error, etc. are allowed). The frame start of a serial message is indicated by the
+                "01111110" unique pattern in bit 3 of the status nibble (SENT messages #18, and #1
+                to #7). Two different configurations are available depending on the configuration
+                bit (serial data bit #3, serial communication nibble No. 8, marked blue in the next
+                Figure):</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>12-bit data and 8-bit message ID (configuration bit = 0)</p></li><li class="listitem"><p>16-bit data and 4-bit message ID (configuration bit = 1)</p></li></ul></div><p><span class="inlinemediaobject"><img src="./graphics/sent_enhanced_serial_message.png" width="800"></span></p><p>All data (data field, message ID and CRC) transmitted in the serial message
+                channel is sent in the following order: MSB (most significant bit) to LSB (least
+                significant bit).</p><div class="refsect2"><a name="d5e3071"></a><h3>Enhanced Serial Message CRC</h3><p>For frames 7-18, the CRC value is computed as a function of the contents of
+                    Serial data message bits #2 and #3. For the purpose of the CRC calculation, the
+                    bits are ordered as shown in the following figure.</p><p><span class="inlinemediaobject"><img src="./graphics/sent_enhanced_serial_message_crc.png" width="600"></span></p><p>The encoding is defined by the 6-bit wide generating polynomial,
+                        x<sup>6</sup>+x<sup>4</sup>+x<sup>3</sup>+1
+                    and the seed value of 21 (0b010101) and the reset value of 59 (0b111011).</p></div></div></div></body></html>

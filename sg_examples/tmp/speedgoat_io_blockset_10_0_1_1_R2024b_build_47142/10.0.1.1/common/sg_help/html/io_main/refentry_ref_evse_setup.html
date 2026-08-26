@@ -1,0 +1,56 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EVSE - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_ev_evse.html" title="EV EVSE"><link rel="next" href="refentry_ref_ev_setup.html" title="EV - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_evse_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>EVSE - Setup</h2><p>EVSE - Setup &#8212; <span class="phrase">Configures one EVSE charging board
+                </span></p></div><div class="refsect1"><a name="d5e73479"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_evse_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e73487"></a><h2>Description</h2><p>The EVSE Setup block configures one EVSE charging board, establishing the MQTT
+                connection to the EV Charging box using the configured IP address and allows to
+                configure some static base parameters of the system. However, these parameters can
+                still be overwritten in later stages of the charge cycle if needed.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e73493"></a><h2>Parameters</h2><p>The two tabs of the setup parameter dialog box contain the configuration settings
+                for the EVSE charging board.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Station ID</strong></span> is used to assign
+                            Setup, Read and Write blocks to a particular MQTT client station.
+                            Station IDs range between 0 to 65535 and must be unique along all Setup
+                            blocks in a model. You can define multiple clients by placing a Setup
+                            block with a unique Station ID for each client.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Connection ID</strong></span> is used to assign
+                            Publish and Subscribe blocks to a particular client-broker connection.
+                            Connection IDs range between 0 to 65535 and must be unique along all
+                            Connections blocks of the client (these blocks have the same Station
+                            ID).</p></dd><dt><span class="term">
+                        <span class="guilabel">Client Identifier</span>
+                    </span></dt><dd><p>The Client Identifier represents the MQTT client in the local network
+                            and must be unique along all clients in that network. The parameter is a
+                            character array with a length limit of 256.</p></dd><dt><span class="term">
+                        <span class="guilabel">Local IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the MQTT client. This step does not assign the
+                            IP address to an Ethernet interface; instead, it binds the Setup block
+                            to an IP address, which was previously configured in the Ethernet
+                            Configuration Tool. Refer to the <a href="refentry_mqtt_usage_notes.html" class="olink">MQTT usage notes</a> for
+                            further information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which data is exchanged with the EV
+                            charging board. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote TCP Port </span>
+                    </span></dt><dd><p>Enter the TCP port the remote MQTT broker is listening on for
+                            connection requests. The default value is 1883.</p></dd><dt><span class="term">
+                        <span class="guilabel">Remote IP Address </span>
+                    </span></dt><dd><p>Enter the IP address of the EV charging board.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Charging Configuration Parameters Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Max. Voltage Limit [V]</span>
+                    </span></dt><dd><p>Specify the maximum voltage limit of the EVSE station in volts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max. Current Limit [A]</span>
+                    </span></dt><dd><p>Specify the maximum current limit of the EVSE station in
+                            amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Min. Current Limit [A]</span>
+                    </span></dt><dd><p>Specify the minimum current limit of the EVSE station in
+                            amperes.</p></dd><dt><span class="term">
+                        <span class="guilabel">Max. Power Limit [W]</span>
+                    </span></dt><dd><p>Specify the maximum power limit of the EVSE station in watts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Min. Voltage Limit [V]</span>
+                    </span></dt><dd><p>Specify the minimum voltage limit of the EVSE station in volts.</p></dd><dt><span class="term">
+                        <span class="guilabel">Current Regulation Tolerance</span>
+                    </span></dt><dd><p>Specify the current regulation tolerance of the EVSE station in
+                            percentages (0-100).</p></dd><dt><span class="term">
+                        <span class="guilabel">Peak Current Ripple</span>
+                    </span></dt><dd><p>Specify the peak current ripple of the EVSE station in amperes.</p></dd></dl></div></div></div></body></html>

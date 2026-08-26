@@ -1,0 +1,49 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC429 - Pack</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_arinc429_decode_v4.html" title="ARINC429 - Decode v4"><link rel="next" href="refentry_arinc429_unpack.html" title="ARINC429 - Unpack"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc429_pack"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC429 - Pack</h2><p>ARINC429 - Pack &#8212; 
+                <span class="phrase">Pack ARINC 429 words for the Send block</span>
+            </p></div><div class="refsect1"><a name="d5e54195"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc429_pack.png"></span></span></p></div><div class="refsect1"><a name="d5e54204"></a><h2>Description</h2><p>This block packs the input signals into the ARINC 429 word based on the specified
+                configuration.</p></div><div class="refsect1"><a name="d5e54207"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Signal</span>
+                    </span></dt><dd><p>All the connected signals are packed into the ARINC 429 word according
+                            to the values configured in the signals table.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Msg</span>
+                    </span></dt><dd><p>ARINC 429-encoded messages.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54223"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Label</span>
+                    </span></dt><dd><p>Enter a three-digit octal number as the ARINC 429 label.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The <span class="bold"><strong>Label</strong></span> bit order is
+                                    reversed automatically by the transmit logic prior to
+                                    transmission of the ARINC 429 word for all <span class="bold"><strong>Data Type</strong></span> options.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">SDI</span>
+                    </span></dt><dd><p>If the <span class="bold"><strong>SDI</strong></span> element is in the range
+                                <code class="literal">0</code> to <code class="literal">3</code>, the block sets the SDI
+                            field of the corresponding output word to that value. If the SDI element
+                            has a value of <code class="literal">-1</code>, the block does not perform SDI
+                            processing on the corresponding output word.</p></dd><dt><span class="term">
+                        <span class="guilabel">SSM</span>
+                    </span></dt><dd><p>Default value for the sign/status matrix (<span class="bold"><strong>SSM</strong></span>) field if no signal is defined with the SSM data
+                            type. </p><p>If the SSM element is in the range <code class="literal">0</code> to
+                                <code class="literal">3</code>, the block sets the SSM field of the
+                            corresponding output word to that value. If the SSM element has a value
+                            of <code class="literal">-1</code>, the block does not perform SSM processing on
+                            the corresponding output word.</p></dd><dt><span class="term">
+                        <span class="guilabel">Signals</span>
+                    </span></dt><dd><p>Use the <span class="bold"><strong>Add Signal</strong></span> button to create a
+                            new signal entry in the signal table. With the <span class="bold"><strong>Delete Signal</strong></span> button, the selected signal can be removed
+                            from the table. Each signal that you create has the following values:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Name: Specify a descriptive name for your signal, which is
+                                        then displayed on the block</p></li><li class="listitem"><p>Start Bit: Specify the start bit of the data. The start
+                                        bit must be an integer from 9 to 31</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Bits 1 to 8 are reserved for the ARINC 429
+                                                  <span class="bold"><strong>Label</strong></span> and bit 32
+                                                for the parity bit of the ARINC 429 word</p></td></tr></table></div></li><li class="listitem"><p>Length: Specify the number of bits the signal occupies in
+                                        the ARINC 429 word. Ensure that the specified signals do not
+                                        overlap</p></li><li class="listitem"><p>Data Type: Select between BNR, BCD, DSC, or SSM data encoding</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If no SSM signal is defined, the default value
+                                                from the <span class="bold"><strong>SSM</strong></span>
+                                                parameter is used</p></td></tr></table></div></li><li class="listitem"><p>Resolution: Specify the value per bit to apply to convert
+                                        the physical value to the raw value packed in the ARINC 429
+                                        word</p></li><li class="listitem"><p>Offset: Specify the value to apply to convert the physical
+                                        value to the raw value packed in the ARINC 429 word</p></li><li class="listitem"><p>Min: Specify the minimum value of the input signal before
+                                        clipping occurs. Use -Inf if you do not want to limit the
+                                        signal</p></li><li class="listitem"><p>Max: Specify the maximum value of the input signal before
+                                        clipping occurs. Use Inf if you do not want to limit the
+                                        signal</p></li><li class="listitem"><p>Signed: Select this option if the BNR signal is packed as
+                                        a signed or unsigned integer</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If you have a signed signal, one bit of the signal
+                                                length is used for the sign bit</p></td></tr></table></div></li></ul></div></dd></dl></div></div></div></body></html>

@@ -1,0 +1,231 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO723 - Write Interface</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io723_read_interface.html" title="IO723 - Read Interface"><link rel="next" href="refentry_io723_manipulation.html" title="IO723 - Manipulation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io723_write_interface"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO723 - Write Interface</h2><p>IO723 - Write Interface &#8212; <span class="phrase">IO723 Write Interface
+                    supporting database visualization and signal mapping</span></p></div><div class="refsect1"><a name="d5e56106"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io723_write_interface.png"></span></span></p></div><div class="refsect1"><a name="d5e56115"></a><h2>Description</h2><p>The IO723 Write Interface block executes according to the settings in the IO723
+                Write Interface application. The execution primarily depends on the signal mapping
+                configured on the parsed database.</p><p>Each execution of an IO723 Write Interface block consists of one or more message
+                payloads being updated on the block's software buffer.</p><p>Each Write Interface block can be configured using the application, which can be
+                opened by double-clicking the block. The IO723 Write Interface application bridges
+                    Simulink<sup>&reg;</sup> model signals to <span class="bold"><strong>RBS
+                    project</strong></span> signals based on a manual mapping process. The <span class="bold"><strong>RBS project</strong></span> must be configured using the <a href="refentry_io723_fl3xConfig_usage_notes.html" class="olink">FL3X
+                    Config Software</a> and the <a href="refentry_io723_setup.html" class="olink">Setup</a> block.</p><p>As an alternative to configuring the Write Interface block using the application,
+                the <a href="refentry_sgapi_restbus_io723block_config.html" class="olink">IO723 Block Config</a>
+                class can be used to perform the mapping process programmatically.</p><p> The IO723 Write Interface block consists of a subsystem dynamically populated
+                with input ports, a dedicated IO723 byte packing block, IO723 Write blocks and the
+                interconnecting lines. Consequently, when an IO723 Interface Write block is placed
+                in a model, the link to the library is broken.</p></div><div class="refsect1"><a name="d5e56128"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data to be transmitted as a virtual bus structure. Datatypes for the
+                            individual signals must comply with the payload size of the designated
+                            PDU signal to which the individual signals will be mapped.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56137"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56151"></a><h2>Configure Interface</h2><p>When configuring the interface, there is one tab for each communication protocol.
+                In the <span class="bold"><strong>RBS project</strong></span>, all available networks
+                corresponding to one protocol are combined into one tab. Each tab can be configured
+                differently from the others. The configuration settings of each tab are combined
+                into one when applying the final configuration settings.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io723_writeInterfaceApp.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Simulink Input Signals</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> shows a
+                            tree view of the structure of the input Simulink bus signal. The icons
+                            indicate if a node is a bus (located at the top of a branch) or a signal
+                            (located at the bottom of a branch). The icon changes to a link symbol
+                            if a signal is currently mapped.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Hierarchy</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Hierarchy</strong></span> shows a tree view of
+                            the <span class="bold"><strong>RBS project</strong></span> structure. The icons
+                            indicate the node type in the corresponding protocol structure. Nodes at
+                            any level can be enabled using the adjacent checkboxes. Enabling or
+                            disabling a node higher in the hierarchy will also automatically change
+                            the status of all subordinate nodes. </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Details Table</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Details</strong></span> table shows all the
+                            information available to the subordinate nodes of the node currently
+                            selected in the <span class="bold"><strong>Hierarchy</strong></span> tree. No
+                            actions are available for this table.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Search and Options Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> and the
+                                <span class="bold"><strong>Hierarchy</strong></span> tree each have their own
+                                <span class="bold"><strong>Search</strong></span> field available. Any nodes
+                            found will be highlighted in the respective tree. You can cycle through
+                            highlighted nodes using the up and down arrow buttons next to the
+                            respective search button. Clear the search field to clear the node
+                            highlighting. </p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Refresh</strong></span> button will update both
+                            the trees. Refreshing the <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> tree will update the structure of the input
+                            Simulink bus signal of the Simulink model. Refreshing the <span class="bold"><strong>Hierarchy</strong></span> tree will update the structure of
+                            the <span class="bold"><strong>RBS project</strong></span> configured in the
+                            connected IO723 Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Expand All Nodes</strong></span> state button
+                            will expand or collapse all nodes in the respective tree depending on
+                            the state of the button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check All Nodes</strong></span> state button will
+                            check or uncheck all nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree depending on the state of the
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check Selected Use Physical</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check Selected Use Physical</strong></span> state
+                            button will check or uncheck all <span class="bold"><strong>Use
+                                Physical</strong></span> properties of selected nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree depending on the state of the
+                            button. Nodes with <span class="bold"><strong>Use Physical</strong></span> enabled
+                            will process mapped <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> as physical values and if disabled process them
+                            as a raw byte array. The physical attributes for processing a signal
+                            with <span class="bold"><strong>Use Physical</strong></span> enabled are defined
+                            in the <span class="bold"><strong>RBS project</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Mapping Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Map Signals</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Map Signals</strong></span> button links signals
+                            from the two trees. To do this, one signal must be selected in the
+                                <span class="bold"><strong>Simulink Input Signals</strong></span> tree, and
+                            one in the <span class="bold"><strong>Hierarchy</strong></span> tree. Only one
+                            signal from each tree can be selected. Only signals can be mapped and
+                            they are always located at the bottom of a branch.</p></dd><dt><span class="term">
+                        <span class="guilabel">Highlight Mapped Signals</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Highlight Mapped Signals</strong></span> button
+                            shows all signals in the <span class="bold"><strong>Hierarchy</strong></span> tree
+                            that have been mapped to a specific <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> signal. You can cycle through the nodes found
+                            using the up and down buttons next to the search field of the <span class="bold"><strong>Hierarchy</strong></span> tree.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Selected Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Selected Mapping</strong></span> button
+                            resets all the highlighted signals in the <span class="bold"><strong>Hierarchy</strong></span> tree to the default 'Ground(0)'.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Entire Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Entire Mapping</strong></span> button
+                            resets all the signals in the <span class="bold"><strong>Hierarchy</strong></span>
+                            tree to the default 'Ground(0)'.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56260"></a><h2>Configure Global Variables</h2><p>When configuring the interface, use the tab for configuring values for global
+                variables. In the <span class="bold"><strong>RBS project</strong></span>, all available global
+                variables are combined into one tab.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io723_writeInterfaceGlobalVariablesApp.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Simulink Input Signals</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> shows a
+                            tree view of the structure of the input Simulink bus signal. The icons
+                            indicate if a node is a bus (located at the top of a branch) or a signal
+                            (located at the bottom of a branch). The icon changes to a link symbol
+                            if a signal is currently mapped.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Global Variables</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Global Variables</strong></span> shows a table
+                            view of the global variables defined in the <span class="bold"><strong>RBS
+                                project</strong></span> structure. Access to altering the value of a
+                            global variable using a signal can be enabled using the adjacent
+                            checkbox.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Search and Options Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> tree and
+                            the <span class="bold"><strong>Global Variables</strong></span> table each have
+                            their own <span class="bold"><strong>Search</strong></span> field available. Any
+                            nodes or rows found will be highlighted in the respective tree or table.
+                            You can cycle through highlighted <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> nodes using the up and down arrow buttons next to
+                            the respective search button. Clear the search field to clear the node
+                            or row highlighting. Nodes and rows are searched based on their node
+                            name or <span class="bold"><strong>Name</strong></span> only.</p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Refresh</strong></span> button will update both
+                            the tree or table. Refreshing the <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> tree will update the structure of the input
+                            Simulink bus signal of the Simulink model. Refreshing the <span class="bold"><strong>Global Variables</strong></span> table will update the
+                            structure of the <span class="bold"><strong>RBS project</strong></span> configured
+                            in the connected IO723 Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Expand All Nodes</strong></span> state button
+                            will expand or collapse all nodes in the <span class="bold"><strong>Simulink
+                                Input Signals</strong></span> tree depending on the state of the
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Check All Variables</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Check All Variables</strong></span> state button
+                            will check or uncheck all variables in the <span class="bold"><strong>Global
+                                Variables</strong></span> table depending on the state of the
+                            button.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Mapping Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Map Signals</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Map Signals</strong></span> button links signals
+                            from the tree to the table. To do this, one signal must be selected in
+                            the <span class="bold"><strong>Simulink Input Signals</strong></span> tree, and
+                            one variable in the <span class="bold"><strong>Global Variables</strong></span>
+                            table. Only one signal from the <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> tree can be selected. Multiple variables can be
+                            selected in the <span class="bold"><strong>Global Variables</strong></span> table,
+                            also by highlighting them using the search function.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Selected Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Selected Mapping</strong></span> button
+                            resets all the highlighted or selected variables in the <span class="bold"><strong>Global Variables</strong></span> table to the default
+                            'Ground(0)'.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Entire Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Entire Mapping</strong></span> button
+                            resets all the variables in the <span class="bold"><strong>Global
+                                Variables</strong></span> table to the default 'Ground(0)'.</p></dd></dl></div></div><div class="refsect1"><a name="d5e56345"></a><h2>Configure Manipulations</h2><p>When configuring the interface, there is a tab for enabling and configuring values
+                of manipulations during runtime. In the <span class="bold"><strong>RBS
+                project</strong></span>, all available manipulations and sequences are combined into one
+                tab. Manipulations can be configured only once for each associated IO723 - I/O
+                Module ID. If two IO723 Write Interface applications are configured for the same
+                Module ID, only the one opened first has a manipulations tab.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/io723_writeInterfaceManipulationsApp.png"></span></span></p><div class="variablelist"><div class="variablelist-title">Simulink Input Signals</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> shows a
+                            tree view of the structure of the input Simulink bus signal. The icons
+                            indicate if a node is a bus (located at the top of a branch) or a signal
+                            (located at the bottom of a branch). The icon changes to a link symbol
+                            if a signal is currently mapped.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Manipulations</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Manipulations</strong></span> shows a table view
+                            of the manipulations defined in the <span class="bold"><strong>RBS
+                                project</strong></span> structure. The individual manipulations can be
+                            enabled or disabled by setting the <span class="bold"><strong>Value</strong></span> of <span class="bold"><strong>Value Name</strong></span>
+                            'EnableSignal' to '1' or '0' respectively. Alternatively the
+                            'EnableSignal' can be mapped to a <span class="bold"><strong>Simulink Input
+                                Signal</strong></span> from the tree view. Also <span class="bold"><strong>Value</strong></span> from rows with <span class="bold"><strong>Value
+                                Name</strong></span> 'ValueX' can be set to any uint32 scalar, rather
+                            than the default one defined in the <span class="bold"><strong>RBS
+                                project</strong></span>, or mapped to a <span class="bold"><strong>Simulink
+                                Input Signal</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Search and Options Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Simulink Input Signals</strong></span> tree and
+                            the <span class="bold"><strong>Manipulations</strong></span> table each have their
+                            own <span class="bold"><strong>Search</strong></span> field available. Any nodes
+                            or rows found will be highlighted in the respective tree or table. You
+                            can cycle through highlighted <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> nodes using the up and down arrow buttons next to
+                            the respective search button. Clear the search field to clear the node
+                            or row highlighting. Nodes and rows are searched based on their node
+                            name or <span class="bold"><strong>Manipulation Name</strong></span> only. </p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Refresh</strong></span> button will update both
+                            the tree or table. Refreshing the <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> tree will update the structure of the input
+                            Simulink bus signal of the Simulink model. Refreshing the <span class="bold"><strong>Manipulations</strong></span> table will update the structure
+                            of the <span class="bold"><strong>RBS project</strong></span> configured in the
+                            connected IO723 Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand All Nodes</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Expand All Nodes</strong></span> state button
+                            will expand or collapse all nodes in the <span class="bold"><strong>Simulink
+                                Input Signals</strong></span> tree depending on the state of the
+                            button.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Value Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Enable Value Mapping</strong></span> state button
+                            controls whether <span class="bold"><strong>Value</strong></span> can be edited or
+                            mapped in the <span class="bold"><strong>Manipulations</strong></span> table. When
+                            the button is disabled, the default <span class="bold"><strong>Value</strong></span> from the <span class="bold"><strong>RBS
+                                project</strong></span> are used. In this state, only rows with <span class="bold"><strong>Value Name</strong></span> 'EnableSignal' are
+                            available.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Manipulations Mapping Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Map Signals</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Map Signals</strong></span> button links signals
+                            from the tree to the table. To do this, one signal must be selected in
+                            the <span class="bold"><strong>Simulink Input Signals</strong></span> tree, and
+                            one row in the <span class="bold"><strong>Manipulations</strong></span> table.
+                            Only one signal from the <span class="bold"><strong>Simulink Input
+                                Signals</strong></span> tree can be selected. Multiple rows can be
+                            selected in the <span class="bold"><strong>Manipulations</strong></span> table,
+                            also by highlighting them using the search function.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Selected Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Selected Mapping</strong></span> button
+                            resets all the highlighted or selected rows in the <span class="bold"><strong>Manipulations</strong></span> table to their default <span class="bold"><strong>Value</strong></span> from the <span class="bold"><strong>RBS
+                                project</strong></span> or to '0'.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Entire Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Entire Mapping</strong></span> button
+                            resets all the rows in the <span class="bold"><strong>Manipulations</strong></span> table to their default <span class="bold"><strong>Value</strong></span> from the <span class="bold"><strong>RBS
+                                project</strong></span> or to '0'.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Sequence Control Mapping Panel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Map Sequence Control</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Map Sequence Control</strong></span> button links
+                            a signal from the tree to the <span class="bold"><strong>Sequence
+                                Control</strong></span>. To do this, exactly one signal must be selected
+                            in the <span class="bold"><strong>Simulink Input Signals</strong></span>
+                            tree.</p><p>The value of the signal mapped to <span class="bold"><strong>Sequence
+                                Control</strong></span>, controls which sequence is active if any.
+                            Sequences are activated by matching their <span class="bold"><strong>Sequence
+                                ID</strong></span>. To use the individual manipulations instead of any of
+                            the sequences, the <span class="bold"><strong>Sequence Control</strong></span>
+                            value can be set to '0'. The value of <span class="bold"><strong>Sequence
+                                Control</strong></span> may also be edited to any value inside the uint32
+                            range instead of mapping it.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clear Sequence Control Mapping</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Clear Sequence Control Mapping</strong></span>
+                            button resets the <span class="bold"><strong>Sequence Control</strong></span> to
+                            '0'.</p></dd></dl></div></div></div></body></html>

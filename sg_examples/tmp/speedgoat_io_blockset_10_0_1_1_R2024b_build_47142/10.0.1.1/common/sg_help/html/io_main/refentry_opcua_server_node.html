@@ -1,0 +1,124 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">OPC UA - Server Node</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_opcua_server_setup.html" title="OPC UA - Server Setup"><link rel="next" href="refentry_opcua_client_setup.html" title="OPC UA - Client Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_opcua_server_node"></a><div class="titlepage"></div><div class="refnamediv"><h2>OPC UA - Server Node</h2><p>OPC UA - Server Node &#8212; <span class="phrase">Adds OPC UA nodes to the
+                    server's address space</span></p></div><div class="refsect1"><a name="d5e71855"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_opcua_server_node.png"></span></span></p></div><div class="refsect1"><a name="d5e71863"></a><h2>Description</h2><p>This block is used to add OPC UA nodes, such as objects and variables to the
+                server's address space. The block provides an interface to configure, read and write
+                the node. Your model can contain multiple OPC UA Server Node blocks for each OPC UA
+                Server in your target machine.</p></div><div class="refsect1"><a name="d5e71866"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>This port is used to write data to the OPC UA node defined.
+                            Fundamental data types from boolean to double are supported as well as
+                            dimensions from scalar values to 2D-arrays. If the <span class="bold"><strong>Init Value</strong></span> parameter is empty, the OPC UA node inherits
+                            the data type and the dimensions from the connected source block.</p><p>The port is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span> and
+                            the <span class="bold"><strong>Operation</strong></span> parameter is <span class="bold"><strong>Write</strong></span>. The port's label is only visible if
+                            the <span class="bold"><strong>Extended Interface</strong></span> parameter is
+                            selected.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>If enabled by the <span class="bold"><strong>Extended Interface</strong></span>
+                            parameter, the block updates the node's data with the signal connected
+                            to the <span class="bold"><strong>Data</strong></span> input port as long as the
+                                <span class="bold"><strong>Enable </strong></span> input port is TRUE.</p><p>If disabled, the block updates the node's data on each sample hit,
+                            according to the <span class="bold"><strong>Sample Time</strong></span> parameter,
+                            and without checking data changes.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            the model's base sample time) and trigger the <span class="bold"><strong>Enable</strong></span> input port at a lower rate or once for certain
+                            events. You could also connect this port with the output port of a
+                                <span class="bold"><strong>Detect Change</strong></span> block and connect the
+                            input port with your data to be written. This ensures that data from
+                            external write operations is not periodically overwritten.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>This port is used to read data from the OPC UA node defined.
+                            Fundamental data types from boolean to double are supported as well as
+                            dimensions from scalar values to 2D-arrays. If the <span class="bold"><strong>Init Value</strong></span> parameter is empty, the OPC UA node inherits
+                            the data type and the dimensions from the connected sink block.</p><p>The port is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span> and
+                            the <span class="bold"><strong>Operation</strong></span> parameter is <span class="bold"><strong>Read</strong></span>. The port's label is only visible if the
+                                <span class="bold"><strong>Extended Interface</strong></span> parameter is
+                            selected.</p></dd></dl></div></div><div class="refsect1"><a name="d5e71910"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Class</span>
+                    </span></dt><dd><p>Select the class of the new node. The options are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Object</p></li><li class="listitem"><p>Variable</p></li></ul></div><p>Objects do not have a value. They just organize a quantity of
+                            variables. Use the <span class="bold"><strong>Node Identifier </strong></span> and
+                                <span class="bold"><strong>Parent Identifier</strong></span> parameters to
+                            create relations between objects and variables and to finally build up a
+                            tree of nodes.</p><p>With regards to the OPC UA standard, objects are always type
+                            BaseObjectType whereas variables are type BaseDataVariableType.</p></dd><dt><span class="term">
+                        <span class="guilabel">Namespace</span>
+                    </span></dt><dd><p>Defines the namespace index to which the node should be added.
+                            Supported values are 0 to 255. By default, you can assign nodes to the
+                            namespaces 0 and 1. Increase the <span class="bold"><strong>Number Of
+                                Additional Namespaces</strong></span> parameter in the OPC UA Server Setup
+                            block mask to define additional namespaces.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier Type</span>
+                    </span></dt><dd><p>An OPC UA node is represented by its node identifier in the
+                            corresponding namespace. The node identifier must be unique within the
+                            namespace and can be of type <span class="bold"><strong>Numeric</strong></span>,
+                                <span class="bold"><strong>String</strong></span>, <span class="bold"><strong>GUID</strong></span> and <span class="bold"><strong>Opaque.</strong></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Node Identifier</span>
+                    </span></dt><dd><p>The format of the node identifier varies depending on the <span class="bold"><strong>Node Identifier Type</strong></span> parameter.
+                            Examples:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Numeric </p><pre class="programlisting">5</pre></li><li class="listitem"><p>String </p><pre class="programlisting">'myNodeID'</pre></li><li class="listitem"><p>GUID
+                                    </p><pre class="programlisting">'BAEAF004-1E43-4A06-9EF0-E52010D5CD10'</pre></li><li class="listitem"><p>Opaque </p><pre class="programlisting">'ABC123'</pre></li></ul></div><p>When passing a character array that contains special characters such
+                            as <span class="bold"><strong>"</strong></span> or <span class="bold"><strong>\</strong></span> , ensure that you place the so-called escape character
+                                <span class="bold"><strong>\</strong></span> before the special character.
+                            Examples:</p><p>Type
+                            </p><pre class="programlisting">'\"Program1\".\"Function2\".\"Variable3\"'</pre><p>
+                            for node identifier
+                            </p><pre class="programlisting">"Program1"."Function2"."Variable3"</pre><p>Type </p><pre class="programlisting">'Program1\\Function2\\Variable3'</pre><p>
+                            for node identifier
+                            </p><pre class="programlisting">Program1\Function2\Variable3</pre></dd><dt><span class="term">
+                        <span class="guilabel">Parent Identifier</span>
+                    </span></dt><dd><p>This is the identifier of the parent node in the OPC UA address space.
+                            The format must be the same as for the <span class="bold"><strong>Node
+                                Identifier</strong></span> parameter, according to the selected <span class="bold"><strong>Node Identifier Type</strong></span>. You can easily build up
+                            a structured node tree from the structure of your model just by using
+                            block names and subsystem names as node identifiers and parent
+                            identifiers. Discover the OPC UA product examples and learn how to map
+                            the model structure to the OPC UA node tree structure.</p><p>If you want to add nodes to the server's root node, enter an empty
+                            character array or an empty numeric array, depending on the <span class="bold"><strong>Node Identifier Type</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Browse Name</span>
+                    </span></dt><dd><p>The browse name of the OPC UA node as character array. This name is
+                            another attribute of the node used for localization by the remote
+                            client. As browsing the server's address space is based on browse paths
+                            (starting node + relative path), the browse name does not have to be
+                            unique in the corresponding namespace.</p></dd><dt><span class="term">
+                        <span class="guilabel">Display Name</span>
+                    </span></dt><dd><p>The display name of the OPC UA node as character array. Remote clients
+                            typically read this attribute and display it in a user interface.</p></dd><dt><span class="term">
+                        <span class="guilabel">Description</span>
+                    </span></dt><dd><p>The description of the OPC UA node as character array. Remote clients
+                            typically read this attribute and display it in a user interface.</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The default value of the OPC UA node when the server starts to
+                            communicate (before it is overwritten by the remote client or by the
+                            block's input port). The data type and dimensions of the value you enter
+                            define the data type and dimensions of the OPC UA node to be created.
+                            The parameter further defines the data type and dimensions of the input
+                            and the output ports. Fundamental data types from boolean to double are
+                            supported as well as dimensions from scalar values to 2D-arrays. If no
+                            init value is specified, the node's data type and dimensions are
+                            inherited from the connected source and sink blocks.</p><p>The parameter is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Interpret vector parameters as 1-D</span>
+                    </span></dt><dd><p>When you select this check box, the block interprets the <span class="bold"><strong>Init Value</strong></span> parameter as a vector of length N,
+                            provided the parameter evaluates to an N-element row or column vector.
+                            When you clear this check box, the block interprets the <span class="bold"><strong>Init Value</strong></span> parameter as a matrix of dimension
+                            1-by-N or N-by-1.</p><p>The parameter is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Access Level</span>
+                    </span></dt><dd><p>This parameter defines the permission level for remote clients.
+                            Clients can only read, only write, read and write, or have no access at
+                            all.</p><p>The parameter is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operation</span>
+                    </span></dt><dd><p>This parameter defines the local operation on the node's value. You
+                            can read the value, write the value or do both. <span class="bold"><strong>Write </strong></span> enables the input port. <span class="bold"><strong>Read </strong></span> enables the output port.</p><p>The parameter is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Enable</strong></span> input port. Otherwise, the port is hidden.</p><p>The parameter is only visible if the <span class="bold"><strong>Node Type
+                            </strong></span> parameter is <span class="bold"><strong>Variable</strong></span>.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

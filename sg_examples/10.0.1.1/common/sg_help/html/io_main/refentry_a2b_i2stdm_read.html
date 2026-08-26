@@ -1,0 +1,45 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">A2B - I2S/TDM Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_a2b_setup.html" title="A2B - Setup"><link rel="next" href="refentry_a2b_i2stdm_write.html" title="A2B - I2S/TDM Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_a2b_i2stdm_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>A2B - I2S/TDM Read</h2><p>A2B - I2S/TDM Read &#8212; <span class="phrase">Read values from the A2B bus</span></p></div><div class="refsect1"><a name="d5e350"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_a2b_i2stdm_read.png"></span></span></p></div><div class="refsect1"><a name="d5e358"></a><h2>Description</h2><p>The A2B I2S/TDM Read block allows you to read TDM data from the selected A2B
+                Interface.</p></div><div class="refsect1"><a name="d5e361"></a><h2>Ports</h2><p>This driver block has n output ports of type uint32, where n is twice the number
+                of the selected amount of TDM channels, as the physical A2B unit uses two TDM lines
+                per selected channel. Each output port contains the data of one TDM slot.
+                </p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the TDM slot number) </span>
+                    </span></dt><dd><p>The value of TDM slot X. Type uint32.</p><p>The output width of all the ports is defined by the <span class="bold"><strong>Frame Size</strong></span> parameter.</p></dd></dl></div></div><div class="refsect1"><a name="d5e373"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">A2B Interface ID</span>
+                    </span></dt><dd><p>This parameter selects the physical A2B Interface on the front
+                            connector of the -40 I/O interface extension from which TDM data is
+                            read.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size</span>
+                    </span></dt><dd><p>This parameter defines the number of A2B frames per sample step. The
+                            samples are available at the output ports in a vector size equal to the
+                            value defined in the <span class="bold"><strong>Frame Size</strong></span>
+                            field.</p><p>This parameter is only informative and cannot be modified. The
+                            parameter value is propagated from the corresponding A2B Setup block.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">TDM Mode</span>
+                    </span></dt><dd><p>This parameter defines the number of slots per TDM stream. Every TDM
+                            slot is represented as an output port of this block. Since there are two
+                            interleaved TDM interfaces per physical A2B node, the number of output
+                            ports is twice the selected <span class="bold"><strong>TDM
+                            Mode</strong></span>.</p><p>This parameter is only informative and cannot be modified. The value
+                            is defined by the corresponding node configuration file, selected in the
+                            A2B Setup block.</p></dd><dt><span class="term">TDM Size [Bits]</span></dt><dd><p>This parameter defines the number of bits per slot in the TDM
+                            interface. Only the lower <span class="bold"><strong>TDM Size
+                                [Bits]</strong></span> of the output port will be valid.</p><p>The parameter is only informative and cannot be modified. The value is
+                            defined by the corresponding node configuration file, selected in the
+                            A2B Setup block.</p></dd><dt><span class="term">A2B Data Size [Bits]</span></dt><dd><p>This parameter defines the number of bits per slot in the A2B
+                            stream.</p><p>This parameter can only be configured when the selected node is
+                            configured as a subordinate node. The value must match the A2B data size
+                            of the main node that will be connected to this subordinate node.</p><p>If the selected node is configured as a main node, the parameter is
+                            only informative and cannot be modified. In this case the value is
+                            defined by the corresponding node configuration file, selected in the
+                            A2B Setup block.</p></dd><dt><span class="term">Sample Time [s]</span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>If this block is synchronized to the A2B bus using Interrupts, set
+                                the parameter value to <span class="bold"><strong>-1</strong></span> for
+                                inherited sample time.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

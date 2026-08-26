@@ -1,0 +1,246 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CMU - ADBMS6832_33 v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_cmu.html" title="CMU"><link rel="next" href="refentry_ref_pulse_counter.html" title="Pulse Counter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_adbms6832_33_emulation_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>CMU - ADBMS6832_33 v1</h2><p>CMU - ADBMS6832_33 v1 &#8212; <span class="phrase">The driver block provides the simulation
+                    functionality for an ADBMS6832_33 CMU emulation</span></p></div><div class="refsect1"><a name="d5e2223"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_adbms6832_33_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e2231"></a><h2>Description</h2><p>The ADBMS6832_33 driver block provides functionality for emulation of Battery Cell
+                Measurement Unit (CMU) chips from Analog Devices, namely ADBMS6832 and ADBMS6833.
+                The block provides the cell-, GPIO-, and other voltages to the emulation unit. The
+                block can also read the present configuration contents of the emulation unit. The
+                ADBMS6832_33 CMU can be daisy chained, in which the block has access to all
+                individual ADBMS6832_33 devices in such a daisy chain. The maximum amount of
+                ADBMS6832_33 emulation devices is 64 and is given by the configuration file of the
+                used I/O Board. It is possible that a configuration file contains multiple daisy
+                chains of ADBMS6832_33 devices. Each daisy chain contains the same number of
+                ADBMS6832_33 devices.</p></div><div class="refsect1"><a name="d5e2234"></a><h2>Ports</h2><p>One block can control multiple ADBMS6832_33 CMU devices only if they are connected
+                in a daisy chain. Each individual chain requires a separate driver block. The width
+                of all the inputs and outputs depends on the number of values per single CMU and the
+                length of the chain. </p><p>For example, there are 18 cell-voltages for each ADBMS6832_33 CMU. If a chain with
+                4 of those devices is controlled by the block, then the input for the cell voltages
+                becomes 2-dimensional (dimension1: cell voltage 1 to 18, dimension2: CMU device 1 to
+                4 within the chain). The <span class="bold"><strong>Chain Selection</strong></span> parameter
+                selects the chain, the parameter <span class="bold"><strong>Available Chain
+                    Length</strong></span> indicates the length of the daisy chain.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Cell Voltages [V]</span>
+                    </span></dt><dd><p>This port sets the cell voltage of each of the 18 cells on each of the
+                            ADBMS6832_33 CMU device contained in the daisy chain. This input
+                            therefore is 2 dimensional (dimension1: cell voltage 1 to 18 on each
+                            CMU, dimension2: each CMU device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">S Voltages [V]</span></span></dt><dd><p>This port is only visible if the parameter <span class="bold"><strong>Dynamic S Voltages</strong></span> in the tab <span class="bold"><strong>Voltages Configuration</strong></span> is set. This port sets the
+                            S-voltage of each of the 18 cells on each of the ADBMS6832_33 CMU
+                            devices contained in the daisy chain. This input therefore is 2
+                            dimensional (dimension1: S-voltage 1 to 18 on each CMU, dimension2: each
+                            CMU device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">GPIO Voltages [V]</span></span></dt><dd><p>This port is only visible if the parameter <span class="bold"><strong>Dynamic GPIO Voltages</strong></span> in the tab <span class="bold"><strong>Voltages Configuration</strong></span> is set. This port sets the GPIO
+                            voltage of each of the 12 GPIO on each of the ADBMS6832_33 CMU devices
+                            contained in the daisy chain. This input therefore is 2 dimensional
+                            (dimension1: GPIO voltage 1 to 12 on each CMU, dimension2: each CMU
+                            device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">System Voltages [V] (VRFE2, VD, VA, VRES, VMV)</span></span></dt><dd><p>This port is only visible if the parameter <span class="bold"><strong>Dynamic System Voltages</strong></span> in the tab <span class="bold"><strong>Voltages Configuration</strong></span> is set. This port sets the system
+                            voltages (VREF2, VD, VA, VRES, VMV) on each of the ADBMS6832_33 CMU
+                            devices contained in the daisy chain. This input therefore is 2
+                            dimensional (dimension1: system voltage 1 to 5 on each CMU, dimension2:
+                            each CMU device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">Sum of Cell Voltages [V]</span></span></dt><dd><p>This port is only visible if the parameter <span class="bold"><strong>Dynamic Sum of Cells</strong></span> in the tab <span class="bold"><strong>Voltages Configuration</strong></span> is set. This port sets the sum of
+                            all cell voltages on each of the ADBMS6832_33 CMU devices contained in
+                            the daisy chain. This input therefore is 1 dimensional (dimension1: sum
+                            of all cell voltages for each CMU device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">Temperature [&deg;C]</span></span></dt><dd><p>This port is only visible if the parameter <span class="bold"><strong>Dynamic Temperature</strong></span> in the tab <span class="bold"><strong>Voltages Configuration</strong></span> is set. This port sets the
+                            temperature on each of the ADBMS6832_33 CMU devices contained in the
+                            daisy chain. This input therefore is 1 dimensional (dimension1:
+                            temperature for each CMU device within the chain).</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Parameter Read</span>
+                    </span></dt><dd><p>The ADBMS6832_33 contains several parameters that are stored in
+                            registers. The registers are organized in 8-bit values. In the tab
+                                <span class="bold"><strong>Parameter (read) Configuration</strong></span>
+                            dedicated registers are selectable to activate them as outputs. A
+                            separate output port for each of the selected parameter will be added to
+                            the driver block. Any selected parameter always contains two 8-bit value
+                            registers that are concatenated to a 16-bit unsigned integer value. Each
+                            of these outputs is 1 dimensional (dimension1: parameter for each CMU
+                            device within the chain).</p></dd><dt><span class="term">
+                        <span class="guilabel">Diagnostics</span>
+                    </span></dt><dd><p>In the tab <span class="bold"><strong>Diagnostics</strong></span>, several
+                            diagnostics are selectable. Separate output ports for each of the
+                            selected diagnostics will be added to the driver block. Each of these
+                            outputs are 1 dimensional (dimension1: parameter for each CMU device
+                            within the chain).</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Last Received Command</strong></span>: Adds 2
+                                    ports: The last received command on the CMU / the corresponding
+                                    CRC value.</p></li><li class="listitem"><p><span class="bold"><strong>Command Counters</strong></span>: Adds 2
+                                    ports: The number of received commands / the number of commands
+                                    containing a CRC error.</p></li><li class="listitem"><p><span class="bold"><strong>ADC status of redundant AUX</strong></span>:
+                                    Adds 4 ports: The present states of the ADC on the ADBMS6832_33
+                                    measuring the <span class="emphasis"><em>redundant</em></span> AUX
+                                    channels.</p></li><li class="listitem"><p><span class="bold"><strong>ADC status of AUX</strong></span>: Adds 4
+                                    ports: The present states of the ADC on the ADBMS6832_33
+                                    measuring the AUX channels.</p></li><li class="listitem"><p><span class="bold"><strong>ADC status of S Voltage</strong></span>: Adds
+                                    4 ports: The present states of the ADC on the ADBMS6832_33
+                                    measuring the S-Voltages.</p></li><li class="listitem"><p><span class="bold"><strong>ADC status of Cell Voltage</strong></span>:
+                                    Adds 4 ports: The present states of the ADC on the ADBMS6832_33
+                                    measuring the Cell-Voltages.</p></li><li class="listitem"><p><span class="bold"><strong>Core State</strong></span>: Adds 2 ports:
+                                    Indicates whether the ADBMS6832_33 CMU power core is currently
+                                    in sleep / standby / another state.</p></li><li class="listitem"><p><span class="bold"><strong>Communication State</strong></span>: Adds 2
+                                    ports: Indicates whether the ADBMS6832_33 CMU communication core
+                                    (ISOspi State) is currently in idle / ready state.</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e2322"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Chain Selection</span></span></dt><dd><p>To select the ADBMS6832_33 CMU chain of this driver block. This driver
+                            block can only be assigned to one chain. If your configuration file
+                            contains several chains of ADBMS6832_33 CMUs, several driver block
+                            instantiations are necessary.</p></dd><dt><span class="term">
+                        <span class="guilabel">Available Chain Length</span></span></dt><dd><p>This parameter indicates the length of the chain; that is, how many
+                            ADBMS6832_33 CMUs are included in the selected chain. This parameter is
+                            read only.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Voltages Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Dynamic S Voltages</span></span></dt><dd><p>When set, the input port <span class="bold"><strong>S Voltages
+                                [V]</strong></span> is added to the block and the S-Voltages can be set
+                            dynamically during runtime.</p><p>When not set, the block does not contain an input port for the
+                            S-Voltages. In this case, the S-Voltages are the same as the
+                            Cell-Voltages on the input port <span class="bold"><strong>Cell Voltages
+                                [V]</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Same as Cell Voltages</span></span></dt><dd><p>This parameter is read only and indicates that the S Voltages are the
+                            same as the Cell Voltages if <span class="bold"><strong>Dynamic S
+                                Voltages</strong></span> is off; when <span class="bold"><strong>Dynamic S
+                                Voltages</strong></span> is set, this indication <span class="bold"><strong>Same as Cell Voltages</strong></span> disappears.</p></dd><dt><span class="term">
+                        <span class="guilabel">Dynamic GPIO Voltages</span></span></dt><dd><p>When set, the input port <span class="bold"><strong>GPIO Voltages
+                                [V]</strong></span> is added to the block and the GPIO Voltages can be
+                            set dynamically during runtime.</p><p>When not set, the GPIO voltages can be set with the parameter
+                                <span class="bold"><strong>GPIO Voltages (GPIO1 to GPIO12)
+                                Vector</strong></span>. In this case, the GPIO Voltages will be static
+                            during runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">GPIO Voltages (GPIO1 to GPIO12) Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Dynamic GPIO
+                                Voltages</strong></span> is not set.</p><p>The parameter is 2 dimensional (dimension1: GPIO voltage 1 to 12 on
+                            each CMU, dimension2: each CMU device within the chain). If a parameter
+                            with only 1 column is defined, the set GPIO voltages will be the same on
+                            all CMUs. If a parameter with only 1 row is defined, all GPIO voltages
+                            will be the same on each CMU. The missing values will be set to 0 if
+                            this parameter is set to a 2 dimensional value but either the number of
+                            rows is smaller than the available 12 GPIO voltages or the number of
+                            columns is smaller than the number of available CMUs in the
+                            chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Dynamic System Voltages</span></span></dt><dd><p>When set, the input port <span class="bold"><strong>System Voltages [V]
+                                (VRFE2, VD, VA, VRES, VMV)</strong></span> is added to the block and the
+                            system voltages can be set dynamically during runtime.</p><p>When not set, the system voltages can be set with the parameter
+                                <span class="bold"><strong>System Voltages (VRFE2, VD, VA, VRES, VMV)
+                                Vector</strong></span>. In this case, the system voltages will be static
+                            during runtime.</p></dd><dt><span class="term">
+                        <span class="guilabel">System Voltages (VRFE2, VD, VA, VRES, VMV)
+                        Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Dynamic
+                                System Voltages</strong></span> is not set.</p><p>The parameter is 2 dimensional (dimension1: system voltage 1 to 5 on
+                            each CMU, dimension2: each CMU device within the chain). If a parameter
+                            with only 1 column is defined, the set system voltages will be the same
+                            on all CMUs. If a parameter with only 1 row is defined, all system
+                            voltages will be the same on each CMU. If this parameter is set to a
+                            2-dimensional value and either the number of rows is smaller than the 5
+                            available system voltages or the number of columns is smaller than the
+                            number of available CMUs in the chain, then the missing values will be
+                            set to 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Dynamic Sum Of Cells</span></span></dt><dd><p>When set, the input port <span class="bold"><strong>Sum of Cell Voltages
+                                [V]</strong></span> is added to the block and can be set dynamically
+                            during runtime.</p><p>When not set, the block does not contain an input port for the Sum of
+                            Cell Voltages. In this case, the Sum of Cell Voltages are calculated
+                            from the driver using the input port <span class="bold"><strong>Cell Voltages
+                                [V]</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Calculated</span></span></dt><dd><p>This parameter is read only and indicates that the Sum of Cell
+                            Voltages is calculated if <span class="bold"><strong>Dynamic S
+                                Voltages</strong></span> is off. When <span class="bold"><strong>Dynamic Sum
+                                of Cells</strong></span> is set, this indication <span class="bold"><strong>Calculated</strong></span> disappears.</p></dd><dt><span class="term">
+                        <span class="guilabel">Dynamic Temperature</span></span></dt><dd><p>When set, the input port <span class="bold"><strong>Temperature
+                                [&deg;C]</strong></span> is added to the block and can be set dynamically
+                            during runtime.</p><p>When not set, the block does not contain an input port for the
+                            Temperature. In this case, the Sum of Cell Voltages are calculated from
+                            the driver using the input port <span class="bold"><strong>Cell Voltages
+                                [V]</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Temperature Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Dynamic
+                                Temperature</strong></span> is not set.</p><p>The parameter can be either scalar or a 1-dimensional vector. When
+                            scalar, the value is used for all CMUs in the chain; when vector, each
+                            element defines the temperature for each individual CMU in the
+                            chain.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Parameter (write) Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Configure Serial ID</span></span></dt><dd><p>When this parameter is set, the 48-bit serial ID of the ADBMS6832_33
+                            can be set; when not set, the serial ID is configured to 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Serial ID Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Configure
+                                Serial ID</strong></span> is set.</p><p>When scalar, the value is used for all CMUs in the chain; when vector,
+                            each element defines the serial ID for each individual CMU in the
+                            chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Configure Revision</span></span></dt><dd><p>When this parameter is set, the 4-bit Revision of the ADBMS6832_33 can
+                            be set; when not set, the Revision is configured to 0.</p></dd><dt><span class="term">
+                        <span class="guilabel">Revision Vector</span></span></dt><dd><p>This parameter is only visible when <span class="bold"><strong>Configure
+                                Revision</strong></span> is set.</p><p>When scalar, the value is used for all CMUs in the chain; when vector,
+                            each element defines the Revision for each individual CMU in the
+                            chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Filter Width [FPGA Ticks]</span></span></dt><dd><p>The first and the last CMU of the ADBMS8632_33 daisy chain can be
+                            accessed by an SPI Slave interface. All SPI input signals (CS, SCK,
+                            MOSI) pass a glitch filter. Signal glitches (positive and negative) with
+                            a smaller number of FPGA ticks than defined by the <span class="bold"><strong>Filter Width [FPGA Ticks]</strong></span> parameter do not pass. This
+                            parameter is scalar and therefore applied equal on both SPI Slave
+                            interfaces. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Set the glitch filter width as low as possible since this
+                                parameter also increases the latency of the MISO signal in relation
+                                to the SCK signal on the SPI slave.</p><p>Especially in the case where an SPI &lt;-&gt; ISOspi physical
+                                converter will be added to the SPI interface (in hardware), the
+                                latency between the SCK and the MISO signal should be as low as
+                                possible.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Effective Filter Width [s]</span></span></dt><dd><p>This parameter is read only and indicates the effective time width of
+                            the filter.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Parameter (read) Configuration</div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The ADBMS6832_33 CMU consists of several register groups, each group
+                        contains six 8-bit registers. See the ADBMS6832_33 datasheet for
+                        details.</p><p>The ADBMS6832_33 allows reading the content of those registers. In most
+                        cases, two 8-bit registers are concatenated to a 16-bit value, with the
+                        lower 8-bit representing the register with the lower number.</p><p>Each selection of a register will add a corresponding output signal port
+                        on the driver. These outputs will be vectors, with each element representing
+                        the registers of the corresponding CMU in the chain.</p></td></tr></table></div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Configuration Register Group A</span></span></dt><dd><p>Each of the Configuration Register GroupA can be made available as an
+                            output port on the driver by enabling the corresponding <span class="bold"><strong>Register 5 and 4</strong></span>, <span class="bold"><strong>Register 3 and 2</strong></span> and/or <span class="bold"><strong>Register 1
+                                and 0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Configuration Register Group B</span></span></dt><dd><p>Each of the Configuration Register GroupB can be made available as an
+                            output port on the driver by enabling the corresponding <span class="bold"><strong>Register 5 and 4</strong></span>, <span class="bold"><strong>Register 3 and 2</strong></span> and/or <span class="bold"><strong>Register 1
+                                and 0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">COMM Register Group</span></span></dt><dd><p>Each of the Communication Register Group can be made available as an
+                            output port on the driver by enabling the corresponding <span class="bold"><strong>Register 5 and 4</strong></span>, <span class="bold"><strong>Register 3 and 2</strong></span> and/or <span class="bold"><strong>Register 1
+                                and 0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM Register A</span></span></dt><dd><p>Each of the PWM Register GroupA can be made available as an output
+                            port on the driver by enabling the corresponding <span class="bold"><strong>Register 5 and 4</strong></span>, <span class="bold"><strong>Register 3 and
+                                2</strong></span> and/or <span class="bold"><strong>Register 1 and
+                                0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">PWM Register B</span></span></dt><dd><p>Each of the PWM Register GroupB can be made available as an output
+                            port on the driver by enabling the corresponding <span class="bold"><strong>Register 5 and 4</strong></span>, <span class="bold"><strong>Register 3 and
+                                2</strong></span> and/or <span class="bold"><strong>Register 1 and
+                                0</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status Register Group B</span></span></dt><dd><p>The ADBMS6832_33 CMU unit evaluates the digital GPI inputs related on
+                            the GPIO values. They can be made available as an output port of the
+                            driver by enabling <span class="bold"><strong>GPI</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Diagnostics</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Last Received Command</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>Last Received Command</strong></span> and <span class="bold"><strong>Last Received Command CRC</strong></span> will be added to
+                            the driver block. These will be vector signals, with each element
+                            indicating the last received command and its corresponding CRC checksum
+                            for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Command Counters</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>Command Counter</strong></span> and <span class="bold"><strong>Command CRC Error Counter</strong></span> will be added to the driver
+                            block. These will be vector signals, with each element indicating the
+                            number of received commands and the number of received commands that
+                            contained a CRC Checksum error for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">ADC status of redundant AUX</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>ADC Redundant AUX active</strong></span>, <span class="bold"><strong>ADC Redundant AUX soak</strong></span>, <span class="bold"><strong>ADC Redundant AUX refon</strong></span> and <span class="bold"><strong>ADC
+                                Redundant AUX idle</strong></span> will be added to the driver block.
+                            These will be vector signals, with each element indicating the present
+                            state of the redundant Auxiliary ADC for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">ADC status of AUX</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>ADC AUX active</strong></span>, <span class="bold"><strong>ADC AUX
+                                soak</strong></span>, <span class="bold"><strong>ADC AUX refon</strong></span> and
+                                <span class="bold"><strong>ADC AUX idle</strong></span> will be added to the
+                            driver block. These will be vector signals, with each element indicating
+                            the present state of the Auxiliary ADC for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">ADC Status of S Voltage</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>ADC S active</strong></span>, <span class="bold"><strong>ADC S
+                                wait for ADC Cell</strong></span>, <span class="bold"><strong>ADC S
+                                refon</strong></span> and <span class="bold"><strong>ADC S idle</strong></span>
+                            will be added to the driver block. These will be vector signals, with
+                            each element indicating the present state of the S ADC for each CMU in
+                            the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">ADC Status of Cell Voltage</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>ADC Cell active</strong></span>, <span class="bold"><strong>ADC
+                                Cell refon</strong></span> and <span class="bold"><strong>ADC S
+                                idle</strong></span> will be added to the driver block. These will be
+                            vector signals, with each element indicating the present state of the
+                            Cell ADC for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Core State</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>Core State Sleep</strong></span> and <span class="bold"><strong>Core State Standby</strong></span> will be added to the driver block.
+                            These will be vector signals, with each element indicating the present
+                            ADBMS6832_33 core state for each CMU in the chain.</p></dd><dt><span class="term">
+                        <span class="guilabel">Communication State</span></span></dt><dd><p>When this parameter is set, the output signal ports <span class="bold"><strong>Comm State Ready</strong></span> and <span class="bold"><strong>Comm State Standby</strong></span> will be added to the driver block.
+                            These will be vector signals, with each element indicating the present
+                            ADBMS6832_33 communication state for each CMU in the chain.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,376 @@
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%function opcuaRemanentItem(block, Suffix) Output
+	%<LibGetModelName()>_opcua_rem_%<block.UBID>_%<Suffix>
+%endfunction
+
+%function opcuaCreateRemanentItem(block, type, Suffix) Output
+
+	%openfile tmpBuf
+	%<type> *%<LibGetModelName()>_opcua_rem_%<block.UBID>_%<Suffix>;
+	%closefile tmpBuf
+	%<LibSetSourceFileSection(cFileOpcUa, "Definitions", tmpBuf)>
+	
+	%openfile tmpBuf
+	extern %<type> *%<LibGetModelName()>_opcua_rem_%<block.UBID>_%<Suffix>;
+	%closefile tmpBuf
+	%<LibSetSourceFileSection(hFileOpcUa, "Definitions", tmpBuf)>
+
+%endfunction
+
+%function opcuaGetRemanentItem(block, var, type, Suffix) Output
+	%<type> *%<var> = %<LibGetModelName()>_opcua_rem_%<block.UBID>_%<Suffix>;
+%endfunction
+
+%function opcuaSetRemanentItem(block, var, Suffix) Output
+	%<LibGetModelName()>_opcua_rem_%<block.UBID>_%<Suffix> = %<var>;
+%endfunction
+
+%function opcuaFileCreation(block) Output
+	
+	%if block.UBID == 1
+	
+        %assign ::cFileOpcUa = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_opcua.cpp")
+        %assign ::hFileOpcUa = LibCreateSourceFile("Source", "Custom", "%<LibGetModelName()>_opcua.h")
+    
+        %openfile tmpBuf
+    
+        #include <stdint.h>
+        #include "sg_common.h"
+		#include "%<LibGetModelName()>_opcua.h"
+    
+        %closefile tmpBuf
+      
+        %<LibSetSourceFileSection(cFileOpcUa, "Includes", tmpBuf)>
+    
+        %openfile tmpBuf
+		
+		
+		#ifndef %<LibGetModelName()>_opcua_h_
+		#define %<LibGetModelName()>_opcua_h_
+    
+        #include <stdint.h>
+		#include "%<LibGetMdlPubHdrBaseName()>.h"
+        #include "sg_common.h"
+        #include "opcua.h"
+	    #include "opcua_def.h"
+	    #include "opcua_client_station.h"
+        #include "opcua_client_connection.h"
+        #include "opcua_client_transceiver.h"
+		#include "opcua_server_station.h"
+        #include "opcua_server_node.h"
+    
+        %closefile tmpBuf
+      
+        %<LibSetSourceFileSection(hFileOpcUa, "Includes", tmpBuf)>
+    
+        %openfile tmpBuf
+    
+        using namespace opcua;
+    
+        %closefile tmpBuf
+      
+	    %<LibSetSourceFileSection(cFileOpcUa, "Includes", tmpBuf)>
+    
+            %openfile tmpBuf
+    
+        using namespace opcua;
+    
+        %closefile tmpBuf
+      
+	    %<LibSetSourceFileSection(hFileOpcUa, "Includes", tmpBuf)>
+
+    %endif
+
+%endfunction
+
+%function opcuaFileCompletion(block) Output
+
+	%if block.UBID == 1
+	
+		%openfile tmpBuf
+        #endif
+        %closefile tmpBuf
+	    %<LibSetSourceFileSection(hFileOpcUa, "UserBottom", tmpBuf)>
+	%endif
+		
+%endfunction
+
+%function opcuaStart(block) Output
+	%if block.UBID == 1
+	    {
+			opcua::Root.Run = true;
+			if (opcua::Root.Stop)
+			{
+				%<LibSetRTModelErrorStatus("\"OPC UA error! Check system log for further information!\"")>;
+			}
+		}
+	%endif
+%endfunction
+
+%function opcuaStop(block) Output
+	%if block.UBID == 1
+		{
+			opcua::Root.Run = false;
+		}
+	%endif
+%endfunction
+
+%function getDataProps(block, PortIdx, SigIdx)
+
+    %createrecord DataProps { DataSource "" ; DataTypeId 0; NumDim 0; Dims ""; NumElements 0; DataTypeSize 0}
+
+    %with block.SFcnParamSettings[0]
+
+    %if WriteOp
+        %assign DataProps.DataSource = LibBlockInputSignalAddr(PortIdx,"","",0)
+        %assign DataProps.DataTypeId = LibBlockInputSignalDataTypeId(PortIdx)
+        %assign DataProps.NumDim = LibBlockInputSignalNumDimensions(PortIdx)
+        %assign DataProps.Dims = LibBlockInputSignalDimensions(PortIdx)
+        %assign DataProps.NumElements = LibBlockInputSignalWidth(PortIdx)
+    %else
+        %if EXISTS(InitValueRun)
+            %assign DataProps.DataSource = LibBlockParameterBaseAddr(InitValueRun) 
+            %assign DataProps.DataTypeId = LibBlockParameterDataTypeId(InitValueRun) 
+            %assign DataProps.Dims = LibBlockParameterDimensions(InitValueRun)
+            %assign DataProps.NumDim = SIZE(DataProps.Dims,1)
+            %assign DataProps.NumElements = LibBlockParameterWidth(InitValueRun)
+
+            %if DataProps.NumDim > 1 && ForceVector
+                %if DataProps.Dims[0] == 1 || DataProps.Dims[1] == 1
+                    %assign DataProps.NumDim = 1
+                    %assign DataProps.Dims = DataProps.NumElements
+                %endif
+            %endif    
+            
+        %else
+            %if ReadOp
+                %if SigIdx == -1
+                    %assign DataProps.DataSource = LibBlockOutputSignalAddr(PortIdx,"","",0)
+                    %assign DataProps.DataTypeId = LibBlockOutputSignalDataTypeId(PortIdx)
+                    %assign DataProps.NumDim = LibBlockOutputSignalNumDimensions(PortIdx)
+                    %assign DataProps.Dims = LibBlockOutputSignalDimensions(PortIdx)
+                    %assign DataProps.NumElements = LibBlockOutputSignalWidth(PortIdx)
+                %else
+                    %assign DataProps.DataSource = LibBlockOutputSignalAddr(PortIdx,"","",SigIdx)
+                    %assign DataProps.DataTypeId = LibBlockOutputSignalDataTypeId(PortIdx)
+                    %assign DataProps.NumDim = 1
+                    %assign DataProps.Dims = 1
+                    %assign DataProps.NumElements = 1
+                %endif
+            %else
+                %assign DataProps.DataSource = "NULL"
+                %assign DataProps.DataTypeId = 0 
+                %assign DataProps.Dims = "NULL"
+                %assign DataProps.NumDim = 0
+                %assign DataProps.NumElements = 0
+            %endif
+        %endif
+    %endif
+    %assign DataProps.DataTypeSize = LibGetDataTypeSLSizeFromId(DataProps.DataTypeId)
+
+    %endwith
+
+    %return DataProps
+
+%endfunction
+
+
+%function getClientDataProps(block, Dummy, SigIdx)
+
+    %createrecord DataProps { DataSource "" ; DataTypeId 0; NumDim 0; Dims ""; NumElements 0; DataTypeSize 0}
+
+    %with block.SFcnParamSettings[0]
+
+    %if WriteOp && DataPortType==0 && NumItems==1 && !StructConfig
+        %assign DataProps.DataSource = LibBlockInputSignalAddr(1,"","",0)
+        %assign DataProps.DataTypeId = LibBlockInputSignalDataTypeId(1)
+        %assign DataProps.NumDim = LibBlockInputSignalNumDimensions(1)
+        %assign DataProps.Dims = LibBlockInputSignalDimensions(1)
+        %assign DataProps.NumElements = LibBlockInputSignalWidth(1)
+    %else
+     
+        %assign DataProps.DataTypeId = DataTypes[SigIdx]   
+    
+        %assign Dimension =  Dimensions[SigIdx]
+        %if Dimension[1] == 0
+            %assign DataProps.Dims = Dimension[0]
+        %else
+            %assign DataProps.Dims = Dimension
+        %endif
+    
+        %assign DataProps.NumDim = SIZE(DataProps.Dims,1)
+    
+        %if DataProps.NumDim > 1
+            %assign DataProps.NumElements = DataProps.Dims[0] * DataProps.Dims[1]
+        %else
+            %assign DataProps.NumElements = DataProps.Dims[0] 
+        %endif
+
+    %endif
+
+    %assign DataProps.DataTypeSize = LibGetDataTypeSLSizeFromId(DataProps.DataTypeId)
+
+    %endwith
+
+    %return DataProps
+
+%endfunction
+
+%function deployValSpecifier(block, DataProps, NodeIdx) Output
+
+    %assign Val = "uint32_T %<LibGetModelName()>_Val_%<block.UBID>_%<NodeIdx>[%<DataProps.NumDim>] = {"
+    %foreach n = DataProps.NumDim 
+    %assign Val = Val + STRING(DataProps.Dims[n])
+    %if n < DataProps.NumDim - 1
+        %assign Val = Val + ","
+    %endif
+    %endforeach 
+    %assign Val = Val + "};"
+
+    %<Val>
+
+%endfunction
+
+%function getNodeIdProps(block, NodeIdx)
+
+    %% Initialize the return value
+    %createrecord DataProps { Namespace 0; IdentifierType 0; NodeIdNumeric 0; ParentIdNumeric 0; NodeIdString ""; ParentIdString ""}
+
+    %with block.SFcnParamSettings[0]
+
+    %assign DataProps.Namespace = Namespaces[NodeIdx]
+    %assign DataProps.IdentifierType = IdentifierTypes[NodeIdx]
+
+    %switch IdentifierTypes[NodeIdx]
+        %case 1 %% Numeric
+            %assign DataProps.NodeIdNumeric = CAST("Number", Identifiers[NodeIdx])
+            %assign DataProps.ParentIdNumeric = 0
+            %if EXISTS(Parents)
+                %if HasParent
+                    %assign DataProps.ParentIdNumeric = CAST("Number", Parents[NodeIdx])
+                %endif
+            %endif
+            %break   
+        %default %% String, UID, Opaque
+            %assign DataProps.NodeIdString = STRING(Identifiers[NodeIdx])
+            %assign DataProps.ParentIdString = ""
+            %if EXISTS(Parents)
+                %if HasParent
+                    %assign DataProps.ParentIdString = STRING(Parents[NodeIdx])
+                %endif
+            %endif
+            %break
+    %endswitch
+
+    %endwith
+
+    %return DataProps
+
+%endfunction
+
+%function createUniqueBlockId(block) void
+
+    %if !EXISTS(::OpcUaNumBlocks)
+        %assign ::OpcUaNumBlocks = 0
+    %endif
+    %assign block.UBID = ::OpcUaNumBlocks + 1
+    %assign ::OpcUaNumBlocks = ::OpcUaNumBlocks + 1
+
+%endfunction
+
+%function deployNodeSpecifier(block, NodeIdProps, DataProps, NodeIdx) Output
+        
+    %with block.SFcnParamSettings[0]
+
+    OPCUA_NODE_PROPS_T %<LibGetModelName()>_var_%<block.UBID>_%<NodeIdx> = {
+
+        %if NodeIdProps.IdentifierType == 1
+        "", "", %<NodeIdProps.ParentIdNumeric>, %<NodeIdProps.NodeIdNumeric>,
+        %else
+        "%<NodeIdProps.ParentIdString>", "%<NodeIdProps.NodeIdString>", 0, 0,
+        %endif
+
+        %if EXISTS(Parents)
+        %<HasParent>,
+        %else
+        0,
+        %endif
+
+        %<NodeIdProps.Namespace>,
+        %<NodeIdProps.IdentifierType>,
+        %if EXISTS(BrowseName)
+            "%<BrowseName>",
+        %else
+            "",
+        %endif
+        %if EXISTS(DisplayName)
+            "%<DisplayName>",
+        %else
+            "",
+        %endif
+        %if EXISTS(NodeDescription)
+            "%<NodeDescription>",
+        %else
+            "",
+        %endif
+        %<DataProps.DataTypeId>, 
+        %<LibGetModelName()>_Val_%<block.UBID>_%<NodeIdx>,
+        %<DataProps.NumDim>, 
+        %<DataProps.NumElements>, 
+        %<DataProps.DataTypeSize>, 
+        %if EXISTS(MonitoringModes)
+            %<MonitoringModes[NodeIdx]>,  /* Monitoring Mode */
+        %else
+            0,
+        %endif
+        %if EXISTS(SamplingIntervals)
+            %<SamplingIntervals[NodeIdx]>,  /* Sampling Interval */
+        %else
+            0,
+        %endif
+        %if EXISTS(ReadAccess)
+            %<ReadAccess>, 
+        %else
+            0,
+        %endif
+        %if EXISTS(WriteAccess)
+            %<WriteAccess>,
+        %else
+            0,
+        %endif
+        %if EXISTS(NodeType)
+            %<NodeType>,
+        %else
+            0,
+        %endif
+        };
+
+    %endwith
+%endfunction
+
+%function deployTransceiverSpecifier(block) Output
+        
+    %with block.SFcnParamSettings[0]
+
+    OPCUA_TRANSCEIVER_PROPS_T %<LibGetModelName()>_transceiver_%<block.UBID> = {
+        %if EXISTS(AddOutput)
+            %<AddOutput>,
+        %else
+            0,
+        %endif
+        %if EXISTS(CreateSubscription)
+            %<CreateSubscription>,
+        %else
+            0,
+        %endif
+        %if EXISTS(PublishingInterval)
+            %<PublishingInterval>,
+        %else
+            0.0,
+        %endif
+        };
+
+    %endwith
+%endfunction
+

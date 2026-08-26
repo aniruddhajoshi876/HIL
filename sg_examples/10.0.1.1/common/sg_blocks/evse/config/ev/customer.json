@@ -1,0 +1,99 @@
+{
+	/* Key: ports
+	 * Type: Array of Objects
+	 * Description: Holds a list of objects with the configuration of each physical charge port.
+	 */
+	"ports": [
+		{
+			/* ------------------------------ Configuration for the ev charge control software ------------------------------ */
+
+			/* Key: can_config
+			 * Type: Object
+			 * Description: Provides the CAN-Interface configuration
+			 */
+			"can_config": {
+				/* Key: can_filter
+				 * Type: Object
+				 * Description: Provides the receiving filter of the CAN-Interface. The filter matches, when:
+				 *              <received_can_id> & can_mask == can_id & can_mask
+				 *              Filter-flag for extended frame format: 0x80000000
+				 */
+				"can_filter": {
+					"can_id": "0x80001200",
+					"can_mask": "0x9ffffff8"
+				},
+
+				/* Key: extended_frame_format
+				 * Type: bool
+				 * Description: Provides the setting for the used frame format. Possible values:
+				 *              false (standard 11 bit identifier), true (extended 29 bit identifier).
+				 *
+				 *              Note: This option must match with the configured CAN-msg-ids.
+				 */
+				"extended_frame_format": true,
+
+				/* Key: can_msg_ids
+				 * Type: Object
+				 * Description: Provides the list of CAN-Id's.
+				 *
+				 *              Note: The CAN-filter configuration must be adjusted,
+				 *              the CAN-msg-id's for the EVSE-messages will be changed.
+				 */
+				"can_msg_ids": {
+					"i2ccsx_chargeinfo": "0x1000",
+					"i2ccsx_evse_sessionid": "0x1100",
+					"i2ccsx_evse_datetimenow": "0x1101",
+					"i2ccsx_evse_init": "0x1102",
+					"i2ccsx_evse_parameter": "0x1103",
+					"i2ccsx_evse_schedule_1": "0x1104",
+					"i2ccsx_evse_schedule_2": "0x1105",
+					"i2ccsx_evse_limits_1": "0x1106",
+					"i2ccsx_evse_limits_2": "0x1107",
+					"i2ccsx_evse_notification": "0x1108",
+					"i2ccsx_evse_status": "0x1109",
+					"i2ccsx_evse_evseid": "0x1110",
+					"i2ccsx_evse_evseservice": "0x1111",
+					"i2ccsx_ev_init_evccid": "0x1200",
+					"i2ccsx_ev_init": "0x1201",
+					"i2ccsx_ev_limits": "0x1202",
+					"i2ccsx_ev_parameter_opt": "0x1203",
+					"i2ccsx_ev_parameter_departure": "0x1204",
+					"i2ccsx_ev_parameter_ac": "0x1205",
+					"i2ccsx_ev_status": "0x1206",
+					"i2ccsx_ev_charge_timeto": "0x1207"
+				}
+			},
+
+			/* Key: hlc_config
+			 * Type: Object
+			 * Description: Provides the high level specific configuration
+			 */
+			"hlc_config": {
+				/* Key: hlc_protocols
+				 * Type: Array of Strings
+				 * Description: List of supported high-level communication protocols.
+				 *
+				 *              Possible values:
+				 *              DIN70121: "urn:din:70121:2012", ISO15118: "urn:iso:15118:2:2013"
+				 *
+				 *              The order of the array entries determines the priority of the communication protocols.
+				 *              First entry has the highest priority.
+				 */
+				"hlc_protocols": [
+					"urn:iso:15118:2:2013",
+					"urn:din:70121:2012"
+				],
+
+				/* Key: tls_security
+				 * Type: String
+				 * Description: Provides the tls-security option and controls how to handle encrypted communication.
+				 *
+				 *              Possible values are: "on", "off" or "force".
+				 *
+				 *              For PnC support it must be set to "on" or "force". tls-security is not yet supported.
+				 */
+				"tls_security": "off"
+			}
+		}
+	]
+}

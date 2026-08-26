@@ -1,0 +1,33 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO643 - NMT</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io643_network_status.html" title="IO643 - Network Status"><link rel="next" href="refentry_ref_io644.html" title="IO644"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io643_nmt"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO643 - NMT</h2><p>IO643 - NMT &#8212; <span class="phrase">Controls the network state of CANopen
+                    slaves</span></p></div><div class="refsect1"><a name="d5e48591"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io643_nmt.png"></span></span></p></div><div class="refsect1"><a name="d5e48599"></a><h2>Description</h2><p>The IO643 NMT (Network Management) block is used to control the network states of
+                the CANopen slave devices connected with the I/O module.</p><p>Your model can contain only one NMT block for each I/O module in your target
+                machine.</p></div><div class="refsect1"><a name="d5e48603"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The input port expects the desired network states for the remote slave
+                            devices. The vector length equals the number of elements in the
+                                <span class="bold"><strong>CAN Node ID</strong></span> parameter. The input's
+                            first element corresponds to the slave device whose CAN node ID is
+                            specified in the first element of the parameter's vector. The block
+                            sends a state change request to a slave device each time the
+                            corresponding input value changes.</p><p>The block only processes the following values:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="16%" class="State"><col width="84%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>1</td><td>Operational</td></tr><tr><td>2</td><td>Stop</td></tr><tr><td>128</td><td>Pre-operational</td></tr><tr><td>129</td><td>Reset node (Initialization)</td></tr><tr><td>130</td><td>Reset communication (Initialization)</td></tr></tbody></table></div><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">scalar|vector of uint32</code></p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>By default, the IO643 sends node start commands to all slave
+                                devices in the network right after model initialization or model
+                                start (the time depends on the <span class="bold"><strong>Start of bus
+                                    communication</strong></span> parameter in SYCON.net). This causes
+                                the slave devices to switch to operational state without regard to
+                                the states specified at the NMT block's input port. To prevent the
+                                IO643 from sending start commands by default, clear the <span class="bold"><strong>Send Global Start Node</strong></span>, <span class="bold"><strong>Send the Reset-Node command</strong></span> and <span class="bold"><strong>Send the Start-Node Command</strong></span> checkboxes in
+                                the SYCON.net project. This makes the NMT block the only source for
+                                sending change state requests.</p></td></tr></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any output ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e48653"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">CAN Node ID</span>
+                    </span></dt><dd><p>The addresses of the slave devices to be controlled. Each device has a
+                            unique address between 1 and 127. The values must match the addresses of
+                            the related nodes in the SYCON.net configuration file.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">numeric scalar|vector</code></p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

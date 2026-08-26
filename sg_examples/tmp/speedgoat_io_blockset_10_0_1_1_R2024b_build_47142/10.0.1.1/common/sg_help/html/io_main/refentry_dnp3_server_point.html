@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">DNP3 - Server Point</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_dnp3_server_setup.html" title="DNP3 - Server Setup"><link rel="next" href="refentry_ref_dnp3_examples.html" title="DNP3 - Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_dnp3_server_point"></a><div class="titlepage"></div><div class="refnamediv"><h2>DNP3 - Server Point</h2><p>DNP3 - Server Point &#8212; <span class="phrase">Reads and writes data in local
+                    point groups</span></p></div><div class="refsect1"><a name="d5e6325"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_dnp3_server_point.png"></span></span></p></div><div class="refsect1"><a name="d5e6333"></a><h2>Description</h2><p>This block is used to read and write data to point groups in the local DNP3
+                server. Furthermore, the block indicates control requests from the client.</p></div><div class="refsect1"><a name="d5e6336"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Available only with write operation.</p><p>If set to <span class="bold"><strong>1</strong></span>, the block writes the
+                            values at the <span class="bold"><strong>Value</strong></span> input port to the
+                            specified point range. This is done at each sample hit according to the
+                            block's sample time.</p><p><span class="bold"><strong>Data Type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Available only with write operation.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that is
+                            written to the point range specified by the <span class="bold"><strong>Command</strong></span>, <span class="bold"><strong>Index</strong></span> and
+                                <span class="bold"><strong>Quantity</strong></span> parameters. The data type
+                            depends on the selected command.</p><p>The two bits of a double-binary value are encoded as one uint8.</p><p><span class="bold"><strong>Data type:</strong></span> boolean | uint8 | int16 |
+                            uint16 | int32 | uint32 | single | double</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">New Data</span>
+                    </span></dt><dd><p>Available only with analog and binary control indications.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            indicates new data for each data point specified by the <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span> parameters.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Available only with analog control indications.</p><p>Array of length <span class="bold"><strong>Quantity</strong></span> that
+                            includes the control values received from the client for the point range
+                            specified by the <span class="bold"><strong>Index</strong></span> and <span class="bold"><strong>Quantity</strong></span> parameter.</p><p><span class="bold"><strong>Data type:</strong></span> double</p></dd><dt><span class="term">
+                        <span class="guilabel">Control Code</span>
+                    </span></dt><dd><p>Available only with binary control indications.</p><p>Outputs the control code received for the point specified by the
+                                <span class="bold"><strong>Index</strong></span> parameter.</p><p>For further information refer to the <a href="refentry_dnp3_client_command.html#refsect_dnp3_controlcode" class="olink"> DNP3 Client Command block
+                            </a> help documentation.</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Available only with binary control indications.</p><p>Outputs the repetition counter for the point specified by the
+                                <span class="bold"><strong>Index</strong></span> parameter.</p><p>For further information refer to the <a href="refentry_dnp3_client_command.html#refsect_dnp3_count" class="olink">DNP3 Client Command block</a>
+                            help documentation.</p><p><span class="bold"><strong>Data type:</strong></span> uint8</p></dd><dt><span class="term">
+                        <span class="guilabel">Time On</span>
+                    </span></dt><dd><p>Available only with binary control indications.</p><p>Outputs the on-time for the point specified by the <span class="bold"><strong>Index</strong></span> parameter.</p><p>For further information refer to the <a href="refentry_dnp3_client_command.html#refsect_dnp3_timeon" class="olink">DNP3 Client Command block</a>
+                            help documentation.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Time Off</span>
+                    </span></dt><dd><p>Available only with binary control indications.</p><p>Outputs the off-time for the point specified by the <span class="bold"><strong>Index</strong></span> parameter.</p><p>For further information refer to the <a href="refentry_dnp3_client_command.html#refsect_dnp3_timeoff" class="olink">DNP3 Client Command block</a>
+                            help documentation.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div></div><div class="refsect1"><a name="d5e6431"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Server ID</span>
+                    </span></dt><dd><p>Apply the Server ID of the corresponding Server Setup block. Must
+                            range between 0 and 65519.</p></dd><dt><span class="term">
+                        <span class="guilabel">Operation Mode</span>
+                    </span></dt><dd><p>Select the operation mode of the block. You can either write data to
+                            specific point groups or indicate control requests from the client.</p><p>Refer to the <a href="refentry_dnp3_usage_notes.html" class="olink">DNP3 usage notes</a> for
+                            an overview of the supported groups.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index</span>
+                    </span></dt><dd><p>The first index of the point range you want to read or write. Must
+                            range between 0 and 999.</p></dd><dt><span class="term">
+                        <span class="guilabel">Quantity</span>
+                    </span></dt><dd><p>The length of the point range you want to read or write. <span class="bold"><strong>Index</strong></span> + <span class="bold"><strong>Quantity</strong></span> must not exceed 1000.</p><p>The parameter is ignored for binary control indications.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

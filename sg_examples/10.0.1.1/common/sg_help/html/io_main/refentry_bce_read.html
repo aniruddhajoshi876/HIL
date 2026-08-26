@@ -1,0 +1,31 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">BMTS Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="up" href="book_battery_emulation.html" title="Battery Emulation I/O"><link rel="prev" href="refentry_bce_write.html" title="BMTS Write"><link rel="next" href="refentry_bmts_buspack.html" title="BMTS Bus Pack"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_bce_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>BMTS Read</h2><p>BMTS Read &#8212; <span class="phrase">Configure the BMTS Read
+                block</span></p></div><div class="refsect1"><a name="d5e821"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_bce_read.png"></span></span></p></div><div class="refsect1"><a name="d5e829"></a><h2>Description</h2><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This documentation refers to the Speedgoat Battery Management Testing Systems
+                    (BMTS) that are supported with <span class="bold"><strong>MATLAB R2022a and
+                        later</strong></span>.</p></td></tr></table></div><p>The BMTS Read block consists of a masked subsystem with a MATLAB App-based block
+                mask. The subsystem is dynamically populated with a set of preconfigured EtherCAT
+                Receive blocks to receive the data from the selected device. The list of devices is
+                automatically loaded from the BMTS Setup block with the same <span class="bold"><strong>EtherCAT Network Index</strong></span>.</p></div><div class="refsect1"><a name="d5e836"></a><h2>Ports</h2><p>This driver block has one output port.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>The data port outputs a Simulink bus signal, the structure of which
+                            depends on the selected device. The Simulink bus object and a template
+                            structure for initialization are created in the MATLAB workspace after
+                            the block has been configured. It is recommended to use a Bus Selector
+                            block to access the data contained in the bus signal.</p></dd></dl></div></div><div class="refsect1"><a name="d5e846"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">EtherCAT Network Index</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>EtherCAT Network Index</strong></span> is a
+                            user-defined ID to associate the BMTS Read block with the corresponding
+                            BMTS Setup block. The value must be an integer between 0 and 11. When
+                            changing the network index, click the <span class="bold"><strong>Reload
+                                device list</strong></span> button to load the list of devices from the
+                            BMTS Setup block.</p></dd><dt><span class="term">
+                        <span class="guilabel">EtherCAT Device</span>
+                    </span></dt><dd><p>Selects the device from which the BMTS Read block will receive data.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>The sample time is displayed here, however, it must be configured in
+                            the corresponding BMTS Setup block. This is because the sample time for
+                            EtherCAT is set globally and written to the ENI (EtherCAT Network
+                            Information) file. Therefore, individual BMTS Read blocks must all use
+                            this globally configured sample time.</p></dd></dl></div></div></div></body></html>

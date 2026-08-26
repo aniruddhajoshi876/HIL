@@ -1,0 +1,174 @@
+{
+	/* Key: ports
+	 * Type: Array of Objects
+	 * Description: Holds a list of objects with the configuration of each physical charge port.
+	 */
+	"ports": [
+		{
+			/* ------------------------------ Configuration for the first charge port ------------------------------ */
+
+			/* Key: hlc_protocols
+			 * Type: Array of Strings
+			 * Description: List of supported high-level communication protocols. Possible values:
+			 *              DIN70121: "urn:din:70121:2012", ISO15118: "urn:iso:15118:2:2013"
+			 */
+			"hlc_protocols": [
+				"urn:iso:15118:2:2013",
+				"urn:din:70121:2012"
+			],
+
+			/* Key: pluggable
+			 * Type: Boolean
+			 * Description: Indicates whether the charging cable is attached to the EVSE with a plug into a socket.
+			 *              Set to true when the charge port is equipped with a socket connector, i.e.
+			 *              the cable is not fixed. Set to false when the charge port has a fixed cable.
+			 */
+			"pluggable": false,
+
+			/* Key: always_accept_cp_state_d
+			 * Type: Boolean
+			 * Description: Indicates whether an EV request for CP state D (ventilation) should always be accepted,
+			 *              even if there is no external ventilation available.
+			 */
+			"always_accept_cp_state_d": false,
+
+			/* Key: charging_type
+			 * Type: String
+			 * Description: Specify the allowed charging types during a charging session.
+			 *              Possible values are: "basic", "highlevel" and "basic+highlevel"
+			 */
+			"charging_type": "highlevel",
+
+			/* Key: user_authentication
+			 * Type: String
+			 * Description: Specify the authentication method of the user.
+			 *              Possible values are: "free", "ocpp", "key-switch"
+			 *              When commented out the charging stack defaults to non-free
+			 */
+			"user_authentication": "free",
+
+			/* Key: highlevel_authentication_mode
+			 * Type: String
+			 * Description: Specify the authentication mode for the high level charging session.
+			 *              In case charging type is basic this parameter doesn't have any effect.
+			 *              Possible values are: "eim", "pnc_offline", "pnc_online", "eim+pnc_offline" and 
+			 *              "eim+pnc_online"
+			 */
+			"highlevel_authentication_mode": "pnc_offline",
+
+			/* Key: tls_security
+			 * Type: String
+			 * Description: Controls how to handle encrypted communication. Possible values are:
+			 *              "prohibit", "allow" or "force"
+			 *              This option must be set to "allow" or "force" for PnC-mode.
+			 */
+			"tls_security": "allow",
+
+			/* Key: energy_transfer_modes
+			 * Type: Array of Strings
+			 * Description: List of supported energy transfer modes, i.e. how the slot's pins are
+			 *              connected to DC power supply. Usually only one list item is present,
+			 *              but in case the physical wiring allows multiple scenarios,
+			 *              it's possible to use them here. Possible list items are:
+			 *              "dc_core", "dc_extended", "dc_combo_core" and "dc_unique"
+			 *              Defaults to "dc_extended".
+			 */
+			"energy_transfer_modes": [
+				"dc_extended"
+			],
+
+			/* Key: dc_supply
+			 * Type: Object
+			 * Description: This object holds various parameters of the used DC supply, i.e.
+			 *              the power-electronic configuration used within the charging session.
+			 */
+			"dc_supply": {
+				/* Key: peak_current_ripple
+				 * Type: Integer
+				 * Unit: A (Ampere)
+				 * Description: Provides the charger's peak current ripple.
+				 */
+				"peak_current_ripple": 0,
+
+				/* Key: min_current_limit
+				 * Type: Integer
+				 * Unit: A (Ampere)
+				 * Description: Provides the charger's minimum current limit.
+				 */
+				"min_current_limit": 0,
+
+				/* Key: max_current_limit
+				 * Type: Integer
+				 * Unit: A (Ampere)
+				 * Description: Provides the charger's maximum current limit.
+				 */
+				"max_current_limit": 0,
+
+				/* Key: min_voltage_limit
+				 * Type: Integer
+				 * Unit: V (Volt)
+				 * Description: Provides the charger's minimum voltage limit.
+				 */
+				"min_voltage_limit": 0,
+
+				/* Key: max_voltage_limit
+				 * Type: Integer
+				 * Unit: V (Volt)
+				 * Description: Provides the charger's maximum voltage limit.
+				 */
+				"max_voltage_limit": 0,
+
+				/* Key: max_power_limit
+				 * Type: Integer
+				 * Unit: W (Watt)
+				 * Description: Provides the chargers maximum power limit per specification.
+				 *              This is the limit what the DC supply equipment is capable to provide
+				 *              to the EV in case all prerequisites are met. This value is usually defined
+				 *              by the charging station manufacturer according to the used DC supply.
+				 *              Typical values are for example 11000 for a 11 kW DC supply.
+				 *              The charging stack internally determines the minimum of
+				 *              all power limits (grid_power_limit, max_power_limit and a limit set
+				 *              via MQTT for dynamc energe management purpose) during communication
+				 *              with the EV.
+				 */
+				 "max_power_limit": 0
+
+				/* Key: grid_power_limit
+				 * Type: Integer
+				 * Unit: W (Watt)
+				 * Description: This defines the maximum DC power which should be safe to use without triggering
+				 *              fuses on the AC side of the DC supply equipment. This value is usually defined
+				 *              by the electrician who installs the charging station. It is usually taken from
+				 *              charging station's user manual or DC supply user manual since it must count in
+				 *              energy efficiency and power loss of the DC supply itself.
+				 *              The charging stack internally determines the minimum of
+				 *              all power limits (grid_power_limit, max_power_limit and a limit set
+				 *              via MQTT for dynamc energe management purpose) during communication
+				 *              with the EV.
+				 */
+				//"grid_power_limit": 0
+			}
+		}
+	],
+
+	/* Key: can
+	 * Type: Object
+	 * Description: This object holds various configuration parameters for the CAN interface.
+	 */
+	"can": {
+		/* Key: enable
+		 * Type: Boolean
+		 * Description: Enables or disables the CAN protocol support of the charging stack.
+		 */
+		"enable": true,
+
+		/* Key: baudrate
+		 * Type: Integer
+		 * Description: This parameter defines the CAN baudrate in bit/s and refers to the rate at which
+		 *              data is transmitted on the network. Standard baudrates are 125000 bit/s,
+		 *              250000 bit/s, 500000 bit/s and 1000000 bit/s. Selecting of a deviating baudrate
+		 *              can cause erratic behavior on the network.
+		 */
+		"baudrate": 1000000
+	}
+}

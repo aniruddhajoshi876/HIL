@@ -1,0 +1,235 @@
+<html><head><title>Shared Memory Node Initialization Structure :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: Shared Memory Node Initialization Structure -->
+<!-- CHAPNAME:  Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt9.html"><img src="b_prev.gif" alt="Previous page" border=0></a>
+&nbsp;&nbsp;&nbsp;<a href="scgt11.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>Shared Memory Node Initialization Structure</b></font><br class="hdr">
+
+<p>A node initialization structure has the following fields:</p>
+
+<ul class=continued><li class=continued><pre>
+     Interface: [1x1 struct]
+    Partitions: [1x1 struct]
+</pre></li></ul>
+
+<p>where</p>
+
+<table Border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>Node Structure Fields</b><br></td>
+<td><b>Description</b><br></td>
+
+<tr valign=top>
+<td><strong>Interface</strong><br></td>
+
+<td>Specifies settings for the SCRAMNet GT board. The Interface structure has the following fields. Refer to the SCRAMNet GT product documentation for a description of the operation modes.<br>
+
+<ul>
+<li><code>NodeID</code> -- Configures board node ID (0 - 255, or -1 for no change)</li>
+<li><code>ActiveInterface</code> -- Configures which board interface to use (0, 1, or -1 for no change)</li>
+<li><code>Mode</code> -- Configures board modes (see <a href="scgt12.html#boardmode">Board Mode</a>)</li>
+<li><code>Lasers</code> -- Enables/disables the transceiver lasers (see <a href="scgt12.html#boardlasers">Board Lasers</a>)</li>
+<li><code>Interrupts</code> -- Enables the board to generate and receive interrupts from the network (see <a href="scgt12.html#boardinterrupts">Board Interrupts</a>)</li>
+<li><code>Internal</code> -- Reserved for internal use</li>
+</ul>
+
+</td>
+
+<tr valign=top>
+<td><strong>Partitions</strong><br></td>
+<td>Stores the shared memory segments (see <a href="scgt2.html">Create Shared Memory Partitions</a>)<br></td>
+
+</table> 
+
+<Table><tr valign=top><td></Table> 
+</p>
+
+<a name="boardmode"></a><p><font color="#990000"><b>Board Mode</b></font><br class="hdr">
+
+<p>The SCRAMNet GT board has a number of modes that you can set through the <code>Interface.Mode</code> field. The Interface Mode fields set the corresponding enables on the SCRAMNet GT board. A value of 'nc' does not change the current value on SCRAMNet GT. To display the board mode fields, type</p>
+
+<ul class=continued><li class=continued><pre>&gt;&gt; node.Interface.Mode
+
+ans = 
+
+             ReceivePath: 'nc'
+            TransmitPath: 'nc'
+          RetransmitPath: 'nc'
+           WriteLastPath: 'nc'
+      ElectronicWrapPath: 'nc'
+        ByteSwapGTMemory: 'nc'
+        WordSwapGTMemory: 'nc'
+    PCI64bitDataTransfer: 'nc'
+</pre></li></ul>
+
+<p>These modes have the following values:<br><br>
+<table Border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>Field</b><br></td>
+<td><b>Values</b><br></td>
+<td><b>Default</b><br></td>
+
+<tr valign=top>
+<td></a><strong>ReceivePath</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>TransmitPath</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>RetransmitPath</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>WriteLastPath</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>ElectronicWrapPath</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>ByteSwapGTMemory</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>WordSwapGTMemory</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>PCI64bitDataTransfer</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+</table> 
+
+<Table><tr valign=top><td></Table> 
+</p>
+
+<a name="boardlasers"></a><p><font color="#990000"><b>Board Lasers</b></font><br class="hdr">
+
+<p>The SCRAMNet GT board allows you to turn on or off the transmit lasers through the <code>Interface.Lasers</code> field. The Interface Lasers fields set the corresponding enables on the SCRAMNet GT board. A value of 'nc' does not change the current value on SCRAMNet GT. To display the board mode fields, type</p>
+
+<ul class=continued><li class=continued><pre>&gt;&gt; node.Interface.Lasers
+
+ans =
+
+    ActiveInterfaceLaser: 'nc'
+         Interface0Laser: 'nc'
+         Interface1Laser: 'nc'
+</pre></li></ul>
+
+<p>These fields have the following values:<br><br>
+
+<table Border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>Field</b><br></td>
+<td><b>Values</b><br></td>
+<td><b>Default</b><br></td>
+
+<tr valign=top>
+<td><strong>ActiveInterfaceLaser</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>Interface0Laser</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>Interface1Laser</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+</table> 
+<Table><tr valign=top><td></Table> 
+</p>
+
+<a name="boardinterrupts"></a><p><font color="#990000"><b>Board Interrupts</b></font><br class="hdr">
+
+<p>The SCRAMNet GT board allows you to specify the interrupt sources transmitted and received between the nodes of the network. You can set these bits through the <code>Interface.Interrupts</code> field. The Interface Interrupts fields set the corresponding values on the SCRAMNet GT board. A value of 'nc' does not change the current value on SCRAMNet GT. To display the board mode fields, type</p>
+
+<ul class=continued><li class=continued><pre><a name="850550"></a>&gt;&gt; node.Interface.Interrupts
+
+ans = 
+
+    ChangeBroadcastInterruptMask: 'no'
+          BroadcastInterruptMask: '0x00000000'
+                  SelfInterrupts: 'nc'
+               UnicastInterrupts: 'nc'
+             LinkErrorInterrupts: 'nc'
+</pre></li></ul>
+
+<p>These fields have the following values:<br><br>
+<table Border="2" cellpadding=4 cellspacing=0>
+<caption></caption>
+<tr valign=top>
+<td><b>Field</b><br></td>
+<td><b>Values</b><br></td>
+<td><b>Default</b><br></td>
+
+<tr valign=top>
+<td><strong>ChangeBroadcastInterruptMask</strong><br></td>
+<td><code>'yes', 'no'</code><br></td>
+<td><code>'no'</code><br></td>
+
+<tr valign=top>
+<td><strong>ChangeBroadcastInterruptMask</strong><br></td>
+<td><code>'0x00000000' - '0xffffffff'</code><br></td>
+<td><code>'0x00000000'</code><br></td>
+
+<tr valign=top>
+<td><strong>SelfInterrupts</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>UnicastInterrupts</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+<tr valign=top>
+<td><strong>LinkErrorInterrupts</strong><br></td>
+<td><code>'nc', 'on', 'off'</code><br></td>
+<td><code>'nc'</code><br></td>
+
+</table> 
+<Table><tr valign=top><td></Table> 
+</p>
+
+<br>
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt9.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;Shared Memory Partition Structure</td><td>&nbsp;</td> 
+<td align=right>SCGT Get State&nbsp;</td><td align=right width=20><a href="scgt11.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

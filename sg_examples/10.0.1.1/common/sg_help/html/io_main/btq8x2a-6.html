@@ -1,0 +1,100 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Curtiss-Wright Shared Node Initialization Structure</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs50qjp.html" title="Chapter&nbsp;9.&nbsp;Shared Memory Support"><link rel="prev" href="btq8x2a-4.html" title="Curtiss-Wright Shared Partition Structure"><link rel="next" href="bu3bkur.html" title="Chapter&nbsp;10.&nbsp;CAN I/O FIFO Support"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="btq8x2a-6"></a>Curtiss-Wright Shared Node Initialization Structure</h2></div></div></div><p>A node initialization structure has the following fields:</p><pre class="programlisting">     Interface: [1x1 struct]
+    Partitions: [1x1 struct]</pre><p>where</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="21%" class="col1"><col width="79%" class="col2"></colgroup><thead><tr><th><p>Node Structure Fields</p></th><th><p>Description</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">Interface</span></p></td><td><p>Specifies settings for the board Control/Status Register (CSR).
+                                The Interface structure has the following fields. Refer to the
+                                SCRAMNet+ SC150 product documentation for a description of the CSR
+                                and its operation modes.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">Mode</code> &#8212; Configures board modes
+                                        (see <a href="btq8x2a-6.html#btq8x2a-7" class="olink">Board Mode</a>)</p></li><li class="listitem"><p><code class="literal">Timeout</code> &#8212; Enables the board to
+                                        set the timeout value (see <a href="btq8x2a-6.html#btq8x2a-8" class="olink">Board Timeout</a>)</p></li><li class="listitem"><p><code class="literal">DataFilter</code> &#8212; Controls the data
+                                        filtering operation (see <a href="btq8x2a-6.html#btq8x2a-9" class="olink">Board Data Filter</a>)</p></li><li class="listitem"><p><code class="literal">VirtualPaging</code> &#8212; Controls the
+                                        board virtual paging operation (see <a href="btq8x2a-6.html#btq8x2a-10" class="olink">Virtual Paging</a>)</p></li><li class="listitem"><p><code class="literal">Interrupts</code> &#8212; Enables the board
+                                        to generate and receive interrupts from the network (see
+                                            <a href="btq8x2a-6.html#btq8x2a-11" class="olink">Board Interrupts</a>)</p></li><li class="listitem"><p><code class="literal">Internal</code> &#8212; Reserved for internal
+                                        use</p></li></ul></div></td></tr><tr><td><p><span class="guilabel">Partitions</span></p></td><td><p>Stores the shared memory segments (see <a href="btq8x2a-1.html" class="olink">Create
+                                    Shared Memory Partitions</a>)</p></td></tr></tbody></table></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-7"></a>Board Mode</h3></div></div></div><p>The SCRAMNet+ SC150 board has modes that you can set through the
+                    <code class="literal">Interface.Mode</code> field. The Interface Mode fields set the
+                corresponding bits in the CSR. To display the board mode fields, type:</p><pre class="programlisting">&gt;&gt; node.Interface.Mode
+ans =
+          NetworkCommunicationsMode: 'TransmitReceive'
+                         InsertNode: 'on'
+          DisableFiberOpticLoopback: 'on'
+                 EnableWireLoopback: 'off'
+           DisableHostToMemoryWrite: 'off'
+                 WriteOwnSlotEnable: 'off'
+                 MessageLengthLimit: '256'
+    VariableLengthMessagesOnNetwork: 'off'
+                        HIPROEnable: 'off'
+                   MultipleMessages: 'on'
+           NoNetworkErrorCorrection: 'on'
+           MechanicalSwitchOverride: 'on'
+                     DisableHoldoff: 'on'</pre><p>These modes have the following values:</p><div class="shaded_ruled"><table class="shaded_ruled" width="100%" border="1"><colgroup><col width="41%" class="col1"><col width="23%" class="col2"><col width="16%" class="col3"><col width="20%" class="col4"></colgroup><thead><tr><th><p>Field</p></th><th><p>Values</p></th><th><p>Default</p></th><th><p>CSR</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">NetworkCommunications
+                                Mode</span></p></td><td><p><code class="literal">'none',
+                                        'receiveonly', 'transmitonly', 'transmit
+                                    receive'</code></p></td><td><p><code class="literal">'transmit receive'</code></p></td><td><p>CSR3[8..15]</p></td></tr><tr><td><p><span class="guilabel">InsertNode</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR0[0..1]</p></td></tr><tr><td><p><span class="guilabel">DisableFiberOptic
+                                Loopback</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR2[6]</p></td></tr><tr><td><p><span class="guilabel">EnableWire Loopback</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR2[7]</p></td></tr><tr><td><p><span class="guilabel">DisableHost ToMemory
+                                Write</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR2[8]</p></td></tr><tr><td><p><span class="guilabel">WriteOwnSlotEnable</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR2[9]</p></td></tr><tr><td><p><span class="guilabel">Message LengthLimit</span></p></td><td><p><code class="literal">'256'</code>,
+                                <code class="literal">'1024'</code></p></td><td><p><code class="literal">'256'</code></p></td><td><p>CSR2[11]</p></td></tr><tr><td><p><span class="guilabel">Variable Length MessagesOn
+                                    Network</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR212]</p></td></tr><tr><td><p><span class="guilabel">HIPROEnable</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR2[13]</p></td></tr><tr><td><p><span class="guilabel">Multiple Messages</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR2[14]</p></td></tr><tr><td><p><span class="guilabel">NoNetwork Error
+                                Correction</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR2[15]</p></td></tr><tr><td><p><span class="guilabel">Mechanical Switch
+                                Override</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR8[11]</p></td></tr><tr><td><p><span class="guilabel">Disable Holdoff</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'on'</code></p></td><td><p>CSR8[11]</p></td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-8"></a>Board Timeout</h3></div></div></div><p>The SCRAMNet+ SC150 board allows you to set the network timeout through the
+                    <code class="literal">Interface.Timeout</code> field. The Interface Timeout fields set the
+                corresponding bits in the CSR.</p><p>To display the timeout fields, type:</p><pre class="programlisting">&gt;&gt; node.Interface.Timeout
+ans =
+       NumOfNodesInRing: '2'
+    TotalCableLengthInM: '2'</pre><p>These fields have the following values:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="41%" class="col1"><col width="22%" class="col2"><col width="17%" class="col3"><col width="20%" class="col4"></colgroup><thead><tr><th><p>Field</p></th><th><p>Values</p></th><th><p>Default</p></th><th><p>CSR</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">NumOfNodes InRing</span></p></td><td><p><code class="literal">'0' to '255'</code></p></td><td><p><code class="literal">'2'</code></p></td><td><p>CSR5</p></td></tr><tr><td><p><span class="guilabel">TotableCable LengthInM</span></p></td><td><p><code class="literal">'0' to
+                                    '<em class="replaceable"><code>n</code></em>'</code></p></td><td><p><code class="literal">'2'</code></p></td><td><p>CSR5</p></td></tr></tbody></table></div><p>Refer to the SCRAMNet+ SC150 product documentation for a description of these
+                fields.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-9"></a>Board Data Filter</h3></div></div></div><p>The SCRAMNet+ SC150 board allows you to set the data filter operation through the
+                    <code class="literal">Interface.DataFilter</code> field. The Interface DataFilter fields
+                set the corresponding bits in the CSR.</p><pre class="programlisting">&gt;&gt; node.Interface.DataFilter
+ans =
+           EnableTransmitDataFilter: 'off'
+    EnableLower4KBytesForDataFilter: 'off'
+ &gt;&gt;</pre><p>These fields have the following values:</p><div class="shaded_ruled"><table class="shaded_ruled" width="100%" border="1"><colgroup><col width="40%" class="col1"><col width="23%" class="col2"><col width="17%" class="col3"><col width="20%" class="col4"></colgroup><thead><tr><th><p>Field</p></th><th><p>Values</p></th><th><p>Default</p></th><th><p>CSR</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">Enable TransmitData
+                                Filter</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[10]</p></td></tr><tr><td><p><span class="guilabel">EnableLower4KBytesFor
+                                    DataFilter</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[11]</p></td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-10"></a>Virtual Paging</h3></div></div></div><p>The SCRAMNet+ SC150 board allows you to set the bits of the Virtual Paging
+                Register operation through the <code class="literal">Interface.VirtualPaging</code> field. The
+                Interface VirtualPaging fields set the corresponding bits in the CSR.</p><pre class="programlisting">&gt;&gt; node.Interface.VirtualPaging
+ans =
+    VirtualPagingEnable: 'off'
+      VirtualPageNumber: '0'</pre><p>These fields have the following values:</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="40%" class="col1"><col width="23%" class="col2"><col width="16%" class="col3"><col width="21%" class="col4"></colgroup><thead><tr><th><p>Field</p></th><th><p>Values</p></th><th><p>Default</p></th><th><p>CSR</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">VirtualPagingEnable</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR12[0]</p></td></tr><tr><td><p><span class="guilabel">VirtualPage Number</span></p></td><td><p><code class="literal">'0'</code> to
+                                <code class="literal">'2047'</code></p></td><td><p><code class="literal">'0'</code></p></td><td><p>CSR12[5..15]</p></td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="btq8x2a-11"></a>Board Interrupts</h3></div></div></div><p>The SCRAMNet+ SC150 board allows you to specify the interrupt sources transmitted
+                and received between the nodes of the network. You can set these bits through the
+                    <code class="literal">Interface.Interrupts</code> field. The Interface Interrupts fields
+                set the corresponding bits in the CSR.</p><pre class="programlisting">&gt;&gt; node.Interface.Interrupts
+ans =
+                 HostInterrupt: 'off'
+    InterruptOnMemoryMaskMatch: 'off'
+      OverrideReceiveInterrupt: 'off'
+              InterruptOnError: 'off'
+              NetworkInterrupt: 'off'
+     OverrideTransmitInterrupt: 'off'
+            InterruptOnOwnSlot: 'off'
+      ReceiveInterruptOverride: 'off'
+</pre><p>These fields have the following values:</p><div class="shaded_ruled"><table class="shaded_ruled" width="100%" border="1"><colgroup><col width="40%" class="col1"><col width="29%" class="col2"><col width="18%" class="col3"><col width="13%" class="col4"></colgroup><thead><tr><th><p>Field</p></th><th><p>Values</p></th><th><p>Default</p></th><th><p>CSR</p></th></tr></thead><tbody><tr><td><p><span class="guilabel">HostInterrupt</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[3]</p></td></tr><tr><td><p><span class="guilabel">InterruptOn MemoryMask
+                                Match</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[5]</p></td></tr><tr><td><p><span class="guilabel">Override Receive
+                                Interrupt</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[6]</p></td></tr><tr><td><p><span class="guilabel">InterruptOn Error</span></p></td><td><p><code class="literal">'off'</code>,<code class="literal">
+                                'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[7]</p></td></tr><tr><td><p><span class="guilabel">Network Interrupt</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[8]</p></td></tr><tr><td><p><span class="guilabel">Override Transmit
+                                Interrupt</span></p></td><td><p><code class="literal">'off'</code>,<code class="literal">
+                                'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR0[9]</p></td></tr><tr><td><p><span class="guilabel">InterruptOn OwnSlot</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR2[10]</p></td></tr><tr><td><p><span class="guilabel">Receive Interrupt
+                                Override</span></p></td><td><p><code class="literal">'off'</code>,
+                                <code class="literal">'on'</code></p></td><td><p><code class="literal">'off'</code></p></td><td><p>CSR8[10]</p></td></tr></tbody></table></div></div></div></body></html>

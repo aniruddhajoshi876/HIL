@@ -1,0 +1,107 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO601 - CAN Setup v4</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io601_usage_notes.html" title="IO601 Usage Notes"><link rel="next" href="refentry_io601_can_read.html" title="IO601 - CAN Read v4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io601_can_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO601 - CAN Setup v4</h2><p>IO601 - CAN Setup v4 &#8212; <span class="phrase">Configure the IO601 CAN
+                    interface</span></p></div><div class="refsect1"><a name="d5e8567"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io601_can_setup_v4.png"></span></span></p></div><div class="refsect1"><a name="d5e8575"></a><h2>Description</h2><p>Your model must contain one "CAN Setup" driver block for each IO601 module in your
+                target machine. This block allows all of the supported I/O types of this module to
+                be configured and therefore impacts on the other driver blocks (CAN Write, CAN
+                Read, and CAN Status).</p></div><div class="refsect1"><a name="d5e8578"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e8581"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Module setup </div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Init structure </span>
+                    </span></dt><dd><p>Defines CAN messages sent during initialization of the Write block.
+                            For more information, see: <a href="refentry_io601_usage_notes.html#refsect1_io601_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Term structure </span>
+                    </span></dt><dd><p>Defines CAN messages sent during termination of the Write block. For
+                            more information, see: <a href="refentry_io601_usage_notes.html#refsect1_io601_init_term_can" class="olink">Initialization and
+                                Termination CAN Messages</a>.</p></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">CAN Channel 1 </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable </span>
+                    </span></dt><dd><p>When enabled, the CAN 1 channel is initialized at target application
+                            download time. By default the box is checked. If unchecked, it is
+                            assumed that the model does not contain a Write block to transmit to the
+                            CAN 1 channel, or a Read block to receive from the CAN 1 channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Physical bus </span>
+                    </span></dt><dd><p>The transceiver mode for this CAN channel. The options are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Highspeed (default)</p></li><li class="listitem"><p>Lowspeed</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>The baud rate for this CAN channel. This control allows the most
+                            commonly used values to be selected. If special bit timing is needed,
+                            then select the User defined here and use the "User defined baud rate"
+                            parameter below.</p></dd><dt><span class="term">
+                        <span class="guilabel">User defined baud rate </span>
+                    </span></dt><dd><p>If "User defined" has been selected in the "Baud rate" parameter
+                            above, this parameter is used to configure the bit timing. The parameter
+                            is a vector with the following elements:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization-Jump-Width (SJW)</p></li><li class="listitem"><p>Time-Segment-1 (TSEG1)</p></li><li class="listitem"><p>Time-Segment-2 (TSEG2)</p></li></ul></div><p>For information concerning the IO601 bit-timing values, please contact
+                            technical support (support@speedgoat.com) to obtain the
+                            "IO601_bit_timing.pdf" manual.</p></dd><dt><span class="term">
+                        <span class="guilabel">Acceptance (standard identifier) </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with a standard ID (11 bits)
+                            is accepted on CAN channel 1. The message is accepted if either of the
+                            following rules is true:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; StdMask1) == StdCode1)</p></li><li class="listitem"><p>((ID &amp; StdMask2) == StdCode2)</p></li></ul></div><p>Set a StdMask element to zero (the default) to disable a rule. Note
+                            that this parameter takes a decimal value. See the "Usage notes" section
+                            for examples of how to set this parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Acceptance (extended identifier) </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with an extended ID (29 bits)
+                            is accepted on CAN channel 1. The message is accepted if either of the
+                            following rules is true:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; ExtMask1) == ExtCode1)</p></li><li class="listitem"><p>((ID &amp; ExtMask2) == ExtCode2)</p></li></ul></div><p>Set an ExtMask element to zero (the default) to disable a rule. Note
+                            that this parameter takes a decimal value. See the "Usage notes" section
+                            for examples of how to set this parameter.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">CAN Channel 2 </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable </span>
+                    </span></dt><dd><p>When enabled, the CAN 2 channel is initialized at target application
+                            download time. By default the box is checked. If unchecked, it is
+                            assumed that the model does not contain a Write block which transmits to
+                            CAN 2 channel, or a Read block which receives from CAN 2 channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Physical bus </span>
+                    </span></dt><dd><p>The transceiver mode for this CAN channel. The options are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Highspeed (default)</p></li><li class="listitem"><p>Lowspeed</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>The baud rate for this CAN channel. This control allows the most
+                            commonly used values to be selected. If special bit timing is needed,
+                            then select the User defined here and use the "User defined baud rate"
+                            parameter below.</p></dd><dt><span class="term">
+                        <span class="guilabel">User defined baud rate </span>
+                    </span></dt><dd><p>If "User defined" has been selected in the "Baud rate" parameter
+                            above, this parameter is used to configure the bit timing. The parameter
+                            is a vector with the following elements:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Prescaler (BRP)</p></li><li class="listitem"><p>Synchronization-Jump-Width (SJW)</p></li><li class="listitem"><p>Time-Segment-1 (TSEG1)</p></li><li class="listitem"><p>Time-Segment-2 (TSEG2)</p></li></ul></div><p>For information concerning the IO601 bit-timing values, please contact
+                            technical support (support@speedgoat.com) to obtain the
+                            "IO601_bit_timing.pdf" manual.</p></dd><dt><span class="term">
+                        <span class="guilabel">Acceptance (standard identifier) </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with a standard ID is
+                            accepted on CAN channel 2. The message is accepted if either of the
+                            following rules is true:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; StdMask1) == StdCode1)</p></li><li class="listitem"><p>((ID &amp; StdMask2) == StdCode2)</p></li></ul></div><p>Set a StdMask element to zero (the default) to disable a rule.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Acceptance (extended identifier) </span>
+                    </span></dt><dd><p>The rule to decide whether a CAN message with an extended ID is
+                            accepted on CAN channel 2. The message is accepted if either of the
+                            following rules is true:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>((ID &amp; ExtMask1) == ExtCode1)</p></li><li class="listitem"><p>((ID &amp; ExtMask2) == ExtCode2)</p></li></ul></div><p>Set an ExtMask element to zero (the default) to disable a rule.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">LIN Channel 1 </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Role </span>
+                    </span></dt><dd><p>The IO601 can be configured to act as a master or a slave. In the LIN
+                            topology, only one master is allowed per network.</p></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>This parameter is valid for master and slave operation. Range between
+                            2400 and 20000.</p></dd><dt><span class="term">
+                        <span class="guilabel">LIN v2.x (enhanced check sum) </span>
+                    </span></dt><dd><p>When enabled, the IO601 will use the enhanced check sum as defined in
+                            the LIN 2.0 (and newer) specification. Otherwise, the classic check sum
+                            (up to LIN 1.3) is applied.</p></dd></dl></div></div></div></body></html>

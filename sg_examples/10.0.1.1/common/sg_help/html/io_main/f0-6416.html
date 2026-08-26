@@ -1,0 +1,24 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Bus Monitor Operation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="prev" href="f0-6415.html" title="Remote Terminal and Bus Controller Operation"><link rel="next" href="mw_ebefb990-e878-4650-838f-44b82f7f1b6e.html" title="Chapter&nbsp;13.&nbsp;RS232 blocks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f0-6416"></a>Bus Monitor Operation</h2></div></div></div><p>The following example uses PCI-1553 blocks. It describes how you can use a Bus Monitor
+            in a model. The Bus Monitor operation outputs a list containing the messages seen on the
+            specified bus since the last time it was called. The <code class="literal">BMSample</code> model
+            shows how to set up a simple bus monitor that looks for the messages in the preceding
+            examples (<code class="literal">RTSample</code>, <code class="literal">BCSample</code>, and
+                <code class="literal">RTBCSample</code>).</p><p>You can run this example on a target computer that has a PCI-1553 board. If your
+            target computer uses a different board, such as a QPCI-1553 board, replace the PCI-1553
+            blocks with the blocks for your board.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/qpci_bmsample.png"></div></div><p>The <code class="literal">PCI-1553 Initialize</code> block configures a Bus Monitor on channel 1
+            of the board. This block also instructs the board to monitor bus A.</p><p>The <code class="literal">PCI-1553 Bus Monitor</code> block specifies a maximum of 10 messages
+            to receive in a list.</p><p>The <code class="literal">1553 Select BM Message</code> block picks a message with specified
+            properties out of this list. The Message selection mode parameter of the block provides
+            a finite list of message properties. In this model, the selected property is
+                <code class="literal">BC-&gt;RT or RT-&gt;BC</code>.</p><p>The <code class="literal">1553 Select BM Message</code> block has the following outputs:</p><p>L &#8212; Message list passed to other<code class="literal">1553 Select BM Message</code>
+            blocks. If this block is the only <code class="literal">1553 Select BM Message</code> block in
+            your model, connect the signal to a terminator or ground.</p><p>T &#8212; Time that the board believes that the message was received on the bus. This
+            time is the time, in microseconds, since the board was started, presented as a double.
+            The clock can run at a slightly different rate than the model execution timer.
+            Therefore, this time is likely different from the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> execution time.</p><p>S &#8212; Status information. This information contains seven
+                <code class="literal">uint32</code> entries with status and command information.</p><p>D &#8212; A vector of 32 uint16 entries with the data from that message. This vector
+            outputs 32 entries, even if only some of the entries are defined.</p></div></body></html>

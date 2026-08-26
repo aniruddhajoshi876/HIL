@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO619 - Process Data</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io619_setup.html" title="IO619 - Setup"><link rel="next" href="refentry_io619_status.html" title="IO619 - Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io619_process_data"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO619 - Process Data</h2><p>IO619 - Process Data &#8212; <span class="phrase">Receive/Transmit cyclic
+                    data</span></p></div><div class="refsect1"><a name="d5e17996"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io619_process_data.png"></span></span></p></div><div class="refsect1"><a name="d5e18004"></a><h2>Description</h2><p>This block receives/transmits cyclic data from/to the MVB network. The
+                configuration can be done manually or by a configuration file specified in the
+                corresponding Setup block.</p></div><div class="refsect1"><a name="d5e18007"></a><h2>Ports</h2><p>The data type of the input/output data depends on the selected configuration mode
+                in the Setup block. If a configuration file is selected, the data type changes to a
+                Simulink bus, and a bus object containing the variables defined in the configuration
+                file is created in your workspace. Otherwise, the data type is a vector of
+                bytes.</p><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Process data to be transmitted either as as a byte vector or a
+                            Simulink bus.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>Enable/Disable message transmission.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Process data to be received either as a byte vector or a Simulink
+                            bus.</p></dd><dt><span class="term">
+                        <span class="guilabel">Freshness</span>
+                    </span></dt><dd><p>Elapsed time from the last valid reception of the message in
+                            milliseconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e18034"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Address</span>
+                    </span></dt><dd><p>Specify the address of the port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Size</span>
+                    </span></dt><dd><p>Select the amount of bytes each message contains.</p></dd><dt><span class="term">
+                        <span class="guilabel">Direction</span>
+                    </span></dt><dd><p>Select if a message should be received or transmitted.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Selected Port</span>
+                    </span></dt><dd><p>Displays the selected port name. Click on the <span class="bold"><strong>Select Port</strong></span> button to choose a port from the port list
+                            of the configured device. This automatically updates the <span class="bold"><strong>Port Address</strong></span>, <span class="bold"><strong>Size</strong></span>, <span class="bold"><strong>Direction</strong></span> and
+                                <span class="bold"><strong>Sample Time</strong></span>. By clicking the
+                                <span class="bold"><strong>Refresh Data</strong></span> button, the data of
+                            the specified device is updated.</p></dd><dt><span class="term">
+                        <span class="guilabel">Freshness Data Type</span>
+                    </span></dt><dd><p>Select the data type of the freshness output.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Port</span>
+                    </span></dt><dd><p>Select whether the enable input is active. Otherwise message
+                            transmission is always enabled.</p></dd></dl></div></div></div></body></html>

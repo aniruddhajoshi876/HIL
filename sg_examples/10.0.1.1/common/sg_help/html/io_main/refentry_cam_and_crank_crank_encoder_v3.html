@@ -1,0 +1,68 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Crank Encoder v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_cam_decoder_v1.html" title="Cam and Crank - Cam Decoder v1"><link rel="next" href="refentry_cam_and_crank_cam_encoder_v3.html" title="Cam and Crank - Cam Encoder v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_crank_encoder_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Crank Encoder v3</h2><p>Cam and Crank - Crank Encoder v3 &#8212; <span class="phrase">The Crank Encoder
+                    generates a binary crankshaft signal based on the defined number of teeth, the
+                    number of missing teeth, the duty cycle and speed. </span></p></div><div class="refsect1"><a name="d5e12580"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_crank_encoder_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e12589"></a><h2>Description</h2><p>The Crank Encoder module generates a binary crankshaft signal based on the
+                defined number of teeth, the number of missing teeth, the duty cycle and speed. The
+                module integrates the crankshaft speed to obtain the shaft position. The optional
+                position output port allows the shaft position to be used in the user model. The
+                crank tooth pattern is repeated every 360 degrees. The shaft position is wrapped
+                between 0 and 720 degrees to match one cycle of the Cam Encoder module.</p></div><div class="refsect1"><a name="d5e12592"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Position </span>
+                    </span></dt><dd><p>The current angle of the crankshaft module. The range is between 0
+                            and 720 degrees.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Speed </span>
+                    </span></dt><dd><p>This optional input port defines the crankshaft speed in rpm. The
+                            speed can be negative, which represents reverse rotation.</p></dd><dt><span class="term">
+                        <span class="guilabel">Duty Cycle </span>
+                    </span></dt><dd><p>This optional input allows you to alter the duty cycle of the crank
+                            teeth during model execution. Values between 0.0 and 1.0 are
+                            accepted.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12613"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module Setup</div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Crank Encoder Tabulator </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Initial Angle Vector </span>
+                    </span></dt><dd><p>This parameter sets the crankshaft angle at model start. The angle is
+                            defined in degrees. The crankshaft will start turning from this
+                            position. Use this parameter to emulate multiple mechanically coupled
+                            crankshafts, which each have different angle offsets. This parameter is
+                            only visible if your configuration file features Crank Encoder version
+                            3.8 or later.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Speed (rpm) Vector </span>
+                    </span></dt><dd><p>This parameter defines the default speed of the crankshaft. The
+                            default speed value is used initially at model start until a new speed
+                            value is received at the input port of the block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Crank Teeth Vector </span>
+                    </span></dt><dd><p>This parameter defines the number of teeth of the crankshaft. Note
+                            that the number of teeth also includes any missing teeth.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Missing Crank Teeth Vector </span>
+                    </span></dt><dd><p>This parameter defines the number of missing teeth of the crankshaft.
+                            The missing teeth appear at the end of each turn.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Crank Teeth Duty Cycle Vector</span>
+                    </span></dt><dd><p>This parameter defines the default duty cycle of the crank teeth.
+                            Valid values are between 0.0 and 1.0. The default duty cycle is used
+                            initially at model start. The duty cycle can be changed during model
+                            execution by using the optional duty cycle input port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Invert Crankshaft Signal Output</span>
+                    </span></dt><dd><p>This checkbox defines the polarity of the crank signal.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Input and Output Port Configuration Tabulator </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Speed Input Port </span>
+                    </span></dt><dd><p>This checkbox enables the optional speed input port of the driver
+                            block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Duty Cycle Input Port </span>
+                    </span></dt><dd><p>This checkbox enables the optional duty cycle input port of the driver
+                            block.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Position Output Port </span>
+                    </span></dt><dd><p>This checkbox enables the optional crankshaft position output port of
+                            the driver block.</p></dd></dl></div></div></div></body></html>

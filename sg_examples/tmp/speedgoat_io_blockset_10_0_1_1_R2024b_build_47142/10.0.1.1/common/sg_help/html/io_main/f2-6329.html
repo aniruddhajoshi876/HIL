@@ -1,0 +1,37 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Initialization and Termination CAN Messages</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bjes.html" title="Chapter&nbsp;11.&nbsp;CAN I/O Support"><link rel="prev" href="f2-6291.html" title="Model Execution Driven by CAN Messages"><link rel="next" href="f2-6483.html" title="CAN Data Frames"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f2-6329"></a>Initialization and Termination CAN Messages</h2></div></div></div><p>The CAN <code class="literal">Setup</code> driver blocks for the supported CAN boards allow you
+            to define CAN messages to be sent during initialization and termination of the real-time
+            application. The driver blocks send these messages once at the beginning of each
+            application run and once before an application run is stopped. The main purpose for
+            sending these messages is to initialize or terminate other CAN nodes on the network,
+            such as CANopen or DeviceNet nodes. Even if those CAN layers are not directly supported,
+            the model can usually communicate with those nodes with standard CAN messages, provided
+            the nodes are initialized. The initialization and termination fields of the
+                <code class="literal">Setup</code> blocks are intended for this purpose.</p><p>You define the initialization and termination CAN messages by using <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; struct arrays with CAN
+            specific field names. This approach was also used for the RS-232 and general counter
+            driver blocks found in the <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> I/O library. Refer to those driver blocks and their help
+            for additional information about this basic concept.</p><p>The CAN <code class="literal">Setup</code> block-specific field names are the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="guilabel">Port</span> &#8212; Selects the CAN port over which the message
+                    is sent. Valid values are either <code class="literal">1</code> or <code class="literal">2</code>
+                    (double).</p></li><li class="listitem"><p><span class="guilabel">Type</span> &#8212; Defines whether the message to be sent is
+                    of type standard or extended. Valid values are either
+                        <code class="literal">'Standard'</code> or <code class="literal">'Extended'</code> (character
+                    vectors).</p></li><li class="listitem"><p><span class="guilabel">Identifier</span> &#8212; Defines the identifier of the
+                    message. The value (scalar) itself must be in the corresponding identifier range
+                    (standard or extended).</p></li><li class="listitem"><p><span class="guilabel">Data</span> &#8212; Defines the data frame to be sent out along
+                    with the CAN message. The length of the row vector defines the data frame
+                    size.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>If the CAN message data type is a CAN_MESSAGE data type, the value of
+                            the frame size vector must match the <span class="guilabel">Length</span>
+                            parameter of the connected <code class="literal">CAN Pack</code> block.</p></li><li class="listitem"><p>If the CAN message data type is a double, this field defines the data
+                            frame to be sent out along with the CAN message. The value must be a row
+                            vector of type double with a maximum length of 8. Each element of the
+                            vector defines 1 byte. In this case, the first element defines the data
+                            for byte 0 and the eighth element the data for byte 7. Each element can
+                            have a value from 0 through 255 (decimal).</p></li></ul></div></li><li class="listitem"><p><span class="guilabel">Pause</span> &#8212; Defines the amount of time, in seconds,
+                    that the <code class="literal">Setup</code> block waits after this message has been sent
+                    before sending the next message. Valid values are 0&#8211;0.05 seconds. Some CAN nodes
+                    need time to settle before they can accept the next message. For example, the
+                    node must settle when the previous message puts it in a new operational mode.
+                    Use this field to specify those idle times.</p></li></ul></div></div></body></html>

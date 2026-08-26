@@ -1,0 +1,120 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO752 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io752_setup.html" title="IO752 - Setup"><link rel="next" href="refentry_io752_setup_v3.html" title="IO752 - Setup v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io752_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO752 - Setup v2</h2><p>IO752 - Setup v2 &#8212; <span class="phrase">Configure the IO752 IO
+                    module</span></p></div><div class="refsect1"><a name="d5e61374"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io752_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e61382"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e61388"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Configuration-Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_comms_ip_targetdrive"></a><span class="term">
+            <span class="guilabel">Target Machine Drive Letter</span>
+        </span></dt><dd><p>The drive letter of your target machine where the firmware and configuration files
+                will be stored. The default drive is "C:\".</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This parameter serves no purpose in MATLAB R2020b and later.</p></td></tr></table></div></dd><dt><a name="varlistentry_comms_ip_configurationmode"></a><span class="term">
+            <span class="guilabel">Configuration Mode</span>
+        </span></dt><dd><p>Select <span class="bold"><strong>Configuration file</strong></span> to use the
+                configuration files generated with SYCON.net. Use <span class="bold"><strong>Warmstart</strong></span> to configure the I/O module by the block mask parameters
+                completely.</p></dd><dt><a name="varlistentry_comms_pciSlot_autoSearch_hilscher_slave"></a><span class="term">
+                            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+                        </span></dt><dd><p>There are two approaches for mapping the block to a specific I/O
+                                module installed in your target machine. All modules of the same
+                                family (see Module ID above) must be configured using the same
+                                method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be
+                                        automatically located in the target machine. If you have
+                                        multiple modules of the same family, the Module ID (first
+                                        vector element for a multi-node module) defines which module
+                                        is associated with this block. To see how each I/O module
+                                        maps to a Module ID, use this Speedgoat API:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li><li class="listitem">Explicit Addressing: to explicitly define the logical
+                                        address of the I/O module in the target machine, you can
+                                        provide the PCI bus and slot numbers as a vector: [bus,
+                                        slot]. To determine these numbers, run the following command
+                                        in the MATLAB command window:
+                                        <pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre>Note
+                                        that the PCI address can change whenever an I/O module is
+                                        added or removed. Usually, auto-search is the best option.
+                                    </li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Warmstart-Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Bus Start</span></span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Automatic: The device starts the communication immediately
+                                        after the initialization of the real-time application on the
+                                        target. The communication is maintained even if the
+                                        real-time application stops.</p></li><li class="listitem"><p>Application controlled: The device starts the
+                                        communication after the real-time application has executed.
+                                        The device stops the communication on the Profinet when the
+                                        real-time application stops.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term"><span class="guilabel">Name of Station</span></span></dt><dd><p>Profinet uses a name-based station addressing method. The name must be
+                            unique in the network and must match the name of the related device node
+                            in the Profinet controller configuration.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The length of the name is limited to 127 characters.</p><p>The name must not contain uppercase letters.</p><p>The only special characters allowed are hyphens and
+                                periods.</p><p>The name must begin with a letter.</p></td></tr></table></div></dd><dt><span class="term"><span class="guilabel">Vendor ID</span></span></dt><dd><p>The ID can be found in the ProfileBody/deviceIdentity section of the
+                            device-related GSDML file. The Vendor ID must match the Vendor ID of the
+                            related device node in the Profinet controller configuration.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The Vendor ID must be a decimal number. You can use hex2dec() to
+                                convert a hexadecimal number to a decimal number.</p></td></tr></table></div></dd><dt><span class="term"><span class="guilabel">Device ID</span></span></dt><dd><p>The ID can be found in the ProfileBody/deviceIdentity section of the
+                            related device description file (GSDML). The device ID must match the
+                            device ID of the related device node in the Profinet controller
+                            configuration.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>The device ID must be a decimal number. You can use hex2dec() to
+                                convert a hexadecimal number to a decimal number.</p></td></tr></table></div></dd><dt><span class="term"><span class="guilabel">Object UUID</span></span></dt><dd><p>This parameter must match the ObjectUUID_LocalIndex value in the
+                            related device description file (GSDML).</p></dd><dt><span class="term"><span class="guilabel">Profinet Slot/Module Configuration</span></span></dt><dd><p>A Profinet device consists of logical APIs, slots and subslots. The
+                            pluggable modules and sub-modules of the device are listed in the
+                            related device description file (GSDML). The communication between
+                            controller and device is based on a configured subset of these modules.
+                            The module configuration of a device must match the module configuration
+                            of the related device node in the Profinet controller
+                            configuration.</p><p>The slot/module configuration edit field expects a n-by-7 matrix. Each
+                            submodule is represented by one row and must contain the following
+                            items:</p><pre class="programlisting">[API, slot, subslot, module, submodule, input length, output length]</pre><div class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>Refer to <a href="refentry_io752_usage_notes.html#refsect_io752_usage_note_example" class="olink">Configuration
+                                    Example</a> for information on how to use this
+                                parameter.</p></td></tr></table></div></dd><dt><span class="term"><span class="guilabel">Profinet Record/Parameter Configuration</span></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This parameter is obsolete. Instead, use the IO752 Record block to
+                                define records.</p></td></tr></table></div><p>As described in the previous block parameter, a sub-module contains
+                            data which can be cyclically read and written by the PROFINET
+                            controller. A sub-module can also contain acyclic data. A subset of
+                            these so-called RECORDs is listed in the related GSDML file. Navigate to
+                            a SubmoduleItem and you will find a RecordDataList containing
+                            ParameterRecordDataItems. For the correct configuration of the device,
+                            you require the Index and Length attributes. The Data attribute contains
+                            the default value of the record. This subset of records, which is part
+                            of the GSDML file, is written once by the controller when the connection
+                            is being established. While the communication is running, the controller
+                            can read/write additional records which do not need to be part of the
+                            GSDML. Note that you can only define records whose sub-modules are part
+                            of the <span class="bold"><strong>Slot/Module Configuration</strong></span>. Slots
+                            and subslots defined in the <span class="bold"><strong>Record/Parameter
+                                Configuration</strong></span> must be part of the <span class="bold"><strong>Slot/Module Configuration</strong></span> as well.</p><p>The <span class="bold"><strong>Record/Parameter Configuration</strong></span>
+                            edit field expects a n-by-5 cell array. Each record is represented by
+                            one row and must contain the following items:</p><pre class="programlisting">{slot, subslot, index, access mode, default value; ...</pre><pre class="programlisting"> slot, subslot, index, access mode, default value}</pre><div class="itemizedlist"><div class="itemizedlist-title"><span class="bold"><strong>RECORD Properties</strong></span></div><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The <span class="bold"><strong>Slot</strong></span> of the module to
+                                    which the record belongs. Valid values are between 0 and
+                                    0x7FFF.</p></li><li class="listitem"><p>The <span class="bold"><strong>Sub-Slot</strong></span> into which the
+                                    record-related sub-module is plugged. Valid values are between 0
+                                    and 32767</p></li><li class="listitem"><p>The <span class="bold"><strong>Index</strong></span> of the record.
+                                    Corresponds to the XML attribute Index of the related
+                                    ParameterRecordDataItem in the GSDML file. Valid values are
+                                    between 0 and 32767</p></li><li class="listitem"><p>The <span class="bold"><strong>Access Mode</strong></span> determines
+                                    how to access the record data from the real-time application
+                                    side </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Select <span class="bold"><strong>0</strong></span> to
+                                                define the record without reading and writing during
+                                                runtime</p></li><li class="listitem"><p>Select <span class="bold"><strong>1</strong></span> to read
+                                                the value of a record which has been written by the
+                                                PROFINET controller. Use the Record Read block for
+                                                this purpose</p></li><li class="listitem"><p>Select <span class="bold"><strong>2</strong></span> to write
+                                                the value of a record which the PROFINET controller
+                                                can then read. Use the Record Write block for this
+                                                purpose</p></li><li class="listitem"><p>Select <span class="bold"><strong>3</strong></span> to read
+                                                and write the record.</p></li></ul></div><p>
+                                </p></li><li class="listitem"><p>The <span class="bold"><strong>Default Value</strong></span> of the
+                                    record. Corresponds to the XML attribute Data of the related
+                                    ParameterRecordDataItem in the GSDML file. The default value is
+                                    an array of uint8. When defining the default value you
+                                    implicitly define the length of the record.</p></li></ul></div></dd></dl></div></div></div></body></html>

@@ -1,0 +1,55 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">SSI Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_ssi_examples.html" title="IO3xx SSI - Examples"><link rel="next" href="refentry_ssi_master_v2.html" title="SSI - Master v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ssi_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>SSI Usage Notes</h2><p>SSI Usage Notes &#8212; <span class="phrase"><span class="bold"><strong>Usage
+                        information about the I/O module</strong></span></span></p></div><div class="refsect1"><a name="refsect_ssi_timing_diagram"></a><h2>SSI Timing Diagram</h2><p>The image below illustrates the timing diagrams of the SSI and SSI2
+                protocols.</p><p><span class="bold"><strong>SSI:</strong></span></p><p>
+                <span class="inlinemediaobject"><img src="./graphics/SSI_diag_1.svg" width="100%"></span></p><p><span class="bold"><strong>SSI2:</strong></span></p><p>
+                <span class="inlinemediaobject"><img src="././graphics/SSIM_diag_2.svg" width="100%"></span>
+            </p><p>
+                </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col class="col1" width="50%"><col class="col2" width="50%"></colgroup><tbody><tr><td valign="top">
+                                    <p><span class="bold"><strong>Timings Provided by the Master
+                                            Device</strong></span></p>
+                                    <p>1/T<sub>CLK</sub> = Period</p>
+                                    <p>T<sub>P</sub> = Time pause</p>
+                                    <p>T<sub>L</sub> = Time low</p>
+                                </td><td valign="top">
+                                    <p><span class="bold"><strong>Timings Provided by the Slave
+                                            Device</strong></span></p>
+                                    <p>T<sub>M</sub> = Transfer timeout</p>
+                                </td></tr></tbody></table></div><p>
+            </p><p><span class="bold"><strong>T<sub>P</sub>:</strong></span></p><p>Time pause defines the idle time between two SSI messages, before the master
+                restarts clocking to read the next data from the slave. Ensure that this time is
+                greater than T<sub>M</sub> and is at least equal to
+                    2*1/T<sub>CLK</sub>.</p><p><span class="bold"><strong>T<sub>L</sub>:</strong></span></p><p>The time low is only used with SSI2. If enabled, the master will provide an
+                additional clock with an extended low time of T<sub>L</sub>.
+                    T<sub>L</sub> must be at least 2.5 times the period (2.5*T). SSI2 is
+                a variant of SSI for use with Codechamp encoders.</p><p><span class="bold"><strong>T<sub>M</sub>:</strong></span></p><p>Transfer timeout (also known as mono-flop time). After the slave has shifted out
+                its last bit, it will hold the data line low and release it high after
+                    T<sub>M</sub> to signal the end of the message.
+                    T<sub>M</sub> starts after the last falling clock edge.</p></div><div class="refsect1"><a name="refsect_ssi_mode_free_run"></a><h2>SSI Mode Free Run</h2><p>The image below illustrates the timing diagram of the <span class="bold"><strong>Free
+                    Run</strong></span> mode:</p><p><span class="inlinemediaobject"><img src="./graphics/SSI_FreeRun.svg" width="100%"></span></p><p>The master continuously generates the clock signal that defines the SSI frame.
+                Every time the SSI driver block is executed on the CPU during a simulation step, the
+                SSI data from the previous SSI frame received will be read for the current step. The
+                driver only reads data and does not actively wait for the end of the SSI-frame.
+                Consequently the execution time is short.</p></div><div class="refsect1"><a name="refsect_ssi_mode_sync_no_wait_time_smallframe"></a><h2>SSI Synchronization Mode: No Waiting Time (t<sub>FrameSSI</sub> &lt;
+                    t<sub>Sample</sub>)</h2><p>The image below illustrates the timing diagram of the <span class="bold"><strong>Synchronization No Waiting Time</strong></span> mode when the SSI frame time is
+                smaller than the sample step time:</p><p>
+                <span class="inlinemediaobject"><img src="./graphics/SSI_SyncNoWaitTimeFrameSmaller.svg" width="100%"></span></p><p>Every time the SSI driver block is executed on the CPU during a simulation step,
+                the SSI data from the previous SSI frame received will be read for the current step,
+                and the SSI master will be triggered to generate a new single SSI frame. The driver
+                only reads data and writes to the SSI master to trigger a new frame and does not
+                actively wait for the end of the SSi-frame. Consequently the execution time is
+                short.</p></div><div class="refsect1"><a name="refsect_ssi_mode_sync_no_wait_time_bigframe"></a><h2>SSI Synchronization Mode: No Waiting Time (t<sub>FrameSSI</sub> &gt;
+                    t<sub>Sample</sub>)</h2><p>The image below illustrates the timing diagram of the <span class="bold"><strong>Synchronization No Waiting Time</strong></span> mode when the SSI frame time is
+                greater than the sample step time:</p><p>
+                <span class="inlinemediaobject"><img src="./graphics/SSI_SyncNoWaitTimeFrameBigger.svg" width="100%"></span></p><p>This is the same behavior as described above. However, since the SSI frame time is
+                greater than the sample step time, the SSI master only starts a new frame when the
+                SSI frame is idle. The read SSI data are the same for several CPU sample
+                steps.</p></div><div class="refsect1"><a name="refsect_ssi_mode_sync_wait_time_applicable"></a><h2>SSI Mode Synchronization: Waiting Time Applicable</h2><p>The image below illustrates the timing diagram of the <span class="bold"><strong>Synchronization Waiting Time Applicable</strong></span> mode:</p><p>
+                <span class="inlinemediaobject"><img src="./graphics/SSI_SyncWaitTimeApplicable.svg" width="100%"></span></p><p>Every time the SSI driver block is executed on the CPU during a simulation step,
+                the SSI master is triggered to generate a new SSI frame. The SSI driver block
+                actively waits until the frame is finished and then reads the SSI data from the SSI
+                frame just received, which will be available for the current sample step. The driver
+                actively waits for the SSI frame to complete. The execution time is therefore equal
+                to the SSI frame time. If the sample time is set to less than the SSI frame length,
+                a CPU overload issue will occur.</p></div></div></body></html>

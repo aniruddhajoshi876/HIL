@@ -1,0 +1,39 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">A2B - Remote I2C</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_a2b_remote_gpio.html" title="A2B - Remote GPIO"><link rel="next" href="refentry_a2b_status.html" title="A2B - Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_a2b_remote_i2c"></a><div class="titlepage"></div><div class="refnamediv"><h2>A2B - Remote I2C</h2><p>A2B - Remote I2C &#8212; <span class="phrase">I2C communication to remote devices over A2B</span></p></div><div class="refsect1"><a name="d5e576"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_a2b_remote_i2c.png"></span></span></p></div><div class="refsect1"><a name="d5e584"></a><h2>Description</h2><p>This block reads or writes data from or to the specified peripheral I2C device via
+                an existing A2B main node.</p></div><div class="refsect1"><a name="d5e587"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Data Count</span></span></dt><dd><p>Number of data bytes to read or write.</p></dd><dt><span class="term"><span class="guilabel">I2C Addr</span></span></dt><dd><p>I2C address of the specified device from which to read or
+                            write.</p></dd><dt><span class="term"><span class="guilabel">Reg Addr</span></span></dt><dd><p>I2C register address of the specified device from which to read or
+                            write.</p></dd><dt><span class="term"><span class="guilabel">Data</span></span></dt><dd><p>Data to transmit to the specified I2C device. This input port is only
+                            active when <span class="bold"><strong>Direction</strong></span> is set to
+                            Write.</p></dd><dt><span class="term"><span class="guilabel">Enable</span></span></dt><dd><p>Controls whether data transmission is enabled or disabled. This input
+                            port is only active when <span class="bold"><strong>Show Enable
+                                Port</strong></span> is selected.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Received data bytes from the specified I2C device. This output port is
+                            only active when <span class="bold"><strong>Direction</strong></span> is set to
+                            Read.</p></dd></dl></div></div><div class="refsect1"><a name="d5e626"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">A2B Interface ID</span>
+                    </span></dt><dd><p>This parameter selects the physical A2B interface on the -40 I/O
+                            interface extension for remote I2C access. </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>I2C remote accesses only are possible when the corresponding
+                                    <span class="bold"><strong>A2B Interface ID</strong></span> is acting as a
+                                main node.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Direction</span>
+                    </span></dt><dd><p>Select the direction for the I2C peripheral device.</p></dd><dt><span class="term">
+                        <span class="guilabel">Node ID</span>
+                    </span></dt><dd><p>Specify the ID of the subordinate node as indicated in the
+                            configuration file for the remote I2C access.</p></dd><dt><span class="term">
+                        <span class="guilabel">Buffer Size</span>
+                    </span></dt><dd><p>Specify the maximum number of bytes expected for reading or writing
+                            data.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use 2-Byte Register Address</span>
+                    </span></dt><dd><p>Select whether the register address is one or two bytes long.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Port</span>
+                    </span></dt><dd><p>Select whether the enable input is active.</p></dd></dl></div></div></div></body></html>

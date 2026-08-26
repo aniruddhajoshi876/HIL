@@ -1,0 +1,49 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO425 - Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="up" href="book_lvdt_etc.html" title="Lvdt_etc I/O"><link rel="prev" href="refentry_io425_setup.html" title="IO425 - Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io425_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO425 - Write</h2><p>IO425 - Write &#8212; <span class="phrase">Writes the IO425 LVDT/RVDT/Resolver
+                    outputs</span></p></div><div class="refsect1"><a name="d5e3730"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io425_write.png"></span></span></p></div><div class="refsect1"><a name="refsect_common_block_description"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+            machine.</p></div><div class="refsect1"><a name="d5e3741"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the LVDT/RVDT/Resolver channel number)</span>
+                    </span></dt><dd><p>The position in percent (-100 to 100) for LVDT/RVDT or in degrees for
+                            resolvers (0&deg; to 360&deg;).</p></dd><dt><span class="term">
+                        <span class="guilabel">In Ctrl</span>
+                    </span></dt><dd><p>Controls the input relays for all enabled channels by setting the
+                            corresponding element of the vector. Each element of the vector controls
+                            one channel's input relays where each relay can be controlled by its
+                            bit-position. The value '1' closes the relay and '0' opens it. Refer to
+                            the <a href="refentry_io425_usage_notes.html" class="olink">IO425 usage notes</a> for
+                            more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Out A Ctrl</span>
+                    </span></dt><dd><p>Controls the output relays of the A output for all enabled channels by
+                            setting the corresponding element of the vector. Each element of the
+                            vector controls one channel's A output relays where each relay can be
+                            controlled by its bit-position. The value '1' closes the relay and '0'
+                            opens it. Refer to the <a href="refentry_io425_usage_notes.html" class="olink">IO425 usage notes</a> for
+                            more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Out B Ctrl</span>
+                    </span></dt><dd><p>Controls the output relays of the B output for all enabled channels by
+                            setting the corresponding element of the vector. Each element of the
+                            vector controls one channel's B output relays where each relay can be
+                            controlled by its bit-position. The value '1' closes the relay and '0'
+                            opens it. Refer to the <a href="refentry_io425_usage_notes.html" class="olink">IO425 usage notes</a> for
+                            more information.</p></dd></dl></div><p>All input ports are vectors. The width of the vector and the order of the
+                corresponding channels depends on the configuration of the <span class="bold"><strong>Channel Setup</strong></span>.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">LOS</span>
+                    </span></dt><dd><p>This shows if the excitation input signal is lost (1) or not (0). The
+                            LOS output is active if the input signal is less than 50 %.</p></dd><dt><span class="term">
+                        <span class="guilabel">Voltage</span>
+                    </span></dt><dd><p>Outputs the measured voltage of the excitation input signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frequency</span>
+                    </span></dt><dd><p>Outputs the measured frequency of the excitation input signal.</p></dd><dt><span class="term">
+                        <span class="guilabel">Position</span>
+                    </span></dt><dd><p>Outputs the current position being simulated by the module.</p></dd></dl></div><p>All output ports are vectors. The width of the vector, and the order of the
+                corresponding channels, depends on the configuration of the <span class="bold"><strong>Channel Setup</strong></span>.</p></div><div class="refsect1"><a name="d5e3794"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">Show LOS</span></dt><dd><p>Select whether the LOS output should be available.</p></dd><dt><span class="term">Show Input Voltage</span></dt><dd><p>Select whether the input voltage output should be available.</p></dd><dt><span class="term">Show Input Frequency</span></dt><dd><p>Select whether the input frequency output should be available.</p></dd><dt><span class="term">Show Wrapped Position</span></dt><dd><p>Select whether the wrapped position output should be available.</p></dd><dt><span class="term">Enable Input Control</span></dt><dd><p>Select whether the input relays' control input should be
+                            available.</p></dd><dt><span class="term">Enable Output A Control</span></dt><dd><p>Select whether the output A relays' control input should be
+                            available.</p></dd><dt><span class="term">Enable Output B Control</span></dt><dd><p>Select whether the output B relays' control input should be
+                            available.</p></dd></dl></div></div></div></body></html>

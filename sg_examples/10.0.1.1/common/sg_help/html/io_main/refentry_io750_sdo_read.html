@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO750 - SDO Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io750_sdo_write.html" title="IO750 - SDO Write"><link rel="next" href="refentry_io750_emergency.html" title="IO750 - Emergency"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io750_sdo_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO750 - SDO Read</h2><p>IO750 - SDO Read &#8212; 
+                <span class="phrase">Reads data from local EtherCAT Service Data Objects </span>
+            </p></div><div class="refsect1"><a name="d5e57799"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p>
+                <span class="guiicon">
+                    <span class="inlinemediaobject"><img src="././graphics/icon_io750_sdo_read.png"></span>
+                </span>
+            </p></div><div class="refsect1"><a name="d5e57807"></a><h2>Description</h2><p>This block is used to read the service data objects of the subordinate device. Use the IO750
+                Setup block to define these objects. On the network side the objects can be read and
+                written by the EtherCAT main device.</p><p>Your model can contain only one SDO Read block for each I/O module in your target
+                machine. This single block handles all the model's SDO read accesses to the SDO
+                dictionary of the related module.</p><p>Your model must contain one Setup block and one SDO Read block for the SDO
+                communication to function. The SDO Write block is optional.</p><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>This block is only supported by MATLAB from <span class="bold"><strong>R2019b</strong></span>.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e57815"></a><h2>Ports</h2><div class="refsect2"><a name="d5e57817"></a><h3>Inputs</h3><p>This block does not have any input ports.</p></div><div class="refsect2"><a name="d5e57820"></a><h3>Outputs</h3><p>This block has one output port for each SDO defined in the SDO table of the
+                    related Setup block with a "read" or "read-write" <span class="bold"><strong>Access
+                        Mode</strong></span>. The port type depends on the <span class="bold"><strong>Data
+                        Type</strong></span> property. The name of the port is composed of the <span class="bold"><strong>Index</strong></span>, <span class="bold"><strong>Sub Index</strong></span> and
+                        <span class="bold"><strong>Name</strong></span> properties.</p><p>If no SDO has a "read" or "read-write" <span class="bold"><strong>Access
+                        Mode</strong></span> then the block will have no output ports.</p></div></div><div class="refsect1"><a name="d5e57830"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Retrieve SDO Configuration</span>
+                    </span></dt><dd><p>Retrieves the SDO configuration from the related Setup block and
+                            updates the output ports.</p></dd></dl></div></div></div></body></html>

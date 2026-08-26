@@ -1,0 +1,93 @@
+/*******************************************************/
+
+/* 
+* LIN Descriptor File for Speedgoat LIN Product Example
+* © 2023, Speedgoat GmbH, www.speedgoat.com
+*
+* This .ldf file is intended for use with the Speedgoat
+* LIN Product Example (IO603_LIN_DIO_Loopback). It can 
+* also be used as a template for .ldf files compatible 
+* with the LIN Pack and Unpack Simulink blocks.
+*/
+
+/*******************************************************/
+
+
+LIN_description_file;
+LIN_protocol_version = "2.2";
+LIN_language_version = "2.2";
+LIN_speed = 19.2 kbps ;
+
+Nodes {
+  Master: WRITE, 5 ms, 0.1 ms ;
+  Slaves: READ ;
+}
+
+Signals {
+  Counter_01: 8, 0, READ, WRITE ;
+  Counter_02: 8, 0, READ, WRITE ;
+  Counter_03: 8, 0, READ, WRITE ;
+  SineCurve_01: 8, 0, READ, WRITE ;
+  SineCurve_02: 8, 0, READ, WRITE ;
+  SineCurve_03: 8, 0, READ, WRITE ;
+  State_01: 8, 0, READ, WRITE ;
+  State_02: 8, 0, READ, WRITE ;
+}
+
+Frames {
+  Frame_01: 0x01, READ, 3 {
+    Counter_01, 0 ;
+    Counter_02, 8 ;
+    Counter_03, 16 ;
+  }
+  Frame_02: 0x02, READ, 1 {
+    SineCurve_01, 0 ;
+  }
+  Frame_03: 0x03, READ, 1 {
+    SineCurve_02, 0 ;
+  }
+  Frame_04: 0x04, READ, 1 {
+    SineCurve_03, 0 ;
+  }
+  Frame_05: 0x05, READ, 2 {
+    State_01, 0 ;
+    State_02, 8 ;
+  }
+  Frame_06: 0x32, READ, 8 {
+    Counter_01, 0 ;
+    Counter_02, 8 ;
+    Counter_03, 16 ;
+	SineCurve_01, 24 ;
+	SineCurve_02, 32 ;
+	SineCurve_03, 40 ;
+	State_01, 48 ;
+    State_02, 56 ;
+  }
+}
+
+Node_attributes {
+  READ {
+    LIN_protocol = "2.2" ;
+    configured_NAD = 0x1 ;
+  }
+}
+
+Schedule_tables {
+ Table1 {
+    Frame_01 delay 10 ms ;
+    Frame_02 delay 5 ms ;
+    Frame_03 delay 5 ms ;
+    Frame_04 delay 5 ms ;
+    Frame_05 delay 10 ms ;
+  }
+}
+
+Signal_representation {
+  Enc_Test: Counter_01, Counter_02 ;
+}
+
+Signal_encoding_types {
+	Enc_Test {
+
+	}
+}

@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">CAN Message Utilities: E2E Profile 2 Check</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_e2e_p2_protect.html" title="CAN Message Utilities: E2E Profile 2 Protect"><link rel="next" href="refentry_ref_dnp3_client.html" title="DNP3 Client"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_e2e_p2_check"></a><div class="titlepage"></div><div class="refnamediv"><h2>CAN Message Utilities: E2E Profile 2 Check</h2><p>CAN Message Utilities: E2E Profile 2 Check &#8212; <span class="phrase">Applies AUTOSAR E2E Profile 2 Check
+                    mechanism to an array of bytes previously protected using E2E Profile 2
+                    Protect.</span></p></div><div class="refsect1"><a name="d5e4737"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_e2e_p2_check.png"></span></span></p></div><div class="refsect1"><a name="refsect_description_counter_insert"></a><h2>Description</h2><p>The <span class="bold"><strong>E2E Profile 2 Check </strong></span>block implements the
+                receiver-side logic of the AUTOSAR E2E Profile 2 specification. It is responsible
+                for validating the integrity and correctness of received messages protected using
+                E2E Profile 2.</p><p>For in-depth documentation about the E2E Profile 2 please refer to the <a class="link" href="https://www.autosar.org/fileadmin/standards/R19-03/FO/AUTOSAR_PRS_E2EProtocol.pdf" target="_top">relevant AUTOSAR documentation</a>.</p></div><div class="refsect1"><a name="refsect_ports_counter_insert"></a><h2>Ports</h2><p>Which input and output ports are available depends on the configuration settings
+                in the block mask.</p><div class="variablelist"><div class="variablelist-title">Input</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input Port</span>
+                    </span></dt><dd><p>This input port is always available and its datatype (either
+                            CAN_MESSAGE_BUS, CAN_FD_MESSAGE_BUS or a uint8 array with a maximum
+                            length of 256 bytes) is configured by the <span class="bold"><strong>Protocol</strong></span> parameter in the block mask.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID List</span>
+                    </span></dt><dd><p>This input port can be enabled with the <span class="bold"><strong>Data ID
+                                List from Input</strong></span> checkbox in the mask. <span class="bold"><strong>Data ID List</strong></span> input port expects an array of
+                            16 elements of data type uint8.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>This port outputs the result of the E2E P2 Check operation. The output
+                            can take one of the following values:</p><p>
+                            </p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="12%" class="c1"><col width="17%" class="newCol2"><col width="71%" class="c2"></colgroup><thead><tr><th>Status Code</th><th>Short Name</th><th>Status</th></tr></thead><tbody><tr><td>0</td><td>E2E_P02STATUS_OK</td><td>The received data is valid. Both the CRC and the
+                                                sequence counter check passed, and there was no data
+                                                loss detected.</td></tr><tr><td>1</td><td>E2E_P02STATUS_NONEWDATA</td><td>No new data has been received since the last
+                                                check. The sequence counter in the received message
+                                                is the same as in the previous message.</td></tr><tr><td>2</td><td>E2E_P02STATUS_WRONGCRC</td><td>The CRC validation failed, suggesting the message
+                                                data might be corrupted or altered during
+                                                transmission.</td></tr><tr><td>3</td><td>E2E_P02STATUS_INITAL</td><td>This is the initial state of the receiver. It
+                                                indicates that the system has not yet received or
+                                                validated the first expected message.</td></tr><tr><td>4</td><td>E2E_P02STATUS_REPEATED</td><td>A repeated message has been received. Although a
+                                                new message was expected, the sequence counter has
+                                                not changed, implying redundancy.</td></tr><tr><td>5</td><td>E2E_P02STATUS_OKSOMELOST</td><td>The received message is valid, but there are
+                                                indications that one or more messages were lost in
+                                                the sequence (i.e., a jump in the counter was
+                                                detected).</td></tr><tr><td>6</td><td>E2E_P02STATUS_WRONGSEQUENCE</td><td>The sequence counter is not in the expected
+                                                range, which can suggest issues such as
+                                                synchronization errors or an incorrect sequence due
+                                                to wrap-around or message tampering.</td></tr></tbody></table></div><p>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_counter_insert"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Data ID List from Input</span>
+                    </span></dt><dd><p>If enabled, adds a "Data ID List" input port to provide the <span class="bold"><strong>Data ID List</strong></span> from the Simulink&reg;
+                            model.</p></dd><dt><span class="term">
+                        <span class="guilabel">Data ID List</span>
+                    </span></dt><dd><p>If <span class="guilabel">Data ID List from Input</span> checkbox is disabled,
+                            the 16-element long <span class="bold"><strong>Data ID List</strong></span> can be
+                            configured with this parameter.</p></dd></dl></div></div></div></body></html>

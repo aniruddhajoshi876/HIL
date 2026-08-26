@@ -1,0 +1,75 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">General Standards PMC-24DSI12</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f44-6069.html" title="Chapter&nbsp;6.&nbsp;General Standards Blocks No Longer Recommended for Use"><link rel="prev" href="bq9wbuw.html" title="General Standards 16AO16 Analog Output"><link rel="next" href="bq9wfqs.html" title="General Standards 24DSI12 Analog Input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bq9u6mp-1"></a><div class="titlepage"></div><div class="refnamediv"><h2>General Standards PMC-24DSI12</h2><p>General Standards PMC-24DSI12 &#8212; Support for GS PMC-24DSI12 high-speed analog input board. (not
+                recommended)<b>GeneralStandards</b></p></div><div class="refsect1"><a name="bq9u6tn"></a><h2>Board</h2><p>General Standards PMC-24DSI12</p></div><div class="refsect1"><a name="bq9u6mp"></a><h2>General Description</h2><p>The PMC-24DSI12 is a high-speed analog input board. You can purchase the board
+                with either 4, 8, or 12 input channels. The board PMC form factor allows it to be
+                attached to different adapters for use on <span class="trademark"><a name="tp_pciexpress"></a>PCI
+        Express</span>&reg;, PCI-X, cPCI-x, PCI,
+                cPCI, or PC104-plus. You can order the board attached to the adapter that you
+                choose.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>This board operates in frame mode. To run the model with this board, you
+                        must perform additional setup procedures to route the buffer completion
+                        interrupt, as described in the following bullets.</p></li><li class="listitem"><p>If your system requires more channels:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Designate one board as the master board.</p></li><li class="listitem"><p>Add slave boards PMC-24DSI12 to the target computer.</p></li><li class="listitem"><p>Connect output pins <code class="literal">B29</code> and
+                                    <code class="literal">B30</code> of the master board to the clock input
+                                pins <code class="literal">A29</code> and <code class="literal">A30</code> of each slave
+                                board. Use twisted-pair wiring according to the LVDS
+                                directions.</p><p>The master board generates the interrupts from which to run the
+                                model.</p></li></ol></div></li><li class="listitem"><p>For frame audio output, route the clock output to a General Standards
+                        PMC66-16AO16 board:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Connect the output pins B29 and B30 from the last PMC-24DSI12
+                                board to the input pins B33 and B34 pins of the PMC66-16AO16
+                                board.</p></li><li class="listitem"><p>Set the <span class="bold"><strong>Frame Size</strong></span>, <span class="bold"><strong>Sample Rate</strong></span>, and <span class="bold"><strong>Sampletime</strong></span> parameters to the same value for each
+                                PMC-24DSI12 and PMC66-16AO16 block. For example, if <span class="bold"><strong>Sample Rate</strong></span> is 41000, set the <span class="bold"><strong>Sample Rate</strong></span> parameter to
+                                    <code class="literal">44100</code> for each block.</p></li></ol></div></li><li class="listitem"><p>The PMC-24DSI12 uses DMA completion interrupts. To use this interrupt to
+                        run your model:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>From the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window, type:
+                                </p><pre class="programlisting">tg = slrt;
+getPCIInfo(tg, 'all')</pre><p>.</p><p>This function returns a list of the installed PCI devices on your
+                                target computer.</p></li><li class="listitem"><p>Find the name <code class="literal">24DSI12</code> and note the IRQ for that
+                                board.</p></li><li class="listitem"><p>From the <span class="trademark"><a name="tm_matlab"></a>MATLAB</span>&reg; Command Window, type the name of your
+                                    <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model.</p><p>The <span class="trademark"><a name="tm_simulink"></a>Simulink</span>&reg; model appears.</p></li><li class="listitem"><p>From the model, select <span class="guimenuitem">Simulation</span> &#8594; <span class="guimenuitem">Model Configuration Parameter</span>.</p><p>The Configuration Parameter dialog box is displayed for the
+                                model.</p></li><li class="listitem"><p>Select the <span class="bold"><strong>Code
+                                    Generation</strong></span>
+                                node.</p></li><li class="listitem"><p>In the <span class="bold"><strong>Simulink Real-Time Options</strong></span>
+                                node, from the <span class="bold"><strong>Real-time interrupt
+                                    source</strong></span> list, select the same value as the IRQ value
+                                that <code class="literal">SimulinkRealTime.target.getPCIInfo</code> returns
+                                (see step 2).</p></li><li class="listitem"><p>To specify that the General Standards 24DSI12 board generates the
+                                interrupt, from the <span class="bold"><strong>I/O board generating the
+                                    interrupt</strong></span> list, select <code class="literal">General Standards
+                                    24DSI12</code>.</p></li><li class="listitem"><p>In the <span class="bold"><strong>PCI slot (-1: autosearch) or ISA base
+                                    address</strong></span> field, set the PCI bus and slot for your
+                                interrupting board. If you have only one PMC-24DSI12 board, you can
+                                enter <code class="literal">-1</code> to enable the driver to find the only
+                                board.</p></li><li class="listitem"><p>Click <span class="bold"><strong>OK</strong></span> and save the
+                                model.</p></li></ol></div></li></ul></div><p>The <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> block
+                library supports this board with this driver block:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                        <a href="bq9wfqs.html" class="olink">Analog
+                            Input</a>
+                    </p></li></ul></div><p>For frame audio output, use the General Standards PMC-24DSI12 Analog Input block
+                with the <a href="bq9wbuw.html" class="olink">Analog
+                    Output</a> block for your <span class="phrase"><a name="tm_xpctarget"></a>
+            <span class="trademark">Simulink</span>&reg;
+            <span class="trademark">Real-Time</span>&#8482;</span> audio system model.</p></div><div class="refsect1"><a name="bq9u6w3-1"></a><h2>Board Characteristics</h2><div class="unshaded_unruled"><table class="unshaded_unruled" border="1"><colgroup><col class="col1" width="50%"><col class="col2" width="50%"></colgroup><tbody><tr><td>
+                                <p>Board name</p>
+                            </td><td>
+                                <p>General Standards PMC-24DSI12</p>
+                            </td></tr><tr><td>
+                                <p>Manufacturer</p>
+                            </td><td>
+                                <p>General Standards</p>
+                            </td></tr><tr><td>
+                                <p>Bus type</p>
+                            </td><td>
+                                <p>PCI, <span class="trademark"><a name="tp_pciexpress"></a>PCI
+        Express</span>&reg;, PCI-X, cPCI-x, cPCI, or
+                                    PC104-plus</p>
+                            </td></tr><tr><td>
+                                <p>Multiple block instance support</p>
+                            </td><td>
+                                <p>One block per board</p>
+                            </td></tr><tr><td>
+                                <p>Multiple board support</p>
+                            </td><td>
+                                <p>Yes. Only one can be the timing initiator; the others must be
+                                    targets.</p>
+                            </td></tr></tbody></table></div></div><div class="refsect1"><a name="d5e7594"></a><h2>Related Links</h2><p><a class="link" href="http://www.generalstandards.com" target="_top">www.generalstandards.com</a></p></div></div></body></html>

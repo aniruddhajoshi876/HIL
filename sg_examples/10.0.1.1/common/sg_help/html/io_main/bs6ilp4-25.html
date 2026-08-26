@@ -1,0 +1,152 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor Decode ARINC 429 Words from Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="bs6ilp4-20.html" title="Condor Encode ARINC 429 Words for Send"><link rel="next" href="bs6ilqy-5.html" title="Condor 1553 Create BC Message List"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="bs6ilp4-25"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor Decode ARINC 429 Words from Receive<a name="arinc_decode"></a></h2><p>Condor Decode ARINC 429 Words from Receive<a name="arinc_decode"></a> &#8212; Decode ARINC 429 Words from Receive block (not recommended)<b>ARINC429</b></p></div><div class="refsect1"><a name="d5e3092"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="btvzwop-1.html" class="olink">Condor&reg;
+                            (GE&reg;-IP) RCEI-530</a></p></li><li class="listitem"><p><a href="bty9woi-1.html" class="olink">Condor&reg;
+                            (GE&reg;-IP) RCEI-830A</a></p></li></ul></div></div><div class="refsect1"><a name="bs6ilp4-28"></a><h2>Note</h2><p>The input port of a Decode block is a signal of type double. The Decode block
+                input port width automatically adapts to that of the source block.</p><p>Because the Decode block interprets the data on this port in a nonstandard way,
+                you send data to this port from the <a href="btvzwop-17.html" class="olink">Condor (GE-IP) RCEI-530 Receive</a> and <a href="bty9wpz-13.html" class="olink">Condor (GE-IP) RCEI-830A
+                    Receive</a> blocks. These blocks output their data into standard double
+                output.</p><p>The output port of a Decode block is in standard double format.</p></div><div class="refsect1"><a name="bs6ilp4-29"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Label</strong></span></span></dt><dd><p>Enter a three digit octal number. If the label of an input word does
+                            not match this label, the block completely ignores the word and does not
+                            apply the <span class="bold"><strong>Sync mask</strong></span> and <span class="bold"><strong>Sync value</strong></span> parameters.</p></dd><dt><span class="term"><span class="bold"><strong>Data type vector</strong></span></span></dt><dd><p>Enter a vector consisting of values between 0 and 3. These values
+                            specify the data type. The length of this vector determines how many
+                            ARINC words the block will attempt to decode and output each sample
+                            time.</p><p>The elements of the vector determine how the input double value is
+                            converted to a corresponding double output value, as follows</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="16%" class="col1"><col width="84%" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Interpretation</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">0</code></p>
+                                        </td><td>
+                                            <p>Raw &#8212; Convert the entire (unsigned) 32&#8211;bit
+                                                input word to double.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">1</code></p>
+                                        </td><td>
+                                            <p>BNR &#8212; For each word, convert bits 10&#8211;28
+                                                from signed binary format to a double output in the
+                                                range <code class="literal">[-Scale, Scale]</code> using the
+                                                  <span class="bold"><strong>Resolution (BCD) or Scale
+                                                  (BNR) vector</strong></span> scale factor specified for
+                                                this value.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">2</code></p>
+                                        </td><td>
+                                            <p>BCD &#8212; For each word, convert bits 10&#8211;28
+                                                from BCD format to double, using the sign data in
+                                                the SSM.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">3</code></p>
+                                        </td><td>
+                                            <p>Discretes &#8212; For each word, extract bits
+                                                10&#8211;28 and return them as a double.</p>
+                                        </td></tr></tbody></table></div><p>The elements of the data type vector determine how the input ARINC
+                            value is converted to a corresponding double output. The following
+                            describes how this block performs the conversion. For the purposes of
+                            this description, <code class="literal">n</code> denotes the length of the data
+                            type vector.</p></dd></dl></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The output width is one of the following, depending on your time tag
+                        selection</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>Provide time tags</strong></span> selected
+                                &#8212; <code class="literal">2n + 1</code> is the output width. The width
+                                consists of a count element, followed by <code class="literal">n</code> data
+                                elements, followed by <code class="literal">n</code> time tag elements.</p></li><li class="listitem"><p><span class="bold"><strong>Provide time tags</strong></span> cleared
+                                &#8212; <code class="literal">n + 1</code> is the output width. The width
+                                consists of a count element followed by <code class="literal">n</code> data
+                                elements.</p></li></ul></div><p>The count element indicates how many valid messages the block has decoded
+                        during the current sample time. If at least one message on the data element
+                        is valid, the count element has a nonzero value. It is zero otherwise. If
+                        the count element has a value greater than one, the block asserts only the
+                        most recent valid message on the output port.</p></li><li class="listitem"><p>The Decode block buffers its input internally. It updates its output port
+                        only during sample times when it has assembled at least one complete message
+                        of length <code class="literal">n</code> without detecting an error.</p><p>More than one complete message can be assembled during one sample time.
+                        The Decode block overwrites these messages such that only the most recent
+                        message is on the output port.</p></li></ul></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Resolution (BCD) or Scale (BNR)
+                        vector</strong></span></span></dt><dd><p>Enter a vector or scalar value as the resolution vector. This value
+                            must be a vector of the same length as the <span class="bold"><strong>data
+                                type vector</strong></span>. Otherwise, the scalar value is applied to
+                            the length of the <span class="bold"><strong>data type vector</strong></span>. The
+                            interpretation of this value depends on the data type. The block works
+                            with the data types as follows.</p><div class="shaded_ruled"><table class="shaded_ruled" border="1"><colgroup><col width="22%" class="col1"><col width="78%" class="col2"></colgroup><thead><tr><th>
+                                            <p>Type</p>
+                                        </th><th>
+                                            <p>Effect</p>
+                                        </th></tr></thead><tbody><tr><td>
+                                            <p><code class="literal">Raw</code></p>
+                                        </td><td>
+                                            <p>The block ignores the resolution value. However,
+                                                you must still include an associated value in the
+                                                resolution vector.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BNR</code></p>
+                                        </td><td>
+                                            <p>The block uses this value as a scale factor. The
+                                                block converts the binary value in bits 10&#8211;28 back
+                                                to a double in the range <code class="literal">[-1,1]</code>.
+                                                The block then multiplies that value by the scale
+                                                value to recover the original value.</p>
+                                            <p>A 19-bit signed ARINC binary can represent a range
+                                                from -262,144 to 262,143. If the combination of
+                                                input signal and resolution produces a value outside
+                                                this range, the block clamps it to be within the
+                                                range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">BCD</code></p>
+                                        </td><td>
+                                            <p>The resolution vector specifies, in the same units
+                                                as the input signal, the value of the least
+                                                significant digit of the BCD data field to be
+                                                encoded and sent. For example, if the associated
+                                                resolution is <code class="literal">.01</code> and the input
+                                                signal contains the value <code class="literal">3.1415</code>,
+                                                the output ARINC word will contain the number
+                                                  <code class="literal">314</code> in its data field, encoded
+                                                in BCD. Use same resolution on the receive side to
+                                                reconstruct 3.14. Resolution is typically a power of
+                                                10, but this is not a restriction.</p>
+                                            <p>The range representable as an ARINC BCD value is
+                                                -79,999 to 79,999. If the combination of input
+                                                signal and resolution produces a value outside this
+                                                range, the block limits it to within the
+                                                range.</p>
+                                        </td></tr><tr><td>
+                                            <p><code class="literal">Discretes</code></p>
+                                        </td><td>
+                                            <p>The block ignores the resolution value. However,
+                                                you must still include an associated value in the
+                                                resolution vector.</p>
+                                        </td></tr></tbody></table></div></dd><dt><span class="term"><span class="bold"><strong>Sync mask</strong></span></span></dt><dd><p>Enter a value, in hexadecimal, to specify which bits of the input
+                            words are the sync bits. (A sync bit lets you specify, using other
+                            parameters, when a message should begin.) The Decode block will examine
+                            these bits to look for the start of the next message. A message might be
+                            a series of one or more words. For example, a sync mask value of
+                                <code class="literal">0x300</code> equals <code class="literal">1100000000</code> in
+                            binary. This value selects the SDI bits (bits 9 and 10) as the sync
+                            bits. This functionality works with the <span class="bold"><strong>Sync
+                                value</strong></span> parameter.</p><p>If the sync mask is <code class="literal">0x0</code>, sync logic is not used.
+                            The next word begins a new message.</p></dd><dt><span class="term"><span class="bold"><strong>Sync value(s)</strong></span></span></dt><dd><p>This parameter specifies the sync logic for the block. Enter one hex
+                            value to specify <code class="literal">oneSync</code>, two hex values separated by
+                            a space for <code class="literal">twoSync</code> logic. For example, the sync
+                            value</p><pre class="programlisting">0x100</pre><p>selects <code class="literal">oneSync</code> logic. The sync value</p><pre class="programlisting">0x100 0x200</pre><p>selects <code class="literal">twoSync</code> logic. You can enter an 32-bit
+                            value.</p><p>The sync value takes into account the value of the sync mask, as
+                            follows:</p></dd></dl></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Assume the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>Sync mask</strong></span> =
+                                    <code class="literal">0x300</code></p></li><li class="listitem"><p><span class="bold"><strong>Sync value(s)</strong></span> =
+                                    <code class="literal">0x100</code></p></li></ul></div><p>When looking for the beginning of a new message, the block ANDs each input
+                        word with the <span class="bold"><strong>Sync mask</strong></span> value
+                            <code class="literal">0x300</code>. It compares the result with
+                            <code class="literal">0x100</code> and <code class="literal">0x300</code>. When it finds a
+                        match, the block stops this search and begins a new search, looking for the
+                        next message. The block decodes the next <code class="literal">n</code> words starting
+                        at this point.</p></li><li class="listitem"><p>Assume the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><span class="bold"><strong>Sync mask</strong></span> =
+                                    <code class="literal">0x300</code></p></li><li class="listitem"><p><span class="bold"><strong>Sync value(s)</strong></span> = <code class="literal">0x100
+                                    0x200</code></p></li></ul></div><p>When looking for the beginning of a new message, the block ANDs each input
+                        word with the <span class="bold"><strong>Sync mask</strong></span> value
+                            <code class="literal">0x300</code>. It compares the result to
+                            <code class="literal">0x100</code> and <code class="literal">0x300</code>. When the block
+                        finds a match, it ANDs the next input word with <code class="literal">0x300</code>. If
+                        the result equals <code class="literal">0x200</code> and <code class="literal">0x300</code>,
+                        this second word begins a new message.</p><p>Once the block locates the beginning of a message, it uses the next
+                            <code class="literal">n</code> input words and the required label to assemble the
+                        next output message. The block does not use synchronization logic until it
+                        is time to begin the assembly of a new message.</p></li></ul></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Provide time tags</strong></span></span></dt><dd><p>Select this check box to enable an output port of width <code class="literal">2n +
+                                1</code>, with time tag data in the last <code class="literal">n</code>
+                            elements.</p></dd></dl></div></div><div class="refsect1"><a name="d5e3303"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="https://aviation-ia.sae-itc.com" target="_top">https://aviation-ia.sae-itc.com</a></p></li><li class="listitem"><p><a class="link" href="http://www.abaco.com" target="_top">www.abaco.com</a></p></li></ul></div></div></div></body></html>

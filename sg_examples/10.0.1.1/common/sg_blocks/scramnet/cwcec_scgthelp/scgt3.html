@@ -1,0 +1,55 @@
+<html><head><title>Initialize Shared Memory Nodes :: Curtiss-Wright Controls (xPC Target)</title>
+<!-- $Revision$  $Date$ -->
+
+<!-- DOCNAME:   xPC Target -->
+<!-- CHUNKNAME: Initialize Shared Memory Nodes -->
+<!-- CHAPNAME:   Curtiss-Wright Controls -->
+<!-- HEADSTUFF -->
+<link rel=stylesheet href="docstyle1.css" type="text/css">
+</head>
+<body bgcolor=#ffffff>
+<!-- NAVBARTOP -->
+<table border=0 width="100%" cellpadding=0 cellspacing=0><tr>
+<td valign=baseline bgcolor="#e7ebf7"><b>xPC Target</b></td>
+<td valign=baseline bgcolor="#e7ebf7" align=right><a href="scgt2.html"><img src="b_prev.gif" alt="Previous page" border=0></a>&nbsp;&nbsp;&nbsp;<a href="scgt4.html"><img src="b_next.gif" alt="Next Page" border=0></a></td>
+</tr>
+</table>
+
+<p><font size=+1 color="#990000"><b>Initialize Shared Memory Nodes</b></font><br class="hdr">
+
+<p>To use the xPC Target SCRAMNet GT shared memory, you must define a node initialization structure. SCRAMNet GT shared memory drivers use MATLAB structures to define shared memory node initializations. A node initialization structure describes the shared memory partition (see <a href="scgt2.html">Create Shared Memory Partitions</a>) and the SCRAMNet GT board configuration, including interrupt configurations. The following SCRAMNet GT block requires shared memory node initialization structures:</p>
+
+<ul><li>SCGT init</li></ul>
+
+<p>After you define the node initialization partition, you can add SCRAMNet GT shared memory driver blocks to your Simulink model. Create a shared memory structure in one of the following ways. See <a href="scgt10.html">Shared Memory Node Initialization Structure</a> for the complete list of fields for the structure.</p>
+
+<p>The following description refers to the <code>scgtnodestruct</code> command. Type</p>
+
+<ul class=continued><li class=continued><pre>help scgtnodestruct</pre></li></ul>
+
+<p>for a description of the command.</p>
+
+<ul><li>Using the <code>scgtnodestruct</code> command at the MATLAB Command Window, create a default node initialization structure. For example, type</li>
+
+<ul class=continued><li class=continued><pre>node=scgtnodestruct([])
+
+node = 
+
+     Interface: [1x1 struct]
+    Partitions: [1x1 struct]
+</pre></li></ul>
+
+<li>A user-defined node structure, create with m-code or from the MATLAB Command Window and supplement the resulting structure with a call to the <code>scgtnodestruct</code> function.</li>
+
+</ul>
+
+<br>
+
+<p><table bgcolor="#e7ebf7" border=0 width="100%" cellpadding=0 cellspacing=0><tr valign=top><td align=left width=20><a href="scgt2.html"><img src="b_prev.gif" alt="Previous page" border=0 align=bottom></a>&nbsp;</td><td align=left>&nbsp;Create Shared Memory Partitions</td><td>&nbsp;</td><td align=right>SCRAMNet GT PCI&nbsp;</td><td align=right width=20><a href="scgt4.html"><img src="b_next.gif" alt="Next page" border=0 align=bottom></a></td></tr></table>
+<p class="copy">&copy; 2005 Curtiss-Wright Controls</p>
+
+<br>
+<!-- Copyright 2005 Curtiss-Wright Controls -->
+<!-- Last updated: Thu May 26 10:12 a.m. 2005 -->
+</body>
+</html>

@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Quadrature Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_ref_quadrature_examples.html" title="IO3xx Quadrature - Examples"><link rel="next" href="refentry_quadrature_decoder_v2.html" title="Quadrature - Decoder v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_quadrature_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>Quadrature Usage Notes</h2><p>Quadrature Usage Notes &#8212; Information about the I/O module</p></div><div class="refsect1"><a name="refsect_quadrature_encoding"></a><h2>Quadrature Encoding</h2><p>A quadrature encoder uses a wheel with slots (teeth) to indicate the position of
+                the shaft (high and low side, or black and white in the figure below). This wheel is
+                emulated by the QAE (Quadrature Encoding) code module. The following image shows an
+                example with a wheel that contains 8 slots:</p><p><span class="inlinemediaobject"><img src="././graphics/qae_signal_generation.png" width="864"></span></p><p>When rotating CW (clockwise), the A signal is leading, when rotating CCW
+                (counterclockwise), the B signal is leading.</p><div class="refsect2"><a name="refsect_quadrature_encoding_signal_timing"></a><h3>Quadrature Encoding Signal Parameterizing</h3><p>The following image shows the parameterizing of the quadrature signals:</p><p><span class="inlinemediaobject"><img src="././graphics/qae_signal_timing.png" width="864"></span></p><p>Note that the parameterizing of the quadrature signals is valid for all slots
+                    (the image shows only slot1) and the parameterizing is CW (clockwise) rotation
+                    oriented.</p></div><div class="refsect2"><a name="refsect_quadrature_encoding_outputs"></a><h3>Quadrature Encoding Position Outputs</h3><p>The following image shows the details of the outputs of the QAE driver
+                    block:</p><p><span class="inlinemediaobject"><img src="././graphics/qae_outputs.png" width="864"></span></p><p>Note that the <span class="bold"><strong>Position [Number of Slot]</strong></span>
+                    output starts from 0 and counts to the number of slots minus 1. The <span class="bold"><strong>Slot Position </strong></span> output is a fraction between 0 and 1.
+                    This information can be used for a precision positioning function (to be added
+                    manually).</p></div><div class="refsect2"><a name="refsect_quadrature_encoding_interrupt_signals"></a><h3>Quadrature Encoding Interrupt Signals</h3><p>The following image shows the details of the signal interrupting:</p><p><span class="inlinemediaobject"><img src="././graphics/qae_signal_interrupt.png" width="864"></span></p><p>The <span class="bold"><strong>Single</strong></span> and <span class="bold"><strong>Dismiss
+                        High</strong></span> parameters are shown in the gray boxes.</p></div></div><div class="refsect1"><a name="refsect_quadrature_decoding"></a><h2>Quadrature Decoding </h2><p>A quadrature decoder requires three lines: A, B, and C/Index. Lines A and B
+                provide information on position and direction, and C/Index provides information on
+                the incremental encoder sensor signal measuring pulses for completed revolutions.
+                The QAD (Quadrature Decoding) code module can be parameterized for different
+                operating modes.</p><p>The following image shows the behavior of the <span class="bold"><strong>Position
+                    [Number of Slot]</strong></span> output for the different modes which are set with
+                the <span class="bold"><strong>Captured Signal Edges</strong></span> parameter:</p><p><span class="inlinemediaobject"><img src="././graphics/qad_capture_mode.png" width="864"></span></p><div class="refsect2"><a name="refsect_quadrature_decoding_extrapolate"></a><h3>Quadrature Decoding Extrapolation</h3><p>The following image shows the extrapolation functionality:</p><p><span class="inlinemediaobject"><img src="././graphics/qad_extrapolate.png" width="864"></span></p><p>Note the extrapolation is only 100% correct if the speed is constant. If the
+                    speed increases, the extrapolated position value is too low (as shown in the
+                    above image). If the speed decreases, the extrapolated position value will be
+                    too high.</p></div><div class="refsect2"><a name="refsect_quadrature_decoding_speedfilter"></a><h3>Quadrature Decoding Speed Filter</h3><p>The A- and B- signals are not always perfectly shifted by 90&deg;. Since the speed
+                    calculation uses the delta times between two detected signal edges, this can
+                    lead to non-stable speed values, even if the speed of the rotating wheel is
+                    constant. This issue is depicted in the following figure:</p><p><span class="inlinemediaobject"><img src="././graphics/qad_speedfilter1.png" width="1080"></span></p><p>The same issue can be observed if the ratio [capturing frequency / quadrature
+                    signals frequency] is below a certain value.</p><p>For this issue, the speed filter can improve the speed measurement. The filter
+                    calculates the average of the last elapsed delta times. The amount of elapsed
+                    delta times can be set with the <span class="bold"><strong>Speed Filter
+                        Width</strong></span> parameter. The following image explains the setting with
+                        <span class="bold"><strong>Speed Filter Width</strong></span> parameter set to
+                    4:</p><p><span class="inlinemediaobject"><img src="././graphics/qad_speedfilter2.png" width="1080"></span></p><p>With this setup, the sum of the last 4 elapsed delta times is always the same.
+                    The resulting speed value therefore remains stable.</p></div><div class="refsect2"><a name="refsect_quadrature_decoding_glitchfilter"></a><h3>Quadrature Decoding Input Signals Glitch Filter</h3><p>In some situations, the simulation environment may be contaminated owing to
+                    cross-talking issues. There are many reasons for this such as weak signal
+                    drivers, long cables for connections, different signal sources, etc. This issue
+                    often leads to the problem of signal glitches and spikes of the measured signals
+                    which can affect the measured results. The QAD code module offers a
+                    parameterizeable glitch filter to improve such environments. The following image
+                    depicts the functionality:</p><p><span class="inlinemediaobject"><img src="././graphics/qad_glitchfilter.png" width="864"></span></p><p>Note that the glitch filter width should not be set higher than required. For
+                    instance if the filter width is higher than the maximum required signal
+                    frequency (e.g. lowest signal width), the measurement results will be
+                    incorrect.</p></div></div></div></body></html>

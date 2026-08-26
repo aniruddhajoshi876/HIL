@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--  This file shadows \rtw\targets\xpc\target\build\xpcblocks\SupportedSpeedgoatIO.xml
+        which contains deprecated info. -->
+
+
+<Drivers>
+ <driver obs="no">
+        <Manufacturer>N/A</Manufacturer>
+        <ManufacturerLink>N/A</ManufacturerLink>
+        <DeviceName>N/A</DeviceName>
+        <VendorID>N/A</VendorID>
+        <DeviceID>N/A</DeviceID>
+        <SubVendorID>N/A</SubVendorID>
+        <SubDeviceID>N/A</SubDeviceID>
+        <Functionality Func_value=" ">N/A</Functionality>
+        <BusType>N/A</BusType>
+        <DAChan>N/A</DAChan>
+        <DARes>N/A</DARes>
+        <DALatency>N/A</DALatency>
+        <ADChan>N/A</ADChan>
+        <ADRes>N/A</ADRes>
+        <ADLatency>N/A</ADLatency>
+        <DIOChan>N/A</DIOChan>
+        <DIOLatency />
+        <Owner />
+        <Owner_Info />
+        <Release>N/A</Release>
+        <Notes>N/A</Notes>
+        <DeviceType>N/A</DeviceType>
+    </driver>
+</Drivers>

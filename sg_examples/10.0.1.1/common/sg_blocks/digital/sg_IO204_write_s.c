@@ -1,0 +1,32 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#define S_FUNCTION_LEVEL    (0x686+858-0x9de)
+#undef S_FUNCTION_NAME
+#define S_FUNCTION_NAME     sg_IO204_write_s
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "sg_io204.h"
+#include "simstruc.h"
+#ifdef MATLAB_MEX_FILE
+#include "mex.h"
+#else
+#include "sg_common.h"
+#include "sg_printf.h"
+#include "sg_module_types.h"
+#include "sg_module_registry.h"
+#endif
+#define SG_EARLY_INIT   
+#include "sg_callback.h"
+#define za00184cdc1            ssGetSFcnParam(S, (0x681+5493-0x1bf6))
+#define z2cc9a52544            ssGetSFcnParam(S, (0xd99+3937-0x1cf9))
+#define z3832b85a32           ssGetSFcnParam(S, (0x468+6141-0x1c63))
+#define z702a26a5e9                ssGetSFcnParam(S, (0xe3c+1085-0x1276))
+#define zdf24515981                           ((0x629+5945-0x1d5e))
+#define z8b20b92ea1 0.5
+static char msg[(0xd55+562-0xe87)];static void mdlInitializeSizes(SimStruct*S){ssSetNumSFcnParams(S,zdf24515981);if(ssGetNumSFcnParams(S)!=ssGetSFcnParamsCount(S)){sprintf(msg,"\x25\x73\x3a\x20\x57\x72\x6f\x6e\x67\x20\x6e\x75\x6d\x62\x65\x72\x20\x6f\x66\x20\x69\x6e\x70\x75\x74\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x70\x61\x73\x73\x65\x64\x2e" "\n" "\x25\x64\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x73\x20\x61\x72\x65\x20\x65\x78\x70\x65\x63\x74\x65\x64" "\n",DEVNAME,zdf24515981);ssSetErrorStatus(S,msg);return;}ssSetNumContStates(S,(0x722+5794-0x1dc4));ssSetNumDiscStates(S,(0x118+8133-0x20dd));(void)ssSetNumOutputPorts(S,(0x1cec+1913-0x2465));switch((uint8_T)mxGetPr(z2cc9a52544)[(0x1719+332-0x1865)]){case(0x855+6750-0x22b2):(void)ssSetNumInputPorts(S,z069b97c2dc);for(int i=(0x104b+1245-0x1528);i<z069b97c2dc;i++){ssSetInputPortWidth(S,i,(0x4bc+6523-0x1e36));ssSetInputPortDirectFeedThrough(S,i,(0x1a1c+1766-0x2101));ssSetInputPortRequiredContiguous(S,i,(0x341+2805-0xe35));}break;case(0x4ef+5555-0x1aa0):(void)ssSetNumInputPorts(S,z069b97c2dc);for(int i=(0x1288+2937-0x1e01);i<z069b97c2dc;i++){ssSetInputPortWidth(S,i,(0x1ffd+1716-0x26b0));ssSetInputPortDataType(S,i,SS_BOOLEAN);ssSetInputPortDirectFeedThrough(S,i,(0x8e6+2699-0x1370));ssSetInputPortRequiredContiguous(S,i,(0xbc9+737-0xea9));}break;case(0x11d7+2453-0x1b69):(void)ssSetNumInputPorts(S,(0x94a+4936-0x1c91));ssSetInputPortWidth(S,(0x168c+259-0x178f),z069b97c2dc);ssSetInputPortDirectFeedThrough(S,(0x627+7150-0x2215),(0x647+4441-0x179f));ssSetInputPortRequiredContiguous(S,(0x856+1893-0xfbb),(0x1d99+2030-0x2586));break;case(0x147d+1958-0x1c1f):(void)ssSetNumInputPorts(S,(0x1db+4612-0x13de));ssSetInputPortWidth(S,(0x20f+2297-0xb08),z069b97c2dc);ssSetInputPortDataType(S,(0x1481+4449-0x25e2),SS_BOOLEAN);ssSetInputPortDirectFeedThrough(S,(0x13b3+2372-0x1cf7),(0x13db+2324-0x1cee));ssSetInputPortRequiredContiguous(S,(0xce3+449-0xea4),(0x1809+2071-0x201f));break;case(0x5bc+7246-0x2205):(void)ssSetNumInputPorts(S,(0x415+8589-0x25a1));ssSetInputPortWidth(S,(0x306+2555-0xd01),(0x38f+3742-0x122c));ssSetInputPortDataType(S,(0xd5c+5256-0x21e4),SS_UINT16);ssSetInputPortDirectFeedThrough(S,(0x1f3a+1695-0x25d9),(0x434+5217-0x1894));ssSetInputPortRequiredContiguous(S,(0x19fa+1870-0x2148),(0x46b+517-0x66f));break;}ssSetNumSampleTimes(S,(0x1294+3043-0x1e76));ssSetNumRWork(S,(0x420+2074-0xc3a));ssSetNumIWork(S,(0x14f6+3774-0x23b4));ssSetNumPWork(S,(0x1202+3300-0x1ee6));ssSetNumModes(S,(0x57a+6253-0x1de7));ssSetNumNonsampledZCs(S,(0xfe6+1306-0x1500));for(int i=(0xc61+6055-0x2408);i<zdf24515981;i++)ssSetSFcnParamTunable(S,i,(0xba3+525-0xdb0));ssSetOptions(S,SS_OPTION_EXCEPTION_FREE_CODE);}static void mdlInitializeSampleTimes(SimStruct*S){if(mxGetPr(z3832b85a32)[(0xec8+2690-0x194a)]==-1.0){ssSetSampleTime(S,(0x49f+5369-0x1998),INHERITED_SAMPLE_TIME);ssSetOffsetTime(S,(0x11c0+1112-0x1618),FIXED_IN_MINOR_STEP_OFFSET);}else{ssSetSampleTime(S,(0x744+5014-0x1ada),mxGetPr(z3832b85a32)[(0xee2+895-0x1261)]);ssSetOffsetTime(S,(0xd53+1724-0x140f),0.0);}}
+#ifndef MATLAB_MEX_FILE
+static void sg_ModelLoad(SimStruct*S){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x57\x72\x69\x74\x65\x3a\x20\x25\x73\x20\x73\x67\x5f\x4d\x6f\x64\x65\x6c\x4c\x6f\x61\x64" "\n",DEVNAME,(int)mxGetPr(za00184cdc1)[(0x14ab+2438-0x1e31)],sg_isFirstModelLoad()?"\x20\x46\x69\x72\x73\x74":"");}static void sg_ModelStart(SimStruct*S){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x57\x72\x69\x74\x65\x3a\x20\x73\x67\x5f\x4d\x6f\x64\x65\x6c\x53\x74\x61\x72\x74" "\n",DEVNAME,(int)mxGetPr(za00184cdc1)[(0x463+675-0x706)]);}static void sg_ModelStep(SimStruct*S){double*y1;bool*y2;uint16_t*z671e76e748;int za0d38ae598=(int)mxGetPr(za00184cdc1)[(0xd41+4567-0x1f18)];z36f890056f*zae10e3f17f=(z36f890056f*)sg_module_get_custom_data(zc2d861b965,za0d38ae598);if(!zae10e3f17f){sprintf(msg,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x3a\x20\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x74\x72\x69\x65\x76\x65\x20\x6d\x6f\x64\x75\x6c\x65\x20\x73\x74\x61\x74\x65\x20\x66\x72\x6f\x6d\x20\x72\x65\x67\x69\x73\x74\x72\x79" "\n",DEVNAME,za0d38ae598);ssSetErrorStatus(S,msg);return;}uint16_t out=(0xf03+2208-0x17a3);switch((uint8_t)mxGetPr(z2cc9a52544)[(0x7ac+4891-0x1ac7)]){case(0x813+7442-0x2524):for(int i=(0xb55+4348-0x1c51);i<z069b97c2dc;i++){y1=(double*)ssGetInputPortSignal(S,i);if(y1[(0x1bda+1341-0x2117)]>=z8b20b92ea1)out|=((0x526+4680-0x176d)<<i);}break;case(0x1ac+3744-0x104a):for(int i=(0x2a2+6521-0x1c1b);i<z069b97c2dc;i++){y2=(bool*)ssGetInputPortSignal(S,i);if(y2[(0x158f+1379-0x1af2)])out|=((0x1024+5334-0x24f9)<<i);}break;case(0xc3a+5498-0x21b1):y1=(double*)ssGetInputPortSignal(S,(0x102f+2975-0x1bce));for(int i=(0xd21+4187-0x1d7c);i<z069b97c2dc;i++){if(y1[i]>=z8b20b92ea1)out|=((0x843+7270-0x24a8)<<i);}break;case(0x46+5-0x47):y2=(bool*)ssGetInputPortSignal(S,(0x3e6+6933-0x1efb));for(int i=(0x48d+6378-0x1d77);i<z069b97c2dc;i++){if(y2[i])out|=((0x1a09+2267-0x22e3)<<i);}break;case(0xfb+9008-0x2426):z671e76e748=(uint16_T*)ssGetInputPortSignal(S,(0x14e9+4570-0x26c3));out=z671e76e748[(0xf80+1445-0x1525)];break;}if(zae10e3f17f->z422873c946==(0x18d4+1233-0x1da4)){zae10e3f17f->zc3873c1935->z87ef16205f=out;}else if(zae10e3f17f->z422873c946==(0x418+1874-0xb68)){sg_outpW((uintptr_t)(zae10e3f17f->ze8d6ac6ed7)+(0xb54+4932-0x1e98),out);}}static void sg_ModelStop(SimStruct*S){SG_PRINTF(DEBUG,"\x25\x73\x20\x28\x49\x44\x20\x25\x64\x29\x20\x57\x72\x69\x74\x65\x3a\x20\x73\x67\x5f\x4d\x6f\x64\x65\x6c\x53\x74\x6f\x70" "\n",DEVNAME,(int)mxGetPr(za00184cdc1)[(0x17da+1994-0x1fa4)]);}
+#endif  
+#include "sg_sfcn_glue.h"   
+

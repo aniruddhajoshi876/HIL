@@ -1,0 +1,58 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Cam and Crank - Cam Encoder v3</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_cam_and_crank_crank_encoder_v3.html" title="Cam and Crank - Crank Encoder v3"><link rel="next" href="refentry_cam_and_crank_events_capture_v3.html" title="Cam and Crank - Events Capture v3"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_cam_and_crank_cam_encoder_v3"></a><div class="titlepage"></div><div class="refnamediv"><h2>Cam and Crank - Cam Encoder v3</h2><p>Cam and Crank - Cam Encoder v3 &#8212; <span class="phrase">The Cam Encoder
+                    generates a binary camshaft signal based on the specified start position and
+                    length of each crank tooth. The module supports up to 10
+                teeth.</span></p></div><div class="refsect1"><a name="d5e12689"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_cam_encoder_v3.png"></span></span></p></div><div class="refsect1"><a name="d5e12698"></a><h2>Description</h2><p>The Cam Encoder generates a binary camshaft signal based on the specified start
+                position and length of each crank tooth. The module supports up to 10 teeth per
+                iteration. One iteration is from 0 to 720 degrees. The Cam Encoder module receives
+                the shaft position signal from a connected Crank Encoder module. The connection of a
+                Cam Encoder module to a Crank Encoder module is defined in the configuration file
+                and cannot be changed by the user.</p></div><div class="refsect1"><a name="d5e12701"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Start </span>
+                    </span></dt><dd><p>Start angle matrix of the maximum 10 cam teeth in degrees [0, 720].
+                            The number of rows of the input matrix must always be 10. The number of
+                            columns of the matrix is equal to the length of the channel vector (as
+                            specified in the dialog mask of this driver). To use less than 10 teeth,
+                            assign value 0 to the <span class="bold"><strong>Start</strong></span> and
+                                <span class="bold"><strong>Length</strong></span> inputs.</p></dd><dt><span class="term">
+                        <span class="guilabel">Length </span>
+                    </span></dt><dd><p>Length angle matrix of the maximum 10 cam teeth in degrees [0, 720].
+                            The number of rows of the input matrix must always be 10. The number of
+                            columns of the matrix is equal to the length of the channel vector (as
+                            specified through the dialog mask of this driver). To use less than 10
+                            teeth, assign value 0 to the <span class="bold"><strong>Start</strong></span> and
+                                <span class="bold"><strong>Length</strong></span> inputs.</p></dd></dl></div></div><div class="refsect1"><a name="d5e12719"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Cam Encoder </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Initial Cam Start Matrix </span>
+                    </span></dt><dd><p>This parameter defines the default values of the start angle matrix of
+                            the maximum 10 cam teeth in degrees [0, 720]. The default values are
+                            used initially at model start. The number of rows of the input matrix
+                            must always be 10. The number of columns of the matrix is equal to the
+                            length of the channel vector (as specified through the dialog mask of
+                            this driver). To use less than 10 teeth, assign value 0 to the <span class="bold"><strong>Start</strong></span> and <span class="bold"><strong>Length</strong></span> parameters of a cam tooth.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initial Cam Length Matrix </span>
+                    </span></dt><dd><p>This parameter defines the default cam teeth length matrix in degrees
+                            of the maximum 10 cam teeth [0, 720]. The default values are used
+                            initially at model start. The number of rows of the input matrix must
+                            always be 10. The number of columns of the matrix is equal to the length
+                            of the channel vector (as specified through the dialog mask of this
+                            driver). To use less than 10 teeth, assign value 0 to the <span class="bold"><strong>Start</strong></span> and <span class="bold"><strong>Length</strong></span> parameters of a cam tooth.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and Output Ports Configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Show Cam Start and Length Input Port </span>
+                    </span></dt><dd><p>This checkbox enables two optional inputs of the driver block allowing
+                            you to alter the cam teeth start angle and cam teeth length during model
+                            execution.</p></dd></dl></div></div></div></body></html>

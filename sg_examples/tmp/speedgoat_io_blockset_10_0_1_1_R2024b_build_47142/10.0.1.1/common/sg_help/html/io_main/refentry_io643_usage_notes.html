@@ -1,0 +1,83 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO643 Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_io643.html" title="IO643"><link rel="next" href="refentry_io643_pin_mapping.html" title="IO643/IO644 Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io643_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO643 Usage Notes</h2><p>IO643 Usage Notes &#8212; <span class="phrase">Usage information about the
+                    I/O module</span></p></div><div class="refsect1"><a name="d5e47754"></a><h2>Description</h2><p>This section describes how to configure the CANopen network.</p></div><div class="refsect1"><a name="d5e47757"></a><h2>I/O Module configuration with SYCON.net</h2><p>During initialization of the real-time application, the IO643 Setup block reads a
+                configuration file from the hard drive of the target machine and configures the
+                CANopen Master protocol stack. Use the SYCON.net configuration tool to create such a
+                file.</p><div lang="" class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left"><a name="para_sycon_link"></a>Tip</th></tr><tr><td align="left" valign="top"><p>Download the SYCON.net configuration tool from the Speedgoat Customer Portal. Login to
+            your <a class="link" href="https://www.speedgoat.com/extranet#/Login" target="_blank">Speedgoat</a> account. In the Downloads section, navigate to Software and click
+            SYCON.net (v1.500 Build 231214).</p></td></tr></table></div><p>In addition to this short introduction, please read the SYCON.net help
+                documentation for detailed information about how to set up a CANopen network and
+                export the module configuration file.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Open SYCON.net and create a new project</p></li><li class="listitem"><p>In the right window, select the <span class="bold"><strong>Fieldbus</strong></span>
+                        tab, navigate to <span class="bold"><strong>CANopen</strong></span> &gt; <span class="bold"><strong>Master</strong></span>, select the <span class="bold"><strong>CIFX
+                            CO/COM</strong></span> item and drag it to the bus line in the <span class="bold"><strong>Network View</strong></span> window</p><p><span class="inlinemediaobject"><img src="././graphics/io643_sycon_1.png" width="756"></span>
+                    </p></li><li class="listitem"><p>Double-click the master node in the <span class="bold"><strong>Network
+                            View</strong></span> window, navigate to <span class="bold"><strong>Bus
+                            Parameters</strong></span> and set the desired <span class="bold"><strong>Node
+                            ID</strong></span> and <span class="bold"><strong>Baud rate</strong></span></p><p><span class="inlinemediaobject"><img src="././graphics/io643_sycon_3.png" width="756"></span>
+                    </p></li><li class="listitem"><p>In the main menu bar, navigate to <span class="bold"><strong>Network</strong></span>
+                        and click <span class="bold"><strong>Import Device Descriptions</strong></span>.
+                        Select the device description files (*.eds) of the slaves included in your
+                        CANopen network</p></li><li class="listitem"><p>In the right window, select the <span class="bold"><strong>Fieldbus</strong></span>
+                        tab, navigate to <span class="bold"><strong>CANopen</strong></span> &gt; <span class="bold"><strong>Slave</strong></span>, select the slave device and drag it to the
+                        master bus line in the <span class="bold"><strong>Network View</strong></span>
+                        window</p></li><li class="listitem"><p>Double-click the slave nodes in the <span class="bold"><strong>Network
+                            View</strong></span> window and configure the <span class="bold"><strong>PDO
+                            mapping</strong></span> according to the corresponding device description
+                        file of the slave</p></li><li class="listitem"><p>Double-click the master node in the <span class="bold"><strong>Network
+                            View</strong></span> window, navigate to <span class="bold"><strong>Node ID
+                            Table</strong></span> and set the appropriate Node ID for each slave</p></li><li class="listitem"><p>Save the project</p></li><li class="listitem"><p>Right-click the master node in the <span class="bold"><strong>Network
+                            View</strong></span> window, navigate to <span class="bold"><strong>Additional
+                            Functions</strong></span> &gt; <span class="bold"><strong>Export</strong></span> and click
+                            <span class="bold"><strong>DBM/nxd</strong></span>. Save the file to a destination
+                        of your choice</p><p><span class="inlinemediaobject"><img src="././graphics/io643_sycon_2.png" width="756"></span>
+                    </p></li></ol></div></div><div class="refsect1"><a name="d5e47824"></a><h2>Configuration of the Send and Receive Blocks</h2><p>To access the data sent and received by the I/O module, add one Send and one
+                Receive block to your Simulink model. The <span class="bold"><strong>Number of
+                    Bytes</strong></span> block parameters result from the PDO configuration in the
+                SYCON.net project.</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>In the SYCON.net project, double-click the master node and navigate to the
+                            <span class="bold"><strong>Address Table</strong></span>. There you can find the
+                        length and the offset of each PDO in the RX and TX data areas of the I/O
+                        module</p><p><span class="inlinemediaobject"><img src="././graphics/io643_sycon_4.png" width="972"></span>
+                    </p></li><li class="listitem"><p>The upper table is labeled <span class="bold"><strong>Inputs</strong></span> and
+                        contains the <span class="bold"><strong>TX PDOs</strong></span> of the slaves. This is
+                        the data the master receives from the slaves. Add the <span class="bold"><strong>Length</strong></span> of the last row to the <span class="bold"><strong>Address</strong></span> of the last row and enter the result into the
+                            <span class="bold"><strong>Number of Bytes</strong></span> parameter of the
+                            <span class="bold"><strong>Receive block</strong></span> in Simulink</p><p><span class="inlinemediaobject"><img src="././graphics/io643_simulink_2.png" width="378"></span></p></li><li class="listitem"><p>The lower table is labeled <span class="bold"><strong>Outputs</strong></span> and
+                        contains the <span class="bold"><strong>RX PDOs</strong></span> of the slaves. This is
+                        the data the master sends to the slaves. Add the <span class="bold"><strong>Length</strong></span> of the last row to the <span class="bold"><strong>Address</strong></span> of the last row and enter the result into the
+                            <span class="bold"><strong>Number of Bytes</strong></span> parameter of the
+                            <span class="bold"><strong>Send block</strong></span> in Simulink</p><p><span class="inlinemediaobject"><img src="././graphics/io643_simulink_1.png" width="378"></span></p></li></ol></div><p>
+                </p><div lang="" class="tip"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="images/tip.png"></td><th align="left"><a name="tip_create_from_sycon"></a>Tip</th></tr><tr><td align="left" valign="top"><p>You can autogenerate the entire data assembly and extraction part for your
+            model including Send, Receive, Packing and Unpacking blocks with the help of the
+            <span class="olink">createFromSycon</span> function.</p></td></tr></table></div><p>
+            </p></div><div class="refsect1"><a name="d5e47866"></a><h2>PDO communication with non-conformant CANopen slave devices</h2><p>By default, the IO643 sends an SDO request to all configured slaves to read object
+                0x1000, which contains device type information. The module reads this object not
+                only to check the device type but also to check if SDO communication is supported.
+                Slave devices that do not support SDO or do not have an object dictionary will not
+                respond to this read request. In such cases, the IO643 will not start sending PDOs
+                to the slaves or process received PDOs.</p><p>To prevent the IO643 from sending this specific SDO read request, all SDO-relevant
+                configuration options must be disabled in the SYCON.net project. This informs the
+                module that no SDO communication is required during runtime and that reading object
+                0x1000 is not required. The module will then just start sending the configured
+                PDOs.</p><p>In the SYCON.net project, double-click the master node and navigate to the
+                    <span class="bold"><strong>Node Boot Up</strong></span>. Clear the checkboxes as shown in
+                the following screenshot: </p><p><span class="inlinemediaobject"><img src="././graphics/io643_sycon_5.png" width="810"></span>
+            </p></div><div class="refsect1"><a name="d5e47878"></a><h2>Front Plate Description</h2><div class="variablelist"><div class="variablelist-title">IO643 PCI and PCIe modules</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io643_pci_front.png" width="378"></span>
+                        </p><p><a name="para_common_rotary_switch_note"></a>The rotary switch has no functional role.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">IO643 mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p><span class="inlinemediaobject"><img src="././graphics/io643_mpci_front.png" width="216"></span>
+                        </p><p><a name="para_common_mPCIe_error_LED_reversed"></a>Note that in some real-time target machines,
+        the mPCIe module is reversed; that is, the Error LED appears on the right.</p></dd></dl></div></div><div class="refsect1"><a name="d5e47904"></a><h2>LED Status Description</h2><div class="variablelist"><div class="variablelist-title">PCI and PCIe modules</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>SYS</td><td>Green</td><td>On</td><td>Operating system running</td></tr><tr><td>&nbsp;</td><td>Green/Yellow</td><td>Blinking</td><td>Second stage bootloader is waiting for
+                                            firmware</td></tr><tr><td>&nbsp;</td><td>Yellow</td><td>On</td><td>Bootloader netX (= romloader) is waiting for second
+                                            stage bootloader</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>Power supply for the device is missing or hardware
+                                            defect</td></tr><tr><td>CAN</td><td>Green</td><td>On</td><td>The device is in the OPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Blinking (2.5 Hz)</td><td>The device is in the PREOPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Single flash </td><td>The device is in STOPPED state</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Single flash </td><td>Warning limit reached: At least one of the error
+                                            counters of the CAN controller has reached or exceeded
+                                            the warning level (too many error frames)</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Double flash</td><td>Error control event: A guard event (NMT slave or NMT
+                                            master) or a heartbeat event (heartbeat consumer) has
+                                            occurred</td></tr><tr><td>&nbsp;</td><td>Red</td><td>On</td><td>Bus Off: The CAN controller is in bus OFF
+                                            state</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>The device is executing a reset or the device has no
+                                            configuration</td></tr></tbody></table></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">mPCIe module</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="5%" class="LED"><col width="7%" class="Color"><col width="8%" class="State"><col width="80%" class="Meaning"></colgroup><tbody><tr><td><span class="bold"><strong>LED</strong></span></td><td><span class="bold"><strong>Color</strong></span></td><td><span class="bold"><strong>State</strong></span></td><td><span class="bold"><strong>Meaning</strong></span></td></tr><tr><td>STATUS/COM1</td><td>Green</td><td>On</td><td>The device is in the OPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Blinking (2.5 Hz)</td><td>The device is in the PREOPERATIONAL state</td></tr><tr><td>&nbsp;</td><td>Green</td><td>Single flash</td><td>The device is in STOPPED state</td></tr><tr><td>&nbsp;</td><td>Off</td><td>Off</td><td>The device is executing a reset or the device has no
+                                            configuration. Refer to the ERROR LED</td></tr><tr><td>ERROR/COM2</td><td>Off</td><td>Off</td><td>Refer to the STATUS LED</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Single flash</td><td>Warning limit reached: At least one of the error
+                                            counters of the CAN controller has reached or exceeded
+                                            the warning level (too many error frames)</td></tr><tr><td>&nbsp;</td><td>Red</td><td>Double flash</td><td>Error control event: A guard event (NMT slave or NMT
+                                            master) or a heartbeat event (heartbeat consumer) has
+                                            occurred</td></tr><tr><td>&nbsp;</td><td>Red</td><td>On </td><td>The CAN controller is in bus OFF state</td></tr></tbody></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e48043"></a><h2>Status Codes</h2><p>For the list of status codes, please refer to <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for Protocols Supported
+                    with the IO64x/IO75x Modules</a>.</p></div></div></body></html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="link_blue.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#4f4f4f"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="1"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#ffffff"
+     showgrid="false"
+     inkscape:zoom="24.424647"
+     inkscape:cx="0.28659575"
+     inkscape:cy="13.183404"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M12.6774 11.3225C11.837 10.4821 10.4744 10.4821 9.63398 11.3225L5.69408 15.2624C4.85365 16.1029 4.85365 17.4655 5.69408 18.3059C6.5345 19.1463 7.8971 19.1463 8.73753 18.3059L10.4261 16.6174C10.829 16.2144 11.4824 16.2144 11.8854 16.6174C12.2883 17.0203 12.2883 17.6737 11.8854 18.0767L10.1968 19.7652C8.55045 21.4116 5.88115 21.4116 4.23478 19.7652C2.58841 18.1188 2.58841 15.4495 4.23478 13.8031L8.17469 9.86321C9.82106 8.21683 12.4904 8.21683 14.1367 9.86321C14.5397 10.2662 14.5397 10.9195 14.1367 11.3225C13.7338 11.7255 13.0804 11.7255 12.6774 11.3225Z"
+     fill="var(--mw-icon-glyph-content-gray, #616162)"
+     id="path4"
+     style="fill:#007cba;fill-opacity:1" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M11.3226 12.6775C12.163 13.5179 13.5256 13.5179 14.366 12.6775L18.3059 8.73756C19.1463 7.89713 19.1463 6.53452 18.3059 5.69409C17.4655 4.85366 16.1029 4.85366 15.2625 5.69409L13.5739 7.38263C13.171 7.78561 12.5176 7.78561 12.1146 7.38263C11.7117 6.97965 11.7117 6.3263 12.1146 5.92332L13.8032 4.23479C15.4495 2.5884 18.1188 2.5884 19.7652 4.23479C21.4116 5.88117 21.4116 8.55048 19.7652 10.1969L15.8253 14.1368C14.1789 15.7832 11.5096 15.7832 9.86327 14.1368C9.46029 13.7338 9.46029 13.0805 9.86327 12.6775C10.2662 12.2745 10.9196 12.2745 11.3226 12.6775Z"
+     fill="var(--mw-icon-glyph-content-gray, #616162)"
+     id="path6"
+     style="fill:#007cba;fill-opacity:1" />
+  <use
+     href="#link"
+     id="use8"
+     style="display:inline" />
+</svg>

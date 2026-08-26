@@ -1,0 +1,34 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EtherCAT SubDevice Emulator - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_ethercat_examples.html" title="EtherCAT - Examples"><link rel="next" href="refentry_ecatsim_send.html" title="EtherCAT SubDevice Emulator - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ecatsim_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>EtherCAT SubDevice Emulator - Setup</h2><p>EtherCAT SubDevice Emulator - Setup &#8212; <span class="phrase">Configures the EtherCAT network to
+                    be emulated on one Ethernet interface</span></p></div><div class="refsect1"><a name="d5e6561"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_ecatsim_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e6569"></a><h2>Description</h2><p>The Setup block sets up the emulation of one EtherCAT network containing multiple
+                EtherCAT subordinate devices. An EtherCAT network is defined in a configuration file
+                called the EtherCAT network information file (ENI). The emulator only works in
+                conjunction with an existing ENI file. Use EtherCAT tools such as Beckhoff's TwinCAT
+                or Acontis' EC-Engineer to configure EtherCAT networks and export ENI files. Every
+                EtherCAT subordinate device to be emulated requires a runtime license.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>In the Ethernet Configuration Tool, select EtherCAT for the interface that
+                    will be used with the EtherCAT Emulator. Enter the following in the MATLAB
+                    command window to open the tool:
+                    </p><pre class="programlisting">&gt;&gt; speedgoat.configureEthernet</pre></td></tr></table></div></div><div class="refsect1"><a name="refsect_ports_snippet_receive"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any input ports.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>This block does not have any output ports.</p></dd></dl></div></div><div class="refsect1"><a name="d5e6589"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Interface ID</span>
+                    </span></dt><dd><p>The Interface ID is used to assign EtherCAT Emulator blocks to a
+                            particular Ethernet interface. The number is the position of the
+                            interface in the list shown in the Ethernet configuration tool.
+                            Performance real-time target machine: The first available interface
+                            (after the host-link) used for the EtherCAT Emulator has ID 1. All other
+                            machines: The first available interface (after the host-link) used for
+                            the EtherCAT Emulator has ID 2.</p><p>You can simulate multiple EtherCAT networks: one network must be
+                            assigned to one Ethernet interface.</p></dd><dt><span class="term">
+                        <span class="guilabel">First Device</span>
+                    </span></dt><dd><p>The emulator emulates the subordinate device specified by the station
+                            address in this parameter, along with all subsequent devices listed in
+                            the ENI file. Setting this parameter to -1 will cause the emulator to
+                            simulate all devices defined in the ENI file. </p><p>This parameter is useful for excluding specific devices at the
+                            beginning of the topology&#8212;such as Beckhoff&#8217;s EK1110 extension module or
+                            other modules connected directly to the EtherCAT main device&#8212;that should
+                            not be emulated.</p></dd><dt><span class="term">
+                        <span class="guilabel">Configuration File</span>
+                    </span></dt><dd><p>The path to the ENI file on the host PC. Enter an absolute path to the
+                            file or use a function to obtain a relative path.</p><pre class="programlisting">'C:\projects\myeni.xml'</pre><pre class="programlisting">[pwd, '\..\myeni.xml']</pre><p>Instead of typing the path to the file manually, click the <span class="bold"><strong>Select Configuration File (ENI/EXI)</strong></span> button
+                            and simply select the file.</p><p><span class="bold"><strong>Type:</strong></span>
+                            <code class="literal">char</code></p></dd></dl></div></div></div></body></html>

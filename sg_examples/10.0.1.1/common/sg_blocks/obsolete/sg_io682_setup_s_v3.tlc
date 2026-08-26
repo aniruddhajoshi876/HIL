@@ -1,0 +1,287 @@
+%implements sg_io682_setup_s_v3 "C"
+
+%include FEVAL("fullfile", FEVAL("speedgoatroot"), "sg_codegen", "sg_common.tlc")
+
+%% =================================================================================================
+%function BlockTypeSetup(block, system) void
+
+	%<LibAddToCommonIncludes("sg_io682_v3.h")>
+	%if %<block.SFcnParamSettings[0].ParIsSlrealtime>
+		%<LibAddToCommonIncludes("StartCallbackAPI.h")>
+	%endif
+ 
+%endfunction
+
+%% =================================================================================================
+%function BlockInstanceSetup(block, system) void
+
+
+%endfunction
+
+%% =================================================================================================
+%function Start(block, system) Output
+
+    %with block.SFcnParamSettings[0]
+	{
+		%% sg_ModelLoad
+		%openfile callback
+		{
+			static char msg[256];
+			int moduleId = %<ParModuleId>;
+			int deviceId = %<ParDeviceId>;
+			int16_t bus = %<ParBus>;
+			int16_t slot = %<ParSlot>;
+			int boardId = moduleId - 1;
+			int timeSource = %<ParTimeSource>;
+			int timerRate = %<ParTimerRate>;
+			int result;
+			
+
+			if ((moduleId < 1) || (moduleId > MAX_BOARDS))
+			{
+				sprintf(msg, "Invalid module ID: %d", moduleId);
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+
+			switch (deviceId)
+			{
+				case 0x430:     // CEI-430
+				case 0x430A:    // CEI-430A
+				case 0x530:     // CEI-530
+				case 0x830:     // CEI-830
+				case 0x831:     // CEI-830RX
+				case 0x830A:    // RCEI-830A
+					break;
+				default:
+					sprintf(msg, "Unsupported device ID 0x%X", deviceId);
+					%<LibSetRTModelErrorStatus("msg")>;
+					return;
+			}
+
+			if (io682_configPciAddresses(deviceId, bus, slot, moduleId, boardId, msg))
+			{
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			
+			if (io682_initArincApi(boardId, msg))
+			{
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			
+			// This needs to be set before initializing the API (aka loading the slave processor)
+			if (io682_setConcurrencyMode(boardId, msg))
+			{
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			
+			// ----------------------------------------io682_configScheduler----------------------------------
+			%assign schedMsg = %<ParSchedMsg>
+			int nMsg = %<SIZE(schedMsg,0)>;
+			int i;
+			int maxMsg = 1000;
+			AR_SCHEDULED_MSG_ENTRY_TYPE scheduledMessages[1000];
+			
+			if ((nMsg != 0) && (%<SIZE(schedMsg,1)> == 5))
+			{
+				if (nMsg > maxMsg)
+				{
+					sprintf(msg, "Maximal number of scheduled messages is %d\n",maxMsg);
+					%<LibSetRTModelErrorStatus("msg")>;
+					return;
+				}
+				%if SIZE(schedMsg,1) == 5
+					%foreach idx = %<SIZE(schedMsg,0)>
+						i = %<idx>;
+						scheduledMessages[i].messageIndex = i;
+						scheduledMessages[i].board = boardId;
+						scheduledMessages[i].channel = %<ParSchedMsg[idx][0]> - 1;
+						scheduledMessages[i].rate = %<ParSchedMsg[idx][1]>;
+						scheduledMessages[i].start = %<ParSchedMsg[idx][2]>;
+						scheduledMessages[i].txCount = %<ParSchedMsg[idx][3]>;
+						scheduledMessages[i].data = %<ParSchedMsg[idx][4]>;
+					%endforeach
+				%endif
+				
+				result = arx30_define_msg_block (nMsg, scheduledMessages);
+				if (result != ARS_NORMAL)
+				{
+					sprintf(msg, "Failed to load scheduled messages: %s", arx30_get_error(result));
+					%<LibSetRTModelErrorStatus("msg")>;
+					return;
+				}
+			}
+			// ------------------------------------------------------------------------------------------------
+			
+			if (io682_setTimerRate(boardId, timeSource, timerRate))
+			{
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+
+			SG_PRINTF(INFO, "Speedgoat IO682, ID: %d, Initialization OK\n", moduleId);
+		}
+		%closefile callback
+	
+		%<sgAddInitCode(callback, "execution")>
+
+		%% sg_ModelStart
+		// --------------------------------------------io682_configChannels--------------------------------
+		static char msg[256];
+		int moduleId = %<ParModuleId>;
+		int boardId = moduleId - 1;
+		int i;
+		int result;
+		double bitrate;
+		%assign inConfig = %<ParInConfig>
+		%assign outConfig = %<ParOutConfig>
+		
+		//InConfig
+		%foreach idx = %<SIZE(inConfig,0)>
+			%assign inBitrate = LibBlockParameter(InBitrate%<idx+1>,"","",0)
+			i = %<idx>;
+			bitrate = 16e6/%<inBitrate> - 2;
+			if ((bitrate < MIN_BITRATE_ARX) || (bitrate > MAX_BITRATE_ARX))
+			{
+				sprintf(msg, "Invalid Rx bit rate %f", bitrate);
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_RX_BITRATE, (int16_t)bitrate);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load input channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_RX_MERGED_MODE, %<ParInConfig[idx][1]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load input channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_RX_FIFO_ENABLE, %<ParInConfig[idx][2]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load input channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_RX_PARITY, %<ParInConfig[idx][3]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load input channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_RECV_MODE, %<ParInConfig[idx][4]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load input channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+		%endforeach
+
+		//OutConfig
+		%foreach idx = %<SIZE(outConfig,0)>
+			%assign outBitrate = LibBlockParameter(OutBitrate%<idx+1>,"","",0)
+			i = %<idx>;
+			bitrate = 16e6/%<outBitrate> - 2;
+			if ((bitrate < MIN_BITRATE_ARX) || (bitrate > MAX_BITRATE_ARX))
+			{
+				sprintf(msg, "Invalid Tx bit rate %f", bitrate);
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_TX_BITRATE, (int16_t)bitrate);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load output channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_TX_PARITY, %<ParOutConfig[idx][1]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load output channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			%switch %<ParOutConfig[idx][2]>
+				%case 1 %%PROT_ERROR_HI
+					%assign bitError = 1
+					%assign gapError = 8
+					%break
+				%case 2 %%PROT_ERROR_LO
+					%assign bitError = 0
+					%assign gapError = 8
+					%break
+				%case 3 %%PROT_ERROR_SHORT_GAP
+					%assign bitError = 8
+					%assign gapError = 7
+					%break
+				%case 4 %%PROT_ERROR_NONE
+					%assign bitError = 8
+					%assign gapError = 8
+					%break
+				%default
+					%exit Invalid Protocol Error selection %<ParOutConfig[idx][2]>
+			%endswitch
+			result = arx30_set_device_config(boardId, i, ARU_TX_BIT_ERROR, (int16_t)%<bitError>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load output channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_TX_GAP_ERROR, (int16_t)%<gapError>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load output channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+			result = arx30_set_device_config(boardId, i, ARU_TX_FIFO_ENABLE, %<ParOutConfig[idx][3]>);
+			if (result != ARS_NORMAL)
+			{
+				sprintf(msg, "Failed to load output channel configuration: %s", arx30_get_error(result));
+				%<LibSetRTModelErrorStatus("msg")>;
+				return;
+			}
+		%endforeach
+		// ------------------------------------------------------------------------------------------------
+
+		if (io682_startDriver(boardId, msg))
+		{
+			%<LibSetRTModelErrorStatus("msg")>;
+			return;
+		}
+	}
+	%endwith
+
+%endfunction
+
+%% =================================================================================================
+%function Outputs(block, system) Output
+
+%endfunction
+
+%% =================================================================================================
+%function Terminate(block, system) Output
+{
+	char msg[256];
+    
+	int result = arx30_reset(%<SFcnParamSettings.ParModuleId> - 1);
+	if (result != ARS_NORMAL)
+	{
+		sprintf(msg, "Failed to reset I/O module: %s", arx30_get_error(result));
+		%<LibSetRTModelErrorStatus("msg")>;
+		return;
+	}
+}
+%endfunction

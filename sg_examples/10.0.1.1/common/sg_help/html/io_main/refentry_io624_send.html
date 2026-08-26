@@ -1,0 +1,51 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Send</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_receive.html" title="IO624 - Receive"><link rel="next" href="refentry_io624_frame.html" title="IO624 - Frame"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_send"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Send</h2><p>IO624 - Send &#8212; 
+                <span class="phrase">Sends sensor data frames</span>
+            </p></div><div class="refsect1"><a name="d5e20447"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_send.png"></span></span></p></div><div class="refsect1"><a name="d5e20455"></a><h2>Description</h2><p>Your model can contain up to eight Send blocks for each I/O module in your target
+                machine.</p><p>To support the sensor-to-ECU communication, the Sensor Send block offers the data
+                frame FIFO, which holds up to 33 Data Frames.</p></div><div class="refsect1"><a name="d5e20459"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the send channel number)</span>
+                    </span></dt><dd><p>Payload that is transferred in a data frame from the sensor to the
+                            ECU. The payload must include the parity or CRC bits. The bits are
+                            transmitted in ascending order, starting with bit 0. The configured
+                            payload length is in 32-bit words.</p><p>When <span class="bold"><strong>PSI5-D (Synchronous Daisy Chain)</strong></span>
+                            is selected in the Setup block, the Send block needs as input the
+                            following data for the selected channel(s):</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>First frame: Payload</p></li><li class="listitem"><p>Second frame: Sensor address which is read from the Sync
+                                        Pulses block, <span class="bold"><strong>Sensor
+                                            Address</strong></span> channel data. Refer to the usage
+                                        notes for more information</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">uint32</code></p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the send channel number)</span>
+                    </span></dt><dd><p>When <span class="bold"><strong>PSI5-D (Synchronous Daisy Chain)</strong></span>
+                            is selected in the Setup block and <span class="bold"><strong>Outputs
+                                Channels Status Ch X</strong></span> is selected in the <span class="bold"><strong>Channels Settings</strong></span> tab of the Send block, the
+                            Send block provides the following status information for the selected
+                            channel(s):</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - No status message</p></li><li class="listitem"><p>1 - Sensor address is already used</p></li><li class="listitem"><p>2 - Sensor address received from the ECU is higher than
+                                        the max possible number of slots</p></li><li class="listitem"><p>3 - Channel is programmed with the sensor address in the
+                                        corresponding slot.</p></li><li class="listitem"><p>4 - The last sensor address 1 has been received and
+                                        programmed</p></li><li class="listitem"><p>5 - Channel is relocated with the new sensor
+                                        address</p></li><li class="listitem"><p>6 - Channel will not fit in the next slot</p></li><li class="listitem"><p>7 - Channel was disabled due to sensor address 1 was
+                                        programmed to another channel</p></li></ul></div><p>
+                        </p><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e20511"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Channels Settings Tab</div><p>The configuration details are all defined in the Setup block.</p><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Outputs Channels Status</span>
+                    </span></dt><dd><p>During the allocation of the time slot for PSI5-D, the Send block
+                            provides status information for the selected channel. Choose the active
+                            channels by selecting the corresponding checkboxes. The values and the
+                            corresponding information are described in the Outputs section above.
+                            The channels available are defined by selecting <span class="bold"><strong>PSI5-D (Synchronous Daisy Chain)</strong></span> in the Setup block, and
+                            then selecting the corresponding channels in the <span class="bold"><strong>Inputs Active Channels</strong></span> parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Inputs Active Channels</span>
+                    </span></dt><dd><p>Choose the active channels by selecting the corresponding checkboxes.
+                            The channels available depend on if the same channels have also been
+                            enabled in the Setup block.</p></dd></dl></div></div></div></body></html>

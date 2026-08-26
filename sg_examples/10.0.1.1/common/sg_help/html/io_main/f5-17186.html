@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read RCV Level</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="f4-6069.html" title="Chapter&nbsp;4.&nbsp;CAN I/O FIFO Blocks No Longer Recommended for Use"><link rel="prev" href="f5-17154.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Reset XMT"><link rel="next" href="f5-17215.html" title="Softing CAN-AC2-PCI with Philips SJA1000 FIFO Reset RCV"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="f5-17186"></a><div class="titlepage"></div><div class="refnamediv"><h2>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read RCV Level<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read-RCV-Level"></a></h2><p>Softing CAN-AC2-PCI with Philips SJA1000 FIFO Read RCV Level<a name="Softing_CAN-AC2-PCI-SJA-1000_FIFO-Read-RCV-Level"></a> &#8212; <span class="trademark"><a name="tp_softing"></a>Softing</span>&reg;
+                CAN-AC2-PCI with Philips SJA1000 FIFO Read RCV Level block (not
+                recommended)<b>CANFIFOBlocks</b><b>Softing</b><b>Philips</b></p></div><div class="refsect1"><a name="d5e2054"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="olink">Softing CAN-AC2-PCI</span></p></li></ul></div></div><div class="refsect1"><a name="f5-18062"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;
+                </span> Library of Drivers No
+                Longer Recommended for Use.</p><p>To open this library, type <code class="literal">slrtsoftinglib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="f5-17191"></a><h2>Description</h2><p>The <code class="literal">FIFO Read RCV Level</code> driver block reads the current number
+                of CAN messages stored in the receive FIFO. The receive FIFO can store up to 127
+                events (messages). If it is full and a <code class="literal">FIFO Read</code> driver block
+                does not attempt to read the stored messages, the driver ignores new incoming
+                messages. Increments to the lost message counter show the number of lost messages.
+                You can use this driver block to check for this condition and perform an error
+                action, such as stopping the execution or resetting the receive FIFO.</p><p>The block has a single output port of type double, returning a scalar value
+                containing the current receive FIFO level (number of messages to be
+                processed).</p></div><div class="refsect1"><a name="f5-15813"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board</strong></span></span></dt><dd><p>Defines the board accessed to read the current receive FIFO level. For
+                            more information about the meaning of the board number, see the
+                                <code class="literal">Setup</code> driver block. If just one board is present
+                            in the target system, select board number 1.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Defines the sample time at which the <code class="literal">FIFO Read RCV
+                                Level</code> driver block is executed during a real-time
+                            application run.</p></dd></dl></div></div><div class="refsect1"><a name="d5e2089"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="http://www.can-cia.org" target="_top">http://www.can-cia.org</a></p></li><li class="listitem"><p><a class="link" href="https://company.softing.com" target="_top">https://www.company.softing.com</a></p></li></ul></div></div></div></body></html>

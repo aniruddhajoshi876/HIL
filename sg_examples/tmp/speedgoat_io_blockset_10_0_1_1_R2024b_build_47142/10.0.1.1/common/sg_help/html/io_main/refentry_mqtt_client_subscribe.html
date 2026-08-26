@@ -1,0 +1,65 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MQTT - Client Subscribe</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_mqtt_client_connection.html" title="MQTT - Client Connection"><link rel="next" href="refentry_mqtt_client_publish.html" title="MQTT - Client Publish"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mqtt_client_subscribe"></a><div class="titlepage"></div><div class="refnamediv"><h2>MQTT - Client Subscribe</h2><p>MQTT - Client Subscribe &#8212; <span class="phrase">Subscribes to an MQTT
+                    topic and outputs its value</span></p></div><div class="refsect1"><a name="d5e70535"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_mqtt_client_subscribe.png"></span></span></p></div><div class="refsect1"><a name="d5e70543"></a><h2>Description</h2><p>The Subscribe block subscribes to a topic the remote broker provides and outputs
+                the topic's data received. The block sends the subscription request for the topic
+                once a connection to the broker is established. The broker passes data to the
+                Subscriber each time the Publisher has updated the topic in the broker.</p></div><div class="refsect1"><a name="d5e70546"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the current value of the topic subscribed. The port inherits
+                            the data type and the dimensions from the <span class="bold"><strong>Init
+                                Value</strong></span> parameter. The data type and dimensions do not both
+                            need to match the data type and dimensions of the topic in the broker,
+                            but the overall number of bytes must be equal to or greater than the
+                            size of the topic. The block outputs the number of bytes received
+                            (padded by zeros), or truncates the data if it exceeds the port size.
+                            The <span class="bold"><strong>Length</strong></span> output port outputs the
+                            actual number of bytes received.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from Boolean to double are supported as well as dimensions from scalar
+                            values to vectors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates an updated <span class="bold"><strong>Data</strong></span> output port</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>Outputs the number of data bytes received. The value will always at
+                            the most be the size of the <span class="bold"><strong>Data</strong></span> output
+                            port.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Inputs</div><p>This block does not have any input ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e70582"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Apply the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Apply the Connection ID of the corresponding Connection block. Must
+                            range between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Topic
+                        </span>
+                    </span></dt><dd><p>The topic whose data you want to receive. Topic is a character array.</p><p>Use the / character to build paths and address specific topic levels.
+                            Examples:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>Subscribe to topic 'attribute7' of parent topic
+                                        'group0/port3':</p><pre class="programlisting">'group0/port3/attribute7'</pre><p>Subscribe to topic level 'port3' of parent topic
+                                        'group0':</p><pre class="programlisting">'group0/port3'</pre></dd></dl></div><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Wildcard characters, such as + and # are not supported.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Quality of Service</span>
+                    </span></dt><dd><p>The Quality of Service is a flag in the subscription message and tells
+                            the broker on how to quarantee the delivery of messages.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - at most once: The Subscriber does not confirm the receipt
+                                    of a data message and the message is not retransmitted by the
+                                    broker. This level allows the Subscriber to immediately procees
+                                    the message received and allows the broker not to have to
+                                    preserve messages for retransmission.</p></li><li class="listitem"><p>1 - at least once: The Subscriber confirms the receipt of a
+                                    data message by sending an acknowledge to the broker. If the
+                                    broker does not receive a confirmation in a specific amount of
+                                    time, the same data message is transmitted again.</p></li><li class="listitem"><p>2 - exactly once: The Subscriber confirms the receipt of a
+                                    data message twice using a 4-way handshake. If the broker does
+                                    not receive the confirmation in a specific amount of time, the
+                                    same data message is transmitted again. This level increases the
+                                    overall time for processing data messages but ensures that the
+                                    same data is not processed multiple times.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The value that the <span class="bold"><strong>Data</strong></span> port outputs
+                            before a data frame is received. The parameter's data type and
+                            dimensions define the data type and dimensions of the <span class="bold"><strong>Data</strong></span> output port and specify the length of
+                            the requested data. Fundamental data types from Boolean to double are
+                            supported as well as 1D-arrays.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Status</strong></span> and the <span class="bold"><strong>Length</strong></span>
+                            output ports. Otherwise, the ports are hidden.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

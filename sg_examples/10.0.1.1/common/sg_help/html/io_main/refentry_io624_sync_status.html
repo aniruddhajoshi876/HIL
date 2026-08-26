@@ -1,0 +1,23 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO624 - Sync Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io624_sync_pulses.html" title="IO624 - Sync Pulses"><link rel="next" href="refentry_ref_io629.html" title="IO629"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io624_sync_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO624 - Sync Status</h2><p>IO624 - Sync Status &#8212; <span class="phrase">Reads sensor synchronous
+                    status information</span></p></div><div class="refsect1"><a name="d5e21025"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io624_sync_status.png"></span></span></p></div><div class="refsect1"><a name="d5e21033"></a><h2>Description</h2><p>Your model can only contain one of these blocks for each I/O module in your target
+                machine.</p><p>When <span class="bold"><strong>PSI5-U/P (Synchronous without Daisy Chain)</strong></span>
+                is selected in the Setup block, the Sync Status block provides sensor synchronous
+                status information for the specified channel in the corresponding Setup
+                block.</p></div><div class="refsect1"><a name="d5e21038"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the sync status channel number)</span></span></dt><dd><p>The following values are obtained from Sync Status Channel X:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0 - No unexpected sync pulse detected yet</p></li><li class="listitem"><p>1 - Absence of the sync pulse during the expected time
+                                        window</p></li><li class="listitem"><p>2 - Too short for a short pulse</p></li><li class="listitem"><p>3 - Too long for a short pulse OR too short for a long
+                                        pulse</p></li><li class="listitem"><p>4 - Too long for a long pulse</p></li><li class="listitem"><p>5 - Long pulse instead of expected short pulse
+                                        detected</p></li><li class="listitem"><p>6 - Data Frame FIFO (Send block) is full*</p></li></ul></div><p><span class="bold"><strong>Data Type:</strong></span>
+                            <code class="literal">double</code></p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>*6 - Data Frame FIFO (Send block) is full</p><p>If one pulse message status (1 to 5) shows at the same time as
+                                message 6, the output value will be the sum of both messages; for
+                                example, if the sync pulse does not occur during the expected time
+                                window (1) and the Data Frame FIFO is full (6), this will result in
+                                a value of 7.</p></td></tr></table></div></dd></dl></div></div><div class="refsect1"><a name="d5e21068"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Remote Terminal and Bus Controller Operation</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bu3bgu6.html" title="Chapter&nbsp;12.&nbsp;MIL-STD-1553 Support"><link rel="prev" href="f0-6414.html" title="Bus Controller Operation"><link rel="next" href="f0-6416.html" title="Bus Monitor Operation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="f0-6415"></a>Remote Terminal and Bus Controller Operation</h2></div></div></div><p>The following example uses PCI blocks. It describes how you can use a Remote Terminal
+            and Bus Controller in a model. This model combines the three models,
+                <code class="literal">RTInit</code>, <code class="literal">RTSample</code>, and
+                <code class="literal">BCSample</code>.</p><p>The <code class="literal">RTBCSample</code> real-time application executes on a target computer
+            with a multifunction board. It shows how to configure and use a single board as a Bus
+            Controller and Remote Terminal. You can also run this model in one target computer with
+            two different PCI-1553 boards.</p><div class="informalfigure"><div class="mediaobject"><img src="./graphics/qpci_rtbcsample.png"></div></div><p>In this example, the two Encode BC Message blocks each create a message, for a total
+            of two, in the list. The message created in the first Encode BC Message block is a
+            receive message. The direction of a message is defined from the point of view of the
+            Remote Terminal. The <span class="bold"><strong>Direction</strong></span> parameter of the block
+            has a value of <code class="literal">R (BC-&gt;RT)</code>. The 1553 Encode BC Message block
+            creates message 1, one 16-bit word, to be sent to Remote Terminal 1, sub address 3. This
+            word has a value of either <code class="literal">1</code> or <code class="literal">2</code>. An
+                <code class="literal">Add</code> block creates this value by adding the constant value
+                <code class="literal">1</code> to the output of the Pulse Generator, which outputs either
+                <code class="literal">0</code> or <code class="literal">1</code>.</p><p>Message 2 of Bus Controller message list is a command for Remote Terminal 1, sub
+            address 3, to send one word. From the <code class="literal">RTSample</code> model, that data word
+            comes back containing either the clock or the sine wave data.</p><p>The PCI-1553 Bus Controller Send block takes a fully formed list of message buffers
+            and sends it. It waits for the messages to be sent and the response to be received. The
+            PCI-1553 Bus Controller Send block has a programmable maximum wait time parameter
+                (<span class="bold"><strong>Maximum wait time (microseconds)</strong></span>). In this model,
+            the maximum wait time is 1000 microseconds.</p><p>The response message list from the PCI-1553 Bus Controller Send block has the same
+            length as the list that was sent. The responses are found in the same position in the
+            list as the corresponding command. In this case, the command to the Remote Terminal to
+            send data is message number 2. The data that is returned is also message number 2 in the
+            response list. In this example, the Decode BC Message block check message 2 only. Decode
+            BC Message blocks can be in arbitrary order on the list. To avoid confusion, put them in
+            numerical order. This example does not check message 1. You can add another Decode BC
+            Message block to check message 1. In this case, only the status is useful because the
+            data is exactly what was sent.</p><p>The Decode BC Message block has the following outputs.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>L &#8212; Message list passed to other Decode BC Message blocks. If your
+                    model contains only one Decode BC Message block, connect the signal to a
+                    terminator or ground.</p></li><li class="listitem"><p>S &#8212; Status information. The Decode BC Status block extracts individual
+                    status bits from this status. To get multiple status bits, use multiple Decode
+                    BC Status blocks and feed, in parallel, the same signal to the S ports.</p></li><li class="listitem"><p>D &#8212; A vector of 32 short integers with the data from that message.
+                    Output from the Decode BC Message block has the maximum message width of 32
+                        <code class="literal">uint16</code> values. The actual message determines how many of
+                    these values are significant. In this example, only the first value is
+                    significant. The block sends the last 31 values to a terminator.</p></li></ul></div></div></body></html>

@@ -1,0 +1,116 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">ARINC 429 Parser Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_arinc429_parser_read.html" title="ARINC 429 Parser Read"><link rel="next" href="refentry_ref_io682_previous_versions.html" title="IO682 Previous Versions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_arinc429_parser_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>ARINC 429 Parser Write</h2><p>ARINC 429 Parser Write &#8212; <span class="phrase">Sends ARINC 429 words to
+                    one channel</span></p></div><div class="refsect1"><a name="d5e54547"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_arinc429_parser_write.png"></span></span></p></div><div class="refsect1"><a name="d5e54556"></a><h2>Description</h2><p>The ARINC 429 Parser Write block consists of a masked subsystem, which adds an
+                additional functionality layer to the existing IO682 Send block. The subsystem is
+                dynamically populated with a set of preconfigured ARINC 429 Pack blocks, the
+                corresponding IO682 Send blocks, preconfigured input ports, and the interconnecting
+                lines. The ARINC 429 Parser Write block mask allows users to select which
+                configuration file messages should be transmitted.</p><p>The ARINC 429 Parser Write block cannot be edited when linked to a custom library
+                because the block contains instance-specific data that cannot be shared across
+                links. The block remains editable within the library itself; changes made there are
+                reflected in all linked instances. Additionally, the block cannot be used within
+                subsystem models, as these are not supported.</p><p>Each Write block has a software FIFO buffer in which Tx messages are queued. When
+                selecting the sample time of the Write block, the user must ensure that all messages
+                can be transmitted within a single sample step and that the bus is not
+                overloaded.</p></div><div class="refsect1"><a name="d5e54561"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable Input</span>
+                    </span></dt><dd><p>This input port is available whenever the <span class="bold"><strong>Show
+                                Enable Input</strong></span> checkbox in the block mask is activated. Use
+                            this port to enable (1) or disable (0) the transmission of ARINC 429
+                            messages during runtime. Each message may be controlled using an
+                            n-elements boolean vector, where n represents the number of messages
+                            from the configuration file that are enabled in the ARINC 429 Parser.
+                            The indexing of the messages aligns with the enabled nodes in the tree,
+                            in ascending order.</p></dd><dt><span class="term">
+                        <span class="guilabel">Tx</span>
+                    </span></dt><dd><p>The input port expects a Simulink bus containing the signals that
+                            should be transmitted. The <span class="bold"><strong>Mapping Tab</strong></span>
+                            allows you to map these signals to the ones defined in the selected
+                            database.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54577"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">I/O Module Configuration</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Module ID</span>
+                    </span></dt><dd><p>Selects the IO682 I/O module with which this driver block
+                            communicates. The list is populated according to the IO682 Setup blocks
+                            in the model. </p></dd><dt><span class="term">
+                        <span class="guilabel">Channel</span>
+                    </span></dt><dd><p>Select the IO682 channel with which this driver block communicates.
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Database</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Browse</span>
+                    </span></dt><dd><p>Select a configuration file from your folders by clicking the browse
+                            button.</p><p>Refer to the <a href="refentry_io682_usage_notes.html" class="olink">Usage Notes</a> for more
+                            information about the configuration file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Update</span>
+                    </span></dt><dd><p>Use this button if the configuration file changes.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Transmission Control</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Use Cycle Times from Database</span>
+                    </span></dt><dd><p>Select this option to transmit ARINC 429 messages with the cycle time
+                            defined in the selected configuration file. If disabled, ARINC 429
+                            messages are transmitted at the selected block sample time by
+                            default.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Enable Input</span>
+                    </span></dt><dd><p>Select this option for <span class="bold"><strong>Enable Input
+                                Port</strong></span> to be available. With this port, messages can be
+                            enabled or disabled during execution.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Sample Time</div><dl class="variablelist"><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54626"></a><h2>Hierarchy Tab</h2><p>All messages defined in the selected configuration file are displayed in the
+                    <span class="bold"><strong>Hierarchy</strong></span> tab. Detailed information about the
+                various signals is displayed when a specific message is selected.</p><p>The <span class="bold"><strong>CycleTime</strong></span> message property is supported
+                provided that all cycle times are a multiple of the <span class="bold"><strong>Sample
+                    Time</strong></span> parameter. To use this feature, check the <span class="bold"><strong>Use Cycle Times from Database</strong></span> checkbox. If no cycle time has been
+                defined for a message, it defaults to the configured <span class="bold"><strong>Sample
+                    Time</strong></span>.</p><div class="variablelist"><div class="variablelist-title">Hierarchy Tree</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Search</span>
+                    </span></dt><dd><p>The <span class="bold"><strong>Hierarchy</strong></span> tree has a <span class="bold"><strong>Search</strong></span> field available, which highlights
+                            nodes found in this tree. You can cycle through highlighted nodes using
+                            the up and down arrow buttons next to the <span class="bold"><strong>Search</strong></span> button. Clear the <span class="bold"><strong>Search</strong></span> field to clear the node highlighting.</p></dd><dt><span class="term">
+                        <span class="guilabel">Refresh</span>
+                    </span></dt><dd><p>This button refreshes the <span class="bold"><strong>Hierarchy</strong></span>
+                            tree and the <span class="bold"><strong>Details Table</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Expand</span>
+                    </span></dt><dd><p>This button expands or collapses all nodes in the <span class="bold"><strong>Hierarchy</strong></span> tree.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable all</span>
+                    </span></dt><dd><p>Allows users to enable or disable all available messages in one
+                            click.</p></dd><dt><span class="term">
+                        <span class="guilabel">Group by</span>
+                    </span></dt><dd><p>Allows users to sort the messages either by <span class="bold"><strong>None</strong></span>, <span class="bold"><strong>Equipment</strong></span>, or
+                                <span class="bold"><strong>Channel</strong></span>.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Details Table</div><dl class="variablelist"><dt><span class="term"></span></dt><dd><p>The <span class="bold"><strong>Details Table</strong></span> shows all the
+                            information available in the configuration file for the selected node.
+                            Depending on the hierarchy level, different types of information are
+                            displayed. No actions are available for this table.</p></dd></dl></div></div><div class="refsect1"><a name="d5e54679"></a><h2>Mapping Tab </h2><p>The mapping functionality allows you to map the elements of an input bus signal to
+                the signals defined in the selected database file. On the <span class="bold"><strong>Hierarchy</strong></span> tab, first select which messages are transmitted, and then
+                switch to the <span class="bold"><strong>Mapping</strong></span> tab. At this point, it is
+                important to ensure that there is an input Simulink bus signal on the input port of
+                the block.</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/arinc429_parser_mapping.png"></span></span></p><p>The <span class="bold"><strong>Mapping</strong></span> tab shows a tree view of the
+                structure of the input Simulink bus signal on the left, and the mapping table on the
+                right. The mapping table contains the list of signals that were previously selected
+                in the <span class="bold"><strong>Hierarchy</strong></span> tab, and an <span class="bold"><strong>Input Signal</strong></span> column that shows how an element of the input Simulink
+                bus signal maps to a corresponding database-defined signal. When no mapping is
+                selected, the input signal in the mapping table takes the default value <span class="bold"><strong>Ground (0)</strong></span>. To map signals, you must select the desired
+                input signal elements in the left-hand tree view, the corresponding row in the
+                right-hand table, and click the arrow button to complete the mapping.</p><p>The following options are available in the <span class="bold"><strong>Mapping</strong></span> tab:</p><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Refresh button</strong></span>: If the input Simulink
+                            bus signal is modified, click this button to refresh the tree
+                            view</p></li><li class="listitem"><p><span class="bold"><strong>Clear Selected</strong></span>: The signal currently
+                            selected in the mapping table is set to the default value <span class="bold"><strong>Ground (0)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Clear All</strong></span>: All signals in the mapping
+                            table are set to the default value <span class="bold"><strong>Ground
+                                (0)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Map Button (arrow icon)</strong></span>: Maps an
+                            input signal element to a database-defined signal. To enable the button,
+                            both a signal from the tree view and a row from the table on the right
+                            must be selected. Once a signal is mapped, the signal's icon in the tree
+                            view changes to a link</p></li><li class="listitem"><p><span class="bold"><strong>Configure Table</strong></span>: Opens a dialog
+                            window where you can use checkboxes to configure the columns visible in
+                            the mapping table</p></li><li class="listitem"><p><span class="bold"><strong>Save to File</strong></span>: Saves the mapping table
+                            to a file, where the file name and the file type are selectable in a
+                            dialog box. The file types currently supported are <span class="bold"><strong>.csv</strong></span> and <span class="bold"><strong>.mat</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Load from File</strong></span>: Invokes a file
+                            selection dialog to load the mapping table from a file. The file types
+                            currently supported are <span class="bold"><strong>.csv</strong></span> and
+                                <span class="bold"><strong>.mat</strong></span>. The table layout of the
+                            loaded file must match the layout of the file created when you click the
+                                <span class="bold"><strong>Save to File</strong></span> button. To ensure that
+                            the mapping table is valid, all the mapped messages must be enabled and
+                            all the input signals must be available in the connected input Simulink
+                            bus signal. Disabled messages are not loaded into the mapping table
+                            (indicated by a warning message). The input signals unavailable are
+                            displayed as invalid in the mapping table.</p></li></ul></div><p>
+            </p></div></div></body></html>

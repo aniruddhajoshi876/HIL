@@ -1,0 +1,154 @@
+%% Abstract: TLC file for J1939 Protocol Stack Block.
+%%
+%%   Copyright 2009-2010 The MathWorks, Inc.
+
+%implements j1939protocolstack "C"
+
+
+%function BlockTypeSetup(block, system) void
+
+%if !IsModelReferenceSimTarget()
+%% When building a model with this block inside a model reference, and the
+%% referring block is set to ACCELERATOR mode, then the compile of the file
+%% generated with this file will fail unless we exclude the target specific
+%% includes and code.
+  %<LibAddToCommonIncludes("xpctarget.h")>
+  %<LibAddToCommonIncludes("j1939lib.h")>
+  %<LibAddToCommonIncludes("cantransportlib.h")>
+%endif
+
+ %if !EXISTS(::xpc_can_datatype_registered)
+    %assign ::xpc_can_datatype_registered = TLC_TRUE
+   
+    %if !EXISTS(::custom_can_datatype_registered)
+		%assign ::custom_can_datatype_registered = TLC_TRUE
+		
+        %with CompiledModel.DataTypes
+          %foreach dtIdx = NumDataTypes
+            %assign dt = DataType[dtIdx]
+            %if (ISEQUAL(dt.Name,"CAN_MESSAGE_STANDARD") || ISEQUAL(dt.Name,"CAN_MESSAGE_EXTENDED") || \
+                 ISEQUAL(dt.Name, "CAN_MESSAGE"))
+   
+                %<SLibSetDataTypeName(dt, "CAN_DATATYPE")>
+                %<SLibSetDataTypeGroundName(dt,"CAN_DATATYPE_GROUND1")>
+                %<SLibSetDataTypeGroundValue(dt,"CAN_DATATYPE_GROUND")>
+                %<SLibSetDataTypeGroundInit(dt,"{0,0,0,0,0,{0}}")>
+            %endif
+          %endforeach
+        %endwith
+        %% Make a ground reference for CAN_FRAME
+        %openfile buffer
+        #include "can_message.h"
+        %closefile buffer
+        %<LibExportFileCustomCode(buffer,"header")>
+
+        %openfile buffer = "can_datatype_ground.c"
+            #include "can_message.h"
+            /* A ground reference for CAN_DATATYPE */
+            CAN_DATATYPE CAN_DATATYPE_GROUND;
+        %closefile buffer
+        %<LibAddToModelSources("can_datatype_ground")>
+        %<LibCacheExtern("extern CAN_DATATYPE CAN_DATATYPE_GROUND;")>
+
+        %% add in required includes to the main header file
+        %<LibAddToCommonIncludes("can_message.h")>
+        %<LibAddToCommonIncludes("<string.h>")>
+        
+     %else
+			%% CAN_DATATYPE already registered.
+			%% Check for CAN_DATATYPE ground name validity.
+			
+			%with CompiledModel.DataTypes
+			  %foreach dtIdx = NumDataTypes
+				%assign dt = DataType[dtIdx]
+				%if (ISEQUAL(dt.Name, "CAN_DATATYPE") && ISEQUAL(dt.GroundName, "CAN_DATATYPE"))
+					%% Data type name and ground name cannot be equal. Reseting ground attributes.
+					
+					%assign dt.GroundName = "CAN_DATATYPE_GROUND1" 
+					%assign dt.GroundValue = "CAN_DATATYPE_GROUND" 
+					%assign dt.GroundInit = "{0,0,0,0,0,{0}}" 
+					
+				%endif
+			  %endforeach
+			%endwith      
+        %endif     
+    %endif
+
+
+%endfunction
+
+
+%function Start(block, system) Output 
+{
+%if !IsModelReferenceSimTarget()
+	if (!xpcIsModelInit()) 
+	{ 
+		j1939Error ret;
+		%% Initialize J1939 Protocol Stack
+		ret = j1939InitializeStack(%<SFcnParamSettings.STACKID>, 
+									 %<SFcnParamSettings.TPENABLED>,
+									 %<SFcnParamSettings.ACENABLED>,
+									 %<SFcnParamSettings.NUMRXPGN>,
+									 %<SFcnParamSettings.NUMTXPGN>,
+									 %<SFcnParamSettings.NUMCA>,
+									 %<SFcnParamSettings.MAXTP>);
+		
+		if(ret!=J1939_ERROR_OK)
+		{
+			static uint8_T errmsg[100];
+			sprintf(errmsg,"J1939 PStack Initialization Error: %d",ret);
+			%with CompiledModel
+			  %assign rootsys = System[NumSystems-1]
+		      %<LibSetRTModelErrorStatus("errmsg")>;
+			%endwith	
+		}
+	}     
+%endif
+}
+%endfunction
+
+%function Outputs(block, system) Output
+{
+%if !IsModelReferenceSimTarget()
+	int32_T num_msg_sent = 0;
+    
+	%%Get input and output CAN message signals
+	%assign inputSignal = LibBlockInputSignalAddr(0,"","",0)
+    %assign outputSignal = LibBlockOutputSignalAddr(0,"","",0)
+ 
+
+	%%Get message count signals
+    %assign msgCountOut = LibBlockOutputSignal(1,"","",0)
+
+	%assign inputWidth   =  LibBlockInputSignalWidth(0)
+	%assign outputWidth  =  LibBlockOutputSignalWidth(0)
+
+	
+	%if LibBlockInputSignalConnected(0)
+        int32_T max_rx_limit = 0;
+        max_rx_limit = (int32_T)min( %<LibBlockInputSignal(1,"","",0)>,%<SFcnParamSettings.MAXRX>);
+		%%Receive messages (until we reach "receive depth")
+		CTL_ExecuteRx(%<SFcnParamSettings.STACKID>,%<inputSignal>,%<inputWidth>,max_rx_limit);
+	%endif
+	
+	%if LibBlockOutputSignalConnected(0)
+		%%Send All messages waiting to be sent (until we reach "max transmit")
+		num_msg_sent = CTL_ExecuteTx(%<SFcnParamSettings.STACKID>,%<outputSignal>,%<outputWidth>, %<SFcnParamSettings.MAXTX>);
+	%endif
+	
+   %<msgCountOut> = num_msg_sent;
+
+%endif
+}
+%endfunction
+
+%function Terminate(block, system) Output
+{
+%if !IsModelReferenceSimTarget()
+	if (!xpcIsModelInit()) 
+	{ 
+		j1939DestroyStack(%<SFcnParamSettings.STACKID>);
+	}
+%endif
+}
+%endfunction

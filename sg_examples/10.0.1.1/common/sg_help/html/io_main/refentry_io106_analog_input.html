@@ -1,0 +1,42 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO106 - Analog input</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io106_setup.html" title="IO106 - Setup"><link rel="next" href="refentry_io106_start_conversion.html" title="IO106 - Start conversion"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io106_analog_input"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO106 - Analog input</h2><p>IO106 - Analog input &#8212; 
+                <span class="phrase">Reads the IO106 analog inputs</span>
+            </p></div><div class="refsect1"><a name="d5e4929"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io106_analog_input.png"></span></span></p></div><div class="refsect1"><a name="d5e4937"></a><h2>Description</h2><p>This is the default driver block for acquiring analog input channels from the
+                IO106 I/O module. This driver block combines the conversion start and channel read
+                functionality into one block. If you want to separate the start conversion and
+                channel read functionality in your model (as for multi-board synchronized
+                acquisition) then use the Start Conversion and Read Channels driver blocks
+                instead.</p></div><div class="refsect1"><a name="d5e4940"></a><h2>Ports</h2><p>This driver block has one output port returning the acquired analog input channels
+                (see the "Number of Channels" parameter in the "Setup" dialog box).</p><p>As this I/O module has a high channel count, it was decided against returning each
+                analog input channel via a separate output port in order to not make the driver
+                block icon use up too much real-estate in the model window.</p><p>The single output port therefore returns a vector with the number of elements
+                defined in the "Number of Channels" field (except for the Pseudo-differential input
+                coupling mode; see below). Each element is of type double and outputs the acquired
+                channel value in volts depending on the "Range" setting. The Demux or Selection
+                block from the Simulink library can be used to access individual elements (channels)
+                in your model.</p><p>For single-ended and differential modes the first element is channel 1 and the
+                last channel is defined by the "Number of Channels" setting in the corresponding
+                Setup driver block.</p><p>For pseudo-differential mode the first element is channel 2 and the last channel
+                is defined by the "Number of Channels" setting in the corresponding Setup driver
+                block.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">1..X (X is the last channel and is defined by the "Number of
+                            Channels" setting in the module's "Setup" block dialog box)</span>
+                    </span></dt><dd><p>A vector with n elements (where n is the number of selected analog
+                            input channels). Each element corresponds to the value from an A/D
+                            channel in volts. This port is enabled if the "Input Coupling" parameter
+                            in the module's "Setup" block dialog box is set to Single-ended or
+                            Differential.</p></dd><dt><span class="term">
+                        <span class="guilabel">2..X (X is the last channel and is defined by the "Number of
+                            Channels" setting in the module's "Setup" block dialog box)</span>
+                    </span></dt><dd><p>A vector with n elements (where n is the number of selected analog
+                            input channels). Each element corresponds to the value from an A/D
+                            channel in volts. This port is enabled if the "Input Coupling" parameter
+                            in the module's "Setup" block dialog box is set to
+                            Pseudo-differential.</p></dd></dl></div></div><div class="refsect1"><a name="d5e4959"></a><h2>Parameters</h2><div class="variablelist"><p>The configuration details are all defined in the setup block.</p><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

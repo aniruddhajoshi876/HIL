@@ -1,0 +1,27 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO601 - LIN Status v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io601_can_status.html" title="IO601 - CAN Status v4"><link rel="next" href="refentry_io601_lin_master_write_v2.html" title="IO601 - LIN Master Write v2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io601_lin_status_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO601 - LIN Status v2</h2><p>IO601 - LIN Status v2 &#8212; <span class="phrase">This block is used to read
+                    status information from the LIN channel</span></p></div><div class="refsect1"><a name="d5e9189"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io601_lin_status_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e9197"></a><h2>Description</h2><p>This block can be used to get the current status of a LIN channel. The link to the
+                corresponding LIN module can be set in the block mask. The status information is
+                updated every 128ms by the LIN controller on the IO601 module.</p></div><div class="refsect1"><a name="d5e9200"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Role </span>
+                    </span></dt><dd><p>LIN operating mode: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Slave</p></li><li class="listitem"><p>1: Master</p></li></ul></div><p>
+                            <span class="bold"><strong>Data
+                            Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Bus load </span>
+                    </span></dt><dd><p>Bus load in [%]. <span class="bold"><strong>Data
+                                Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Baud rate </span>
+                    </span></dt><dd><p>The currently configured baud rate in [bits/s]. <span class="bold"><strong>Data Type:</strong></span><code class="literal">uint32</code></p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>LIN status: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: No error</p></li><li class="listitem"><p>1: Receive queue overflow (Already one or more messages
+                                        lost. The module must be re-initialized to reset the
+                                        status.)</p></li><li class="listitem"><p>16: LIN controller is still in init mode</p></li></ul></div><p>
+                            <span class="bold"><strong>Data
+                            Type:</strong></span><code class="literal">uint32</code></p></dd></dl></div></div><div class="refsect1"><a name="d5e9244"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">Enable Role</span></dt><dd><p>Enables the output port for role information.</p></dd><dt><span class="term">Enable Busload</span></dt><dd><p>Enables the output port for busload information.</p></dd><dt><span class="term">Enable Baud rate</span></dt><dd><p>Enables the output port for baud rate information.</p></dd><dt><span class="term">Enable Status</span></dt><dd><p>Enables the output port for status information.</p></dd></dl></div></div></div></body></html>

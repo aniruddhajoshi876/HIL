@@ -1,0 +1,62 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Initialize</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_bus_monitor.html" title="IO672 - Bus Monitor"><link rel="next" href="refentry_io672_rt_initialize.html" title="IO672 - RT Initialize"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_initialize"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Initialize</h2><p>IO672 - Initialize &#8212; <span class="phrase">Initializes the IO672 I/O
+                    Module</span></p></div><div class="refsect1"><a name="d5e51416"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_initialize.png"></span></span></p></div><div class="refsect1"><a name="d5e51424"></a><h2>Description</h2><p>Use one block per channel to initialize it.</p></div><div class="refsect1"><a name="d5e51427"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Init Struct</span></span></dt><dd><p>Vector that contains information for RT Initialize block.</p></dd></dl></div></div><div class="refsect1"><a name="d5e51436"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Channel </span>
+                    </span></dt><dd><p>From the list of available channels on the board, choose channel 1, 2,
+                            3, or 4. This channel is initialized for this command stream.</p></dd><dt><span class="term">
+                        <span class="guilabel">Coupling mode </span>
+                    </span></dt><dd><p>Defines the mode for coupling a terminal device to the bus.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initialize for Bus Controller operation </span>
+                    </span></dt><dd><p>When selected, Bus Controller initialization is performed for this
+                            channel. Selecting this check box enables the parameters: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Number of Bus Controller buffers to
+                                        allocate</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Enable retries</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>No response timeout
+                                        (microseconds)</strong></span></p></li><li class="listitem"><p><span class="bold"><strong>Late response timeout
+                                        (microseconds)</strong></span></p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Number of Bus Controller buffers to allocate </span>
+                    </span></dt><dd><p>The number of message buffers to allocate in onboard memory on the
+                            board. This number must be greater than or equal to the longest string
+                            of command buffers that the board is given to process.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable retries </span>
+                    </span></dt><dd><p>When selected, automatic retries are enabled when a message times out
+                            or has an error.</p></dd><dt><span class="term">
+                        <span class="guilabel">No response timeout (microseconds) </span>
+                    </span></dt><dd><p>The number of microseconds the board is to wait for a response from
+                            the Remote Terminal. If the response from the Remote Terminal takes
+                            longer than this timeout value, the board sets the NORESPONSE error
+                            condition in the status returned from the command.</p></dd><dt><span class="term">
+                        <span class="guilabel">Late response timeout (microseconds) </span>
+                    </span></dt><dd><p>The number of microseconds the board waits for a response from the
+                            Remote Terminal. If the response from the Remote Terminal takes longer
+                            than this timeout value, the board sets the LATERESPONSE error condition
+                            in the status returned from the command.</p></dd><dt><span class="term">
+                        <span class="guilabel">Initialize for Bus Monitor operation </span>
+                    </span></dt><dd><p>When selected, this channel is initialized for Bus Monitor operation.
+                            Selecting this check box enables the parameters <span class="bold"><strong>Monitor bus A</strong></span>, <span class="bold"><strong>Monitor bus
+                                B</strong></span>, and <span class="bold"><strong>Number of monitor buffers to
+                                allocate</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">Monitor bus A </span>
+                    </span></dt><dd><p>When selected, bus A is monitored. You can monitor either bus A, bus
+                            B, or both.</p></dd><dt><span class="term">
+                        <span class="guilabel">Monitor bus B </span>
+                    </span></dt><dd><p>When selected, bus B is monitored. You can monitor either bus A, bus
+                            B, or both.</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of monitor buffers to allocate </span>
+                    </span></dt><dd><p>Enter a number at least as large as the number of messages that you
+                            expect to see between calls to the Bus Monitor block. If more messages
+                            arrive than there are buffers, some messages are lost and not monitored.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Initialize for Remote Terminal operation </span>
+                    </span></dt><dd><p>When selected, the board is initialized to operate as a Remote
+                            Terminal. If this check box is selected, add the RT Initialize block to
+                            the model to initialize the Remote Terminal. Connect the RT Initialize
+                            block for the Remote Terminal to the S output of this block. Selecting
+                            this check box enables the parameter <span class="bold"><strong>RT address 31
+                                is Broadcast</strong></span>.</p></dd><dt><span class="term">
+                        <span class="guilabel">RT address 31 is Broadcast </span>
+                    </span></dt><dd><p>Select this check box to enable the board to see messages to Remote
+                            Terminal 31 as broadcast messages.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

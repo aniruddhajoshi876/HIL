@@ -1,0 +1,7 @@
+
+%implements sg_IO672_setup_s "C"
+
+%% Function: BlockTypeSetup ===============================================
+%function BlockTypeSetup (block, system) void
+    %<LibAddToCommonIncludes("sg_mil1553.h")>
+%endfunction

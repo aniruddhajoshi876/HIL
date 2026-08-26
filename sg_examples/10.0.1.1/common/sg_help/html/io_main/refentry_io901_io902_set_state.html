@@ -1,0 +1,60 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO901/IO902 - Set State</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="up" href="book_shared_memory.html" title="Shared_memory I/O"><link rel="prev" href="refentry_io901_io902_get_state.html" title="IO901/IO902 - Get State"><link rel="next" href="refentry_io901_io902_send_interrupt.html" title="IO901/IO902 - Send Interrupt"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io901_io902_set_state"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO901/IO902 - Set State</h2><p>IO901/IO902 - Set State &#8212; <span class="phrase">Set State of the driver
+                    resource</span></p></div><div class="refsect1"><a name="d5e886"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io901_io902_set_state.png"></span></span></p></div><div class="refsect1"><a name="d5e894"></a><h2>Description</h2><p>This function changes the current State of the driver resource identified by the
+                stateID paramater to the new value specified.</p></div><div class="refsect1"><a name="d5e897"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">State ID</span>
+                    </span></dt><dd><p>State Identifier parameter to be modified.</p></dd><dt><span class="term">
+                        <span class="guilabel">Value</span>
+                    </span></dt><dd><p>Value of the desired State ID to write to. See Table below for more
+                            details to the different State IDs and possible output values.</p></dd></dl></div></div><div class="refsect1"><a name="d5e911"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e939"></a><h2>State ID Table</h2><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="24%" class="c1"><col width="7%" class="c2"><col width="11%" class="c3"><col width="58%" class="c4"></colgroup><thead><tr><th><span class="bold"><strong>State Id</strong></span></th><th>Id #</th><th><span class="bold"><strong>Setable</strong></span></th><th>Description</th></tr></thead><tbody><tr><td><span class="bold"><strong>SCGT_NODE_ID</strong></span></td><td>0</td><td>yes</td><td>Node Id Of unit.</td></tr><tr><td><span class="bold"><strong>SCGT_ACTIVE_LINK</strong></span></td><td>1</td><td>yes</td><td>Units Active Link. For Boards with multiple links (link 0and 1),
+                                you may get/set the active link.</td></tr><tr><td><span class="bold"><strong>SCGT_NUM_LINK_ERRS</strong></span></td><td>2</td><td>yes</td><td>Number of Link errors.</td></tr><tr><td><span class="bold"><strong>SCGT_EWRAP</strong></span></td><td>3</td><td>yes</td><td>Set to '1' to enable electronic wrp and bypass thelink. Set to
+                                '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_WRITE_ME_LAST</strong></span></td><td>4</td><td>yes</td><td>Set to '1' to specify that writes to shared memory willoccur only
+                                after coresponding native packets traversethe ring. Set to '0' to
+                                specify normal operation, whereWrites to shared memory will not rely
+                                on the receptionof native packets.</td></tr><tr><td><span class="bold"><strong>SCGT_UNICAST_INT_MASK</strong></span></td><td>5</td><td>yes</td><td>Set to '1' to enable receives of Unicast Interrupts. Setto '0' to
+                                disable.</td></tr><tr><td><span class="bold"><strong>SCGT_BROADCAST_INT_MASK</strong></span></td><td>6</td><td>yes</td><td>Bit vestor describing which of the 32 BroadcastInterupts to
+                                receive. Bit 0 coresponds to broadcastInterrupt 0, and bit
+                                31-corresponds to broadcastinterrupt31. Set the coresponding bit to
+                                '1' to receivethe broadcast interrupt, set to '0' otherwise.
+                                Forexample, to receive interrupt 16 set the mask asfollows: mask =
+                                Mask | (1&lt;&lt;16);</td></tr><tr><td><span class="bold"><strong>SCGT_INT_SELF_ENABLE</strong></span></td><td>7</td><td>yes</td><td>Se tto '1' to enable reception of network interrupts sentby this
+                                node. Set to '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_RING_SIZE</strong></span></td><td>8</td><td>&nbsp;</td><td>The Number of nodes on the ring.</td></tr><tr><td><span class="bold"><strong>SCGT_UPSTREAM_NODE_ID</strong></span></td><td>9</td><td>&nbsp;</td><td>Node ID ot the ring upstream to this node.</td></tr><tr><td><span class="bold"><strong>SCGT_NET_TIMER_VAL</strong></span></td><td>10</td><td>&nbsp;</td><td>Timer that is incremented on every network transmitclock period.
+                                For 2.5Gbps configurations, the networktransmit clock period is 8ns.
+                                See the hardwaremanaual for addtional information.</td></tr><tr><td><span class="bold"><strong>SCGT_LATENCY_TIMER_VAL</strong></span></td><td>11</td><td>&nbsp;</td><td>Timer that measures transmit latency of the network.</td></tr><tr><td><span class="bold"><strong>SCGT_SM_TRAFFIC_CNT</strong></span></td><td>12</td><td>&nbsp;</td><td>Number of 32-bit shared memory data phases.</td></tr><tr><td><span class="bold"><strong>SCGT_SPY_TRAFFIC_CNT</strong></span></td><td>13</td><td>yes</td><td>Number of 32-bit data phases transmited by
+                                nodeSCGT_SPY_NODE_ID.</td></tr><tr><td><span class="bold"><strong>SCGT_SPY_NODE_ID</strong></span></td><td>14</td><td>yes</td><td>The Node Id for whci 32-bit data phases will be</td></tr><tr><td><span class="bold"><strong>SCGT_TRANSMIT_ENABLE</strong></span></td><td>15</td><td>yes</td><td>Set to '1' to enable native packet transmitions. Set to'0' to
+                                disable. Does not affect retransmition ofnetwork packets.</td></tr><tr><td><span class="bold"><strong>SCGT_RECIEVE_ENABLE</strong></span></td><td>16</td><td>yes</td><td>Set to '1' to enable network packet reception. Set to '0'to
+                                disable. This includes data packets and networkinterrupt packets.
+                                Does not affect retrasnmition ofNetwork packets.</td></tr><tr><td><span class="bold"><strong>SCGT_RETRANSMIT_ENABLE</strong></span></td><td>17</td><td>yes</td><td>Set to '1' to enable retrasnmission of foreign networktraffic.
+                                Set to '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_LASER_0_ENABLE</strong></span></td><td>18</td><td>yes</td><td>Set to '0' enable laser. Set to '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_LASER_1_ENABLE</strong></span></td><td>19</td><td>yes</td><td>Set to '0' enable laser. Set to '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_LINK_UP</strong></span></td><td>20</td><td>&nbsp;</td><td>Link up status for active link. '1' if link u, '0' if
+                                down.</td></tr><tr><td><span class="bold"><strong>SCGT_LASER_0_SIGNAL_DET</strong></span></td><td>21</td><td>&nbsp;</td><td>Signal detect state for Laser 0: '1' is signal detected, '0'if no
+                                signal detected.</td></tr><tr><td><span class="bold"><strong>SCGT_LASER_1_SIGNAL_DET</strong></span></td><td>22</td><td>&nbsp;</td><td>Signal detect state for Laser 1: '1' is signal detected, '0'if no
+                                signal detected.</td></tr><tr><td><span class="bold"><strong>SCGT_D64_ENABLE</strong></span></td><td>23</td><td>yes</td><td>Set to '1' to enable 64-bit PCI data trasnfers by the GTDMA
+                                engine. Se tto '0' to allow only 32-bit PCI datatrasnfers by the GT
+                                DMA engine.</td></tr><tr><td><span class="bold"><strong>SCGT_BYTE_SWAP_ENABLE</strong></span></td><td>24</td><td>yes</td><td>Set to '1' to enable byte swapping on accesses to GTmemory. Set
+                                to '0' to disable.</td></tr><tr><td><span class="bold"><strong>SCGT_WORD_SWAP_ENABLE</strong></span></td><td>25</td><td>yes</td><td>Set to '1' to enable byte swapping of 32-bit words on
+                                64-bitaccesses to GT memory. Set to '0' to disable.</td></tr></tbody></table></div></div></div></body></html>

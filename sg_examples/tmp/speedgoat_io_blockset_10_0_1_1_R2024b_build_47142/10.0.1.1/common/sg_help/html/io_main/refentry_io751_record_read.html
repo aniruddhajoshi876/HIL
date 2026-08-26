@@ -1,0 +1,87 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO751 - Record Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io751_receive_v2.html" title="IO751 - Receive v2"><link rel="next" href="refentry_io751_record_write.html" title="IO751 - Record Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io751_record_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO751 - Record Read</h2><p>IO751 - Record Read &#8212; <span class="phrase">Reads records of remote
+                    PROFINET devices.</span></p></div><div class="refsect1"><a name="d5e60127"></a><h2>Library</h2><p>Simulink<sup>&reg;</sup> Real-Time&#8482; - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io751_record_read.png"></span></span></p></div><div class="refsect1"><a name="d5e60136"></a><h2>Description</h2><p>This block is used to read records of remote PROFINET devices. Use one block for
+                each record you want to read.</p><p>Reading and writing of records is performed acyclically. Device response times
+                vary. Record read and write commands are executed one after another. The more Record
+                blocks you place in your model the longer you will wait for responses from connected
+                devices.</p></div><div class="refsect1"><a name="d5e60140"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Enable</span>
+                    </span></dt><dd><p>The block sends out read requests as long as the input port is
+                            TRUE.</p><p>Best practice is to set the block's sample time to a higher rate (like
+                            1 ms) and trigger the <span class="bold"><strong>Enable</strong></span> input port
+                            at a lower rate. This ensures low network traffic but immediate updates
+                            of the output ports once a response is received.</p><p><span class="bold"><strong>Data type:</strong></span> boolean</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Outputs the current value of the requested record. The port inherits
+                            the data type and the dimensions from the <span class="bold"><strong>Init
+                                Value</strong></span> parameter. The data type and dimensions do not both
+                            need to match the data type and dimensions of the record in the remote
+                            slave device, but the overall number of bytes must be equal to or
+                            greater than the size of the record. The block outputs the number of
+                            bytes received (padded by zeros), or truncates the data if it exceeds
+                            the port size. The <span class="bold"><strong>Length</strong></span> output port
+                            outputs the actual number of bytes received.</p><p><span class="bold"><strong>Data type:</strong></span> Fundamental data types
+                            from boolean to double are supported as well as dimensions from scalar
+                            values to vectors.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>A rising or falling edge indicates a completed read operation. Either
+                            a response was received and the <span class="bold"><strong>Data</strong></span>
+                            output port was updated or the <span class="bold"><strong>Error</strong></span>
+                            output port provides an error code.</p><p>If the <span class="bold"><strong>Status</strong></span> output does not change,
+                            the read operation is still in progress or the block is idle.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd><dt><span class="term">
+                        <span class="guilabel">Error</span>
+                    </span></dt><dd><p>Outputs the error code reported by the driver, the protocol stack, or
+                            the remote device (the error included in the response).</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Driver</strong></span></p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="20%" class="Code"><col width="80%" class="Description"></colgroup><tbody><tr><td><span class="bold"><strong>Code</strong></span></td><td><span class="bold"><strong>Description</strong></span></td></tr><tr><td>1</td><td>The quantity of data included in the read
+                                                  response exceeds the dimensions of the data output
+                                                  port</td></tr><tr><td>2</td><td>Received a read response, but a write
+                                                  response was expected (and vice versa)</td></tr><tr><td>7</td><td>Waiting for response timed out</td></tr></tbody></table></div></li><li class="listitem"><p><span class="bold"><strong>Protocol Stack</strong></span></p><p>Please refer to the <a href="refentry_io64x75x_status_codes.html" class="olink">Status Codes for
+                                        Protocols Supported with the IO64x/IO75x
+                                    Modules</a>.</p></li><li class="listitem"><p><span class="bold"><strong>Remote Device </strong></span></p><p>Please refer to the chapter about PROFINET status codes <a href="refentry_io751_usage_notes.html" class="olink">in the IO751 Usage
+                                        Notes</a> for further information.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Length</span>
+                    </span></dt><dd><p>Outputs the number of data bytes received. The value will always be
+                            less than or equal to the size of the <span class="bold"><strong>Data</strong></span> output port.</p><p><span class="bold"><strong>Data type:</strong></span> uint32</p></dd></dl></div></div><div class="refsect1"><a name="d5e60223"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Device Index</span>
+                    </span></dt><dd><p>The index of the remote PROFINET device. Find the index in the
+                            SYCON.net project. In SYCON.net, double-click the controller node. In
+                            the navigation area, click <span class="bold"><strong>Device
+                            Table</strong></span>. In the table on the right, navigate to the device
+                            whose record you want to read and locate the device index in the
+                                <span class="bold"><strong>Index</strong></span> column.</p></dd><dt><span class="term">
+                        <span class="guilabel">API</span>
+                    </span></dt><dd><p>The API of the module to which the record belongs. Valid values are
+                            between 0 and 0xFFFFFFFF.</p></dd><dt><span class="term">
+                        <span class="guilabel">Slot</span>
+                    </span></dt><dd><p>The slot of the module to which the record belongs. Valid values are
+                            between 0 and 0xFFFF.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sub-Slot</span>
+                    </span></dt><dd><p>The subslot of the submodule to which the record belongs. Valid values
+                            are between 0 and 0xFFFF.</p></dd><dt><span class="term">
+                        <span class="guilabel">Index</span>
+                    </span></dt><dd><p>Enter the index of the record within the respective subslot.
+                            Corresponds to the XML attribute Index of the related
+                            ParameterRecordDataItem in the GSDML file. Valid values are between 0
+                            and 0xFFFF</p></dd><dt><span class="term">
+                        <span class="guilabel">Init Value</span>
+                    </span></dt><dd><p>The value that the <span class="bold"><strong>Data</strong></span> port outputs
+                            before a read response is received. The parameter's data type and
+                            dimensions define the data type and dimensions of the <span class="bold"><strong>Data</strong></span> output port and specify the length of
+                            the requested data. Fundamental data types from boolean to double are
+                            supported as well as 1D-arrays.</p><p>The <span class="bold"><strong>Init Value</strong></span> corresponds to the XML
+                            attribute Data of the related ParameterRecordDataItem in the GSDML
+                            file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Timeout</span>
+                    </span></dt><dd><p>The time the module should wait for a response from the remote device
+                            before allowing the next Record block to send out its request.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extended Interface</span>
+                    </span></dt><dd><p>If selected, the block shows the <span class="bold"><strong>Status</strong></span>, the <span class="bold"><strong>Error</strong></span> and
+                            the <span class="bold"><strong>Length</strong></span> output ports. Otherwise, the
+                            ports are hidden.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="varlistentry_cifx_same_time"></a><span class="term"></span></dt><dd><div class="caution"><table border="0" summary="Caution"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Caution]" src="images/caution.png"></td><th align="left">Caution</th></tr><tr><td align="left" valign="top"><p>All blocks that interface with the same I/O module must have identical
+                        sample times.</p></td></tr></table></div></dd></dl></div></div></div></body></html>

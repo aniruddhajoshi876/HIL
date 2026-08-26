@@ -1,0 +1,172 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO642 - Setup v2</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io642_setup.html" title="IO642 - Setup"><link rel="next" href="refentry_io642_send.html" title="IO642 - Send"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io642_setup_v2"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO642 - Setup v2</h2><p>IO642 - Setup v2 &#8212; <span class="phrase">Configure the IO642 I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e47121"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io642_setup_v2.png"></span></span></p></div><div class="refsect1"><a name="d5e47129"></a><h2>Description</h2><p lang=""><a name="para_cifx_block_description_setup"></a>The Setup block configures the protocol stack
+        of the related I/O module and enables the send and receive blocks to exchange data on the
+        network. Your model can contain only one Setup block for each I/O module in your target
+        machine.</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e47135"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: General </div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_IO75X_Setup_inclMultiNode"></a><span class="term">Module ID</span></dt><dd><p>The Module ID has two functions:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It logically connects the Setup block and its I/O blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If only
+                        one I/O module of this family is installed, the Module ID must be set to
+                            <span class="bold"><strong>1</strong></span>. To see how each I/O module maps to a
+                        Module ID, use this Speedgoat API:
+                        </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div><p>This Setup block belongs to two families of I/O modules that use the same hardware
+                for multiple protocols. Across both families, the Module ID must be unique.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>IO64X/IO75X (single-node modules)</strong></span>: IO641,
+                        IO642, IO643, IO644, IO750, IO751, IO752, IO753, IO754, IO755, IO756,
+                        IO758</p></li><li class="listitem"><p><span class="bold"><strong>IO64X-32/IO75X-32 (multi-node modules)</strong></span>:
+                        IO642-32, IO752-32, IO754-32, IO756-32</p></li></ul></div><p>If the PCI Slot parameter is set to <span class="bold"><strong>-1</strong></span>
+                (auto-search), the Module ID must be in the range 1:n, where 'n' cannot be larger
+                than the number of modules of this type installed in the target machine. Not all
+                installed I/O modules need to be used.</p><p>To use this Setup block with a multi-node I/O module (IO75X-32 family), the Module
+                ID must be defined as a two-element vector. The second vector element is the
+                sub-module ID. It describes the specific node (1:32) within the I/O module. The 32
+                nodes are internally connected to form two linear networks (daisy-chain), where the
+                first and the last node of both chains are externally accessible. If one node is not
+                configured (has no Setup block), the chain terminates at this point. The sub-module
+                IDs must therefore start at node 1, 16, 17 or 32 and not have any gaps.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>When using I/O modules of both families simultaneously (single-node and
+                    multi-node I/O modules), always use explicit addressing in the <span class="bold"><strong>PCI Slot</strong></span> parameter. Ignore the Module IDs returned by
+                    the getIoInterfaces function and instead assign unique Module IDs accross all
+                    modules used. </p></td></tr></table></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Profibus </div><dl class="variablelist"><dt><a name="varlistentry_comms_ip_startup"></a><span class="term"><span class="guilabel">Bus Start</span></span></dt><dd><p>
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Automatic: The device starts the communication immediately after the
+                            initialization of the real-time application on the target. The
+                            communication is maintained even if the real-time application stops.
+                        </p></li><li class="listitem"><p>Application controlled: After initialization of the real-time
+                            application on the target, the communication of the slave with the
+                            network is off. The device starts the communication immediately after
+                            the real-time application has been started. The device stops the
+                            communication on the network when the real-time application stops.
+                        </p></li></ul></div><p>
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Address </span>
+                    </span></dt><dd><p>The address of the slave in the PROFIBUS network. Each slave has an
+                            unique address between 2 and 126. The value must match the address of
+                            the related slave in the network confiuration of the master.</p><p>Select address 126 if you want the master to assign a bus address
+                            while the connection is being established. In this case you must also
+                            activate the <span class="bold"><strong>Bus Address Change</strong></span>
+                            parameter.</p><p>Address 0 is reserved for diagnostic tools. The Master is generally
+                            at address 1. Address 127 is used for broadcasting.</p></dd><dt><span class="term">
+                        <span class="guilabel">Manual Configuration </span>
+                    </span></dt><dd><p>Select the checkbox if you want to configure the PROFIBUS protocol
+                            stack manually.</p><p>Deselect the checkbox if you want to configure the PROFIBUS protocol
+                            stack automatically by importing a GSD file.</p></dd><dt><span class="term">
+                        <span class="guilabel">Import GSD </span>
+                    </span></dt><dd><p>Push the button and select a valid GSD file. All the neccessary
+                            PROFIBUS protocol stack parameters will be read out of the file and will
+                            be written to the block parameters below. You can emulate almost every
+                            existing PROFIBUS slave. Refer to the usage notes to find GSD files and
+                            learn about limitations.</p></dd><dt><span class="term">
+                        <span class="guilabel">Ident Number </span>
+                    </span></dt><dd><p>This number is unique for each slave device type as it is uniquely
+                            assigned by the Profibus Trade Organization. You can find the value in
+                            the related GSD file: Ident_Number = 0x1234</p><p>As the value in the GSD file is in hexadecimal format, you must
+                            convert it to a numeric value: hex2dec('1234')</p><p>The valid range is: 0 to 65535 (0x0000 to 0xFFFF)</p><p>Default value: 0x0B69 (CIFX DP/DPS Hilscher GmbH)</p><p>If you type 0 the default value will be assigned.</p></dd><dt><span class="term">
+                        <span class="guilabel">Baud Rate </span>
+                    </span></dt><dd><p>Select the transmission speed. The speed must match the speed selected
+                            in the master configuration. The values in the drop-down list are
+                            defined by the PROFIBUS standard. If you want to emulate a PROFIBUS
+                            slave of another vendor, you will find the supported baud rates in the
+                            related GSD file. For example:</p><p>9.6_supp = 0 19.2_supp = 0 45.45_supp = 1 93.75_supp = 1 187.5_supp =
+                            1 500_supp = 1 1.5M_supp = 1 3M_supp = 1 6M_supp = 1 12M_supp = 0</p><p>However, the IO642 I/O module supports all baud rates. Select
+                                <span class="bold"><strong>Auto Detect</strong></span> if you are not sure
+                            which baud rate to select. Refer to the manual of your PROFIBUS master
+                            to learn about how to set the PROFIBUS timing on the master side.</p></dd><dt><span class="term">
+                        <span class="guilabel">DPV1</span>
+                    </span></dt><dd><p>DPV1 is an extension of the PROFIBUS standard and describes a cyclic
+                            data exchange and alarm notifications. If you select the checkbox, the
+                            PROFIBUS slave protocol stack supports DPV1. At the same time, the
+                            related GSD file tells the PROFIBUS master if a slave is a DPV1 slave.
+                            The selection in the block mask must therefore match the master
+                            configuration. You can find the DPV1 property in the GSD file
+                            (DPV1_Slave = 1) and in the master configuration. Refer to the manual of
+                            your PROFIBUS master for further information.</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">SYNC </span>
+                    </span></dt><dd><p>The PROFIBUS master sends SYNC commands to a group of slaves in order
+                            to synchronize the output of those slaves. The group can be defined in
+                            the PROFIBUS master configuration tool. "Output" means the data sent
+                            from the master to the slave. The slaves only output data if they
+                            receive a SYNC request. The IO642 I/O module generally supports this
+                            feature. The output of the Receive block would then hold the latest
+                            values until the next SYNC is received.</p><p>If you select the checkbox, the PROFIBUS slave protocol stack supports
+                            SYNC. At the same time, the related GSD file tells the PROFIBUS master
+                            if a slave supports SYNC. The selection in the block mask must therefore
+                            match the master configuration. You can find the SYNC property in the
+                            GSD file (Sync_Mode_supp = 1) and in the master configuration. Refer to
+                            the manual of your PROFIBUS master to learn how to define SYNC groups
+                            and how to use SYNC commands.</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">FREEZE </span>
+                    </span></dt><dd><p>The PROFIBUS master sends FREEZE commands to a group of slaves in
+                            order to synchronize the input of those slaves. The group can be defined
+                            in the PROFIBUS master configuration tool. "Input" means the data sent
+                            from the slave to the master. The slaves only send actual data if they
+                            receive a FREEZE request. The IO642 I/O module generally supports this
+                            feature. The Send block sends old data as long as no FREEZE command is
+                            received.</p><p>If you select the checkbox, the PROFIBUS slave protocol stack supports
+                            FREEZE. At the same time, the related GSD file tells the PROFIBUS master
+                            if a slave supports FREEZE. The selection in the block mask must
+                            therefore match the master configuration. You can find the FREEZE
+                            property in the GSD file (Freeze_Mode_supp = 1) and in the master
+                            configuration. Refer to the manual of your PROFIBUS master to learn how
+                            to define FREEZE groups and how to use FREEZE commands.</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">FAILSAFE </span>
+                    </span></dt><dd><p>This parameter determines which data the slave expects if the master
+                            is in Clear State. In Clear State the master does not have valid data
+                            for the slave. The IO642 I/O module generally supports this feature. If
+                            the checkbox is selected the slave expects the master to send no data in
+                            cyclic data transmission. If the checkbox is deselected the slave
+                            expects the master to send data of the specified length but all the
+                            values will be 0.</p><p>The related GSD file tells the PROFIBUS master if a slave supports
+                            FAILSAFE. The selection in the block mask must therefore match the
+                            master configuration. You can find the FAILSAFE property in the GSD file
+                            (Fail_Safe = 1). Refer to the manual of your PROFIBUS master to learn
+                            more about how to handle FAILSAFE.</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Extra Alarm SAP </span>
+                    </span></dt><dd><p>With DPV1 the slave can send alarm messages to the master. The master
+                            acknowledges an alarm by sending a response to a specific Service Access
+                            Point in the slave. Usually SAP 51 handles acyclic communication and
+                            alarm acknowledgment. But some PROFIBUS slaves support alarm
+                            acknowledgment via SAP 50. The IO642 I/O module generally supports this
+                            feature as well.</p><p>If set, the slave stack expects alarm acknowledgements from the master
+                            at service access point 50. If not set, the slave stack expects alarm
+                            acknowledgements from the master at service access point 51. At the same
+                            time, the related GSD file tells the PROFIBUS master about the correct
+                            SAP. The selection in the block mask must therefore match the master
+                            configuration. You find the property in the GSD file
+                            (Extra_Alarm_SAP_supp = 1).</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus Address Change </span>
+                    </span></dt><dd><p>If a PROFIBUS slave has bus address 126 the PROFIBUS master can adjust
+                            the address by sending a specific command. The IO642 I/O module
+                            generally supports this feature.</p><p>If set, the slave stack accepts the request from the master and
+                            changes the bus address to the received value. If not set, the slave
+                            rejects the master request and keeps the predefined value. In this case
+                            the parameter <span class="bold"><strong>Bus Address</strong></span> parameter
+                            must not be 126. At the same time the related GSD file tells the
+                            PROFIBUS master about whether the slave expects the address change. The
+                            selection in the block mask must therefore match the master
+                            configuration. You can find the property in the GSD file
+                            (Set_Slave_Add_supp = 1). Refer to the manual of your PROFIBUS master to
+                            learn more about how to handle address changes.</p><p lang=""><a name="para_pbs_manual_config"></a>Deselect the <span class="bold"><strong>Manual
+            Configuration</strong></span> parameter and import the GSD file to automatically set up this
+        parameter.</p></dd></dl></div></div></div></body></html>

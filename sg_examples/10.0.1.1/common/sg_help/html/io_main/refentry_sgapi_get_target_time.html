@@ -1,0 +1,20 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">speedgoat.getTargetTime</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="up" href="book_speedgoat_tools.html" title="Speedgoat Tools"><link rel="prev" href="refentry_sgapi_doc.html" title="speedgoat.doc"><link rel="next" href="refentry_sgapi_get_disk_space.html" title="speedgoat.getDiskSpace"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_sgapi_get_target_time"></a><div class="titlepage"></div><div class="refnamediv"><h2>speedgoat.getTargetTime</h2><p>speedgoat.getTargetTime &#8212; 
+            <span class="phrase">Get the date and time of your Speedgoat real-time target machine</span>
+         </p></div><div class="refsect1"><a name="d5e623"></a><h2>Description</h2><p>This Speedgoat API function gets the current date and time of your Speedgoat real-time target
+machine. The target time is by default in [ddd mmm dd HH:MM:SS yyyy] format, but can also be
+returned as a serial date number [double].</p></div><div class="refsect1"><a name="d5e626"></a><h2>Examples</h2><p>Get the time of the default target machine:</p><pre class="programlisting">targetTime = speedgoat.getTargetTime</pre><p>Get the time of the default target machine in serial date number format:</p><pre class="programlisting">targetTime = speedgoat.getTargetTime('NumberFormat', true)</pre><p>Get the time of a specified target machine using the target name (for example, 'TargetPC1'):</p><pre class="programlisting">targetTime = speedgoat.getTargetTime(___, 'TargetName', 'TargetPC1')</pre><p>Get the time of a specified target machine using the target object (for example, tg):</p><pre class="programlisting">targetTime = speedgoat.getTargetTime(___, 'TargetObject', tg)</pre><p>Display the time of the target machine:</p><pre class="programlisting">speedgoat.getTargetTime(___)</pre><pre class="screen">&gt;&gt; Target time is: Tue Dec 07 08:54:17 GMT 2021</pre><p>Display the time of the target machine as a serial date number:</p><pre class="programlisting">speedgoat.getTargetTime('NumberFormat', true)</pre><pre class="screen">&gt;&gt; Target time is: 7.3850e+05</pre></div><div class="refsect1"><a name="d5e642"></a><h2>Input Arguments</h2><p>NumberFormat - Serial date number format
+[boolean].
+When set to true, the input argument converts the output of the function to the serial
+date number format [double], similar to the MATLAB datenum, for example, now().</p><p>Name-Value Pair Arguments:
+'TargetName' - Target machine name
+[character vector].
+The name of the target machine you want to use.</p><p>'TargetObject' - Target object
+[target object].
+The target object of the target machine you want to use.</p></div><div class="refsect1"><a name="d5e647"></a><h2>Output Arguments</h2><p>targetTime - Target time
+[character vector | double].
+The current date and time of the target machine.</p></div><div class="refsect1"><a name="d5e650"></a><h2>Notes</h2><p>This function requires an Ethernet connection to your Speedgoat real-time target machine.
+If no 'TargetObject' or 'TargetName' argument is given to the function, the default target
+is used. Moreover, the 'TargetObject' argument takes precedence: if both arguments
+are supplied, 'TargetName' will therefore be ignored.</p></div></div></body></html>

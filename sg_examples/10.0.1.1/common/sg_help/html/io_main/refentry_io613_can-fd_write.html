@@ -1,0 +1,51 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO613 - CAN-FD Write</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io613_can-fd_read.html" title="IO613 - CAN-FD Read"><link rel="next" href="refentry_io613_can-fd_status.html" title="IO613 - CAN-FD Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io613_can-fd_write"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO613 - CAN-FD Write</h2><p>IO613 - CAN-FD Write &#8212; <span class="phrase">Send CAN-FD message to one
+                    channel of the IO613</span></p></div><div class="refsect1"><a name="d5e15367"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io613_can-fd_write.png"></span></span></p></div><div lang="" class="refsect1"><a name="refsect_description_can_fd_write"></a><h2>Description</h2><p>Each execution of a "CAN-FD Write" block represents a CAN-FD message being written
+                to the IO61X output buffer. Multiple instances of the block can be used in order to
+                send messages at multiple rates. The buffer size is 96 messages per channel, so
+                depending on the selected baud rate and the "CAN-FD Write" block sample times, it is
+                important to not let the output buffer overflow. You may use the block status output
+                port to verify this.</p></div><div lang="" class="refsect1"><a name="refsect_ports_can_fd_write"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">CAN-FD Msg</span>
+                    </span></dt><dd><p>The complete CAN-FD message. Please use the "CAN-FD Pack" block to
+                            create this message.</p></dd><dt><span class="term">
+                        <span class="guilabel">ID [uint32]</span>
+                    </span></dt><dd><p>Identifier of the CAN message.</p></dd><dt><span class="term">
+                        <span class="guilabel">EFF [uint32]</span>
+                    </span></dt><dd><p>Identifier type (Extended Frame Format) of the CAN-FD message. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: 11-bit identifier</p></li><li class="listitem"><p>1: 29-bit extended identifier</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">DLC [uint32]</span>
+                    </span></dt><dd><p>Length of the payload data. The following configurations are possible:</p><div class="informaltable"><table class="informaltable" border="1"><colgroup><col width="50%" class="col1"><col width="50%" class="col2"></colgroup><thead><tr><th>DLC Setting</th><th>Effective Payload Length</th></tr></thead><tbody><tr><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td></tr><tr><td>2</td><td>2</td></tr><tr><td>3</td><td>3</td></tr><tr><td>4</td><td>4</td></tr><tr><td>5</td><td>5</td></tr><tr><td>6</td><td>6</td></tr><tr><td>7</td><td>7</td></tr><tr><td>8</td><td>8</td></tr><tr><td>9</td><td>12</td></tr><tr><td>10</td><td>16</td></tr><tr><td>11</td><td>20</td></tr><tr><td>12</td><td>24</td></tr><tr><td>13</td><td>32</td></tr><tr><td>14</td><td>48</td></tr><tr><td>15</td><td>64</td></tr></tbody></table></div></dd><dt><span class="term">
+                        <span class="guilabel">BRS [uint32]</span>
+                    </span></dt><dd><p>Bitrate Shift </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The data will be sent with the baud rate of the
+                                        arbitration phase (Standard baud rate).</p></li><li class="listitem"><p>1: The data will be sent with the Fast Data baud rate
+                                        configured in the Setup block.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Data [uint8(64)]</span>
+                    </span></dt><dd><p>Payload data of the CAN-FD message. Be aware that the size of this
+                            input is always 64 bytes, as the length of the payload data can vary at
+                            runtime.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status [uint32]</span>
+                    </span></dt><dd><p>Indicates if the message supplied to the input ports has been
+                            successfully placed in the module TX queue. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: The message was not successfully written to the send
+                                        buffer.</p></li><li class="listitem"><p>1: The message was successfully written to the send
+                                        buffer.</p></li></ul></div><p> This port can be enabled or disabled from the "Show
+                            status output port" in the dialog box for this driver block.</p></dd></dl></div></div><div lang="" class="refsect1"><a name="refsect_parameters_can_fd_write"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Send Message with Channel</span>
+                    </span></dt><dd><p>Choose the CAN-FD channel to which this driver block should be
+                            connected.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Type</span>
+                    </span></dt><dd><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>CAN-FD: Use "CAN-FD Pack" block to define the CAN-FD
+                                        message.</p></li><li class="listitem"><p>RAW: Manual definition of the CAN-FD message without the
+                                        "CAN-FD Pack" block. Please see the CAN-FD specification for
+                                        the correct input values for the Identifier, Identifier
+                                        Type, Length, Bitrate Shift and Data.</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Enable Status Output Port</span>
+                    </span></dt><dd><p>Adds the "Status" output port.</p></dd></dl></div></div></div></body></html>

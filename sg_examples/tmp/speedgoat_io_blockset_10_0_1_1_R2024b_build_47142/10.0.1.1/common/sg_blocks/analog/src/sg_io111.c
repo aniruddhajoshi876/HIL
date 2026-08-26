@@ -1,0 +1,4 @@
+// Copyright 2006-2026 Speedgoat GmbH
+
+#include "sg_io111.h"
+static void zd8daa90d05(real_T*val,int z6c5ef6aa7d);uint16_T zc3ebc5e98b(uint16_T x){if(x%(0x89+801-0x3a8)==(0x1111+2208-0x19b1))return x+(0x2661+156-0x26fc);else return x-(0x155c+1324-0x1a87);}void z2ecaac0920(int range,real_T z0754dd67cc,real_T offset,real_T*val){real_T out=*val;if(range<(0x2054+1193-0x24fa)){out=out*(1.0-z0754dd67cc/262144.0)-offset/4.0;zd8daa90d05(&out,(0x1a11+615-0x1c78));}else{out=out*(1.0-z0754dd67cc/131072.0)-offset/4.0;zd8daa90d05(&out,(0xcd8+3298-0x19b9));}*val=out;}static void zd8daa90d05(real_T*val,int z6c5ef6aa7d){real_T out=*val;if(z6c5ef6aa7d==(0x88a+6040-0x2022)){if(out>65535)out=65535;if(out<(0xbd4+2331-0x14ef))out=(0x4d3+1582-0xb01);}else{if(out>32767)out=32767;if(out<-32768)out=-32768;}*val=out;}

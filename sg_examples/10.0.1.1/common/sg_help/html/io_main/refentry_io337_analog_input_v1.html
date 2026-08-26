@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Analog IO337-650k - Analog Input v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_io337_analog_setup_v1.html" title="Analog IO337-650k - Analog Setup v1"><link rel="next" href="refentry_io337_analog_output_v1.html" title="Analog IO337-650k - Analog Output v1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io337_analog_input_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Analog IO337-650k - Analog Input v1</h2><p>Analog IO337-650k - Analog Input v1 &#8212; <span class="phrase">This driver block is
+                    available for the IO337-650k.</span></p></div><div class="refsect1"><a name="d5e8881"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io337_analog_input_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e8889"></a><h2>Description</h2><p>The number of Analog input v1 blocks in your model must match the number of
+                IO337-650k I/O modules installed in your target machine.</p></div><div class="refsect1"><a name="d5e8892"></a><h2>Ports</h2><p>This driver block has n scalar output ports of type double where n is the number
+                of selected analog input channels. Each port (signal) returns the converted analog
+                values in volts.</p><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">X (X is the analog channel number)</span>
+                    </span></dt><dd><p>The value from analog channel X in volts. The data type is
+                            double.</p></dd></dl></div></div><div class="refsect1"><a name="d5e8902"></a><h2>Parameters</h2><p>The configuration details are all defined in the IO337-650k Analog Setup v1
+                block.</p><div class="variablelist"><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

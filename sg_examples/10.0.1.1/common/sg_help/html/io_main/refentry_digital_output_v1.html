@@ -1,0 +1,40 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Digital - Output v1</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_code_module.html" title="Code_module I/O"><link rel="up" href="book_code_module.html" title="Code_module I/O"><link rel="prev" href="refentry_digital_input_v1.html" title="Digital - Input v1"><link rel="next" href="refentry_ref_pwm.html" title="PWM"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_digital_output_v1"></a><div class="titlepage"></div><div class="refnamediv"><h2>Digital - Output v1</h2><p>Digital - Output v1 &#8212; <span class="phrase">Writes the digital outputs of
+                    the configurable I/O module</span></p></div><div class="refsect1"><a name="d5e1026"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_digital_output_v1.png"></span></span></p></div><div class="refsect1"><a name="d5e1034"></a><h2>Description</h2><p>A Simulink model can contain only one digital output block for each physical IO3xx
+                card in your system.</p></div><div class="refsect1"><a name="d5e1037"></a><h2>Ports</h2><p>This driver block has one input and no output ports. According to your input type
+                configuration, the input can be one of the following:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">32 ports of type double </span>
+                    </span></dt><dd><p>32 input ports of type double are shown. Each port is a scalar either
+                            having value 0.0 (Low) or 1.0 (High).</p></dd><dt><span class="term">
+                        <span class="guilabel">1 port with 32 element vector of type double </span>
+                    </span></dt><dd><p>One input port of type double is shown. The port has a width of 32
+                            where each element returns either 0.0 (Low) or 1.0 (High) for the
+                            corresponding channel.</p></dd></dl></div></div><div class="refsect1"><a name="d5e1051"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">Tab: Module setup </div><dl class="variablelist"><dt><a name="common_varlistentry_fpga_module_id"></a><span class="term">
+            <span class="guilabel">Configurable I/O Module ID</span>
+        </span></dt><dd><p>This parameter associates a code module block with a configurable I/O module setup
+                block. Set this value to match the Module ID defined in the setup block of the
+                required configurable I/O module.</p></dd><dt><a name="common_varlistentry_fpga_channel_vector"></a><span class="term">
+            <span class="guilabel">Channel Vector</span>
+        </span></dt><dd><p>A vector of channels this driver block entity will access. You can specify
+                channels in the range 1-N (N = the number of channels implemented in your specific
+                configuration file defined in the Setup block). The width of this vector also
+                defines the subsequent size of some of the following parameters if scalar expansion
+                applies. With a single block, all the channels of the block are synchronized.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Init values vector </span>
+                    </span></dt><dd><p>A vector of values to define the initial signal level present on the
+                            output ports after the real-time application has been downloaded and
+                            started.</p></dd><dt><span class="term">
+                        <span class="guilabel">Reset vector </span>
+                    </span></dt><dd><p>A vector of values to define the output ports when the real-time
+                            application stops. When set to (0), the output port retains the last
+                            value defined in the application. When set to (1), the output port is
+                            set to the value applied in the <span class="bold"><strong>Init values
+                                vector</strong></span> parameter.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Tab: Input and output port configuration </div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Vectorize input port </span>
+                    </span></dt><dd><p>Set the input port of the driver block to be a vector.</p></dd></dl></div></div></div></body></html>

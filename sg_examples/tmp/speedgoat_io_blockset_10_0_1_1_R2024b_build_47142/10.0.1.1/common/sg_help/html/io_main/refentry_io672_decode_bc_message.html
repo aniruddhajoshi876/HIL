@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO672 - Decode BC Message</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_io672_create_bc_message_list.html" title="IO672 - Create BC Message List"><link rel="next" href="refentry_io672_decode_bc_status.html" title="IO672 - Decode BC Status"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io672_decode_bc_message"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO672 - Decode BC Message</h2><p>IO672 - Decode BC Message &#8212; <span class="phrase">Extracts information out
+                    of one message in the receive list</span></p></div><div class="refsect1"><a name="d5e51909"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io672_decode_bc_message.png"></span></span></p></div><div class="refsect1"><a name="d5e51917"></a><h2>Description</h2><p>Each instance of this block extracts information out of one message in the receive
+                list.</p></div><div class="refsect1"><a name="d5e51920"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">MSG List</span></span></dt><dd><p>BC Message List.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">MSG List</span>
+                    </span></dt><dd><p>Specifies the input and output message list passed to other Decode BC
+                            Message blocks. If this is the only Decode BC Message block in your
+                            model, connect the signal to a terminator or ground.</p></dd><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>The Status output is a vector of six elements from the received
+                            message, bit packed with information:</p><p>control, command1, status1, command2, status2, overall status</p><p>Use the Decode BC Status block to extract individual status bits from
+                            this status. To get multiple status bits, use multiple Decode BC Status
+                            blocks and feed, in parallel, the same signal to the Status ports.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>A vector of 32 short integers with the data from that message. For a
+                            message sent to an RT (R direction), these values are the ones sent. For
+                            a message from an RT (T direction), this contains the values from the
+                            RT. You do not need to decode the received message from an R message.
+                        </p></dd></dl></div><p>The block clears the status and data words to 0 if a matching message is not
+                found in the list.</p></div><div class="refsect1"><a name="d5e51949"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Message number </span>
+                    </span></dt><dd><p>Enter the number (position in the BC Message List) of the message to
+                            decode.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

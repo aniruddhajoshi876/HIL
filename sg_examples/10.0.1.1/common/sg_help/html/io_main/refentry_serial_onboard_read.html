@@ -1,0 +1,25 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Serial Onboard - Read</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_serial.html" title="Serial I/O"><link rel="up" href="book_serial.html" title="Serial I/O"><link rel="prev" href="refentry_serial_onboard_write.html" title="Serial Onboard - Write"><link rel="next" href="refentry_serial_onboard_pin_mapping.html" title="Serial Onboard Pin Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_serial_onboard_read"></a><div class="titlepage"></div><div class="refnamediv"><h2>Serial Onboard - Read</h2><p>Serial Onboard - Read &#8212; <span class="phrase">Reads the serial onboard
+                    ports</span></p></div><div class="refsect1"><a name="d5e585"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="./graphics/icon_serial_onboard_read.png"></span></span></p></div><div class="refsect1"><a name="d5e593"></a><h2>Description</h2><p>This block is part of the Speedgoat Serial driver block set for the Speedgoat
+                Serial Onboard supported real-time target machines. The Serial Read block reads
+                characters from the onboard FIFO in the UART.</p><p>It then outputs those characters as the low-order byte of an unsigned 32-bit
+                integer vector. This output vector is large enough to hold the maximum number of
+                characters that the FIFO can hold.</p></div><div class="refsect1"><a name="d5e597"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Count</span>
+                    </span></dt><dd><p>Amount of received bytes.</p></dd></dl></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Data</span>
+                    </span></dt><dd><p>Data output signal.</p></dd></dl></div></div><div class="refsect1"><a name="d5e612"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="guilabel">Machine Type</span></span></dt><dd><p>Select the type of your real-time target machine.</p></dd><dt><span class="term">
+                        <span class="guilabel">Port</span>
+                    </span></dt><dd><p>This parameter specifies the port from which this block reads the
+                            data.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><a name="refsect_read_enable_legacy_mode"></a><span class="term">
+                        <span class="guilabel">Enable Legacy Mode </span>
+                    </span></dt><dd><p>This checkbox can be used to enable/disable the legacy mode of the
+                            Serial Read block. If this mode is enabled, the Data output contains a
+                            vector where the first element of the vector specifies the number of
+                            data elements in the remainder of the vector. Please refer to the <a href="refentry_serial_usage_notes.html" class="olink">Serial Usage Notes</a> for additional information about the
+                            legacy mode.</p></dd><dt><span class="term"><span class="guilabel">Output Data Type</span></span></dt><dd><p>Select the output data type from a list of standard data types<a href="#ftn.d5e642" class="footnote" name="d5e642"><sup class="footnote">[3]</sup></a></p></dd></dl></div></div><div class="footnotes"><br><hr class="footnote-hr"><div id="ftn.d5e642" class="footnote"><p><a href="#d5e642" class="para"><sup class="para">[3] </sup></a>Only selectable if legacy mode is enabled</p></div></div></div></body></html>

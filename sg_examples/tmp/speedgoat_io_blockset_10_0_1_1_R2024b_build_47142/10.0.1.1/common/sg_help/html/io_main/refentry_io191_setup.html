@@ -1,0 +1,114 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO191 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io191_usage_notes.html" title="IO191 Usage Notes"><link rel="next" href="refentry_io191_analog_input.html" title="IO191 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io191_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO191 - Setup</h2><p>IO191 - Setup &#8212; 
+                <span class="phrase">Configure the IO191 input/output blocks</span>
+            </p></div><div class="refsect1"><a name="d5e22470"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io191_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e22478"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input, Analog output, Digital input and Digital output).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e22485"></a><h2>Parameters</h2><p>The four tabs of the setup parameter dialog box contain the IO191 I/O module
+                configuration settings.</p><div class="variablelist"><div class="variablelist-title">Main Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Inputs Tab</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Active Channels</span>
+                    </span></dt><dd><p>Choose the active input/output channels by selecting the corresponding
+                            checkboxes. For each active channel, a separate row for the channel
+                            settings is displayed.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Analog Input channels must be selected in consecutive
+                                order.</p></td></tr></table></div></dd><dt><span class="term">
+                        <span class="guilabel">Mode</span>
+                    </span></dt><dd><p>Select either <span class="bold"><strong>Single-Ended</strong></span> or
+                                <span class="bold"><strong>Differential</strong></span>. For single-ended
+                            channels, each output signal is referenced between the Analog Input line
+                            and the analog ground. For differential channels, the voltage is
+                            referenced between the Analog Input (+) line and the Analog Input (-)
+                            line. For more information, refer to the I/O pin mapping section.</p></dd><dt><span class="term">
+                        <span class="guilabel">Enable DMA</span>
+                    </span></dt><dd><p>Enables incoming data to be transferred over DMA. It also allows much
+                            higher system sampling rates to be achieved as the CPU does not have to
+                            process the data transfer. In addition, frame-based operation is
+                            possible, meaning that multiple samples can be received from the I/O
+                            module in one sample hit. If <span class="bold"><strong>Enable DMA</strong></span>
+                            is active, the model or subsystem containing the Analog input block must
+                            be triggered with the I/O module DMA interrupt for consistent results.
+                            Refer to the usage notes for more information.</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size, Clock Divider and Sample Time</span>
+                    </span></dt><dd><p>Parameter dependency is as follows: <span class="bold"><strong>Frame
+                                Size</strong></span> = <span class="bold"><strong>Sample Time</strong></span> &times;
+                                (<span class="bold"><strong>ADC Rate</strong></span> / <span class="bold"><strong>Active Channels</strong></span>). By defining two parameters, the system
+                            will determine the third parameter automatically when the third
+                            parameter is set to <span class="bold"><strong>-1</strong></span>.</p><p>Example <span class="bold"><strong>Frame Size</strong></span> equal to 1,
+                                <span class="bold"><strong>Clock Divider</strong></span> equal to 6250, and
+                                <span class="bold"><strong>Sample Time</strong></span> as -1. <span class="bold"><strong>Sample Time</strong></span> is computed automatically to be 1
+                            [ms].</p></dd><dt><span class="term">
+                        <span class="guilabel">Frame Size</span>
+                    </span></dt><dd><p>Defines how many samples are transferred from the module at each
+                            sample hit. The output ports of every channel become a vector with the
+                            same number of values, where the value at position 1 is the first taken.
+                            Enter "-1" to allow the system to determine the <span class="bold"><strong>Frame Size</strong></span> automatically.</p></dd><dt><span class="term">
+                        <span class="guilabel">Clock Divider</span>
+                    </span></dt><dd><p>During non-DMA operation, the Simulink model triggers each conversion,
+                            but during DMA operation, the hardware does this independently from the
+                            model and therefore needs a clock. The <span class="bold"><strong>ADC
+                                Rate</strong></span> is calculated internally by dividing the base clock
+                            of the module (50 [MHz]) by the <span class="bold"><strong>Clock
+                                Divider</strong></span> value. The ADC Rate defines the available
+                            frequencies. Enter "-1" to allow the system to determine the <span class="bold"><strong>Clock Divider</strong></span> automatically.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Define the base sample time at which the Analog input block gets its
+                            sample hit. Enter "-1" to allow the system to determine the Analog input
+                            block <span class="bold"><strong>Sample Time</strong></span> automatically.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Range</span>
+                    </span></dt><dd><p>Select the voltage range for the input channels. Single-ended:
+                            &plusmn;0.64&nbsp;V, &plusmn;1.28&nbsp;V, &plusmn;2.56&nbsp;V, &plusmn;5.12&nbsp;V or &plusmn;10.24&nbsp;V.
+                            Differential: the same as the single-ended plus: &plusmn;20.48&nbsp;V or
+                            &plusmn;24.576&nbsp;V.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Analog Outputs Tab</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels_v2"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Choose the active input/output channels by selecting the corresponding checkboxes.
+                For each active channel, a separate row for the channel settings is displayed.
+            </p></dd><dt><span class="term">
+                        <span class="guilabel">Output Range</span>
+                    </span></dt><dd><p>Select the voltage range for the output channels: 0&#8211;5&nbsp;V,
+                            0&#8211;10&nbsp;V, &plusmn;5&nbsp;V, &plusmn;10&nbsp;V or &plusmn;2.5&nbsp;V.</p></dd><dt><a name="varlistentry_common_analog_initialValues_v2"></a><span class="term">
+            <span class="guilabel">Initial Value</span>
+        </span></dt><dd><p>Define the initial signal level present on the specific output after the
+                application has been downloaded. The values can be set individually by entering the
+                initial value for each channel according to the selected output range.</p></dd><dt><a name="varlistentry_common_analog_resetValues_v2"></a><span class="term">
+            <span class="guilabel">Reset to Initial Value</span>
+        </span></dt><dd><p>Define whether the initial value is also applied once the application has stopped.
+                The behavior can be set individually for each channel using the checkbox.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Digital I/O Tab</div><dl class="variablelist"><dt><span class="term"><span class="guilabel">Channels 1-8</span>
+                    </span></dt><dd><p>Select the <span class="bold"><strong>Input</strong></span> or <span class="bold"><strong>Output</strong></span> direction for channels 1 to 8. For
+                                <span class="bold"><strong>Output</strong></span>, the options <span class="bold"><strong>Initial Value</strong></span> and <span class="bold"><strong>Reset
+                                to Initial Value</strong></span> are displayed for each channel.</p></dd><dt><span class="term">
+                        <span class="guilabel">Channels 9-16</span>
+                    </span></dt><dd><p>Individually select the <span class="bold"><strong>Input</strong></span> or
+                                <span class="bold"><strong>Output</strong></span> direction for channels 9 to
+                            16. For <span class="bold"><strong>Output</strong></span>, the options <span class="bold"><strong>Initial Value</strong></span> and <span class="bold"><strong>Reset
+                                to Initial Value</strong></span> are displayed for each channel.</p></dd><dt><a name="varlistentry_common_digital_activeInputChannels_v2"></a><span class="term">
+            <span class="guilabel">Initial Value</span>
+        </span></dt><dd><p>Define the initial signal level present on the specific output after the
+                application has been downloaded. The values can be set individually by choosing the
+                initial value for each channel to be either Low (0) or High (1).</p></dd><dt><a name="varlistentry_common_digital_resetValues_v2"></a><span class="term">
+            <span class="guilabel">Reset to Initial Value</span>
+        </span></dt><dd><p>Define whether the initial value is also applied once the application has stopped.
+                The behavior can be set individually for each channel using the checkbox.</p></dd></dl></div></div></div></body></html>

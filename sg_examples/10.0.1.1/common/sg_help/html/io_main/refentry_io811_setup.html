@@ -1,0 +1,83 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO811 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_video.html" title="Video I/O"><link rel="up" href="book_video.html" title="Video I/O"><link rel="prev" href="refentry_ref_io811.html" title="IO811"><link rel="next" href="refentry_io811_usage_notes.html" title="IO811 Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io811_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO811 - Setup</h2><p>IO811 - Setup &#8212; <span class="phrase">Configure the IO811 I/O
+                    module</span></p></div><div class="refsect1"><a name="d5e61"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io811_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e69"></a><h2>Description</h2><p>Only one IO811 I/O module per target machine is supported.</p></div><div class="refsect1"><a name="d5e72"></a><h2>Port</h2><p>This driver block has one output port which acquires real-time video frames or
+                still images from a Camera Link<sup>&reg;</sup> camera. The image signal
+                type for the IO811 block output is a <span class="emphasis"><em>Single multidimensional
+                    signal</em></span>.</p><p>
+                </p><div class="variablelist"><div class="variablelist-title">Output</div><dl class="variablelist"><dt><span class="term">
+                            <span class="guilabel">1 video channel</span>
+                        </span></dt><dd><p>The image signal is multidimensional.</p><p><span class="bold"><strong>Data Type:</strong></span>
+                                <code class="literal">Single multidimensional signal</code></p></dd></dl></div><p>
+            </p></div><div class="refsect1"><a name="d5e88"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Camera Config File</strong></span></span></dt><dd><p>Click the <span class="bold"><strong>Browse</strong></span> button to select a
+                            configuration from the <a href="refentry_io811_usage_notes.html#btt14g4" class="olink">BitFlow&#8482; Neon-CLB Support</a> installation folder.</p><p>The browser window displays a list of camera configuration files for
+                            BitFlow R64-type camera boards. The <span class="emphasis"><em>BitFlow
+                                Neon-CLB</em></span> board supports cameras from this list. Scroll
+                            and open the camera configuration file specified by you and your BitFlow
+                            representative&#8212;for example,
+                                <span class="emphasis"><em>CIS-VCC-G21V31CL-E1-FreeRun.r64</em></span>. Alternatively,
+                            if you start typing the manufacturer name, an abbreviated list of camera
+                            configuration files will appear for that manufacturer. Open the BitFlow
+                            camera configuration file for your camera model.</p><p>If you cannot locate your camera in the list, contact BitFlow to find
+                            a camera that is compatible with your requirements.</p><p>When you open the configuration file, the file assigns values to the
+                            non-editable parameters:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Manufacturer</strong></span></span></dt><dd><p>Displays camera manufacturer name.</p></dd><dt><span class="term"><span class="bold"><strong>Model</strong></span></span></dt><dd><p>Displays the model of the chosen camera contained in the
+                                        configuration file.</p></dd><dt><span class="term"><span class="bold"><strong>Mode Description</strong></span></span></dt><dd><p>Describes the camera operation mode.</p></dd><dt><span class="term"><span class="bold"><strong>Trigger Mode</strong></span></span></dt><dd><p>From the Trigger Mode list, select one of the
+                                        following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>Free Running</strong></span>. The
+                                                camera and frame grabber run continuously. When the
+                                                camera finishes an exposure, the frame grabber board
+                                                copies the image to the target memory using DMA and
+                                                signals a frame completion interrupt. Upon receiving
+                                                the interrupt, the model runs and performs image
+                                                processing.</p></li><li class="listitem"><p><span class="bold"><strong>Timer Triggered</strong></span>.
+                                                The target computer system timer starts the model.
+                                                When the model runs, it simultaneously starts a
+                                                camera exposure and begins to process the image
+                                                captured during the previous time step. When the
+                                                camera finishes the exposure, the frame grabber
+                                                copies the image to the target memory using DMA for
+                                                processing in the next time step.</p></li><li class="listitem"><p><span class="bold"><strong>Differential
+                                                  Trigger</strong></span>. A rising edge on the
+                                                differential trigger input triggers the camera. When
+                                                the camera finishes the exposure, the frame grabber
+                                                copies the image to the target memory using DMA and
+                                                signals a frame completion interrupt. Upon receiving
+                                                the interrupt, the model runs and performs image
+                                                processing.</p></li><li class="listitem"><p><span class="bold"><strong>TTL Trigger</strong></span>. A
+                                                rising edge on the TTL trigger input triggers the
+                                                camera. The model runs from the frame completion
+                                                interrupt, as with <span class="bold"><strong>Differential Trigger</strong></span>.</p></li><li class="listitem"><p><span class="bold"><strong>Opto Trigger</strong></span>. A
+                                                rising edge on the Opto trigger input triggers the
+                                                camera. The model runs from the frame completion
+                                                interrupt, as with <span class="bold"><strong>Differential
+                                                Trigger</strong></span>.</p></li></ul></div><p>The camera configuration file determines whether you can
+                                        use the block mask to switch the trigger mode to another
+                                        mode, such as <span class="bold"><strong>Free Running</strong></span>.
+                                        You may need to contact BitFlow for a camera configuration
+                                        file for the mode that you want.</p></dd><dt><span class="term"><span class="bold"><strong>Bit Depth</strong></span></span></dt><dd><p>Displays the number of bits per pixel that the camera
+                                        uses.</p></dd><dt><span class="term"><span class="bold"><strong>Acquisition Timeout</strong></span></span></dt><dd><p>Displays the number of milliseconds before the board sends
+                                        an interrupt; for example, if the camera is not on, the
+                                        board emits an interrupt.</p></dd><dt><span class="term"><span class="bold"><strong>Full Width</strong></span></span></dt><dd><p>Displays the width of the incoming image in pixels.</p></dd><dt><span class="term"><span class="bold"><strong>Full Height</strong></span></span></dt><dd><p>Displays the height of the incoming image in lines.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Acquisition Region of Interest</strong></span></span></dt><dd><p>Select a rectangular region of the full image to output from the
+                            block. When you select a new camera configuration file, these values are
+                            set to the full size of the image specified in the configuration
+                            file.</p><p>Column 0, row 0 is in the upper-left corner of the image.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Starting Column</strong></span></span></dt><dd><p>Column numbers are 0-based.</p></dd><dt><span class="term"><span class="bold"><strong>Starting Row</strong></span></span></dt><dd><p>Row numbers are 0-based.</p></dd><dt><span class="term"><span class="bold"><strong>Columns</strong></span></span></dt><dd><p>The number of columns plus the starting column must be
+                                        less than the full image width.</p></dd><dt><span class="term"><span class="bold"><strong>Rows</strong></span></span></dt><dd><p>The number of rows plus the starting row must be less than
+                                        the full image height.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Camera Configuration Serial
+                        Command</strong></span></span></dt><dd><p>Select the serial port configuration and specify a command to send to
+                            the camera when the model starts executing.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Baud Rate</strong></span></span></dt><dd><p>Select one of the following: <code class="literal">9600</code>,
+                                            <code class="literal">19200</code>, <code class="literal">38400</code>,
+                                            <code class="literal">57600</code>, <code class="literal">115200</code>,
+                                            <code class="literal">230400</code>, or <code class="literal">460800</code>
+                                        baud.</p></dd><dt><span class="term"><span class="bold"><strong>Bits per Byte</strong></span></span></dt><dd><p>Select one of the following: <code class="literal">5</code>,
+                                            <code class="literal">6</code>, <code class="literal">7</code>, or
+                                            <code class="literal">8</code>. Most camera configurations use 8
+                                        bits per byte.</p></dd><dt><span class="term"><span class="bold"><strong>Parity</strong></span></span></dt><dd><p>Select one of the following: <code class="literal">None</code>,
+                                            <code class="literal">Even</code>, <code class="literal">Odd</code>,
+                                            <code class="literal">Mark</code>, or
+                                        <code class="literal">Space</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Stop Bits</strong></span></span></dt><dd><p>Select either <code class="literal">1</code> or
+                                        <code class="literal">2</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Command String</strong></span></span></dt><dd><p>Enter a command to send to your camera. The exact format
+                                        of the command depends on the camera.</p></dd><dt><span class="term"><span class="bold"><strong>Display Camera Response
+                                        String</strong></span></span></dt><dd><p>Select this check box to display the camera response to
+                                        the command. Non-printable control codes are printed as C
+                                        escape sequences.</p></dd></dl></div></dd><dt><span class="term"><span class="bold"><strong>Camera Configuration Comments</strong></span></span></dt><dd><p>Displays comments from BitFlow about this configuration.</p></dd><dt><span class="term"><span class="bold"><strong>Sample Time</strong></span></span></dt><dd><p>Enter a base sample time or a multiple of the base sample time.</p><p>If you configure the real-time application to use the board interrupt,
+                            the application adds the sample time to the displayed execution
+                            time.</p></dd></dl></div></div></div></body></html>

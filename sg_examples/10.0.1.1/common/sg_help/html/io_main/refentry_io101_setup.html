@@ -1,0 +1,156 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO101 - Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_analog.html" title="Analog I/O"><link rel="up" href="book_analog.html" title="Analog I/O"><link rel="prev" href="refentry_io101_pin_mapping.html" title="IO101 Pin Mapping"><link rel="next" href="refentry_io101_analog_input.html" title="IO101 - Analog input"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io101_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO101 - Setup</h2><p>IO101 - Setup &#8212; <span class="phrase">Configure the IO101 input/output
+                    blocks</span></p></div><div class="refsect1"><a name="d5e484"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io101_setup.png"></span></span></p></div><div class="refsect1"><a name="d5e492"></a><h2>Description</h2><p><a name="para_common_block_description_setup"></a>Your model can contain only one Setup block
+        for each I/O module in your target machine.</p><p>All the supported I/O types for this module can be configured in the Setup block
+                dialog box. This block will therefore have an impact on all the other driver blocks
+                (Analog input, Analog output, Digital input and Digital output).</p></div><div class="refsect1"><a name="refsect_common_port_description_noPorts"></a><h2>Ports</h2><p>This driver block has no input or output ports.</p></div><div class="refsect1"><a name="d5e499"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Parameter Group</span>
+                    </span></dt><dd><p>This control selects an I/O section, the parameters of which are then
+                            shown in the dialog box below the 'Parameter group' field. Possible
+                            groups are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Module setup</p></li><li class="listitem"><p>Analog input setup</p></li><li class="listitem"><p>Analog output setup</p></li><li class="listitem"><p>Digital setup lower channel</p></li><li class="listitem"><p>Digital setup upper channel</p></li></ul></div><p>
+                        </p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Module Setup</div><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_autoSearch"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>The Module ID has two functions: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>It defines the logical connection between the Setup block and its I/O
+                            blocks</p></li><li class="listitem"><p>It also informs the auto-search feature of the PCI Slot parameter. If
+                            only one I/O module of this type is installed, the Module ID must be set
+                            to <span class="bold"><strong>1</strong></span>. If n modules are installed, it
+                            must be in the range 1:n. Not all the I/O modules installed in the
+                            target machine need to be used. To see how each I/O module maps to a
+                            Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre></li></ul></div></dd><dt><a name="varlistentry_common_pciSlot_autoSearch"></a><span class="term">
+            <span class="guilabel">PCI Slot (-1: auto-search)</span>
+        </span></dt><dd><p>There are two approaches for mapping this block to a specific I/O module installed
+                in your target machine. All modules of the same type must be configured using the
+                same method. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Auto-Search: with the default value <span class="bold"><strong>-1</strong></span> the I/O module will be automatically located in the
+                            target machine. If you have multiple modules of the same kind, the
+                            Module ID defines which module is associated with this block. To see how
+                            each I/O module maps to a Module ID, use this Speedgoat API:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat")</pre><p>
+                        </p></li><li class="listitem"><p>Explicit Addressing: to explicitly define the logical address of the
+                            I/O module in the target machine, you can provide the PCI bus and slot
+                            numbers as a vector: [bus, slot]. To determine these numbers, run the
+                            following command in the MATLAB command window:
+                            </p><pre class="programlisting">speedgoat.getIoInterfaces("TargetName", "mySpeedgoat", "Advanced", true)</pre><p>Note
+                            that the PCI address can change whenever an I/O module is added or
+                            removed &#8211; usually, auto-search is the best option.</p></li></ul></div></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Analog Input Setup</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Start Channel</span>
+                    </span></dt><dd><p>Defines the first channel to be acquired (1..16 or 1..32, depending on
+                            the 'Input coupling' field).</p></dd><dt><span class="term">
+                        <span class="guilabel">Number of Channels</span>
+                    </span></dt><dd><p>Define the number of channels to be acquired beginning with the start
+                            channel defined above (1..16 or 1..32). If the 'Input coupling' field is
+                            set to Differential then a maximum of 16 channels are available. If the
+                            'Input coupling' field is set to Single-ended then a maximum of 32
+                            channels are available.</p></dd><dt><span class="term">
+                        <span class="guilabel">Input Coupling</span>
+                    </span></dt><dd><p>Select either Differential or Single-ended coupling. This applies to
+                            all input channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Range</span>
+                    </span></dt><dd><p>Select the input voltage range for all analog input channels.
+                            Attention: The DIP-switch on the I/O module must be set according to the
+                            selected range. It can be found near the center of the PCB, labeled
+                            SW1.</p><p><span class="inlinemediaobject"><img src="./graphics/io101_setup_analog_input_setup_range_table.png"></span></p></dd><dt><span class="term">
+                        <span class="guilabel">Acquisition Mode</span>
+                    </span></dt><dd><p>Either Standard or Low-latency. If I/O latency is not of concern to
+                            your overall model (target application) then choose standard.
+                            Low-latency mode reduces the latency when acquiring analog input
+                            channels. If the latter mode is selected then pins 1 and 2 on the
+                            module's I/O connector must be wired together.</p><p>In standard mode, the driver first starts the conversion, waits for it
+                            to finish and then reads the samples. In low-latency mode, the driver on
+                            the first sample hit just starts a counter. The IO101 I/O module
+                            decrements this counter until it reaches 0 and then automatically starts
+                            the conversion. The counter value is automatically set to put the
+                            conversion right before the next sample hit. On all following sample
+                            hits the driver reads the samples from the previous conversion and
+                            starts the counter to trigger the next one. Since we do not read any
+                            samples at the first sample hit, a shift is introduced.</p><p>While low-latency mode doesn't improve the conversion time (hardware
+                            limitation), it is possible to save several microseconds by avoiding the
+                            active wait. Generally, sample time needs to be greater than the
+                            conversion time.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Analog Output Setup</div><dl class="variablelist"><dt><a name="varlistentry_common_analog_activeChannels"></a><span class="term">
+            <span class="guilabel">Active Channels</span>
+        </span></dt><dd><p>Select the active input/output channels in a vector. A defined number of channels
+                can be selected using square brackets, for example [1 2 3]. A sequence of channels
+                can be selected using a colon, for example, 1:4.</p></dd><dt><a name="varlistentry_common_analog_resetValues"></a><span class="term">
+            <span class="guilabel">Reset to Initial Values</span>
+        </span></dt><dd><p>Define whether the initial values are also applied once the application has
+                stopped. The behavior can be set individually for each channel using a vector. A
+                scalar value applies to all the channels; for example, for individual values, type
+                "[1 0 0 1]", and to set all channels to zero, type "0". "1" means use the Initial
+                Value and "0" means keep the latest value.</p></dd><dt><a name="varlistentry_common_analog_initialValues"></a><span class="term">
+            <span class="guilabel">Initial Values</span>
+        </span></dt><dd><p>Define the initial signal level present on the outputs after the application has
+                been downloaded. The values can be set individually by entering a vector: the value
+                at a certain position in the Initial Values vector is applied to the channel as
+                defined in the Active Channels vector. A scalar value applies to all the channels;
+                for example, for individual values, type "[1 1.5 0 2.5]", and to set all channels to
+                zero, type "0".</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Digital Setup Lower Channel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Lower Channels Vector</span>
+                    </span></dt><dd><p>Values between 1 and 8 in a vector. This driver allows individual
+                            digital channels to be selected in any order. The number of elements
+                            defines the number of digital channels used. For example, to use two of
+                            the digital input channels, enter '[1,2]'. Number the channels beginning
+                            with 1, even if the board manufacturer starts with 0. This block uses
+                            channels 1-8 of the IO101 I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Lower Channels Direction</span>
+                    </span></dt><dd><p>Defines whether the group of lower input channels will be configured
+                            as inputs or outputs. Note that all digital I/O channels within a group
+                            (upper or lower) must have the same direction.</p></dd><dt><span class="term">
+                        <span class="guilabel">Lower Channels Debounce Vector</span>
+                    </span></dt><dd><p>When the 'Lower channels direction' field is defined as input, this
+                            field allows one of 5 debounce values to be defined for each channel
+                            individually. The values are 0, 4, 64, 1000, or 8000&#956;s. Enter a scalar
+                            or a vector of the same length as the 'Lower channels vector' field. If
+                            a scalar value is specified, its value will be used for all channels.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Lower Channels Reset Vector</span>
+                    </span></dt><dd><p>When the 'Lower channels direction' field is defined as output, this
+                            field specifies the behavior of the channel at model termination. Enter
+                            a scalar or a vector of the same length as the channel vector. If a
+                            scalar value is specified, its value will be used for all channels. A
+                            value of 1 causes the corresponding channel to be reset to the value
+                            specified in the 'Lower channels initial value vector' field. A value of
+                            0 causes the channel to remain at the last value used while the model
+                            was running.</p></dd><dt><span class="term">
+                        <span class="guilabel">Lower Channels Initial Value Vector</span>
+                    </span></dt><dd><p>When the 'Lower channels direction' field is defined as output, this
+                            field specifies the initial voltage values for the output channels.
+                            Enter a scalar or a vector of the same length as the 'Lower channels
+                            vector' field. If a scalar value is specified, its value will be the
+                            initial value for all channels. The channels are set to the initial
+                            values (0 for TTL low and 1 for TTL high) between the time the model is
+                            downloaded and the time it is started.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Parameter Group: Digital Setup Upper Channel</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Upper Channel Vector</span>
+                    </span></dt><dd><p>Values between 1 and 8 in a vector. This driver allows individual
+                            digital channels to be selected in any order. The number of elements
+                            defines the number of digital channels used. For example, to use two of
+                            the digital input channels, enter '[1,2]'. Number the channels beginning
+                            with 1, even if the board manufacturer starts with 0. This block uses
+                            channels 9-16 of the IO101 I/O module.</p></dd><dt><span class="term">
+                        <span class="guilabel">Upper Channels Direction</span>
+                    </span></dt><dd><p>Defines whether the group of upper input channels will be configured
+                            as inputs or outputs. Note that all digital I/O channels within a group
+                            (upper or lower) must have the same direction.</p></dd><dt><span class="term">
+                        <span class="guilabel">Upper Channels Debounce Vector</span>
+                    </span></dt><dd><p>When the 'Upper channels direction' field is defined as Input, the
+                            debounce vector allows one of 5 debounce values to be defined for each
+                            channel individually. The values are 0, 4, 64, 1000, or 8000&#956;s. Enter a
+                            scalar or a vector of the same length as the channel vector. If a scalar
+                            value is specified, its value will be used for all channels.</p></dd><dt><span class="term">
+                        <span class="guilabel">Upper Channels Reset Vector</span>
+                    </span></dt><dd><p>When the 'Upper channels direction' field is defined as output, this
+                            field specifies the behavior of the channel at model termination. Enter
+                            a scalar or a vector of the same length as the 'Upper channel vector'
+                            field. If a scalar value is specified, its value will be used for all
+                            channels. If a value of 1 is specified, the corresponding channel will
+                            be reset to the value specified in the initial value vector. If a value
+                            of 0 is specified, the channel will remain at the last value attained
+                            while the model was running.</p></dd><dt><span class="term">
+                        <span class="guilabel">Upper Channels Initial Value Vector</span>
+                    </span></dt><dd><p>When 'Upper channels direction' field is defined as output, this field
+                            specifies the initial voltage values for the output channels. Enter a
+                            scalar or a vector of the same length as the channel vector. If a scalar
+                            value is specified, its value will be the initial value for all
+                            channels. The channels are set to the initial values (0 for TTL low and
+                            1 for TTL high) between the time the model is downloaded and the time it
+                            is started.</p></dd></dl></div></div></div></body></html>

@@ -1,0 +1,19 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO812 - VME Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_zmi4104.html" title="ZMI 4104"><link rel="up" href="book_zmi4104.html" title="ZMI 4104"><link rel="prev" href="refentry_io812_syncpos_configuration.html" title="IO812 - Configuration"><link rel="next" href="refentry_io812_readallpositiontime.html" title="IO812 - Position and Time"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_io812_vme_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO812 - VME Status</h2><p>IO812 - VME Status &#8212; 
+                <span class="phrase">I/O module status</span>
+            </p></div><div class="refsect1"><a name="d5e155"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_io812_vme_status.png"></span></span></p></div><div class="refsect1"><a name="d5e163"></a><h2>Description</h2><p>This driver block has one output port defining the status of the PCIe link between
+                the PCI-VME bus adapters.</p></div><div class="refsect1"><a name="d5e166"></a><h2>Ports</h2><p>This driver block has one output port.</p><div class="variablelist"><div class="variablelist-title">Output Port</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Status</span>
+                    </span></dt><dd><p>This output value indicates the following errors. For more information
+                            refer to the ALTHEA User Guide. </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1 - VME Bus Time OUT Error (Only while onboard BTO logic
+                                        is active). If this Error is triggered, restarting the VME
+                                        Bus will set the bit back to zero</p></li><li class="listitem"><p>2 - VME Error Flag - Error detected. When this bit is set
+                                        and a VME BERR is detected, the registered parameter is
+                                        related to the first error occurrence. This status flag is
+                                        also connected to the VME ITC unit, and signifies that an
+                                        Interrupt can be issued</p></li><li class="listitem"><p>3 - VME Interrupt Pending status flag</p></li><li class="listitem"><p>4 - BERR condition generated</p></li></ul></div></dd></dl></div></div><div class="refsect1"><a name="d5e185"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div></div></div></body></html>

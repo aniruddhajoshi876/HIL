@@ -1,0 +1,36 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Condor (GE-IP) RCEI-530 Receive</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_mw_deprecated.html" title="Drivers No Longer Recommended for Use"><link rel="up" href="bs5yxb1.html" title="Chapter&nbsp;5.&nbsp;Abaco Blocks No Longer Recommended for Use"><link rel="prev" href="btvzwop-11.html" title="Condor (GE-IP) RCEI-530 Send"><link rel="next" href="bty9woi-1.html" title="Condor (GE-IP) RCEI-830A"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="btvzwop-17"></a><div class="titlepage"></div><div class="refnamediv"><h2>Condor (GE-IP) RCEI-530 Receive<a name="Condor_RCEI-530_Receive"></a></h2><p>Condor (GE-IP) RCEI-530 Receive<a name="Condor_RCEI-530_Receive"></a> &#8212; <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg; RCEI-530
+                Receive block, <span class="trademark"><a name="tp_condor"></a>Condor</span>&reg;
+                CEI-530 Receive block (not recommended)<b>ARINC429</b></p></div><div class="refsect1"><a name="d5e2422"></a><h2>Main Page</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a href="btvzwop-1.html" class="olink">Condor&reg;
+                            (GE&reg;-IP) RCEI-530</a></p></li></ul></div></div><div class="refsect1"><a name="btvzwop-20"></a><h2>Library</h2><p><span class="phrase">
+                    <span class="trademark">Simulink</span>&reg;
+                    <span class="trademark">Real-Time</span>&#8482;</span> Library of Drivers
+                No Longer Recommended for
+                Use.</p><p>To open this library, type <code class="literal">xpccondorlib</code> in the Command
+                Window.</p></div><div class="refsect1"><a name="btvzwop-21"></a><h2>Note</h2><p>Use this block to set up one channel of a board to receive 32-bit words. The
+                number of channels varies depending on the board you have.</p><p>The output port of a Receive block is a signal of type double, but the data on
+                this port is encoded in a nonstandard way. Normally, you feed this output port into
+                an ARINC Decode block (which converts the data into standard double output). You can
+                also feed it into blocks such as MUX blocks that do not interpret the data. However,
+                before feeding this port into a block such as a real-time <code class="literal">Scope</code>
+                block that does interpret the data, you must first pass it through an <code class="literal">ARINC
+                    Decode</code> block.</p></div><div class="refsect1"><a name="btvzwop-22"></a><h2>Block Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="bold"><strong>Board ID</strong></span></span></dt><dd><p>From the list, select from 1 to 16 a unique ID for the CEI board. Use the same ID to
+            identify the CEI board in the Initialize, Send, and Receive blocks in your model. This
+            ID is drawn from a pool shared by the RCEI-530, CEI-530, RCEI-830A, and CEI-830 series
+            boards.</p></dd><dt><span class="term"><span class="bold"><strong>Channel</strong></span></span></dt><dd><p>From the list, select a channel ID. This number varies depending on the particular
+            board that you are using. Refer to your board manufacturer documentation for the number
+            of channels in the board. If you try to select a nonexistent channel, the block returns
+            an error.</p></dd><dt><span class="term"><span class="bold"><strong>Max number of words to return</strong></span></span></dt><dd><p>Enter the maximum number of words to extract from the receive buffer on the I/O
+            module. This number is the maximum number of words for the selected channel at each
+            sample time.</p><p>If you select <code class="varname">n</code>, the output port of the block has a signal width of
+                <code class="varname">n+1</code>. The first signal element contains the count of words
+            actually extracted from the buffer during the current sample time.</p></dd><dt><span class="term"><span class="bold"><strong>Min number of words to return</strong></span></span></dt><dd><p>Enter the minimum number of words to extract from the receive buffer on the I/O
+            module. This number is the minimum number of words for the selected channel at each
+            sample time.</p><p>If the receive buffer does not contain this minimum number of words for the selected
+            channel during the current sample time, the block does not extract words from the
+            buffer. The word count associated with the output port is then
+            <code class="literal">0</code>.</p></dd><dt><span class="term"><span class="bold"><strong>Baud rate</strong></span></span></dt><dd><p>From the list, select:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">12.5 Kbits/sec</code></p></li><li class="listitem"><p><code class="literal">100 Kbits/sec</code></p></li></ul></div><p>Corresponding Send and Receive blocks must have the same baud rate setting for this
+            channel.</p></dd><dt><span class="term"><span class="bold"><strong>Parity</strong></span></span></dt><dd><p>From the list, select:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">odd</code></p></li><li class="listitem"><p><code class="literal">none</code></p></li></ul></div><p>Corresponding Send and Receive blocks must have the same parity setting for this
+            channel.</p></dd><dt><span class="term"><span class="bold"><strong>Sample time</strong></span></span></dt><dd><p>Enter the base sample time or a multiple of the base sample time
+                (<code class="literal">-1</code> means sample time is inherited).</p></dd></dl></div></div><div class="refsect1"><a name="d5e2502"></a><h2>Related Links</h2><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><a class="link" href="https://aviation-ia.sae-itc.com" target="_top">https://aviation-ia.sae-itc.com</a></p></li><li class="listitem"><p><a class="link" href="http://www.abaco.com" target="_top">www.abaco.com</a></p></li></ul></div></div></div></body></html>

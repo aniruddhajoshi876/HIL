@@ -1,0 +1,64 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Interrupt Setup</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_utilities.html" title="Utilities"><link rel="up" href="book_utilities.html" title="Utilities"><link rel="prev" href="refentry_ref_read_cpu_temperature.html" title="Read CPU temperature"><link rel="next" href="refentry_interrupt_setup_usage_notes.html" title="Interrupt Setup Usage Notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="refentry_ref_interrupt_setup"></a><div class="titlepage"></div><div class="refnamediv"><h2>Interrupt Setup</h2><p>Interrupt Setup</p></div><div class="refsect1"><a name="d5e114"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat/Utilities</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_InterruptSetup.png"></span></span></p></div><div class="refsect1"><a name="d5e122"></a><h2>Description</h2><p>This block represents hardware interrupts from Speedgoat I/O modules. It can be
+                used to asynchronously trigger a subsystem or provide the pulse for the model&#8217;s base
+                rate.</p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>This block cannot be used in a referenced model or in variant
+                    subsystems.</p></td></tr></table></div></div><div class="refsect1"><a name="d5e127"></a><h2>Supported I/O Modules</h2><p>All Speedgoat I/O modules with interrupt functionality can be used with this
+                block.</p></div><div class="refsect1"><a name="d5e130"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel"></span>
+                    </span></dt><dd><p>If the <span class="bold"><strong>Use as Model Trigger</strong></span> checkbox
+                            is unchecked, the Interrupt Setup block has one output port which can be
+                            connected to a Function-Call Subsystem block.</p><p>Refer to the <a href="refentry_interrupt_setup_usage_notes.html" class="olink">usage notes</a>
+                            if you want to use the interrupt in a referenced model.</p></dd></dl></div></div><div class="refsect1"><a name="d5e142"></a><h2>Parameters</h2><div class="variablelist"><div class="variablelist-title">
+                    <span class="guilabel">Selected Interrupt</span>
+                </div><dl class="variablelist"><dt></dt><dd><p>The <span class="bold"><strong>Select Interrupt</strong></span> button opens a
+                            MATLAB Application which allows you to select one of the available
+                            interrupt sources.</p><p><span class="inlinemediaobject"><img src="./graphics/speedgoat_interrupt_setup_mask.png"></span></p><p>Choose your interrupt source using the <span class="bold"><strong>Select
+                                Interrupt</strong></span> drop-down menu. The list is generated based on
+                            all the Setup blocks of interrupt-capable I/O modules in your
+                            model.</p><p><span class="inlinemediaobject"><img src="././graphics/speedgoat_interrupt_selector.png"></span></p><p>If you have more than one of the selected I/O modules in your model,
+                            select the appropriate <span class="bold"><strong>Module
+                            ID</strong></span>.</p><p>If you have more than one interrupt channel available, select the
+                            appropriate <span class="bold"><strong>Channel</strong></span>.</p><p>If you are using the Interrupt Setup block in combination with a
+                            Simulink-programmable FPGA I/O module targeting the HDL Coder workflow,
+                            you will only be able to select your interrupt source in the generated
+                            model once you run through the HDL Workflow Advisor.</p></dd><dt><span class="term">
+                        <span class="guilabel">Use as Model Trigger</span>
+                    </span></dt><dd><p>Check this box if you want to trigger your model&#8217;s base rate with this
+                            interrupt source instead of the CPU timer. Only one Interrupt Setup
+                            block per model can have this functionality enabled.</p><p>When the interrupt is used to trigger the model, the real-time
+                            application will use the interrupt signal to trigger the base rate.
+                            Since the model does not implicitly know how much time will pass between
+                            two interrupts, you need to make sure the fundamental sample time is
+                            defined accordingly. Refer to the MathWorks <a class="link" href="https://www.mathworks.com/help/releases/R2023b/simulink/gui/fixedstepsizefundamentalsampletime.html" target="_blank">web</a> documentation to learn more about the
+                            fixed-step size.</p><p>The simulation time of your model is defined by this fixed-step size
+                            and will therefore only be correct if the latter matches the time
+                            interval between two consecutive interrupts.</p><p><span class="bold"><strong>Example</strong></span>: Suppose the base rate of
+                            your model is 1&nbsp;kHz, but the interrupt used as a global model
+                            trigger is generated at 10&nbsp;kHz. The simulation time shown on the
+                            target screen will increment 10x faster than expected. To fix this, set
+                            the fixed-step size in your model's configuration properties to 1/10e4
+                            or 0.0001</p></dd><dt><span class="term">
+                        <span class="guilabel">Use in Polling Mode</span>
+                    </span></dt><dd><p>Check this box if you want to enable <span class="bold"><strong>Polling
+                                Mode</strong></span>. In <span class="bold"><strong>Polling Mode</strong></span>,
+                            the block will continuously query the selected interrupt source instead
+                            of idly waiting for an interrupt to occur. Note that <span class="bold"><strong>Polling Mode</strong></span> is only available for certain
+                            specific interrupt sources.</p></dd><dt><span class="term">
+                        <span class="guilabel">Thread Priority</span>
+                    </span></dt><dd><p>If you use the interrupt to trigger an asynchronous subsystem, you can
+                            decide at which priority it will be executed:</p><p>
+                            </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="bold"><strong>High</strong></span>: The subsystem will
+                                        execute with a priority higher than the base rate of the
+                                        model. Use this if a very quick reaction time is required
+                                        and the computational load is low. Priority value =
+                                        254</p></li><li class="listitem"><p><span class="bold"><strong>Low</strong></span>: The subsystem will
+                                        execute at a lower priority, similar to the slowest rate in
+                                        your model. Use this for less time-critical background
+                                        tasks. Priority value = 193</p></li><li class="listitem"><p><span class="bold"><strong>Manual</strong></span>: Set the priority
+                                        value directly</p></li></ul></div><p>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Manual Priority</span>
+                    </span></dt><dd><p>If you set the Thread priority to <span class="bold"><strong>Manual</strong></span>, enter the desired value here. Refer to the
+                            MathWorks <a class="link" href="https://www.mathworks.com/help/slrealtime/io_ref/threadtrigger.html" target="_blank">web</a> documentation for more
+                            information.</p></dd></dl></div></div></div></body></html>

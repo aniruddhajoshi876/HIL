@@ -1,0 +1,61 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">MQTT Usage Notes</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_mqtt_examples.html" title="MQTT - Examples"><link rel="next" href="refentry_mqtt_client_setup.html" title="MQTT - Client Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_mqtt_usage_notes"></a><div class="titlepage"></div><div class="refnamediv"><h2>MQTT Usage Notes</h2><p>MQTT Usage Notes &#8212; 
+                <span class="phrase">Detailed information about the MQTT protocol and the native MQTT
+                    blockset</span>
+            </p></div><div class="refsect1"><a name="d5e70362"></a><h2>Introduction to MQTT</h2><p>MQ Telemetry Transport (MQTT) is an open communication protocol used mainly for
+                machine to machine (M2M) communication in IoT networks. The protocol is based on
+                TCP/IP and follows a publish-subscribe architecture. A client (Publisher) sends data
+                for a specific topic to the broker, which then passes the data to the other clients
+                (subscribers) that subscribed that topic. MQTT allows fast and efficient data
+                transfer, made possible by both the small protocol header and transmission not
+                requiring periodic requests. MQTT is supported on the real-time target machines&#8217;
+                native Ethernet interfaces and over Ethernet I/O modules. The MQTT protocol stack
+                runs on the target machine's CPU. Simulink driver blocks for client operation are
+                available.</p><p>For further information about MQTT, please read the MQTT Online Reference: <a class="link" href="https://mqtt.org/" target="_blank">https://mqtt.org/</a>.
+            </p></div><div class="refsect1"><a name="d5e70367"></a><h2>Typical Target Machine Configurations</h2><p>Use the Ethernet Configuration Tool to assign IP addresses the target machine's
+                Ethernet interfaces. Enter the following in the MATLAB command window to open the
+                tool:
+                </p><pre class="programlisting">&gt;&gt; speedgoat.configureEthernet</pre><p>
+            </p><p>
+                <span class="inlinemediaobject"><img src="././graphics/dnp3_configeth.png"></span>
+            </p><p>For MQTT, you can use any Ethernet interface when <span class="bold"><strong>Configuration</strong></span> is set to <span class="bold"><strong>IP
+                    Protocols</strong></span>.</p><p>One real-time target machine can run multiple MQTT clients. There are 3 possible
+                configurations:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">One IP Address per Ethernet Interface</span></dt><dd><p>One IP address is assigned to one Ethernet interface. This Ethernet
+                            interface acts as one MQTT client in the network. You can install
+                            multiple Ethernet I/O modules (providing up to 4 interfaces each) or use
+                            additional onboard Ethernet interfaces to set up multiple MQTT clients.
+                            As all the Ethernet interfaces of a target machine must be associated
+                            with different Ethernet subnets, each MQTT client must operate in
+                            another Ethernet network. If an application requires multiple clients to
+                            communicate with different MQTT networks, then this target configuration
+                            is the correct choice.</p><p>The subnet dedication of an Ethernet interface is defined by IP
+                            address and subnet mask.</p></dd><dt><span class="term">Multiple IP Addresses per Ethernet Interface (IP Aliasing)</span></dt><dd><p>IP aliasing can be used to assign multiple IP addresses to a single
+                            physical interface. This allows multiple MQTT clients to be operated on
+                            the same Ethernet I/O module or the same onboard Ethernet interface. As
+                            the related IP addresses are always associated with the same Ethernet
+                            subnet, this configuration is ideal for simulating an MQTT network
+                            containing multiple clients. Alias addresses can be configured in the
+                            advanced settings of the Ethernet Configuration Tool or by
+                            functions.</p><p>Enter the following in the MATLAB command window to manage IP
+                            aliasing:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj = speedgoat.IpAliasConfiguration()
+&gt;&gt; ipAliasObj.add('ETH2', {'192.168.10.31','192.168.10.32','192.168.10.33'})
+&gt;&gt; ipAliasObj.remove('ETH2', {'192.168.10.33'})
+&gt;&gt; ipAliasObj.add('Host Link', {'192.168.1.15','192.168.1.19'})</pre><p>
+                            Enter the following in the MATLAB command window to check the available
+                            Ethernet interfaces and configured IP aliases:
+                            </p><pre class="programlisting">&gt;&gt; ipAliasObj.show()
+Interface Name      IP Address          Subnet Mask
+---------------     ---------------     ---------------
+ETH2                192.168.10.1        255.255.255.0
+                    192.168.10.31       255.255.255.255
+                    192.168.10.32       255.255.255.255
+                    192.168.10.33       255.255.255.255
+Host Link           192.168.1.14        255.255.255.0
+                    192.168.1.15        255.255.255.255
+                    192.168.1.19        255.255.255.255</pre><p>
+                        </p></dd><dt><span class="term">Multiple TCP Ports per IP Address</span></dt><dd><p>This is the normal operation for clients as each connection of the
+                            client to a broker requires a separate TCP port.</p></dd></dl></div></div><div class="refsect1"><a name="d5e70398"></a><h2>Runtime License</h2><p>MQTT blocks require a runtime license installed on the target machine. Please refer to
+                the <a href="refentry_runtime_license.html" class="olink">Runtime
+                Licensing</a> help.</p></div></div></body></html>

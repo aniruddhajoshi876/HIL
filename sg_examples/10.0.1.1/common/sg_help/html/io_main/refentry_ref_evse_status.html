@@ -1,0 +1,43 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">EVSE - Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_ev_status.html" title="EV - Status"><link rel="next" href="refentry_ref_evse_parameter_read.html" title="EVSE - Parameter Read"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_evse_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>EVSE - Status</h2><p>EVSE - Status &#8212; <span class="phrase">Reads status information from the
+                    EVSE board.</span></p></div><div class="refsect1"><a name="d5e73828"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_evse_status.png"></span></span></p></div><div class="refsect1"><a name="d5e73836"></a><h2>Description</h2><p>The EVSE Status block reads status information from the EVSE charging board during
+                the charge cycle and outputs the data to Simulink.</p></div><div class="refsect1"><a name="d5e73839"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Charging State</span>
+                    </span></dt><dd><p>The charge state the EVSE charging board is currently in.</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Not connected or transitioning between states.</p></li><li class="listitem"><p>1: Initialization</p></li><li class="listitem"><p>2: Authentication</p></li><li class="listitem"><p>3: Parameter Discovery</p></li><li class="listitem"><p>4: Isolation</p></li><li class="listitem"><p>5: Pre-Charge</p></li><li class="listitem"><p>6: Charging</p></li><li class="listitem"><p>7: Welding</p></li><li class="listitem"><p>8: Stop</p></li></ul></div><p> Data Type: <code class="literal">double</code>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Protocol</span>
+                    </span></dt><dd><p>The charging protocol in use in the current charge cycle. Possible
+                            values are:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>"ISO 15118"</p></li><li class="listitem"><p>"DIN 70121"</p></li><li class="listitem"><p>"IEC 61851"</p></li><li class="listitem"><p>"NotSupported"</p></li></ul></div><p> Data Type: <code class="literal">string</code>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">CP</span>
+                    </span></dt><dd><p>Indicates the current Control Pilot (CP) state. The possible values of
+                            this topic are the CP states according to IEC 61851:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>1: State A - EV unplugged</p></li><li class="listitem"><p>2: State B - EV connected</p></li><li class="listitem"><p>3: State C - Ready / Charging</p></li><li class="listitem"><p>4: State D - With ventilation</p></li><li class="listitem"><p>5: State E - Power outage or short of the control pilot to
+                                        PE</p></li><li class="listitem"><p>6: State F - Error - unavailability of the charging
+                                        station</p></li></ul></div><p> Data Type: <code class="literal">double</code>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">PP</span>
+                    </span></dt><dd><p>Indicates the current Proximity Pilot (PP) state. The possible values
+                            of this topic are the PP states according to IEC 61851:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Unknown</p></li><li class="listitem"><p>1: Not connected</p></li><li class="listitem"><p>2: Connected</p></li><li class="listitem"><p>3: Connected but not latched</p></li></ul></div><p> Data Type: <code class="literal">double</code>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">PWM</span>
+                    </span></dt><dd><p>Indicates the current PWM duty cycle in percent. The value of this
+                            topic is between "0" and "100" %.</p><p>Data Type: <code class="literal">double</code></p></dd><dt><span class="term">
+                        <span class="guilabel">TCP</span>
+                    </span></dt><dd><p>Indicates the status of the TCP connection between the EV and the
+                            EVSE. The possible values of this topic are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: Disconnected</p></li><li class="listitem"><p>1: TCP connection established</p></li><li class="listitem"><p>2: TCP connection with TLS established</p></li></ul></div><p> Data Type: <code class="literal">double</code>
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Plug</span>
+                    </span></dt><dd><p>Indicates the status of the plug lock on the customer side. The
+                            possible values of this topic are: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>0: unlocked</p></li><li class="listitem"><p>1: locked</p></li><li class="listitem"><p>2: unknown</p></li></ul></div><p> Data Type: <code class="literal">double</code>
+                        </p></dd></dl></div></div><div class="refsect1"><a name="d5e73950"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Station ID</span>
+                    </span></dt><dd><p>Defines the Station ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Connection ID</span>
+                    </span></dt><dd><p>Defines the Connection ID of the corresponding Setup block. Must range
+                            between 0 and 65535.</p></dd><dt><span class="term">
+                        <span class="guilabel">Sample Time</span>
+                    </span></dt><dd><p>Defines the base sample time at which this driver block gets its
+                            sample hit. This parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited sample time. The units are in
+                            seconds.</p></dd></dl></div></div></div></body></html>

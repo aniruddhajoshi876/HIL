@@ -1,0 +1,43 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">Modbus - GOOSE Publisher</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_iec61850_sv.html" title="IEC 61850 Sampled Values"><link rel="next" href="refentry_iec61850_goose_subscriber.html" title="IEC 61850 - GOOSE Subscriber"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_iec61850_goose_publisher"></a><div class="titlepage"></div><div class="refnamediv"><h2>Modbus - GOOSE Publisher</h2><p>Modbus - GOOSE Publisher &#8212; 
+                <span class="phrase">Publishes GOOSE data through MAC addressing.</span></p></div><div class="refsect1"><a name="d5e7967"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_iec61850_goose_publisher.png"></span></span></p></div><div class="refsect1"><a name="d5e7975"></a><h2>Description</h2><p>This block is used to publish data to the network using a destination MAC address.
+                Your model can contain multiple IEC 61850 GOOSE publisher blocks and requires at
+                least one IEC 61850 Client or Server license.</p></div><div class="refsect1"><a name="d5e7978"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Input</span>
+                    </span></dt><dd><p>Array of dynamic length that is published to the given <span class="bold"><strong>Destination MAC Address</strong></span>. The data type is
+                            specified in the <span class="bold"><strong>Message Data Type</strong></span>
+                            field using the <span class="bold"><strong>Base Interval Time</strong></span>
+                            parameters.</p><p>Use Byte Pack blocks to convert to signed values or floating-point
+                            numbers. You can pack one double value to a vector of type int8 and
+                            length 8.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><p>This block does not have any output ports.</p><dl class="variablelist"><dt><span class="term"></span></dt><dd><p></p></dd></dl></div></div><div class="refsect1"><a name="d5e7998"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Ethernet Port</span>
+                    </span></dt><dd><p>Define from which local Ethernet port GOOSE messages should be
+                            published. The internal Ethernet interfaces of Speedgoat target machines
+                            have for example 'ETH1' as an available port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Message Data Type</span>
+                    </span></dt><dd><p>Select one of the data types listed in the dropdown list:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Int8</p><p>1-byte signed integer.</p></li><li class="listitem"><p>Double</p><p>8-byte floating point.</p></li><li class="listitem"><p>Quality</p><p>4-byte unsigned integer.</p></li><li class="listitem"><p>Boolean</p><p>1 bit.</p></li></ul></div></dd><dt><span class="term">
+                        <span class="guilabel">Base Interval Time</span>
+                    </span></dt><dd><p>Define the base interval for publishing GOOSE messages. When a value
+                            changes, the publishing interval is divided by 10 and then augmented in
+                            2 steps until it reaches the base interval again.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd><dt><span class="term">
+                        <span class="guilabel">Destination MAC Address</span>
+                    </span></dt><dd><p>Define the multicast/broadcast MAC address of the GOOSE message. For
+                            the purpose of broadcasting use ff:ff:ff:ff:ff:ff.</p></dd><dt><span class="term">
+                        <span class="guilabel">GOOSE App ID</span>
+                    </span></dt><dd><p>The GOOSE app ID will be inserted into the published message. This way
+                            you can filter the messages when publishing on the same MAC
+                            address.</p></dd><dt><span class="term">
+                        <span class="guilabel">VLAN ID</span>
+                    </span></dt><dd><p>The VLAN identifier is used to tag a message. The values of 0 and 4095
+                            (0x000 and 0xFFF in hexadecimal) are reserved. All other values may be
+                            used as VLAN identifiers, allowing up to 4,094 VLANs.</p><p>Refer to this webpage for further information about VLAN parameters:
+                                <a class="link" href="https://en.wikipedia.org/wiki/IEEE_802.1Q" target="_blank"> IEE_802.1Q Wiki</a>.</p></dd><dt><span class="term">
+                        <span class="guilabel">VLAN Priority</span>
+                    </span></dt><dd><p>The VLAN priority (priority code point (PCP)) sets the priority level
+                            of the message.</p><p>Refer to this webpage for further information about VLAN parameters:
+                                <a class="link" href="https://en.wikipedia.org/wiki/IEEE_802.1Q" target="_blank"> IEE_802.1Q Wiki</a>.</p></dd></dl></div></div></div></body></html>

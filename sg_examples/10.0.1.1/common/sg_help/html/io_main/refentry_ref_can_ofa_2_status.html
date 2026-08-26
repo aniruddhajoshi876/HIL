@@ -1,0 +1,75 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:ng="http://docbook.org/docbook-ng">IO61X - CAN Status</title><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/doc_center.css"><meta xmlns:ng="http://docbook.org/docbook-ng" name="generator" content="DocBook XSL Stylesheets V1.79.2"><link rel="home" href="book_comms.html" title="Comms I/O"><link rel="up" href="book_comms.html" title="Comms I/O"><link rel="prev" href="refentry_ref_can_ofa_2_read.html" title="IO61X - CAN Read"><link rel="next" href="refentry_ref_can_ofa_2_lin_write.html" title="IO61X - LIN Write"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry"><a name="refentry_ref_can_ofa_2_status"></a><div class="titlepage"></div><div class="refnamediv"><h2>IO61X - CAN Status</h2><p>IO61X - CAN Status &#8212; <span class="phrase">This block provides CAN or CAN-FD bus and controller status
+                    information for the configured channel of the IO61X I/O modules
+                </span></p></div><div class="refsect1"><a name="d5e3332"></a><h2>Library</h2><p>Simulink Real-Time - Speedgoat</p><p><span class="guiicon"><span class="inlinemediaobject"><img src="././graphics/icon_canlin_ofa2_io61x_status.png"></span></span></p></div><div class="refsect1"><a name="d5e3340"></a><h2>Description</h2><p>This CAN Status driver block is part of the generic block library for the IO610,
+                IO611, IO612, IO613 and IO614 I/O modules.</p><p>This block provides CAN bus and controller status information for the configured
+                channel. An optional input port makes it possible to disable this channel. This can
+                be used to recover from faulty situations like Bus-Off.</p></div><div class="refsect1"><a name="refsect_ports_can_ofa_2_status"></a><h2>Ports</h2><div class="variablelist"><div class="variablelist-title">Inputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Disable CAN Channel</span>
+                    </span></dt><dd><p>This input port is available whenever the <span class="bold"><strong>Show
+                                Input Port to Disable the CAN Channel</strong></span> checkbox in the
+                            block mask is selected. Use this port to check whether the channel is
+                            enabled to interact on the bus or not.</p><p>Providing a logical "1" to this input signal stops the CAN channel
+                            from interacting on the bus. This channel will stop transmission and
+                            reception of new data with the next sample step. The transmit and
+                            receive buffer will be flushed.</p><p>This functionality can be used to simulate a channel disconnecting
+                            from the bus. Among other things, this means that the channel stops
+                            setting ACK bits. However, all the status indicators or counter values
+                            will remain until the channel is enabled again.</p><p>When the channel is in Bus-Off mode, the state can be recovered using
+                            this input port.</p><p>The channel will always start in an enabled state.</p></dd></dl></div><div class="variablelist"><div class="variablelist-title">Outputs</div><dl class="variablelist"><dt><span class="term">
+                        <span class="guilabel">Bus Load</span>
+                    </span></dt><dd><p>CAN bus load in percentage of the nominal occupation within the sample
+                            time of the Status block. If using a low sample time, the value can
+                            fluctuate significantly.</p><p>When the bus is overloaded or a cable is disconnected the signal may
+                            fluctuate between 0% and 100%.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus-Off Status</span>
+                    </span></dt><dd><p>Indicates if the CAN controller is in bus off mode as described within
+                            the CAN specification. This is set if either the internal CAN receive
+                            error counter or the CAN transmit error counter reaches the bus off
+                            limit of 255 errors.</p><p>This state can be recovered using the <span class="bold"><strong>Disable
+                                CAN Channel</strong></span> input port.</p></dd><dt><span class="term">
+                        <span class="guilabel">Recovery Count</span>
+                    </span></dt><dd><p>Number of bus recoveries performed since simulation start. This
+                            counter will only reset at model restart.</p></dd><dt><span class="term">
+                        <span class="guilabel">Transmit Buffer Overrun</span>
+                    </span></dt><dd><p>Indicates an overrun on the transmit buffer of this channel. This
+                            shows if there was a potential data loss in the output signal flow. The
+                            buffer may overflow if the traffic on the CAN Write block is too large
+                            for the configured sample rate. The size of this buffer is 564
+                            messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Receive Buffer Overrun</span>
+                    </span></dt><dd><p>Indicates an overrun on the receive buffer of this channel. This shows
+                            if there was a potential data loss in the output signal flow. The buffer
+                            is only used if the CAN Read block is in FIFO mode. It may overflow if
+                            the bus-load is too high or because the receive buffer is not read out
+                            by a CAN Read block using a fast enough sample rate. The size of this
+                            buffer is 564 messages.</p></dd><dt><span class="term">
+                        <span class="guilabel">Bus-Warning Limit</span>
+                    </span></dt><dd><p>Indicates if the CAN controller has reached the bus warning limit as
+                            described within the CAN specification. This is set if either the
+                            internal CAN <span class="bold"><strong>Receive Error Counter</strong></span> or
+                            the CAN <span class="bold"><strong>Transmit Error Counter</strong></span> reaches
+                            the warning limit of 96 errors.</p></dd></dl></div></div><div class="refsect1"><a name="refsect_parameters_can_ofa_2_status"></a><h2>Parameters</h2><div class="variablelist"><dl class="variablelist"><dt><a name="varlistentry_common_moduleId_not_setupblock"></a><span class="term">
+            <span class="guilabel">Module ID</span>
+        </span></dt><dd><p>This ID defines the link to the corresponding Setup block</p></dd><dt><span class="term">
+                        <span class="guilabel">Channel Number</span>
+                    </span></dt><dd><p>Selects the CAN channel with which this driver block communicates.
+                        </p></dd><dt><span class="term">
+                        <span class="guilabel">Automatic Recovery at Bus-Off</span>
+                    </span></dt><dd><p>Check this parameter in order to enable the automatic Bus-Off
+                            Recovery.</p><p>If the channel is in Bus-Off state, as indicated by the <span class="bold"><strong>Bus-Off Status</strong></span> output port, the channel will
+                            automatically try and recover from this state.</p></dd><dt><span class="term">
+                        <span class="guilabel">Show Input Port to Disable the CAN Channel</span>
+                    </span></dt><dd><p>Enables an input port that can be used to disable the associated
+                            channel.</p></dd><dt><a name="varlistentry_common_sampleTime"></a><span class="term">
+            <span class="guilabel">Sample Time</span>
+        </span></dt><dd><p>Defines the base sample time at which this driver block gets its sample hit. This
+                parameter can also be set to <span class="bold"><strong>-1</strong></span> for inherited
+                sample time. The units are in seconds.</p></dd></dl></div><p>
+                </p><div class="note"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>Users are recommended to set the sample time to 100 ms when working with
+                        the <span class="bold"><strong>Bus-Off Status</strong></span> output. The combination
+                        of setting the sample time below this value, and using a low bit rate value
+                        that slows down the bus recovery process, may lead to incorrect Bus-Off
+                        indications.</p></td></tr></table></div><p>
+            </p></div></div></body></html>
