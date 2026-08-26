@@ -9,8 +9,8 @@ function verify_pinouts()
 %   Only the "as configured" claims (PINOUTS.MD section 4) are checkable here.
 %   Sections 2, 3, 5.2 and 6 are vendor hardware facts verified by citation.
 
-modelDir = fileparts(mfilename('fullpath'));
-projectDir = fullfile(modelDir, 'inverter_hil');
+testsDir = fileparts(mfilename('fullpath'));
+projectDir = fullfile(fileparts(testsDir), 'inverter_hil');
 model = 'inverter_hil';
 
 fprintf('\n=== verify_pinouts: PINOUTS.MD section 4 vs %s.slx ===\n\n', model);
