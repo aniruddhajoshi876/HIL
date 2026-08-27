@@ -98,7 +98,22 @@ class MatlabEngineBackend:
         return str(self.Engine.getLastApplication(self.Target, nargout=1))
 
     def executionTimeS(self):
-        return float(self.Engine.getExecTime(self.Target, nargout=1))
+        """Execution time, or NaN because R2024b exposes no API for it.
+
+        slrealtimeBackend.m:101 calls obj.Target.getExecTime(), but that method
+        does not exist on slrealtime.Target in R2024b -- not public, not hidden,
+        it is absent from the metaclass MethodList entirely. That line has never
+        run: the class header states it is an untested pass-through that cannot
+        be exercised without hardware, and connecting real hardware for the
+        first time is what surfaced it. status() is no substitute; in R2024b it
+        returns a plain execution-state char vector ('stopped'), not a struct
+        carrying a time.
+
+        Returning NaN keeps the codebase's rule that an unavailable value is
+        reported unknown and rendered as dashes, never fabricated. If a
+        supported API appears in a later release, wire it here.
+        """
+        return float("nan")
 
     def targetName(self):
         return self.Name
