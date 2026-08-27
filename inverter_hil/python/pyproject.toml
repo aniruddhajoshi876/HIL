@@ -9,5 +9,5 @@ description = "Python host-side port for inverter_hil"
 requires-python = ">=3.10"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "gui/tests"]
 addopts = "-ra"
