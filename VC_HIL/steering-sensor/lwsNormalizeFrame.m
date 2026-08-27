@@ -1,21 +1,12 @@
-function frames = sensorBusMux(imuFrame, steeringFrame)
-%SENSORBUSMUX Combine due sensor frames without cross-channel overwriting.
-frames = repmat(emptyFrame(), 1, 2);
-frames(1) = normalizeFrame(imuFrame, 'imu');
-frames(2) = normalizeFrame(steeringFrame, 'steering');
-valid = [frames.valid];
-frames = frames(valid);
-if numel(frames) > 1
-    timestamps = [frames.timestampS];
-    sequences = [frames.sequence];
-    [~, order] = sortrows([timestamps(:), double(sequences(:))], [1 2]);
-    frames = frames(order);
-end
-end
-
-function frame = normalizeFrame(source, kind)
+function frame = lwsNormalizeFrame(source)
+%LWSNORMALIZEFRAME Validate one raw LWS frame into the canonical frame shape.
+%   Split out of the former combined SENSORBUSMUX's NORMALIZEFRAME helper:
+%   this half is purely per-sensor (nothing in it references any other
+%   sensor), so it now lives with the rest of the steering-sensor driver
+%   code. SENSORNORMALIZER.SENSORFRAMEORDER takes already-normalized frames
+%   from this and IMUNORMALIZEFRAME and orders/filters them generically.
 frame = emptyFrame();
-frame.kind = kind;
+frame.kind = 'steering';
 if isempty(source) || ~isstruct(source) || ~isfield(source, 'valid') || ...
         ~source.valid
     return;
@@ -33,7 +24,7 @@ frame.payload = uint8(source.payload(:).');
 frame.timestampS = double(source.timestampS);
 frame.sequence = uint32(source.sequence);
 frame.valid = logical(source.valid);
-frame.kind = kind;
+frame.kind = 'steering';
 end
 
 function frame = emptyFrame()

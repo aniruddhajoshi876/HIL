@@ -281,7 +281,9 @@ classdef targetSession < handle
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
             blank = inverterhilgui.live_telemetry.blankTelemetry();
-            [~, sensorDlcInit] = sensorTxIds();
+            [~, imuDlcInit] = imuTxIds();
+            [~, lwsDlcInit] = lwsTxIds();
+            sensorDlcInit = [imuDlcInit, lwsDlcInit];
             snapshot.steering = blank.steering;
             snapshot.imu = blank.imu;
             snapshot.sensorPayloads = ...
@@ -338,7 +340,7 @@ classdef targetSession < handle
                 % blocks are named "CAN Write Sensor 0x..." (see
                 % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
                 % than one combined ID list.
-                sensorIds = sensorTxIds();
+                sensorIds = [imuTxIds(), lwsTxIds()];
                 writeNoOverrun = false(1, numel(writeIds) + numel(sensorIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
@@ -482,8 +484,9 @@ classdef targetSession < handle
                 % CAN Write pairs, so the TX table shows what is genuinely
                 % on the wire rather than a host-side re-encode.
                 try
-                    [~, sensorDlc] = sensorTxIds();
-                    sensorDlc = double(sensorDlc);
+                    [~, imuDlc] = imuTxIds();
+                    [~, lwsDlc] = lwsTxIds();
+                    sensorDlc = double([imuDlc, lwsDlc]);
                     % Ports 14-18 are the target-selected wire DLCs. These
                     % differ from the nominal contract only during malformed
                     % injection; reading them is what makes the GUI report
@@ -941,7 +944,7 @@ can = struct('known', false, 'diagnostics', struct( ...
     'transmitOverrun', [], ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
-    'writeSucceeded', false(1, 9 + numel(sensorTxIds())), ...
+    'writeSucceeded', false(1, 9 + numel(imuTxIds()) + numel(lwsTxIds())), ...
     'writeKnown', false));
 end
 

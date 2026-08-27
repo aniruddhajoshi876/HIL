@@ -100,7 +100,10 @@ statusNames = {'3X3 INV1', '3X5 INV1', '3X3 INV2', '3X5 INV2', ...
 % interface and must appear in the TX table too, in the SAME order the model
 % writes them (BUILD_INVERTER_HIL_MODEL's SENSORIDS), because
 % APPLYLIVETXFRAMES indexes payload rows positionally against this list.
-sensorIds = sensorTxIds();
+% IMUTXIDS/LWSTXIDS split the former combined SENSORTXIDS by sensor; the
+% concatenation order here (IMU first, then LWS) reproduces the original
+% list and must not change.
+sensorIds = [imuTxIds(), lwsTxIds()];
 sensorNames = {'MTI ACCEL', 'MTI RATE', 'MTI VELOCITY', ...
     'LWS STEERING', 'LWS CONFIG'};
 snapshot.can.tx = blankCanObservations( ...

@@ -31,18 +31,21 @@ if isempty(speedgoatBlocks)
 end
 
 % VC_HIL/inverter's own functions are split by role into subfolders
-% (rxCAN, txCAN, bus_info, contructors, state-machine, imu, build); every
-% caller reaches them by bare function name, so all seven must be on path
-% alongside inverter/ itself. This inverter/imu is the synchronized
-% MTi/LWS sensor transmission code, distinct from WORKSPACEROOT's own
-% imu/ (sensor driver sources) added below.
+% (rxCAN, txCAN, bus_info, contructors, state-machine, sensorNormalizer,
+% build); every caller reaches them by bare function name, so all seven
+% must be on path alongside inverter/ itself. inverter/sensorNormalizer
+% holds only the cross-sensor frame-ordering step that belongs to neither
+% sensor individually (see SENSORFRAMEORDER); the IMU- and LWS-specific
+% pieces that used to live alongside it (TX ID lists, schedulers, frame
+% normalizers) now live in WORKSPACEROOT's own imu/ and steering-sensor/,
+% added below.
 inverterRoot = fullfile(workspaceRoot, 'inverter');
 addpath(root, workspaceRoot, inverterRoot, ...
     fullfile(inverterRoot, 'rxCAN'), fullfile(inverterRoot, 'txCAN'), ...
     fullfile(inverterRoot, 'bus_info'), ...
     fullfile(inverterRoot, 'contructors'), ...
     fullfile(inverterRoot, 'state-machine'), ...
-    fullfile(inverterRoot, 'imu'), fullfile(inverterRoot, 'build'), ...
+    fullfile(inverterRoot, 'sensorNormalizer'), fullfile(inverterRoot, 'build'), ...
     speedgoatBlocks, fullfile(workspaceRoot, 'imu'), ...
     fullfile(workspaceRoot, 'steering-sensor'));
 cacheFolder = fullfile(root, '.simulink', 'cache');
