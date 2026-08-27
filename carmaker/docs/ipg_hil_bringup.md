@@ -1,11 +1,15 @@
 # IPG ↔ Speedgoat HIL bring-up — CAN status
 
 **Confirmed.** `inverter_hil` is deployed, running, and configured as the
-startup application on TargetPC1 (`10.10.10.5`).  The physical CAN path is
-healthy when the PCAN-USB FD is on IO614 connector B (CAN channel 1; connector
-A is channel 2).  The expected receive baseline is the 12 IDs and cadences in
-`carmaker/docs/can_setup_walkthrough.md`.  Local source:
-`carmaker/docs/can_setup_walkthrough.md:3-18`.
+startup application on TargetPC1 (`10.10.10.5`).
+
+**Topology — two independent buses.** IO614 connectors A and B are no longer
+bridged.  CarMaker's PCAN-USB FD goes on connector B (channel 1), which is now a
+private CarMaker ⇄ Speedgoat bus carrying only `0x500` (CarMaker → Speedgoat)
+and `0x501`/`0x502` (Speedgoat → CarMaker).  The real MFE26-VC is on connector A
+(channel 2) with the Speedgoat, carrying the VC control frames and the
+Speedgoat's status + sensor frames.  Each bus needs its own two 120 Ω
+terminators.  Local source: `carmaker/docs/can_setup_walkthrough.md`.
 
 **Confirmed.** CarMaker's direct PCAN parameters are `device=pcan_usb (5)`,
 `channel=1` (`PCAN_USBBUS1`), `rate=1000000`, `is_canfd=0`, with both FD timing
@@ -21,9 +25,12 @@ CRC-8/SAE-J1850 over bytes 1-5.  Local source:
 
 **Open question.** Do not trust operation under load until the persistent
 Speedgoat `busLoad=88`, `txOverrun=1`, `busWarning=1` signature is explained.
+It was seen on the old bridged bus and now belongs to the channel-2 VC bus.
 Measured traffic predicts only about 29% bus utilisation; termination is the
-prime suspect.  Confirm exactly two 120-ohm terminators across IO614 pins 2
-and 7; IO614 supplies none.  Local source: `PINOUTS.md:section 5.2`.
+prime suspect.  Confirm exactly two 120-ohm terminators on **each** bus across
+IO614 pins 2 and 7; IO614 supplies none.  The channel-1 CarMaker bus has its own
+`IO614 CarMaker CAN Diagnostics` block, so the two buses can be diagnosed
+separately.  Local source: `PINOUTS.md:section 5.2`.
 
 **Open question.** RBS’s documented CANIf modules are M51, M410, and vCAN,
 not PCAN-USB; no RBS ScriptControl namespace was found.  Use the GUI for RBS

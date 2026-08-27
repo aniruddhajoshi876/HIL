@@ -295,7 +295,12 @@ classdef targetSession < handle
             end
             hw = 'inverter_hil/Hardware I O - PRE-FLIGHT DISABLED';
             diBlock = [hw '/IO183 DIO09-DIO13 VCU Monitor'];
+            % The CAN bus is split in two (see BUILD_INVERTER_HIL_MODEL):
+            % IO614 CAN Diagnostics is the channel-2 VC bus, IO614 CarMaker
+            % CAN Diagnostics is the channel-1 CarMaker bus. One CAN Status
+            % block per bus.
             diagBlock = [hw '/IO614 CAN Diagnostics'];
+            carMakerDiagBlock = [hw '/IO614 CarMaker CAN Diagnostics'];
             try
                 di = nan(1, 5);
                 for port = 1:5
@@ -325,6 +330,18 @@ classdef targetSession < handle
                 txOverrun = logical(obj.Backend.getsignal(diagBlock, 4));
                 rxOverrun = logical(obj.Backend.getsignal(diagBlock, 5));
                 busWarning = logical(obj.Backend.getsignal(diagBlock, 6));
+
+                % Same six ports, the channel-1 CarMaker bus.
+                cmBusLoad = double(obj.Backend.getsignal(carMakerDiagBlock, 1));
+                cmBusOff = logical(obj.Backend.getsignal(carMakerDiagBlock, 2));
+                cmRecoveryCount = ...
+                    double(obj.Backend.getsignal(carMakerDiagBlock, 3));
+                cmTxOverrun = ...
+                    logical(obj.Backend.getsignal(carMakerDiagBlock, 4));
+                cmRxOverrun = ...
+                    logical(obj.Backend.getsignal(carMakerDiagBlock, 5));
+                cmBusWarning = ...
+                    logical(obj.Backend.getsignal(carMakerDiagBlock, 6));
 
                 % Each CAN Write block exposes one status output, enabled at
                 % build time via enableStatusPort -- whose mask prompt is
@@ -363,9 +380,18 @@ classdef targetSession < handle
                 snapshot.can.diagnostics.errorWarning = busWarning;
                 snapshot.can.diagnostics.writeSucceeded = writeNoOverrun;
                 snapshot.can.diagnostics.writeKnown = true;
+
+                snapshot.can.carMakerDiagnostics.busLoadPercent = cmBusLoad;
+                snapshot.can.carMakerDiagnostics.busOff = cmBusOff;
+                snapshot.can.carMakerDiagnostics.recoveryCount = cmRecoveryCount;
+                snapshot.can.carMakerDiagnostics.transmitOverrun = cmTxOverrun;
+                snapshot.can.carMakerDiagnostics.receiveOverrun = cmRxOverrun;
+                snapshot.can.carMakerDiagnostics.errorWarning = cmBusWarning;
+                snapshot.can.carMakerKnown = true;
                 snapshot.can.known = true;
 
-                snapshot.io.healthy = ~busOff && ~busWarning;
+                snapshot.io.healthy = ~busOff && ~busWarning && ...
+                    ~cmBusOff && ~cmBusWarning;
                 snapshot.io.healthyKnown = true;
                 snapshot.known = true;
             catch err
@@ -937,7 +963,7 @@ end
 function can = blankLiveCan()
 %BLANKLIVECAN The unknown live-CAN block, matching BLANKTELEMETRY's contract
 %   that an unread field is NaN/empty with a KNOWN flag, never a zero.
-can = struct('known', false, 'diagnostics', struct( ...
+can = struct('known', false, 'carMakerKnown', false, 'diagnostics', struct( ...
     'busLoadPercent', NaN, ...
     'busOff', [], ...
     'recoveryCount', NaN, ...
@@ -945,7 +971,14 @@ can = struct('known', false, 'diagnostics', struct( ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
     'writeSucceeded', false(1, 9 + numel(imuTxIds()) + numel(lwsTxIds())), ...
-    'writeKnown', false));
+    'writeKnown', false), ...
+    'carMakerDiagnostics', struct( ...
+    'busLoadPercent', NaN, ...
+    'busOff', [], ...
+    'recoveryCount', NaN, ...
+    'transmitOverrun', [], ...
+    'receiveOverrun', [], ...
+    'errorWarning', []));
 end
 
 function match = valuesMatch(requested, applied)

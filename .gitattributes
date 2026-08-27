@@ -5,6 +5,8 @@
 # "ReleaseInfo is invalid" / "invalid document structure" warnings when
 # Simulink parsed it.
 *.mdl   -text
+*.dbc   -text
+*.a2l   -text
 *.slx   binary
 *.sldd  binary
 *.mlapp binary

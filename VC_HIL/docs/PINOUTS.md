@@ -27,7 +27,7 @@ module.
 | Module | Role | Used by `inverter_hil`? |
 |---|---|---|
 | **IO183** | 16-bit analog in/out + digital I/O — VCU pedal stimulus, rail monitoring, discrete stimulus/monitor | **Yes** — the focus of this document |
-| **IO614** | 4× CAN (HS) + 1× LIN — VCU control/status bus | **Yes** — channel 1/Port B (inverter HIL) and channel 2/Port A (virtual VCU), bridged onto one physical CAN bus |
+| **IO614** | 4× CAN (HS) + 1× LIN — two independent CAN buses | **Yes** — channel 1/Port B is the CarMaker bus (Speedgoat ⇄ CarMaker), channel 2/Port A is the VC bus (Speedgoat ⇄ real MFE26-VC). **Not** bridged — two separate wires, each independently terminated |
 | **IO391** | Configurable FPGA I/O | **No** — manual ships in the bundle, module is not referenced anywhere in the project |
 
 ---
@@ -401,9 +401,17 @@ order**:
 | **C** | CAN 4 |
 | **D** | CAN 3 |
 
-`inverter_hil` uses **channel 1 → connector B** for the inverter HIL and
-**channel 2 → connector A** for the virtual VCU, both `CAN (HS)` @ **1.0
-MBaud**. Channels 3–4 remain disabled. The standalone visibility test still
+`inverter_hil` uses **two independent buses**, both `CAN (HS)` @ **1.0 MBaud**,
+channels 3–4 disabled:
+
+- **Channel 1 → connector B — CarMaker bus.** Speedgoat ⇄ CarMaker only, via
+  CarMaker's PCAN-USB FD. Carries `0x500` (CarMaker → Speedgoat pedal demand)
+  and `0x501`/`0x502` (Speedgoat → CarMaker interpreted telemetry).
+- **Channel 2 → connector A — VC bus.** Speedgoat ⇄ real MFE26-VC only. Carries
+  the VC control frames `0x186 0x196 0x1A6 0x1B6` (VC → Speedgoat), the nine
+  Ephorus status frames, and the MTi/LWS sensor frames (Speedgoat → VC).
+
+Connectors A and B are **not bridged**. The standalone visibility test still
 uses channel 1 only.
 
 ### 5.2 DB9 pinout (identical on all four connectors)
@@ -422,13 +430,20 @@ uses channel 1 only.
 > **Termination is not on the module.** A 120 Ω resistor is required **between
 > pins 2 and 7**. Speedgoat's IO614 loopback cable includes it; a bare cable to a
 > third-party analyser does not. Missing termination presents as ~100 % bus load
-> with `transmit_pending` stuck true and no successful ACK.
+> with `transmit_pending` stuck true and no successful ACK. **Each of the two
+> buses needs its own pair of terminators** — one at the Speedgoat end and one
+> at the far end (CarMaker's PCAN on channel 1, the VC on channel 2).
 
-CAN IDs in `inverter_hil`: HIL TX `0x383 0x385 0x393 0x395 0x3A3 0x3A5 0x3B3
-0x3B5 0x400` plus CarMaker telemetry `0x501` (four torque setpoints) and
-`0x502` (four ready bits), all on CAN 1; HIL RX `0x186 0x196 0x1A6 0x1B6`
-plus CarMaker pedal demand `0x500`. The telemetry contract is authoritative in
-`inverter_hil/docs/can_pedal_demand_frame_spec.md`.
+CAN IDs in `inverter_hil`:
+
+- **Channel 1 (CarMaker bus):** Speedgoat TX `0x501` (four torque setpoints),
+  `0x502` (four ready bits); Speedgoat RX `0x500` (CarMaker pedal demand).
+- **Channel 2 (VC bus):** Speedgoat TX `0x383 0x385 0x393 0x395 0x3A3 0x3A5
+  0x3B3 0x3B5 0x400` plus MTi/LWS sensor frames `0x032 0x034 0x076 0x2B0 0x7C0`;
+  Speedgoat RX `0x186 0x196 0x1A6 0x1B6`.
+
+The telemetry contract is authoritative in
+`VC_HIL/docs/can_pedal_demand_frame_spec.md`.
 
 ---
 

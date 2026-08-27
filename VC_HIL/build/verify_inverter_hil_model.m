@@ -64,6 +64,30 @@ for index = 1:numel(expected)
     assert(any(strcmp(references, expected{index})), ...
         'inverterhil:MissingLibraryLink', 'Missing link [%s].', expected{index});
 end
+% The CAN bus is split in two: channel 1 / Port B is the CarMaker bus,
+% channel 2 / Port A is the VC bus. There is one CAN Read and one CAN Status
+% per bus.
+assert(sum(strcmp(references, 'speedgoatlib_IO614/CAN Read ')) == 2, ...
+    'Expected two IO614 CAN Read blocks (one per bus).');
+assert(sum(strcmp(references, 'speedgoatlib_IO614/CAN Status ')) == 2, ...
+    'Expected two IO614 CAN Status blocks (one per bus).');
+vcRead = [hardware '/IO614 CAN FIFO Read Raw'];
+carMakerRead = [hardware '/IO614 CarMaker FIFO Read'];
+vcStatus = [hardware '/IO614 CAN Diagnostics'];
+carMakerStatus = [hardware '/IO614 CarMaker CAN Diagnostics'];
+assert(getSimulinkBlockHandle(vcRead) ~= -1 && ...
+    strcmp(get_param(vcRead, 'channel'), '2'), ...
+    'VC bus read must be on IO614 channel 2.');
+assert(getSimulinkBlockHandle(carMakerRead) ~= -1 && ...
+    strcmp(get_param(carMakerRead, 'channel'), '1'), ...
+    'CarMaker bus read must be on IO614 channel 1.');
+assert(getSimulinkBlockHandle(vcStatus) ~= -1 && ...
+    strcmp(get_param(vcStatus, 'channel'), '2'), ...
+    'VC bus diagnostics must be on IO614 channel 2.');
+assert(getSimulinkBlockHandle(carMakerStatus) ~= -1 && ...
+    strcmp(get_param(carMakerStatus, 'channel'), '1'), ...
+    'CarMaker bus diagnostics must be on IO614 channel 1.');
+
 % Nine Ephorus status frames, the two CarMaker telemetry frames, the four
 % synchronized sensor frames, and the separately sequenced Bosch config frame
 % (MTi-680G acceleration 0x034, rate-of-turn 0x032 and velocity 0x076,
@@ -105,6 +129,21 @@ assert(isequal(sort(ids), sort(hex2dec( ...
     ['Expected the nine Ephorus status IDs, CarMaker 0x501/0x502, ' ...
     'MTi/LWS sensor IDs, and Bosch LWS config 0x7C0.']);
 assert(all(cellfun(@(block) strcmp(get_param(block, 'enableStatusPort'), 'on'), writes)));
+
+% Bus split: only the two CarMaker telemetry frames (0x501/0x502) transmit
+% on channel 1; every other write -- the nine status frames and the sensor
+% frames -- is VC-bus traffic on channel 2.
+carMakerTxIds = hex2dec({'501', '502'});
+for index = 1:numel(writes)
+    id = double(get_param(writes{index}, 'UserData'));
+    expectedChannel = '2';
+    if any(carMakerTxIds == id)
+        expectedChannel = '1';
+    end
+    assert(strcmp(get_param(writes{index}, 'channel'), expectedChannel), ...
+        'inverterhil:WrongCanChannel', ...
+        'CAN Write 0x%03X must transmit on channel %s.', id, expectedChannel);
+end
 
 set_param(model, 'SimulationCommand', 'update');
 

@@ -8,7 +8,9 @@
 
 **Confirmed - current integration state.** CarMaker and `inverter_hil` are separate today; CarMaker does not talk to Speedgoat. Local source: `speedgoat_ipg_integration.md:3-21`.
 
-**Proposed design not built - recommendation.** First prove CarMaker RBS through a supported physical CAN adapter as a third node on the existing channel-1 bus. Let CarMaker passively decode the existing VC control and HIL status frames. Add only one CarMaker-to-HIL pedal-demand frame plus a timeout-safe CAN-versus-GUI selector. Do not duplicate telemetry already on the bus. Full parity remains blocked until authoritative real-VC state and pedal-plausibility results are published; master neither receives nor computes those semantics.
+**SUPERSEDED — the dedicated-channel design in section 4.2 was chosen and built.** The CAN bus is now split in two: channel 1 / IO614 Port B is a private CarMaker ⇄ Speedgoat bus (`0x500` in, `0x501`/`0x502` out); channel 2 / Port A is the VC ⇄ Speedgoat bus. CarMaker no longer sees the raw VC control or HIL status frames — the Speedgoat interprets them and republishes the per-inverter torque setpoints (`0x501`) and ready bits (`0x502`) CarMaker needs. The shared-bus "third node" recommendation below is kept only for the analysis it contains.
+
+**Original recommendation (shared-bus, not chosen).** First prove CarMaker RBS through a supported physical CAN adapter as a third node on the existing channel-1 bus. Let CarMaker passively decode the existing VC control and HIL status frames. Add only one CarMaker-to-HIL pedal-demand frame plus a timeout-safe CAN-versus-GUI selector. Do not duplicate telemetry already on the bus. Full parity remains blocked until authoritative real-VC state and pedal-plausibility results are published; master neither receives nor computes those semantics.
 
 **Open question - largest gate.** The manuals document an active CarMaker-side physical CAN channel, but the installed adapter/platform/license is unconfirmed. IO614 on Speedgoat does not satisfy that CarMaker-side requirement. UsersGuide_HIL.pdf, section 4, pp. 53-56, 58; section 4.5.2 "CAN", p. 68.
 
@@ -79,9 +81,9 @@
 
 ## 4. CAN topology and frame contract
 
-### 4.1 Recommended shared bus
+### 4.1 Shared bus (NOT chosen — see 4.2)
 
-**Proposed design not built - topology.** Join a supported CarMaker/HIL physical CAN channel as a third node, standard 11-bit at 1 Mbaud, while preserving grounding and exactly two end terminators.
+**Not chosen.** Join a supported CarMaker/HIL physical CAN channel as a third node, standard 11-bit at 1 Mbaud, while preserving grounding and exactly two end terminators. Rejected in favour of the dedicated channel-1 CarMaker bus (4.2): the Speedgoat is the only bridge, so CarMaker never contends with the real VC on the wire and cannot accidentally transmit onto the VC bus.
 
 **Confirmed - manual basis.** RBS imports DBC, classifies ECUs real/simulated, maps signals, and selects an active physical CAN channel. If otherwise unused, `IO.c` initialization and a rebuilt CarMaker executable are documented. UsersGuide_HIL.pdf, section 4, pp. 53, 55-56; section 4.5.2, p. 68.
 
@@ -93,15 +95,19 @@
 
 **Proposed design not built - telemetry.** Add no duplicate torque/state/ready/DC-link frames on the shared bus. RBS can map existing traffic. If the VC later publishes VCU state/plausibility, provisionally allocate a separate `CarMakerVcuObservation` (candidate `0x501`) only after its authoritative source and vehicle-wide ID are approved.
 
-### 4.2 Dedicated CarMaker-Speedgoat CAN alternative
+### 4.2 Dedicated CarMaker–Speedgoat CAN — BUILT
 
-**Proposed design not built - alternative.** Another IO614 channel could isolate CarMaker from the real bus without importing any virtual-VCU model. This is a new physical interface, not the old virtual channel.
+**Built.** The IO614's two channels are split into two independent buses (A/B no longer bridged). Channel 2 / Port A is the VC bus (VC control RX; nine status frames + MTi/LWS sensor frames TX). Channel 1 / Port B is the CarMaker bus, carrying exactly three frames:
 
-**Confirmed - current gap.** Master enables only channel 1; channels 2-4, read, and writes are disabled/not configured for this role. Local source: `inverter_hil/build_inverter_hil_model.m:645-682,781-816`; `PINOUTS.md:375-389`.
+| ID | Dir | Payload |
+|---|---|---|
+| `0x500` `CarMakerPedalDemand` | CarMaker → Speedgoat | throttle %, brake %, active, alive counter, CRC-8/J1850 over bytes 1–5 |
+| `0x501` `CarMakerInverterTorqueSetpoint` | Speedgoat → CarMaker | four int16 per-inverter torque setpoints (1/32 Nm), decoded from the VC's retained control frames |
+| `0x502` `CarMakerInverterReady` | Speedgoat → CarMaker | four ready bits from the transmitted 3X3 status payloads |
 
-**Proposed design not built - bridge cost.** Isolation requires new IO614 setup/read/write blocks, harness/termination, named/flattened signals, and a bridge. A candidate separate-bus set is `0x500` pedals, `0x501` four positive limits, `0x502` four negative limits, `0x503` state/enable/validity bits, and `0x504` DC-link/ready/fault. These are placeholders, not allocations.
+No virtual-VCU model is imported. Model changes: `IO614 CAN Setup` keeps both channels `CAN (HS)` @ 1 MBaud; a second `IO614 CarMaker FIFO Read` + `CarMaker Rx Bus Selector` + `CarMakerRx*` global Gotos on channel 1; a new 1 ms `CarMaker Pedal Retention` MATLAB Function (reusing `receivePedalDemandFrame` / `pedalDemandSnapshot`) publishing the `CarMakerPedalDemand` Goto; the `0x501`/`0x502` writes stay on channel 1; every other CAN block moves to channel 2. A second `IO614 CarMaker CAN Diagnostics` block gives the CarMaker bus its own bus-load/overrun/bus-off telemetry.
 
-**Proposed design not built - choice.** Prefer the shared-bus proof because it uses the real wire contract and avoids a telemetry bridge. Choose isolation only if safety, loading, hardware support, or policy prohibits the third node.
+**Why this over the shared bus.** The Speedgoat is the only bridge, so CarMaker never contends with the real VC for the wire and cannot transmit onto the VC bus. CarMaker also needs none of the 9-frame Ephorus status protocol — `0x501`/`0x502` give it exactly the interpreted values the vehicle-dynamics loop consumes.
 
 ## 5. Pedal ownership and failure behavior
 

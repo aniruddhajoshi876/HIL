@@ -46,8 +46,10 @@ inverter_hil/
    without importing VCU code.
 2. Advance one independent vehicle-state model from inverter plant output and
    steering angle. Publish that state once per status-cycle tick.
-3. Feed the shared state to the MTi and LWS encoders. Run both on the same
-   IO614 CAN channel with independent rates and dropout controls.
+3. Feed the shared state to the MTi and LWS encoders. Run both on the VC bus
+   (IO614 channel 2 / Port A) alongside the Ephorus status frames — the sensors
+   are things the real VC reads. They are not on the channel-1 CarMaker bus.
+   Independent rates and dropout controls.
 4. Expose steering angle, steering dropout, and IMU dropout as tunable GUI
    parameters. The dial is bounded by the LWS range of -780 to +780 degrees.
 5. Verify source app instantiation, regenerated `.mlapp`, host protocol tests,

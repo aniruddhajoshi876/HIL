@@ -12,13 +12,19 @@ Speedgoat, its physical hardware):
   PC directly via `ipg-control.exe` and a CM4SL link into
   `Documents/GitHub/MFE25-Controls`. It does not use the Speedgoat at all.
 
-They are not integrated with each other today. `TargetPC1` was reflashed
-between R2022a and R2024b Simulink Real-Time multiple times while setting up
-`inverter_hil`; this had no effect on the CarMaker side, since CarMaker never
-talks to the Speedgoat. `inverter_hil` is currently loaded and running on
-`TargetPC1` as its startup application (survives a target power cycle) --
-relevant only if the Speedgoat is ever repurposed for CarMaker-side real-time
-work later, since the two would then contend for the same target machine.
+**Update — the two are now wired together over CAN.** `inverter_hil` carries a
+dedicated CarMaker link on IO614 channel 1 / Port B: CarMaker's PCAN-USB FD
+transmits `0x500` (pedal demand) and receives `0x501`/`0x502` (the Speedgoat's
+interpreted per-inverter torque setpoints and ready bits). Channel 2 / Port A
+is the real MFE26-VC bus. The two buses are not bridged. See
+`carmaker_real_vcu_can_interface_plan.md` section 4.2 and
+`carmaker/docs/can_setup_walkthrough.md`. The paragraphs below predate that
+link and describe the earlier standalone state.
+
+`TargetPC1` was reflashed between R2022a and R2024b Simulink Real-Time multiple
+times while setting up `inverter_hil`; this had no effect on the CarMaker side.
+`inverter_hil` is loaded and running on `TargetPC1` as its startup application
+(survives a target power cycle).
 
 ## HOW TO USE IPG
 

@@ -127,6 +127,18 @@ snapshot.can.diagnostics.busLoadPercent = NaN;
 snapshot.can.diagnostics.recoveryCount = NaN;
 snapshot.can.diagnostics.transmitOverrun = [];
 
+% The channel-1 CarMaker bus has its own IO614 CAN Status block after the
+% CAN split. Same six live fields, no per-frame writeSucceeded (the only TX
+% on that bus is the two CarMaker telemetry frames). TARGETSESSION.READLIVEIO
+% fills these; carMakerKnown gates whether they carry a decision.
+snapshot.can.carMakerKnown = false;
+snapshot.can.carMakerDiagnostics.busLoadPercent = NaN;
+snapshot.can.carMakerDiagnostics.busOff = [];
+snapshot.can.carMakerDiagnostics.recoveryCount = NaN;
+snapshot.can.carMakerDiagnostics.transmitOverrun = [];
+snapshot.can.carMakerDiagnostics.receiveOverrun = [];
+snapshot.can.carMakerDiagnostics.errorWarning = [];
+
 snapshot.io.healthy = false;
 snapshot.io.healthyKnown = false;
 end

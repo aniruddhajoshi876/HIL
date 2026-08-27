@@ -1,4 +1,6 @@
-VERSION "MFE26 real-VCU HIL / CarMaker direct-PCAN contract"
+VERSION "MFE26 real-VCU HIL / CarMaker two-bus contract"
+
+CM_ "CAN topology: two independent buses, Speedgoat the only node on both. Channel 2 / IO614 Port A is the VC bus (control frames 390/406/422/438 VC->SpeedgoatHIL; the nine inverter status frames and the MTi/LWS sensor frames SpeedgoatHIL->VC; CarMaker is NOT on this bus). Channel 1 / IO614 Port B is the CarMaker bus (1280 CarMakerPedalDemand CarMaker->SpeedgoatHIL; 1281/1282 SpeedgoatHIL->CarMaker). The Speedgoat interprets CarMaker's pedal demand and republishes the per-inverter torque setpoints and ready bits CarMaker needs.";
 
 NS_ :
     CM_
@@ -13,114 +15,114 @@ BS_:
 BU_: VC SpeedgoatHIL CarMaker
 
 BO_ 390 Inverter1Control: 8 VC
- SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
 BO_ 406 Inverter2Control: 8 VC
- SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
 BO_ 422 Inverter3Control: 8 VC
- SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
 BO_ 438 Inverter4Control: 8 VC
- SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL,CarMaker
- SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
- SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL,CarMaker
+ SG_ EnableInverter : 0|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ResetError : 1|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ ASCallowed : 2|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ CurrentControl : 3|1@1+ (1,0) [0|1] "" SpeedgoatHIL
+ SG_ SpeedSetpoint : 16|16@1- (1,0) [-32768|32767] "RPM" SpeedgoatHIL
+ SG_ TorqueLimitPositive : 32|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
+ SG_ TorqueLimitNegative : 48|16@1- (0.00390625,0) [-128|127.99609375] "Nm" SpeedgoatHIL
 
 BO_ 899 Inverter1StatusA: 8 SpeedgoatHIL
- SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
- SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC,CarMaker
- SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC,CarMaker
- SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC,CarMaker
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC
+ SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC
+ SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC
+ SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC
 BO_ 915 Inverter2StatusA: 8 SpeedgoatHIL
- SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
- SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC,CarMaker
- SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC,CarMaker
- SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC,CarMaker
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC
+ SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC
+ SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC
+ SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC
 BO_ 931 Inverter3StatusA: 8 SpeedgoatHIL
- SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
- SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC,CarMaker
- SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC,CarMaker
- SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC,CarMaker
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC
+ SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC
+ SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC
+ SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC
 BO_ 947 Inverter4StatusA: 8 SpeedgoatHIL
- SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC,CarMaker
- SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC,CarMaker
- SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC,CarMaker
- SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC,CarMaker
- SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC,CarMaker
+ SG_ InverterState : 0|2@1+ (1,0) [0|3] "" VC
+ SG_ InverterReady : 2|1@1+ (1,0) [0|1] "" VC
+ SG_ Derating : 3|1@1+ (1,0) [0|1] "" VC
+ SG_ MaxAllowedCurrent : 4|12@1+ (0.03125,0) [0|127.96875] "A" VC
+ SG_ TorqueActual : 16|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ TorqueSetpoint : 28|12@1- (0.03125,0) [-64|63.96875] "Nm" VC
+ SG_ MotorTemperature : 40|12@1- (0.125,0) [-256|255.875] "degC" VC
+ SG_ SwitchTemperature : 52|12@1- (0.0625,0) [-128|127.9375] "degC" VC
 
 BO_ 901 Inverter1StatusB: 8 SpeedgoatHIL
- SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+ SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC
 BO_ 917 Inverter2StatusB: 8 SpeedgoatHIL
- SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+ SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC
 BO_ 933 Inverter3StatusB: 8 SpeedgoatHIL
- SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+ SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC
 BO_ 949 Inverter4StatusB: 8 SpeedgoatHIL
- SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC,CarMaker
- SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC,CarMaker
+ SG_ IdSetpoint : 0|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IdActual : 12|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqSetpoint : 24|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ IqActual : 36|12@1- (0.0625,0) [-128|127.9375] "Arms" VC
+ SG_ SpeedActual : 48|16@1- (1,0) [-32768|32767] "RPM" VC
 BO_ 1024 DCLinkStatus: 8 SpeedgoatHIL
- SG_ DCLinkVoltage12Actual : 0|16@1+ (0.015625,0) [0|1023.984375] "V" VC,CarMaker
- SG_ DCLinkVoltage34Actual : 16|16@1+ (0.015625,0) [0|1023.984375] "V" VC,CarMaker
- SG_ SwitchingFrequency : 32|16@1+ (0.001953125,0) [0|127.998046875] "kHz" VC,CarMaker
- SG_ DCLink12AboveMinimum : 48|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ DCLink34AboveMinimum : 49|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ ControlEnable : 50|1@1+ (1,0) [0|1] "" VC,CarMaker
- SG_ ControlDisable : 51|1@1+ (1,0) [0|1] "" VC,CarMaker
+ SG_ DCLinkVoltage12Actual : 0|16@1+ (0.015625,0) [0|1023.984375] "V" VC
+ SG_ DCLinkVoltage34Actual : 16|16@1+ (0.015625,0) [0|1023.984375] "V" VC
+ SG_ SwitchingFrequency : 32|16@1+ (0.001953125,0) [0|127.998046875] "kHz" VC
+ SG_ DCLink12AboveMinimum : 48|1@1+ (1,0) [0|1] "" VC
+ SG_ DCLink34AboveMinimum : 49|1@1+ (1,0) [0|1] "" VC
+ SG_ ControlEnable : 50|1@1+ (1,0) [0|1] "" VC
+ SG_ ControlDisable : 51|1@1+ (1,0) [0|1] "" VC
 
 BO_ 52 Sensor034: 8 VC
- SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL
 BO_ 50 Sensor032: 8 VC
- SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL
 BO_ 688 Sensor2B0: 8 VC
- SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL,CarMaker
+ SG_ RawPayload : 0|64@1+ (1,0) [0|1.8446744073709552e+19] "" SpeedgoatHIL
 
 BO_ 1280 CarMakerPedalDemand: 8 CarMaker
  SG_ ThrottleDemand : 0|16@1+ (0.01,0) [0|100] "%" SpeedgoatHIL
@@ -144,7 +146,7 @@ BO_ 1282 CarMakerInverterReady: 8 SpeedgoatHIL
  SG_ Inverter4Ready : 3|1@1+ (1,0) [0|1] "" CarMaker
  SG_ Reserved : 4|60@1+ (1,0) [0|0] "" CarMaker
 
-CM_ BO_ 1280 "Implemented direct-PCAN frame. CRC-8/SAE-J1850 covers bytes 1..5: poly 0x1D, init 0xFF, RefIn=false, RefOut=false, xorout 0xFF. Exact ownership behavior is documented in inverter_hil/docs/can_pedal_demand_frame_spec.md.";
+CM_ BO_ 1280 "Channel-1 CarMaker-bus frame. CRC-8/SAE-J1850 covers bytes 1..5: poly 0x1D, init 0xFF, RefIn=false, RefOut=false, xorout 0xFF. Exact ownership behavior is documented in VC_HIL/docs/can_pedal_demand_frame_spec.md.";
 CM_ BO_ 1281 "Speedgoat-to-CarMaker telemetry, cyclic 5 ms, no application CRC, counter, or timeout.";
 CM_ BO_ 1282 "Speedgoat-to-CarMaker telemetry, cyclic 5 ms. Reserved bits 4..63 must be zero. No application CRC, counter, or timeout.";
 CM_ BO_ 52 "Confirmed ID only; signal layout is an open question and is retained as raw payload.";

@@ -132,11 +132,27 @@ Run these from the repository root with R2024b:
 & 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'VC_HIL','tests','inverter_hil')); run_inverter_hil_tests;"
 ```
 
+## CAN bus topology (this branch)
+
+The IO614's two channels are two **independent** buses (connectors A and B not
+bridged), with the Speedgoat the only node on both:
+
+- **Channel 1 / Port B — CarMaker bus.** RX `0x500` (CarMaker pedal demand);
+  TX `0x501`/`0x502` (interpreted per-inverter torque setpoints and ready
+  bits). One `IO614 CarMaker FIFO Read`, one `IO614 CarMaker CAN Diagnostics`,
+  the two `CAN Write 0x501/0x502` blocks, and a 1 ms `CarMaker Pedal Retention`
+  MATLAB Function block.
+- **Channel 2 / Port A — VC bus.** RX `0x186 0x196 0x1A6 0x1B6`; TX the nine
+  Ephorus status frames and the MTi/LWS sensor frames.
+
+See `carmaker_real_vcu_can_interface_plan.md` section 4.2.
+
 ## Virtual VCU branch integration
 
-On the `virtual-vcu` branch, the same R2024b deployable model additionally
-contains `Virtual VCU`: IO183 I/O Module 2 analog/digital inputs and its own
-IO614 channel 2 / connector A, bridged to the inverter boundary's channel 1 /
+On the `virtual-vcu` branch (a **different** branch, whose topology predates the
+CAN split above), the same R2024b deployable model additionally contains
+`Virtual VCU`: IO183 I/O Module 2 analog/digital inputs and its own IO614
+channel 2 / connector A, bridged to the inverter boundary's channel 1 /
 connector B on one physical CAN bus. The five channel-2 frames are the
 firmware-side pedal broadcast `0x1F5` plus `0x186`, `0x196`, `0x1A6`, and
 `0x1B6`; the nine inverter status IDs are on channel 1 / Port B and reach the
