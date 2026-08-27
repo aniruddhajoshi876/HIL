@@ -1208,31 +1208,15 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 for index = 1:numel(app.Telemetry.pins)
                     app.Telemetry.pins(index).state = live.pins(index);
                 end
-                if live.vcuStateKnown
-                    names = [app.VcuStateNames {'ERROR_SHUTDOWN'}];
-                    stateIndex = round(live.vcuStateId) + 1;
-                    if stateIndex >= 1 && stateIndex <= numel(names)
-                        newState = names{stateIndex};
-                        [app.VcuStateEnteredS, timeInStateS] = ...
-                            inverterhilgui.trackVcuStateEntry(newState, ...
-                            app.VcuStateLast, app.VcuStateEnteredS, ...
-                            app.hostTimeS());
-                        app.VcuStateLast = newState;
-                        app.Telemetry.vcu.state = newState;
-                        app.Telemetry.vcu.timeInStateS = timeInStateS;
-                        app.Telemetry.vcu.errorKnown = stateIndex == 6;
-                        app.Telemetry.vcu.errorActive = stateIndex == 6;
-                    end
-                else
-                    app.VcuStateEnteredS = NaN;
-                    app.VcuStateLast = '';
-                    app.Telemetry.vcu.timeInStateS = NaN;
-                end
-                if live.appsBrakeFaultKnown
-                    app.Telemetry.appsBrakeFault = live.appsBrakeFault;
-                else
-                    app.Telemetry.appsBrakeFault = [];
-                end
+                % No VCU state-machine feedback path exists in this model:
+                % the real MFE26-VC's internal state is not observable as a
+                % HIL signal, only inferable from its CAN broadcasts, which
+                % this model does not yet decode. State strip / time-in-state
+                % / APPS+brake fault therefore stay at their honest-unknown
+                % BLANKTELEMETRY defaults rather than being read here.
+                app.VcuStateEnteredS = NaN;
+                app.VcuStateLast = '';
+                app.Telemetry.vcu.timeInStateS = NaN;
                 wasCanDriving = app.CanPedalsDriving;
                 if live.canPedalsKnown
                     app.CanPedalsDriving = live.canPedalsDriving;
@@ -1310,7 +1294,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 if live.inverterKnown
                     app.applyLiveInverters(live.inverter);
                 end
-                if live.rx.known || live.pedalPayloadKnown
+                if live.rx.known
                     app.applyLiveRxFrames(live.rx, live);
                 end
             else
@@ -1324,7 +1308,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 app.Telemetry.pedals.appliedV = nan(1, 4);
                 app.Telemetry.analogInV = nan(1, 4);
-                app.Telemetry.appsBrakeFault = [];
                 blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
                 % Read failed or not connected: fail closed to GUI-owned
@@ -1516,27 +1499,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   whether this poll happened to succeed. A single entry never
             %   feeds CANROWMODEL's rate calculation (which needs 2+), so
             %   the RATE column still correctly stays dashes.
+            % Row 1 (VCU PEDALS / 0x1F5) has no live source on this branch:
+            % the real MFE26-VC's pedal-demand broadcast is decoded model-side
+            % (RECEIVEPEDALDEMANDFRAME/DECODEPEDALDEMANDFRAME) but that decode
+            % is not yet wired to a GUI-readable signal, so it stays at its
+            % honest-unknown BLANKTELEMETRY default here.
             observations = app.Telemetry.can.rx;
             now = app.hostTimeS();
-            if live.pedalPayloadKnown && numel(observations) >= 1
-                payload = live.pedalPayload;
-                previous = observations(1).value;
-                observations(1).value = strtrim(sprintf('%02X ', payload));
-                observations(1).signal = app.pedalFrameSignalText(payload);
-                observations(1).timestampsS = now;
-                % Genuine, target-measured transmit count (Port A Pedal TX
-                % Counter, read via PEDALTXCOUNT) when available; NaN/dashes
-                % on an older build that predates that counter, never a
-                % fabricated estimate.
-                if live.pedalTxCountKnown
-                    observations(1).count = live.pedalTxCount;
-                else
-                    observations(1).count = NaN;
-                end
-                if ~strcmp(previous, observations(1).value)
-                    observations(1).lastChangeS = now;
-                end
-            end
             for index = 2:numel(observations)
                 channelIndex = index - 1;
                 if channelIndex < 1 || channelIndex > numel(rx.channels)
@@ -1565,18 +1534,6 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 observations(index).count = double(channel.acceptedCount);
             end
             app.Telemetry.can.rx = observations;
-        end
-
-        function text = pedalFrameSignalText(~, payload)
-            %PEDALFRAMESIGNALTEXT Decode only the explicit VCU 0x1F5 contract.
-            if numel(payload) ~= 8
-                text = 'invalid pedal payload';
-                return;
-            end
-            front = double(payload(2)) + 256 * double(payload(3));
-            rear = double(payload(4)) + 256 * double(payload(5));
-            text = sprintf('throttle %d %% | front %d PSI | rear %d PSI | steering 0', ...
-                payload(1), front, rear);
         end
 
         function text = rxFrameSignalText(app, id, channel)

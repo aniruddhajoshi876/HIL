@@ -15,11 +15,11 @@ snapshot.vcu.timeInStateS = NaN;
 snapshot.vcu.errorActive = false;
 snapshot.vcu.errorKnown = false;
 
-% Whether VIRTUALVCUDEPLOYSTEP.M's own APPS+brake plausibility interlock
-% is actively suppressing torque -- a genuine chart-computed value (see
-% TARGETSESSION.READLIVEIO port 8), not inferred here from a torque number
-% happening to read zero. Empty (unknown) rather than false when unread,
-% so a failed read never presents as "interlock not active".
+% Whether the VCU's APPS+brake plausibility interlock is actively
+% suppressing torque. The real MFE26-VC implements this internally but does
+% not currently broadcast it over CAN, so this HIL has no observation
+% channel for it -- permanently unknown ([]) rather than false, so a
+% missing signal never presents as "interlock not active".
 snapshot.appsBrakeFault = [];
 
 snapshot.guards.mainButton = [];

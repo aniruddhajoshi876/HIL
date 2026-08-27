@@ -1,8 +1,13 @@
 function [torquePayload, readyPayload] = packCarMakerTelemetry(telemetry)
 %PACKCARMAKERTELEMETRY Pack the two CarMaker-facing inverter telemetry frames.
 %
-%   0x501 carries all four torque setpoints at the existing 1/32 Nm status
-%   resolution.  0x502 carries the corresponding four inverter-ready bits.
+%   0x501 carries all four torque setpoints, encoded at 1/32 Nm resolution
+%   regardless of the value's own source. TELEMETRY.TORQUESETPOINTNM is the
+%   VC's own commanded torque limit (decoded from 0x186/0x196/0x1A6/0x1B6),
+%   not Speedgoat's simulated inverter status echo -- see
+%   BUILD_INVERTER_HIL_MODEL's CARMAKERTELEMETRYPAYLOADSSCRIPT. 0x502
+%   carries the four inverter-ready bits, still sourced from the 3X3 status
+%   payloads.
 
 required = {'torqueSetpointNm', 'ready'};
 for k = 1:numel(required)

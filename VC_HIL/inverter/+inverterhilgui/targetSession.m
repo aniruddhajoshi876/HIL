@@ -269,11 +269,6 @@ classdef targetSession < handle
                 'inverterKnown', false, ...
                 'systemStatus', blankLiveSystemStatus(), ...
                 'rx', blankLiveRx(), ...
-                'vcuStateId', NaN, 'vcuStateKnown', false, ...
-                'pedalPayload', zeros(1, 0, 'uint8'), ...
-                'pedalPayloadKnown', false, ...
-                'pedalTxCount', NaN, 'pedalTxCountKnown', false, ...
-                'appsBrakeFault', [], 'appsBrakeFaultKnown', false, ...
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN, ...
@@ -374,72 +369,6 @@ classdef targetSession < handle
             catch err
                 obj.LastError = err.message;
                 return;
-            end
-
-            % Virtual VCU observer signals are model-generated outputs. They
-            % are useful for state/pedal diagnostics but are not physical CAN
-            % loopback or an ACK from another node.
-            %
-            % GETSIGNAL(block, port) reads port N of a SUBSYSTEM's own
-            % boundary (the Outport blocks placed inside it), not a bare
-            % top-level Out1 block -- see the "Ephorus System Status"
-            % pattern this now matches. Ports: 1=pedal payload,
-            % 2=state ID, 3=main enable, 4=precharge enable,
-            % 5=inverter control enable, 6=pedal TX count
-            % (patch_virtual_vcu_state_outputs.m).
-            try
-                obsPath = 'inverter_hil/Virtual VCU Observability';
-                pedal = obj.Backend.getsignal(obsPath, 1);
-                if numel(pedal) == 8
-                    snapshot.pedalPayload = uint8(reshape(pedal, 1, 8));
-                    snapshot.pedalPayloadKnown = true;
-                end
-                stateId = obj.Backend.getsignal(obsPath, 2);
-                if isnumeric(stateId) && isscalar(stateId) && isfinite(stateId)
-                    snapshot.vcuStateId = double(stateId);
-                    snapshot.vcuStateKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % Observer outputs are optional on older applications.
-            end
-
-            % Port 6: a genuine, target-measured count of pedal (0x1F5)
-            % frames emitted by the Virtual VCU's own CAN Write path (see
-            % ADD_VIRTUAL_VCU_TO_MODEL.M's Port A Pedal TX Counter). Its own
-            % try, matching the pattern used for newer optional ports
-            % elsewhere in this method: this port only exists in
-            % applications built after this fix, so an older running
-            % application must leave the reads above intact and simply
-            % report the count unknown, not blank a good snapshot.
-            try
-                txCount = obj.Backend.getsignal(obsPath, 6);
-                if isnumeric(txCount) && isscalar(txCount) && isfinite(txCount)
-                    snapshot.pedalTxCount = double(txCount);
-                    snapshot.pedalTxCountKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % PEDALTXCOUNT/PEDALTXCOUNTKNOWN stay at their defaults.
-            end
-
-            % Port 8: VIRTUALVCUDEPLOYSTEP.M's own APPSBRAKEFAULT output --
-            % whether the throttle+brake plausibility interlock is actively
-            % suppressing torque right now, a genuine chart-computed value,
-            % not inferred GUI-side from a torque number happening to be
-            % zero. Same optional-port pattern as port 6: an older running
-            % application without this port must leave the reads above
-            % intact and simply report the fault state unknown.
-            try
-                fault = obj.Backend.getsignal(obsPath, 8);
-                if (islogical(fault) || isnumeric(fault)) && isscalar(fault) && ...
-                        isfinite(double(fault))
-                    snapshot.appsBrakeFault = logical(fault);
-                    snapshot.appsBrakeFaultKnown = true;
-                end
-            catch err
-                obj.LastError = err.message;
-                % APPSBRAKEFAULT/APPSBRAKEFAULTKNOWN stay at their defaults.
             end
 
             % IO183 Rail Monitor AI01-AI04 readback (Fix 1). Despite the
@@ -881,8 +810,8 @@ classdef targetSession < handle
         function ensureApplicationRunning(obj)
             %ENSUREAPPLICATIONRUNNING Stop only another app, then run ours.
             %   A running INVERTER_HIL is preserved. If another model owns
-            %   the target, it is stopped before the integrated inverter HIL
-            %   plus virtual VCU application is loaded and started.
+            %   the target, it is stopped before the inverter HIL
+            %   application is loaded and started.
             state = obj.Backend.applicationState();
             if strcmp(state, 'running')
                 current = obj.Backend.currentApplicationName();

@@ -189,8 +189,11 @@ IDs `0x385`, `0x395`, `0x3A5`, and `0x3B5` map to channels 1..4.
 
 ## 10. CarMaker telemetry
 
-Speedgoat derives both frames from the same four Status A payloads used for the
-current status step and transmits them every 5 ms on IO614 channel 1.
+Speedgoat transmits both frames every 5 ms on IO614 channel 1. `0x501`'s
+torque setpoints are decoded directly from the retained `0x186`/`0x196`/
+`0x1A6`/`0x1B6` control frames -- the real VC's own commanded torque limit,
+not Speedgoat's simulated inverter status. `0x502`'s ready flags still come
+from the four Status A payloads used for the current status step.
 
 ### `0x501` torque setpoints
 
