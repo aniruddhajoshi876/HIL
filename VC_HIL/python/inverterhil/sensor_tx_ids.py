@@ -1,2 +1,0 @@
-def sensorTxIds():
-    return (0x034, 0x032, 0x076, 0x2B0, 0x7C0), (6, 6, 6, 5, 2)

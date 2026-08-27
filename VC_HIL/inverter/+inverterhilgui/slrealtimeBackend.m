@@ -98,7 +98,36 @@ classdef slrealtimeBackend < handle
         end
 
         function value = executionTimeS(obj)
-            value = double(obj.Target.getExecTime());
+            %EXECUTIONTIMES Elapsed target execution time, NaN when unknown.
+            %
+            %   Reads MODELSTATUS.EXECTIME. This previously called
+            %   OBJ.TARGET.GETEXECTIME(), which does not exist on
+            %   SLREALTIME.TARGET in R2024b -- it is absent from the metaclass
+            %   MethodList entirely, not merely hidden, and nothing named
+            %   *ExecTime* exists anywhere under the slrealtime toolbox or the
+            %   Speedgoat library. That line raised "Unrecognized function or
+            %   variable 'getExecTime'" the first time it was ever run against
+            %   a real target. Plan assumption M4 is why it survived so long:
+            %   this class is a pass-through no test can exercise without
+            %   hardware, so a wrong API name here fails nowhere else.
+            %
+            %   TARGET.STATUS() is not a substitute: in R2024b it returns a
+            %   plain execution-state character vector ('stopped'), not a
+            %   structure carrying a time.
+            %
+            %   EXECTIME reads 0 while no application is loaded, and 0 is also
+            %   legitimate one tick after START, so MODELSTATUS.STATE is what
+            %   separates them -- it is empty until an application is loaded.
+            %   Reporting NaN in that case keeps TARGETSESSION.EXECUTIONTIMES's
+            %   documented "NaN when unknown" contract, which APP.FORMATSECONDS
+            %   renders as dashes, instead of claiming the target has been
+            %   running for zero seconds.
+            value = NaN;
+            status = obj.Target.ModelStatus;
+            if isstruct(status) && isfield(status, 'State') && ...
+                    isfield(status, 'ExecTime') && ~isempty(status.State)
+                value = double(status.ExecTime);
+            end
         end
 
         function value = targetName(obj)
