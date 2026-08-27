@@ -309,9 +309,10 @@ class InverterHilWindow(QtWidgets.QMainWindow):
     def _build_inverters(self):
         outer = QtWidgets.QVBoxLayout(self.inverters_tab)
         self.inverter_source_label = QtWidgets.QLabel(
-            "DEGRADED: decodeStatus3X3 is target-generated and is not ported. "
-            "Raw 9x8 TX status payloads remain visible in I/O & CAN; per-inverter "
-            "3X3 values are unavailable and no values are inferred."
+            "UNAVAILABLE: decodeStatus3X3 is target-generated and is never "
+            "reimplemented in Python. A backend with a MATLAB Engine decodes it "
+            "on demand; without one, per-inverter 3X3 values stay unavailable and "
+            "no values are inferred. Raw 9x8 TX payloads remain visible in I/O & CAN."
         )
         self.inverter_source_label.setWordWrap(True)
         outer.addWidget(self.inverter_source_label)
@@ -710,6 +711,38 @@ class InverterHilWindow(QtWidgets.QMainWindow):
         if live.get("can", {}).get("known") and diagnostics:
             self.telemetry["can"]["diagnostics"].update(diagnostics)
         self._apply_raw_can(live)
+        self._apply_inverters(live)
+
+    # Mirrors inverter_hil_app.m:1629-1660.  The frame carries torque in Nm at
+    # its own 1/32 scale, so it is converted back to counts here rather than
+    # passed as engineering units, which formatTorqueCandidates would rescale a
+    # second time and display wrong.  commandAgeS and activeFault are not
+    # carried by the status frames and stay at their blankTelemetry unknowns.
+    INVERTER_STATE_NAMES = ("Idle", "Drive", "Error", "ConfigError")
+
+    def _apply_inverters(self, live):
+        if not live.get("inverterKnown"):
+            return
+        for channel, item in enumerate(live.get("inverter") or []):
+            if not isinstance(item, dict):
+                continue
+            target = self.telemetry["inverter"][channel]
+            state = item.get("state")
+            index = int(state) + 1 if isinstance(state, (int, float)) and math.isfinite(float(state)) else 0
+            target["state"] = self.INVERTER_STATE_NAMES[index - 1] if 1 <= index <= len(self.INVERTER_STATE_NAMES) else ""
+            target["ready"] = item.get("ready")
+            target["derating"] = item.get("derating")
+            for key in ("motorTemperatureC", "switchTemperatureC", "idSetpointA",
+                        "idActualA", "iqSetpointA", "iqActualA", "speedRpm"):
+                target[key] = item.get(key, math.nan)
+            for raw_key, nm_key in (("torqueActualRaw", "torqueActualNm"),
+                                    ("torqueCommandRaw", "torqueCommandNm")):
+                value = item.get(nm_key, math.nan)
+                target[raw_key] = value * 32 if isinstance(value, (int, float)) and math.isfinite(float(value)) else math.nan
+        self.inverter_source_label.setText(
+            "LIVE: 3X3 decoded on the target through the MATLAB Engine round-trip "
+            "(inverterhil.decodeStatus3X3); 3X5 decoded in Python."
+        )
 
     def _set_pedal_display(self, values):
         for slider, field, value in ((self.throttle_slider, self.throttle_field, values[0]),

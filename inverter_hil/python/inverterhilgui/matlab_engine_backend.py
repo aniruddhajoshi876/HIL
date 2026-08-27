@@ -137,3 +137,43 @@ class MatlabEngineBackend:
             except Exception:
                 pass
         self.Instruments.clear()
+
+    # ---------- target-generated codec round-trip ----------
+
+    def decodeStatus3X3(self, payload):
+        """Decode one 3X3 status payload by calling the MATLAB implementation.
+
+        ``inverterhil.decodeStatus3X3`` is pasted into a MATLAB Function block
+        by ``build_inverter_hil_model.m`` and therefore compiles into the C
+        running on the target.  Reimplementing it here would create a second
+        copy of a CAN codec whose authoritative version ships in the real-time
+        application; the two would drift silently and surface as wrong numbers
+        on a panel rather than as an error.  So the host asks MATLAB to run the
+        real function instead, at the cost of one Engine round-trip per poll.
+
+        ``payload`` is any 8-element iterable of byte values.  Returns the
+        decoded field dict, or raises whatever the MATLAB function raises for a
+        malformed payload -- callers treat a failure as "unavailable", never as
+        a zero.
+        """
+        import matlab
+
+        values = [int(x) & 0xFF for x in payload]
+        if len(values) != 8:
+            raise ValueError("payload must have exactly 8 bytes")
+        # MATLAB requires a 1x8 uint8 row vector; decodeStatus3X3 validates the
+        # class and shape and errors otherwise.
+        row = matlab.uint8([values])
+        decoded = self.Engine.feval("inverterhil.decodeStatus3X3", row, nargout=1)
+        return {key: _scalar(value) for key, value in dict(decoded).items()}
+
+
+def _scalar(value):
+    """Unwrap the 1x1 matlab arrays feval returns for scalar struct fields."""
+    if isinstance(value, (bool, int, float)):
+        return value
+    try:
+        flat = [item for row in value for item in row]
+    except TypeError:
+        return value
+    return flat[0] if len(flat) == 1 else flat

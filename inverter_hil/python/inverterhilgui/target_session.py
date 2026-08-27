@@ -11,6 +11,7 @@ from .connection_state import connectionState
 from .parameter_contract import contractEntry, discoverContract
 from .validate_command_value import validateCommandValue
 from .model_schema import MODEL_SCHEMA
+from inverterhil.decode_status_3x5 import decodeStatus3X5
 
 
 def _values_match(requested, applied):
@@ -188,9 +189,11 @@ class TargetSession:
         """Read model signals without inventing unavailable values.
 
         This port covers the live I/O, diagnostics, observer and raw status/RX
-        transport. Per-inverter 3X3 decoding is intentionally not duplicated:
-        decodeStatus3X3 was classified target-generated and excluded from this
-        port. Raw 9x8 TX and 13x14 RX matrices remain available to callers.
+        transport. Per-inverter 3X3 decoding is never reimplemented in Python:
+        decodeStatus3X3 is target-generated, so it is run through the backend's
+        Engine round-trip when one is available (see _decode_inverters) and
+        reported unavailable otherwise. Raw 9x8 TX and 13x14 RX matrices remain
+        available to callers either way.
         """
         nan = math.nan
         snapshot = {
@@ -204,6 +207,7 @@ class TargetSession:
             "appsBrakeFault": None, "appsBrakeFaultKnown": False,
             "txPayloads": [], "txPayloadsKnown": False, "txMessageCount": nan,
             "rxObservation": [], "rxKnown": False,
+            "inverter": [None] * 4, "inverterKnown": False,
             "canPedals": [nan, nan], "canPedalsKnown": False, "canPedalsDriving": False,
         }
         if not self.Backend or not self.Backend.isConnected():
@@ -234,7 +238,7 @@ class TargetSession:
                 self.LastError = str(exc)
                 return default
         pedal = optional(s.vcu_observability_block, s.vcu_pedal_payload_port)
-        if pedal is not None and len(pedal) == 8:
+        if _sized(pedal, 8):
             snapshot.update(pedalPayload=[int(x) & 0xFF for x in pedal], pedalPayloadKnown=True)
         state_id = optional(s.vcu_observability_block, s.vcu_state_id_port)
         if _finite_scalar(state_id):
@@ -246,7 +250,7 @@ class TargetSession:
         if _finite_scalar(fault):
             snapshot.update(appsBrakeFault=bool(fault), appsBrakeFaultKnown=True)
         analog = optional(s.system_status_block, s.status_analog_inputs_port)
-        if analog is not None and len(analog) == 4:
+        if _sized(analog, 4):
             snapshot["analogInV"] = [float(x) for x in analog]
         payloads = optional(s.system_status_block, s.status_tx_payloads_port)
         matrix = _matrix(payloads)
@@ -256,12 +260,74 @@ class TargetSession:
         if _finite_scalar(count):
             snapshot["txMessageCount"] = float(count)
         pedals = optional(s.system_status_block, s.status_can_pedals_port)
-        if pedals is not None and len(pedals) == 3 and all(_finite_scalar(x) for x in pedals) and float(pedals[2]) in (0, 1):
+        if _sized(pedals, 3) and all(_finite_scalar(x) for x in pedals) and float(pedals[2]) in (0, 1):
             snapshot.update(canPedals=[float(pedals[0]), float(pedals[1])], canPedalsKnown=True, canPedalsDriving=bool(pedals[2]))
         observation = _matrix(optional(s.system_status_block, s.status_rx_observation_port))
         if _shape(observation) == s.rx_observation_shape:
             snapshot.update(rxObservation=observation, rxKnown=True)
+        self._decode_inverters(snapshot)
         return snapshot
+
+    def _decode_inverters(self, snapshot):
+        """Decode the four per-inverter panels from the retained TX payloads.
+
+        Mirrors targetSession.m: PROTOCOL.STATUSCYCLEIDS interleaves 3X3/3X5
+        per channel (0x383,0x385, 0x393,0x395, 0x3A3,0x3A5, 0x3B3,0x3B5) then
+        0x400, so channel N occupies rows 2N and 2N+1 of the 9x8 matrix.
+
+        3X5 uses the ported Python decoder.  3X3 does NOT: it is compiled into
+        the target application, so it is decoded by asking the backend to run
+        the real MATLAB function (see MatlabEngineBackend.decodeStatus3X3).
+        A backend without that capability -- FakeTargetBackend, or any host
+        with no MATLAB Engine -- leaves inverterKnown False and the panel
+        renders as unavailable.  Nothing here fabricates a value.
+        """
+        decode3x3 = getattr(self.Backend, "decodeStatus3X3", None)
+        if not callable(decode3x3) or not snapshot["txPayloadsKnown"]:
+            return
+        rows = snapshot["txPayloads"]
+        channels = []
+        for channel in range(4):
+            try:
+                three_x3 = decode3x3(rows[2 * channel])
+                three_x5 = decodeStatus3X5(rows[2 * channel + 1])
+            except Exception:
+                # One bad channel must not blank the other three, and a decode
+                # failure is "unavailable", never zero.
+                channels.append(None)
+                continue
+            channels.append({
+                "state": three_x3.get("state"),
+                "ready": bool(three_x3.get("ready")),
+                "derating": bool(three_x3.get("derating")),
+                "torqueActualNm": three_x3.get("actualTorqueNm"),
+                "torqueCommandNm": three_x3.get("torqueSetpointNm"),
+                "motorTemperatureC": three_x3.get("motorTemperatureC"),
+                "switchTemperatureC": three_x3.get("switchTemperatureC"),
+                "maxAllowedCurrentA": three_x3.get("maxAllowedCurrentA"),
+                "speedRpm": three_x5.get("speedRpm"),
+                "idSetpointA": three_x5.get("idSetpointA"),
+                "idActualA": three_x5.get("idActualA"),
+                "iqSetpointA": three_x5.get("iqSetpointA"),
+                "iqActualA": three_x5.get("iqActualA"),
+            })
+        snapshot.update(inverter=channels, inverterKnown=any(c is not None for c in channels))
+
+
+def _sized(value, length):
+    """True when value is a sequence of exactly `length` items.
+
+    getsignal returns whatever the backend has for that port, which may be a
+    bare scalar when a port is unavailable or stubbed.  Calling len() on that
+    raises TypeError and takes down the whole poll, so the length check has to
+    tolerate a non-sequence rather than assume one.
+    """
+    if value is None or isinstance(value, (str, bytes, dict)):
+        return False
+    try:
+        return len(value) == length
+    except TypeError:
+        return False
 
 
 def _finite_scalar(value):
