@@ -266,5 +266,102 @@ classdef TestSensorProtocol < matlab.unittest.TestCase
             testCase.verifyError(@() packMti680Payload('acceleration', ...
                 [1e9 0 0]), 'mti680:PayloadRange');
         end
+
+        function MtiEulerPitchRangeIsPerAxis(testCase)
+            %MTIEULERPITCHRANGEISPERAXIS MT1604P section 6.3.2 specifies roll
+            %   +/-180, PITCH +/-90, yaw +/-180. The range guard must reject
+            %   a pitch outside +/-90 while roll and yaw at the same
+            %   magnitude still encode -- same reject-not-saturate behaviour
+            %   the other messages use.
+            p = imuProtocol();
+            testCase.verifyEqual(double(p.eulerAngles.rangeMax), ...
+                [180 90 180]);
+            testCase.verifyError(@() packMti680Frame('eulerAngles', ...
+                [0 90.5 0]), 'mti680:DocRange');
+            testCase.verifyError(@() packMti680Frame('eulerAngles', ...
+                [0 -120 0]), 'mti680:DocRange');
+            % Roll and yaw at a magnitude that would fail as pitch still pass.
+            testCase.verifyEqual(packMti680Frame('eulerAngles', ...
+                [170 0 -170]).id, uint32(hex2dec('022')));
+            % Pitch exactly +/-90 is inside the (inclusive) documented range.
+            testCase.verifyEqual(packMti680Frame('eulerAngles', ...
+                [0 90 0]).id, uint32(hex2dec('022')));
+        end
+
+        function MtiScalarFramesArePackedBigEndianUnsigned(testCase)
+            %MTISCALARFRAMESAREPACKEDBIGENDIANUNSIGNED groupCounter (0x006),
+            %   sampleTime (0x005), statusWord (0x011) and errorCode (0x001)
+            %   big-endian-pack a single uintN into their DLC. Bytes are
+            %   hand-derived from MT1604P sections 6.1.1-6.1.3, 6.2.1.
+            group = packMti680ScalarFrame('groupCounter', 4660);
+            testCase.verifyEqual(group.id, uint32(hex2dec('006')));
+            testCase.verifyEqual(group.dlc, uint8(2));
+            testCase.verifyEqual(group.payload, uint8([hex2dec('12') hex2dec('34')]));
+
+            sample = packMti680ScalarFrame('sampleTime', 1e6);
+            testCase.verifyEqual(sample.id, uint32(hex2dec('005')));
+            testCase.verifyEqual(sample.payload, uint8([0 15 66 64]));
+
+            statusWord = packMti680ScalarFrame('statusWord', 3);
+            testCase.verifyEqual(statusWord.id, uint32(hex2dec('011')));
+            testCase.verifyEqual(statusWord.payload, uint8([0 0 0 3]));
+
+            errorCode = packMti680ScalarFrame('errorCode', 0);
+            testCase.verifyEqual(errorCode.id, uint32(hex2dec('001')));
+            testCase.verifyEqual(errorCode.payload, uint8(0));
+
+            % Wrong shape / signedness is rejected, not silently truncated.
+            testCase.verifyError(@() packMti680ScalarFrame('groupCounter', ...
+                -1), 'mti680:InvalidValues');
+            testCase.verifyError(@() packMti680ScalarFrame('groupCounter', ...
+                70000), 'mti680:Range');
+            testCase.verifyError(@() packMti680ScalarFrame('acceleration', ...
+                1), 'mti680:UnknownKind');
+        end
+
+        function MtiMountingTransformIs180AboutZ(testCase)
+            %MTIMOUNTINGTRANSFORMIS180ABOUTZ The physical IMU is mounted
+            %   rotated 180 deg about the vehicle Z (yaw) axis. X and Y of
+            %   every vector negate; Z keeps sign. Euler roll and pitch
+            %   negate; yaw offsets 180 deg and wraps to (-180, 180].
+            p = imuProtocol();
+            testCase.verifyEqual(p.mounting.axisSign, [-1 -1 1]);
+            sensor = mountingTransform(struct( ...
+                'accelerationMps2', [1 2 9.81], ...
+                'rateOfTurnRadPerS', [0.1 -0.2 0.3], ...
+                'velocityMps', [10 -4 0], ...
+                'eulerAnglesDeg', [10 20 30]));
+            testCase.verifyEqual(sensor.accelerationMps2, [-1 -2 9.81], ...
+                'AbsTol', 1e-12);
+            testCase.verifyEqual(sensor.rateOfTurnRadPerS, [-0.1 0.2 0.3], ...
+                'AbsTol', 1e-12);
+            testCase.verifyEqual(sensor.velocityMps, [-10 4 0], ...
+                'AbsTol', 1e-12);
+            testCase.verifyEqual(sensor.eulerAnglesDeg, [-10 -20 -150], ...
+                'AbsTol', 1e-12);
+            % Yaw wrap boundary: vehicle yaw 0 -> sensor yaw 180 (not -180).
+            wrapped = mountingTransform(struct('eulerAnglesDeg', [0 0 0]));
+            testCase.verifyEqual(wrapped.eulerAnglesDeg(3), 180);
+        end
+
+        function MtiSchedulerDerivesBaseTickFromContract(testCase)
+            %MTISCHEDULERDERIVESBASETICKFROMCONTRACT imuProtocol is the
+            %   single source of truth for output rates. The scheduler's base
+            %   tick is 1 / (fastest non-zero rate) = 0.01 s = 100 Hz, and
+            %   eulerAngles at 0 Hz is never due.
+            [~, dueAtZero] = imuScheduler([], 0);
+            testCase.verifyTrue(dueAtZero.imu);
+            testCase.verifyTrue(dueAtZero.acceleration);
+            testCase.verifyTrue(dueAtZero.rateOfTurn);
+            testCase.verifyTrue(dueAtZero.velocityXyz);
+            testCase.verifyFalse(dueAtZero.eulerAngles);
+
+            % 100 Hz base tick: due at 0.01 s, not before.
+            state = imuScheduler([], 0);
+            [state, dueEarly] = imuScheduler(state, 0.004);
+            testCase.verifyFalse(dueEarly.imu);
+            [~, dueOnTick] = imuScheduler(state, 0.01);
+            testCase.verifyTrue(dueOnTick.imu);
+        end
     end
 end

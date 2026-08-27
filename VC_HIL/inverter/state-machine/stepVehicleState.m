@@ -23,7 +23,9 @@ yawRateRadPerS = speedMps * tan(steeringRad) / max(wheelbaseM, eps);
 yawAccelerationRadPerS2 = (yawRateRadPerS - state(2)) / dt;
 next = [speedMps, yawRateRadPerS, ...
     state(3) + dt * speedMps, state(4) + dt * yawRateRadPerS];
-% Observation vector handed to the sensor encoders:
+% Observation vector handed to the sensor encoders, in the VEHICLE frame
+% (X forward, Y left, Z up). mountingTransform / the model's payload encoder
+% rotate it into the sensor frame at the CAN boundary.
 %   1:3 acceleration [ax ay az]     -> MTi 0x034
 %   4:6 rate of turn [wx wy wz]     -> MTi 0x032
 %   7:9 velocity     [vx vy vz]     -> MTi 0x076
@@ -33,12 +35,15 @@ next = [speedMps, yawRateRadPerS, ...
 % this is a single-track longitudinal model with no sideslip state, not a
 % measurement that was dropped.
 %
-% NOTE: yaw rate is published at index 5 (the Y axis), which is the
-% convention master's implementation established. Whether yaw belongs on Y
-% or Z depends on how the MTi is physically mounted, which is an unresolved
-% hardware gate -- see this repository's sensor-mounting checklist.
+% NOTE: yaw rate is published at index 6 (the vehicle Z axis). Resolved: the
+% MTi mounting is now known (180 deg about the vehicle Z / yaw axis, see
+% imuProtocol.mounting). Yaw is a rotation about vehicle vertical, so it
+% belongs on Z, where a Z-rotation mount leaves it sign-invariant; the
+% roll-rate and pitch-rate on X/Y negate. The earlier "yaw on index 5 (Y)"
+% convention was non-physical and interacted with the mounting transform to
+% invert the yaw-rate sign.
 imu = [longitudinalAccelerationMps2, 0, 0, ...
-    0, yawRateRadPerS, 0, ...
+    0, 0, yawRateRadPerS, ...
     speedMps, 0, 0];
 if ~isfinite(yawAccelerationRadPerS2) %#ok<NASGU>
     error('inverterhil:InvalidVehicleState', 'Vehicle state became non-finite.');

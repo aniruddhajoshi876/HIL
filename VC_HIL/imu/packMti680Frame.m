@@ -30,10 +30,19 @@ end
 % and the MFE26 VCU rejects the whole frame if any axis exceeds it. Checking
 % only the int16 limit would let the simulator emit frames the VCU silently
 % drops, which looks like a dead sensor rather than an out-of-range stimulus.
-if isfield(item, 'rangeMax') && any(abs(values) > item.rangeMax)
-    error('mti680:DocRange', ...
-        ['MTi %s value exceeds the documented +/-%g %s range; the VCU ' ...
-        'discards the entire frame.'], kind, item.rangeMax, item.unit);
+% rangeMax is per axis: a scalar bounds all three, a 1x3 vector bounds each
+% axis independently (eulerAngles: roll +/-180, pitch +/-90, yaw +/-180).
+if isfield(item, 'rangeMax')
+    rangeMax = double(item.rangeMax(:).');
+    if isscalar(rangeMax)
+        rangeMax = repmat(rangeMax, 1, 3);
+    end
+    if any(abs(values) > rangeMax)
+        error('mti680:DocRange', ...
+            ['MTi %s value exceeds the documented per-axis range ' ...
+            '[%g %g %g] %s; the VCU discards the entire frame.'], ...
+            kind, rangeMax(1), rangeMax(2), rangeMax(3), item.unit);
+    end
 end
 counts = round(values ./ item.scale);
 if any(counts < -32768 | counts > 32767)
