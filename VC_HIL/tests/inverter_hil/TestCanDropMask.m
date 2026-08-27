@@ -18,12 +18,12 @@ classdef TestCanDropMask < matlab.unittest.TestCase
 
     methods (Test)
         function controlMaskDropsOnlyItsOwnChannel(testCase)
-            ids = inverterhil.protocol().controlIds; % 0x186 0x196 0x1A6 0x1B6
+            ids = protocol().controlIds; % 0x186 0x196 0x1A6 0x1B6
             for bitIndex = 1:4
                 mask = uint8(bitshift(1, bitIndex - 1));
                 for channel = 1:4
                     frame = TestCanDropMask.validFrame(ids(channel));
-                    [outFrame, dropped] = inverterhil.applyControlDropMask( ...
+                    [outFrame, dropped] = applyControlDropMask( ...
                         frame, mask);
                     if channel == bitIndex
                         testCase.verifyTrue(dropped);
@@ -38,7 +38,7 @@ classdef TestCanDropMask < matlab.unittest.TestCase
 
         function unmatchedIdIsNeverAffected(testCase)
             frame = TestCanDropMask.validFrame(hex2dec('7FF'));
-            [outFrame, dropped] = inverterhil.applyControlDropMask( ...
+            [outFrame, dropped] = applyControlDropMask( ...
                 frame, uint8(255));
             testCase.verifyFalse(dropped);
             testCase.verifyFalse(outFrame.drop);
@@ -50,7 +50,7 @@ classdef TestCanDropMask < matlab.unittest.TestCase
             % happens to be clear.
             frame = TestCanDropMask.validFrame(hex2dec('186'));
             frame.drop = true;
-            [outFrame, dropped] = inverterhil.applyControlDropMask( ...
+            [outFrame, dropped] = applyControlDropMask( ...
                 frame, uint8(0));
             testCase.verifyTrue(outFrame.drop);
             testCase.verifyFalse(dropped, ...
@@ -60,17 +60,17 @@ classdef TestCanDropMask < matlab.unittest.TestCase
         function malformedFrameErrors(testCase)
             frame = TestCanDropMask.validFrame(hex2dec('186'));
             frame = rmfield(frame, 'dlc');
-            testCase.verifyError(@() inverterhil.applyControlDropMask( ...
+            testCase.verifyError(@() applyControlDropMask( ...
                 frame, uint8(1)), 'inverterhil:MalformedFrame');
         end
 
         function invalidMaskErrors(testCase)
             frame = TestCanDropMask.validFrame(hex2dec('186'));
-            testCase.verifyError(@() inverterhil.applyControlDropMask( ...
+            testCase.verifyError(@() applyControlDropMask( ...
                 frame, -1), 'inverterhil:InvalidDropMask');
-            testCase.verifyError(@() inverterhil.applyControlDropMask( ...
+            testCase.verifyError(@() applyControlDropMask( ...
                 frame, 256), 'inverterhil:InvalidDropMask');
-            testCase.verifyError(@() inverterhil.applyControlDropMask( ...
+            testCase.verifyError(@() applyControlDropMask( ...
                 frame, [1 2]), 'inverterhil:InvalidDropMask');
         end
 
@@ -82,9 +82,9 @@ classdef TestCanDropMask < matlab.unittest.TestCase
                 hex2dec('CF') 0 hex2dec('20') 0 hex2dec('E0')]);
             frame = TestCanDropMask.frameWithPayload(hex2dec('186'), payload);
 
-            bank = inverterhil.initialDecoderBank();
-            masked = inverterhil.applyControlDropMask(frame, uint8(1));
-            [bank, accepted, reason] = inverterhil.receiveControlFrame( ...
+            bank = initialDecoderBank();
+            masked = applyControlDropMask(frame, uint8(1));
+            [bank, accepted, reason] = receiveControlFrame( ...
                 bank, masked, uint32(100));
 
             testCase.verifyFalse(accepted);
@@ -105,14 +105,14 @@ classdef TestCanDropMask < matlab.unittest.TestCase
                 hex2dec('CF') 0 hex2dec('20') 0 hex2dec('E0')]);
             frame = TestCanDropMask.frameWithPayload(hex2dec('186'), payload);
 
-            bankNoMask = inverterhil.initialDecoderBank();
-            [bankNoMask, acceptedNoMask] = inverterhil.receiveControlFrame( ...
+            bankNoMask = initialDecoderBank();
+            [bankNoMask, acceptedNoMask] = receiveControlFrame( ...
                 bankNoMask, frame, uint32(100));
 
-            bankMasked = inverterhil.initialDecoderBank();
-            passedThrough = inverterhil.applyControlDropMask( ...
+            bankMasked = initialDecoderBank();
+            passedThrough = applyControlDropMask( ...
                 frame, uint8(bitshift(1, 1))); % bit for channel 2, not 1
-            [bankMasked, acceptedMasked] = inverterhil.receiveControlFrame( ...
+            [bankMasked, acceptedMasked] = receiveControlFrame( ...
                 bankMasked, passedThrough, uint32(100));
 
             testCase.verifyTrue(acceptedNoMask);
@@ -126,18 +126,18 @@ classdef TestCanDropMask < matlab.unittest.TestCase
         end
 
         function statusTransmitMaskKeepsAllNineWhenMaskIsZero(testCase)
-            keep = inverterhil.statusTransmitMask(uint16(0));
+            keep = statusTransmitMask(uint16(0));
             testCase.verifySize(keep, [1 9]);
             testCase.verifyTrue(islogical(keep));
             testCase.verifyTrue(all(keep));
         end
 
         function statusTransmitMaskDropsExactlyTheMaskedFrame(testCase)
-            ids = inverterhil.protocol().statusCycleIds;
+            ids = protocol().statusCycleIds;
             testCase.assertNumElements(ids, 9);
             for frameIndex = 1:9
                 mask = uint16(bitshift(1, frameIndex - 1));
-                keep = inverterhil.statusTransmitMask(mask);
+                keep = statusTransmitMask(mask);
                 expected = true(1, 9);
                 expected(frameIndex) = false;
                 testCase.verifyEqual(keep, expected);
@@ -147,16 +147,16 @@ classdef TestCanDropMask < matlab.unittest.TestCase
         function statusTransmitMaskUnusedHighBitsHaveNoEffect(testCase)
             % Only bits 0-8 map to the nine status frames; bits 9-15 are
             % documented as unused and must not affect any frame's gate.
-            keep = inverterhil.statusTransmitMask(uint16(bitshift(1, 15)));
+            keep = statusTransmitMask(uint16(bitshift(1, 15)));
             testCase.verifyTrue(all(keep));
         end
 
         function statusTransmitMaskInvalidMaskErrors(testCase)
             testCase.verifyError( ...
-                @() inverterhil.statusTransmitMask(-1), ...
+                @() statusTransmitMask(-1), ...
                 'inverterhil:InvalidDropMask');
             testCase.verifyError( ...
-                @() inverterhil.statusTransmitMask(65536), ...
+                @() statusTransmitMask(65536), ...
                 'inverterhil:InvalidDropMask');
         end
     end

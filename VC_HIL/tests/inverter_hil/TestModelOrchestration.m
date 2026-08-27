@@ -1,13 +1,13 @@
 classdef TestModelOrchestration < matlab.unittest.TestCase
     methods (Test)
         function noVcuHoldsIdleAndPacksRealNotZeroStatus(testCase)
-            config = inverterhil.defaultStateConfig();
-            cal = inverterhil.defaultCalibration();
-            state = inverterhil.initialSystemState(config);
-            plantState = inverterhil.initialPlantState(cal);
+            config = defaultStateConfig();
+            cal = defaultCalibration();
+            state = initialSystemState(config);
+            plantState = initialPlantState(cal);
 
             [state, plantState, cycle, stateOutput, plantOutput] = ...
-                inverterhil.stepModel(state, plantState, uint32(0), ...
+                stepModel(state, plantState, uint32(0), ...
                 config, cal);
 
             for channel = 1:4
@@ -48,13 +48,13 @@ classdef TestModelOrchestration < matlab.unittest.TestCase
         end
 
         function stateAndPlantPersistAcrossTicks(testCase)
-            config = inverterhil.defaultStateConfig();
-            cal = inverterhil.defaultCalibration();
-            state = inverterhil.initialSystemState(config);
-            plantState = inverterhil.initialPlantState(cal);
+            config = defaultStateConfig();
+            cal = defaultCalibration();
+            state = initialSystemState(config);
+            plantState = initialPlantState(cal);
 
             for tick = 0:4
-                [state, plantState] = inverterhil.stepModel(state, ...
+                [state, plantState] = stepModel(state, ...
                     plantState, uint32(tick), config, cal);
             end
             testCase.verifyEqual(state.stepCount, uint64(5));
@@ -62,11 +62,11 @@ classdef TestModelOrchestration < matlab.unittest.TestCase
         end
 
         function rejectsNonUint32Tick(testCase)
-            config = inverterhil.defaultStateConfig();
-            cal = inverterhil.defaultCalibration();
-            state = inverterhil.initialSystemState(config);
-            plantState = inverterhil.initialPlantState(cal);
-            testCase.verifyError(@() inverterhil.stepModel(state, ...
+            config = defaultStateConfig();
+            cal = defaultCalibration();
+            state = initialSystemState(config);
+            plantState = initialPlantState(cal);
+            testCase.verifyError(@() stepModel(state, ...
                 plantState, 0, config, cal), 'inverterhil:InvalidTick');
         end
     end

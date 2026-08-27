@@ -17,7 +17,7 @@ hostDefaultS = 3.0;
 
 timeoutS = hostDefaultS;
 try
-    calibrated = inverterhil.defaultCalibration().guiHeartbeatTimeoutS;
+    calibrated = defaultCalibration().guiHeartbeatTimeoutS;
 catch
     return;
 end

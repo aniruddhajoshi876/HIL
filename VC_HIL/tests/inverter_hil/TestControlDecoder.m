@@ -4,13 +4,13 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             % The GUI's RX table is fed entirely from this matrix, so the
             % column layout is a contract with TARGETSESSION.READLIVEIO and
             % is asserted position by position.
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             payload = uint8([hex2dec('AD') hex2dec('5A') hex2dec('C7') ...
                 hex2dec('CF') 0 hex2dec('20') 0 hex2dec('E0')]);
             frame = TestControlDecoder.frame(hex2dec('196'), payload);
 
-            bank = inverterhil.receiveControlFrame(bank, frame, uint32(1000));
-            observation = inverterhil.rxObservation(bank, uint32(1075));
+            bank = receiveControlFrame(bank, frame, uint32(1000));
+            observation = rxObservation(bank, uint32(1075));
 
             testCase.assertSize(observation, [4 14]);
             % Channel 2 received; its raw bytes are retained verbatim.
@@ -40,12 +40,12 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             % If absence were inferred from the bytes, this frame would be
             % indistinguishable from silence and the RX table would show
             % dashes for a channel that is actually being commanded.
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             frame = TestControlDecoder.frame(hex2dec('186'), ...
                 zeros(1, 8, 'uint8'));
 
-            bank = inverterhil.receiveControlFrame(bank, frame, uint32(500));
-            observation = inverterhil.rxObservation(bank, uint32(500));
+            bank = receiveControlFrame(bank, frame, uint32(500));
+            observation = rxObservation(bank, uint32(500));
 
             testCase.verifyEqual(observation(1, 1:8), zeros(1, 8));
             testCase.verifyEqual(observation(1, 9), 1, ...
@@ -57,12 +57,12 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             % A rejected frame cannot be attributed to a channel, so it must
             % raise the bank-wide counter and leave every per-channel field
             % untouched.
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             bad = TestControlDecoder.frame(hex2dec('7FF'), ...
                 zeros(1, 8, 'uint8'));
 
-            bank = inverterhil.receiveControlFrame(bank, bad, uint32(10));
-            observation = inverterhil.rxObservation(bank, uint32(10));
+            bank = receiveControlFrame(bank, bad, uint32(10));
+            observation = rxObservation(bank, uint32(10));
 
             testCase.verifyEqual(observation(:, 13), 1 * ones(4, 1));
             testCase.verifyEqual(observation(:, 14), 2 * ones(4, 1));
@@ -71,16 +71,16 @@ classdef TestControlDecoder < matlab.unittest.TestCase
 
         function retainedPayloadTracksOnlyAcceptedFrames(testCase)
             % A later rejected frame must not overwrite the last good bytes.
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             good = uint8([1 2 3 4 5 6 7 8]);
-            bank = inverterhil.receiveControlFrame(bank, ...
+            bank = receiveControlFrame(bank, ...
                 TestControlDecoder.frame(hex2dec('1A6'), good), uint32(1));
             rejected = TestControlDecoder.frame(hex2dec('1A6'), ...
                 uint8([9 9 9 9 9 9 9 9]));
             rejected.isRemote = true;
 
-            bank = inverterhil.receiveControlFrame(bank, rejected, uint32(2));
-            observation = inverterhil.rxObservation(bank, uint32(2));
+            bank = receiveControlFrame(bank, rejected, uint32(2));
+            observation = rxObservation(bank, uint32(2));
 
             testCase.verifyEqual(observation(3, 1:8), double(good));
             testCase.verifyEqual(observation(3, 10), 1, ...
@@ -93,7 +93,7 @@ classdef TestControlDecoder < matlab.unittest.TestCase
                 0 hex2dec('E0')]);
 
             [accepted, channel, command, reason] = ...
-                inverterhil.decodeControlFrame(uint32(hex2dec('186')), ...
+                decodeControlFrame(uint32(hex2dec('186')), ...
                 uint8(8), payload, false, false);
 
             testCase.verifyTrue(accepted);
@@ -119,7 +119,7 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             payload = zeros(1, 8, 'uint8');
             for index = 1:4
                 [accepted, channel, ~, reason] = ...
-                    inverterhil.decodeControlFrame(ids(index), uint8(8), ...
+                    decodeControlFrame(ids(index), uint8(8), ...
                     payload, false, false);
                 testCase.verifyTrue(accepted);
                 testCase.verifyEqual(channel, uint8(index));
@@ -128,9 +128,9 @@ classdef TestControlDecoder < matlab.unittest.TestCase
         end
 
         function rejectsMalformedFramesWithoutRefreshingRetention(testCase)
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             frame = TestControlDecoder.validFrame(hex2dec('186'));
-            [bank, accepted] = inverterhil.receiveControlFrame( ...
+            [bank, accepted] = receiveControlFrame( ...
                 bank, frame, uint32(10));
             testCase.assertTrue(accepted);
             retained = bank.commands(1);
@@ -145,7 +145,7 @@ classdef TestControlDecoder < matlab.unittest.TestCase
 
             for index = 1:size(cases, 1)
                 beforeRejects = bank.rejectedCount;
-                [bank, accepted, reason] = inverterhil.receiveControlFrame( ...
+                [bank, accepted, reason] = receiveControlFrame( ...
                     bank, cases{index, 1}, uint32(100 + index));
                 testCase.verifyFalse(accepted);
                 testCase.verifyEqual(reason, cases{index, 2});
@@ -156,14 +156,14 @@ classdef TestControlDecoder < matlab.unittest.TestCase
         end
 
         function retentionIsIndependentAcrossChannels(testCase)
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             for index = 1:4
                 frame = TestControlDecoder.validFrame( ...
                     [hex2dec('186') hex2dec('196') ...
                     hex2dec('1A6') hex2dec('1B6')]);
                 frame.id = frame.id(index);
                 frame.payload(3:4) = typecast(int16(100 * index), 'uint8');
-                [bank, accepted] = inverterhil.receiveControlFrame( ...
+                [bank, accepted] = receiveControlFrame( ...
                     bank, frame, uint32(10 * index));
                 testCase.assertTrue(accepted);
             end
@@ -171,7 +171,7 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             before = bank;
             update = TestControlDecoder.validFrame(hex2dec('1A6'));
             update.payload(3:4) = typecast(int16(-777), 'uint8');
-            [bank, accepted] = inverterhil.receiveControlFrame( ...
+            [bank, accepted] = receiveControlFrame( ...
                 bank, update, uint32(99));
 
             testCase.verifyTrue(accepted);
@@ -184,23 +184,23 @@ classdef TestControlDecoder < matlab.unittest.TestCase
         end
 
         function computesRolloverSafeAgeAndStrictBoundaries(testCase)
-            bank = inverterhil.initialDecoderBank();
+            bank = initialDecoderBank();
             frame = TestControlDecoder.validFrame(hex2dec('186'));
             receivedAt = intmax('uint32') - uint32(3);
-            [bank, accepted] = inverterhil.receiveControlFrame( ...
+            [bank, accepted] = receiveControlFrame( ...
                 bank, frame, receivedAt);
             testCase.assertTrue(accepted);
 
-            snapshot = inverterhil.decoderSnapshot(bank, uint32(5));
+            snapshot = decoderSnapshot(bank, uint32(5));
             testCase.verifyEqual(snapshot.ageMs(1), uint32(9));
             testCase.verifyEqual(snapshot.ageMs(2:4), ...
                 repmat(intmax('uint32'), 1, 3));
 
             bank.lastValidTickMs(1) = uint32(0);
-            at50 = inverterhil.decoderSnapshot(bank, uint32(50));
-            at51 = inverterhil.decoderSnapshot(bank, uint32(51));
-            at500 = inverterhil.decoderSnapshot(bank, uint32(500));
-            at501 = inverterhil.decoderSnapshot(bank, uint32(501));
+            at50 = decoderSnapshot(bank, uint32(50));
+            at51 = decoderSnapshot(bank, uint32(51));
+            at500 = decoderSnapshot(bank, uint32(500));
+            at501 = decoderSnapshot(bank, uint32(501));
             testCase.verifyFalse(at50.torqueTimedOut(1));
             testCase.verifyTrue(at51.torqueTimedOut(1));
             testCase.verifyFalse(at500.errorTimedOut(1));
@@ -216,7 +216,7 @@ classdef TestControlDecoder < matlab.unittest.TestCase
                 complex(hex2dec('186'), 1), '390', "390", struct()};
             for index = 1:numel(malformedIds)
                 [accepted, channel, ~, reason] = ...
-                    inverterhil.decodeControlFrame( ...
+                    decodeControlFrame( ...
                     malformedIds{index}, uint8(8), payload, false, false);
                 testCase.verifyFalse(accepted);
                 testCase.verifyEqual(channel, uint8(0));
@@ -229,18 +229,18 @@ classdef TestControlDecoder < matlab.unittest.TestCase
             id = uint32(hex2dec('186'));
             payload = zeros(1, 8, 'uint8');
 
-            [accepted, ~, ~, reason] = inverterhil.decodeControlFrame( ...
+            [accepted, ~, ~, reason] = decodeControlFrame( ...
                 id, char(8), payload, false, false);
             testCase.verifyFalse(accepted);
             testCase.verifyEqual(reason, 'wrong_dlc');
 
-            [accepted, ~, ~, reason] = inverterhil.decodeControlFrame( ...
+            [accepted, ~, ~, reason] = decodeControlFrame( ...
                 id, uint8(8), payload, char(0), false);
             testCase.verifyFalse(accepted);
             testCase.verifyTrue(any(strcmp(reason, ...
                 {'extended_frame', 'malformed_frame_type'})));
 
-            [accepted, ~, ~, reason] = inverterhil.decodeControlFrame( ...
+            [accepted, ~, ~, reason] = decodeControlFrame( ...
                 id, uint8(8), payload, false, char(0));
             testCase.verifyFalse(accepted);
             testCase.verifyTrue(any(strcmp(reason, ...

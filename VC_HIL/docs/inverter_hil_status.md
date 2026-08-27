@@ -128,8 +128,8 @@ ambiguity itself is closed.
 Run these from the repository root with R2024b:
 
 ```powershell
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'inverter_hil')); cd(fullfile(pwd,'inverter_hil')); build_inverter_hil_model(true); verify_inverter_hil_model;"
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'tests','inverter_hil')); run_inverter_hil_tests;"
+& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "cd(fullfile(pwd,'VC_HIL','build')); build_inverter_hil_model(true); verify_inverter_hil_model;"
+& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'VC_HIL','tests','inverter_hil')); run_inverter_hil_tests;"
 ```
 
 ## Virtual VCU branch integration

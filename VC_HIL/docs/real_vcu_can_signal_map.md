@@ -410,13 +410,13 @@ proven from that capture.
 | `carmaker/FS_race/src_cm4sl/TorqueVect.mdl` | source switch and vehicle model |
 | `carmaker/FS_race/Data/TestRun/HIL/CAN_Bringup` | 20% TestRun |
 | `carmaker/config/MFE26_Inverter_CarMaker.dbc` | CarMaker-facing DBC |
-| `inverter_hil/+inverterhil/protocol.m` | IDs, timing, torque scale |
-| `inverter_hil/+inverterhil/decodePedalDemandFrame.m` | `0x500` decoder |
-| `inverter_hil/+inverterhil/receivePedalDemandFrame.m` | counter/retention |
-| `inverter_hil/+inverterhil/pedalDemandSnapshot.m` | freshness/ownership |
-| `inverter_hil/+inverterhil/packStatus3X3.m` | Status A layout |
-| `inverter_hil/+inverterhil/packStatus3X5.m` | Status B layout |
-| `inverter_hil/+inverterhil/packSystemStatus.m` | `0x400` layout |
-| `inverter_hil/+inverterhil/packCarMakerTelemetry.m` | telemetry layout |
-| `inverter_hil/build_inverter_hil_model.m` | model/hardware construction |
+| `VC_HIL/inverter/bus_info/protocol.m` | IDs, timing, torque scale |
+| `VC_HIL/inverter/rxCAN/decodePedalDemandFrame.m` | `0x500` decoder |
+| `VC_HIL/inverter/rxCAN/receivePedalDemandFrame.m` | counter/retention |
+| `VC_HIL/inverter/rxCAN/pedalDemandSnapshot.m` | freshness/ownership |
+| `VC_HIL/inverter/txCAN/packStatus3X3.m` | Status A layout |
+| `VC_HIL/inverter/txCAN/packStatus3X5.m` | Status B layout |
+| `VC_HIL/inverter/txCAN/packSystemStatus.m` | `0x400` layout |
+| `VC_HIL/inverter/txCAN/packCarMakerTelemetry.m` | telemetry layout |
+| `VC_HIL/build/build_inverter_hil_model.m` | model/hardware construction |
 | `PINOUTS.md` | analog mapping and physical gates |

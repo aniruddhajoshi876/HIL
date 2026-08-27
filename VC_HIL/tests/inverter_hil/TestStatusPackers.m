@@ -14,7 +14,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             expected = uint8([hex2dec('4E') hex2dec('24') ...
                 hex2dec('B0') hex2dec('8E') hex2dec('28') ...
                 hex2dec('9C') hex2dec('0F') hex2dec('50')]);
-            testCase.verifyEqual(inverterhil.packStatus3X3(status), expected);
+            testCase.verifyEqual(packStatus3X3(status), expected);
         end
 
         function packs3X5GoldenBytes(testCase)
@@ -28,7 +28,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             expected = uint8([hex2dec('23') hex2dec('C1') ...
                 hex2dec('AB') hex2dec('56') hex2dec('F4') ...
                 hex2dec('DE') hex2dec('AB') hex2dec('89')]);
-            testCase.verifyEqual(inverterhil.packStatus3X5(status), expected);
+            testCase.verifyEqual(packStatus3X5(status), expected);
         end
 
         function decodes3X3GoldenBytes(testCase)
@@ -39,7 +39,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 hex2dec('B0') hex2dec('8E') hex2dec('28') ...
                 hex2dec('9C') hex2dec('0F') hex2dec('50')]);
 
-            status = inverterhil.decodeStatus3X3(payload);
+            status = decodeStatus3X3(payload);
             testCase.verifyEqual(status.state, 2);
             testCase.verifyTrue(status.ready);
             testCase.verifyTrue(status.derating);
@@ -55,7 +55,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 hex2dec('AB') hex2dec('56') hex2dec('F4') ...
                 hex2dec('DE') hex2dec('AB') hex2dec('89')]);
 
-            status = inverterhil.decodeStatus3X5(payload);
+            status = decodeStatus3X5(payload);
             testCase.verifyEqual(status.idSetpointA, 18.1875);
             testCase.verifyEqual(status.idActualA, -84.25);
             testCase.verifyEqual(status.iqSetpointA, 69.375);
@@ -78,8 +78,8 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             status.motorTemperatureC = 25.125;
             status.switchTemperatureC = -40.0625;
 
-            decoded = inverterhil.decodeStatus3X3( ...
-                inverterhil.packStatus3X3(status));
+            decoded = decodeStatus3X3( ...
+                packStatus3X3(status));
             testCase.verifyEqual(decoded.state, double(status.state));
             testCase.verifyEqual(decoded.ready, logical(status.ready));
             testCase.verifyEqual(decoded.derating, logical(status.derating));
@@ -104,8 +104,8 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             wide.iqActualA = -0.0625;
             wide.speedRpm = 12000;
 
-            decodedWide = inverterhil.decodeStatus3X5( ...
-                inverterhil.packStatus3X5(wide));
+            decodedWide = decodeStatus3X5( ...
+                packStatus3X5(wide));
             testCase.verifyEqual(decodedWide.idSetpointA, wide.idSetpointA);
             testCase.verifyEqual(decodedWide.idActualA, wide.idActualA);
             testCase.verifyEqual(decodedWide.iqSetpointA, wide.iqSetpointA);
@@ -121,8 +121,8 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             status = TestStatusPackers.status3X3();
             status.actualTorqueNm = 1 / 64;   % half of the 1/32 Nm step
 
-            decoded = inverterhil.decodeStatus3X3( ...
-                inverterhil.packStatus3X3(status));
+            decoded = decodeStatus3X3( ...
+                packStatus3X3(status));
             testCase.verifyEqual(decoded.actualTorqueNm, 1 / 32);
         end
 
@@ -131,13 +131,13 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 zeros(1, 8), 'eightchr'};
             for k = 1:numel(bad)
                 testCase.verifyError( ...
-                    @() inverterhil.decodeStatus3X3(bad{k}), ...
+                    @() decodeStatus3X3(bad{k}), ...
                     'inverterhil:MalformedPayload');
                 testCase.verifyError( ...
-                    @() inverterhil.decodeStatus3X5(bad{k}), ...
+                    @() decodeStatus3X5(bad{k}), ...
                     'inverterhil:MalformedPayload');
                 testCase.verifyError( ...
-                    @() inverterhil.decodeSystemStatus(bad{k}), ...
+                    @() decodeSystemStatus(bad{k}), ...
                     'inverterhil:MalformedPayload');
             end
         end
@@ -151,7 +151,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 hex2dec('A0') hex2dec('57') hex2dec('80') ...
                 hex2dec('14') hex2dec('05') 0]);
 
-            status = inverterhil.decodeSystemStatus(payload);
+            status = decodeSystemStatus(payload);
             testCase.verifyEqual(status.dcLink12V, 400.25);
             testCase.verifyEqual(status.dcLink34V, 350.5);
             testCase.verifyEqual(status.switchingFrequencyKHz, 10.25);
@@ -175,8 +175,8 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 status.controlEnable = logical(bitget(mask, 3));
                 status.controlDisable = logical(bitget(mask, 4));
 
-                decoded = inverterhil.decodeSystemStatus( ...
-                    inverterhil.packSystemStatus(status));
+                decoded = decodeSystemStatus( ...
+                    packSystemStatus(status));
                 testCase.verifyEqual(decoded.dcLink12V, status.dcLink12V);
                 testCase.verifyEqual(decoded.dcLink34V, status.dcLink34V);
                 testCase.verifyEqual(decoded.switchingFrequencyKHz, ...
@@ -204,8 +204,8 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             dirty(7) = bitor(dirty(7), uint8(hex2dec('F0')));
             dirty(8) = uint8(hex2dec('FF'));
 
-            testCase.verifyEqual(inverterhil.decodeSystemStatus(dirty), ...
-                inverterhil.decodeSystemStatus(clean));
+            testCase.verifyEqual(decodeSystemStatus(dirty), ...
+                decodeSystemStatus(clean));
         end
 
         function packsSystemStatusGoldenBytes(testCase)
@@ -221,7 +221,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             expected = uint8([hex2dec('10') hex2dec('64') ...
                 hex2dec('A0') hex2dec('57') hex2dec('80') ...
                 hex2dec('14') hex2dec('05') 0]);
-            testCase.verifyEqual(inverterhil.packSystemStatus(status), expected);
+            testCase.verifyEqual(packSystemStatus(status), expected);
         end
 
         function packsCompleteOrderedCycleWithGoldenBytes(testCase)
@@ -280,7 +280,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 255 15 0 1 0 0 255 255; ...
                 16 100 160 87 128 20 5 0]);
 
-            cycle = inverterhil.packStatusCycle(channels, system);
+            cycle = packStatusCycle(channels, system);
             testCase.verifyEqual(cycle.ids, expectedIds);
             testCase.verifyEqual(cycle.dlc, repmat(uint8(8), 1, 9));
             testCase.verifyEqual(cycle.payloads, expectedPayloads);
@@ -296,7 +296,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             status3X3.switchTemperatureC = realmax;
             expected3X3 = uint8([243 255 0 248 127 0 248 127]);
             testCase.verifyEqual( ...
-                inverterhil.packStatus3X3(status3X3), expected3X3);
+                packStatus3X3(status3X3), expected3X3);
 
             status3X5 = TestStatusPackers.status3X5();
             status3X5.idSetpointA = realmax;
@@ -306,7 +306,7 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             status3X5.speedRpm = realmax;
             expected3X5 = uint8([255 7 128 255 7 128 255 127]);
             testCase.verifyEqual( ...
-                inverterhil.packStatus3X5(status3X5), expected3X5);
+                packStatus3X5(status3X5), expected3X5);
 
             system = TestStatusPackers.systemStatus();
             system.dcLink12V = -realmax;
@@ -318,32 +318,32 @@ classdef TestStatusPackers < matlab.unittest.TestCase
             system.controlDisable = true;
             expectedSystem = uint8([0 0 255 255 255 255 15 0]);
             testCase.verifyEqual( ...
-                inverterhil.packSystemStatus(system), expectedSystem);
+                packSystemStatus(system), expectedSystem);
         end
 
         function rejectsNonfiniteAndInvalidEnumInputs(testCase)
             status3X3 = TestStatusPackers.status3X3();
             status3X3.actualTorqueNm = NaN;
-            testCase.verifyError(@() inverterhil.packStatus3X3(status3X3), ...
+            testCase.verifyError(@() packStatus3X3(status3X3), ...
                 'inverterhil:NonFinite');
             status3X3 = TestStatusPackers.status3X3();
             status3X3.ready = 2;
-            testCase.verifyError(@() inverterhil.packStatus3X3(status3X3), ...
+            testCase.verifyError(@() packStatus3X3(status3X3), ...
                 'inverterhil:InvalidEnum');
 
             status3X5 = TestStatusPackers.status3X5();
             status3X5.iqActualA = Inf;
-            testCase.verifyError(@() inverterhil.packStatus3X5(status3X5), ...
+            testCase.verifyError(@() packStatus3X5(status3X5), ...
                 'inverterhil:NonFinite');
 
             system = TestStatusPackers.systemStatus();
             system.switchingFrequencyKHz = -Inf;
-            testCase.verifyError(@() inverterhil.packSystemStatus(system), ...
+            testCase.verifyError(@() packSystemStatus(system), ...
                 'inverterhil:NonFinite');
             system = TestStatusPackers.systemStatus();
             system.busy = true;
             system.controlDisable = NaN;
-            testCase.verifyError(@() inverterhil.packSystemStatus(system), ...
+            testCase.verifyError(@() packSystemStatus(system), ...
                 'inverterhil:InvalidEnum');
         end
 
@@ -352,17 +352,17 @@ classdef TestStatusPackers < matlab.unittest.TestCase
                 'status3X3', TestStatusPackers.status3X3(), ...
                 'status3X5', TestStatusPackers.status3X5()), 1, 4);
             system = TestStatusPackers.systemStatus();
-            baseline = inverterhil.packStatusCycle(channels, system);
+            baseline = packStatusCycle(channels, system);
 
             changed = channels;
             changed(2).status3X3.actualTorqueNm = 5;
-            torqueCycle = inverterhil.packStatusCycle(changed, system);
+            torqueCycle = packStatusCycle(changed, system);
             changedRows = find(any(torqueCycle.payloads ~= baseline.payloads, 2));
             testCase.verifyEqual(changedRows, 3);
 
             changed = channels;
             changed(3).status3X5.speedRpm = -500;
-            speedCycle = inverterhil.packStatusCycle(changed, system);
+            speedCycle = packStatusCycle(changed, system);
             changedRows = find(any(speedCycle.payloads ~= baseline.payloads, 2));
             testCase.verifyEqual(changedRows, 6);
             testCase.verifyEqual(speedCycle.ids, baseline.ids);

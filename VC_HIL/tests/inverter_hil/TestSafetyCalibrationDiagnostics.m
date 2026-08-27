@@ -8,7 +8,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             % thresholds this test keeps passing while the calibration
             % silently goes stale, so the raw counts must be re-read from
             % driverInputs.cpp whenever that file's conversions change.
-            constants = inverterhil.pedalCalibrationConstants();
+            constants = pedalCalibrationConstants();
             testCase.assertNumElements(constants, 4);
             testCase.verifyEqual([constants.channel], 1:4);
 
@@ -41,7 +41,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             % (ADS_VREF_V = 3.3, ADS_FULL_SCALE = 65535). Recomputed here
             % rather than compared to literals so a changed domain cannot
             % pass by having both sides edited to agree.
-            constants = inverterhil.pedalCalibrationConstants();
+            constants = pedalCalibrationConstants();
             for index = 1:numel(constants)
                 testCase.verifyEqual(constants(index).releasedV, ...
                     constants(index).releasedRaw * 3.3 / 65535, ...
@@ -83,9 +83,9 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             % 'armed' for a channel nobody calibrated, which is the honest
             % description of the current behaviour and is pinned here so the
             % next reader is not surprised by it.
-            cal = inverterhil.defaultCalibration();
+            cal = defaultCalibration();
             command = TestSafetyCalibrationDiagnostics.validCommand();
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
 
             testCase.verifyTrue(output.armed);
             testCase.verifyEqual(output.analogV, zeros(1, 4), ...
@@ -100,7 +100,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             % defence for an uncalibrated channel; only the removed gate was.
             broken = cal;
             broken.pedals.maximumV = [NaN 5 5 5];
-            stillArmed = inverterhil.safeIoOutputs(command, broken);
+            stillArmed = safeIoOutputs(command, broken);
             testCase.verifyTrue(stillArmed.armed, ...
                 'Documents that a NaN clamp bound is scrubbed, not caught.');
         end
@@ -111,7 +111,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             command.throttle = 0.25;
             command.brake = 0.5;
             command.digital = logical([1 0 1 0 1 0 1 0]);
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
 
             testCase.verifyTrue(output.armed);
             testCase.verifyEqual(output.reason, 'armed');
@@ -121,7 +121,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
 
             command.throttle = -100;
             command.brake = 100;
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             testCase.verifyEqual(output.analogV, ...
                 [cal.pedals.releasedV(1:2) cal.pedals.pressedV(3:4)]);
         end
@@ -133,14 +133,14 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             for index = 1:numel(fields)
                 command = base;
                 command.(fields{index}) = false;
-                output = inverterhil.safeIoOutputs(command, cal);
+                output = safeIoOutputs(command, cal);
                 TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
                 testCase.verifyEqual(output.reason, 'not_armed');
             end
 
             command = base;
             command.heartbeatAgeS = cal.guiHeartbeatTimeoutS;
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             testCase.verifyTrue(output.armed);
 
             badAges = [cal.guiHeartbeatTimeoutS + eps(cal.guiHeartbeatTimeoutS), ...
@@ -148,7 +148,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             for age = badAges
                 command = base;
                 command.heartbeatAgeS = age;
-                output = inverterhil.safeIoOutputs(command, cal);
+                output = safeIoOutputs(command, cal);
                 TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
                 testCase.verifyEqual(output.reason, 'heartbeat_expired');
             end
@@ -159,19 +159,19 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             base = TestSafetyCalibrationDiagnostics.validCommand();
 
             command = rmfield(base, 'armed');
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
             testCase.verifyEqual(output.reason, 'missing_armed');
 
             command = base;
             command.throttle = NaN;
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
             testCase.verifyEqual(output.reason, 'malformed_pedal_command');
 
             command = base;
             command.digital = [1 0 1 NaN 0 0 0 0];
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
             testCase.verifyEqual(output.reason, 'malformed_digital_command');
         end
@@ -185,7 +185,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
                 for valueIndex = 1:numel(malformed)
                     command = TestSafetyCalibrationDiagnostics.validCommand();
                     command.(fields{fieldIndex}) = malformed{valueIndex};
-                    output = inverterhil.safeIoOutputs(command, cal);
+                    output = safeIoOutputs(command, cal);
                     TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
                     testCase.verifyEqual(output.reason, ...
                         'malformed_interlock');
@@ -197,7 +197,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             cal = TestSafetyCalibrationDiagnostics.calibrated();
             command = TestSafetyCalibrationDiagnostics.validCommand();
             command.heartbeatAgeS = complex(0, 1);
-            output = inverterhil.safeIoOutputs(command, cal);
+            output = safeIoOutputs(command, cal);
             TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
             testCase.verifyEqual(output.reason, 'heartbeat_expired');
 
@@ -205,7 +205,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             for index = 1:numel(fields)
                 command = TestSafetyCalibrationDiagnostics.validCommand();
                 command.(fields{index}) = complex(0.5, 0.25);
-                output = inverterhil.safeIoOutputs(command, cal);
+                output = safeIoOutputs(command, cal);
                 TestSafetyCalibrationDiagnostics.verifySafe(testCase, output);
                 testCase.verifyEqual(output.reason, ...
                     'malformed_pedal_command');
@@ -216,12 +216,12 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             cal = TestSafetyCalibrationDiagnostics.calibrated();
             invalid = cal;
             invalid.sampleTimeS = 0;
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.configErrorScope = uint8(2);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             % 1/256 is the now-resolved vcu256 scale CALIBRATED() already
@@ -230,22 +230,22 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             % check: the retired 1/512 profile's value.
             invalid = cal;
             invalid.torqueScaleNmPerCount = 1 / 512;
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.inertiaKgM2(4) = Inf;
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.modelTorqueMinNm(2) = invalid.modelTorqueMaxNm(2);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.pedals.maximumV(1) = 5 + eps(5);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
         end
 
@@ -256,7 +256,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
                 invalid = cal;
                 invalid.(fields{index})(2) = -0.01;
                 testCase.verifyError( ...
-                    @() inverterhil.validateCalibration(invalid), ...
+                    @() validateCalibration(invalid), ...
                     'inverterhil:InvalidCalibration', fields{index});
             end
         end
@@ -265,12 +265,12 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             cal = TestSafetyCalibrationDiagnostics.calibrated();
             invalid = cal;
             invalid.pedals.releasedV(1) = 5.5;
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.pedals.pressedV(3) = -0.5;
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
         end
 
@@ -280,32 +280,32 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             invalid = cal;
             invalid.torqueScaleNmPerCount = ...
                 [cal.torqueScaleNmPerCount cal.torqueScaleNmPerCount];
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.torqueScaleVerified = [false false];
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.sampleTimeS = complex(cal.sampleTimeS, 1);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.speedKp(2) = complex(invalid.speedKp(2), 1);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
 
             invalid = cal;
             invalid.pedals.minimumV(2) = complex(0, 1);
-            testCase.verifyError(@() inverterhil.validateCalibration(invalid), ...
+            testCase.verifyError(@() validateCalibration(invalid), ...
                 'inverterhil:InvalidCalibration');
         end
 
         function diagnosticsExposeEveryFailedWriteAndControllerFault(testCase)
-            healthy = inverterhil.evaluateCanDiagnostics( ...
+            healthy = evaluateCanDiagnostics( ...
                 true(1, 9), false, false, false, false);
             testCase.verifyTrue(healthy.cycleSucceeded);
             testCase.verifyEqual(healthy.failedWriteMask, uint16(0));
@@ -313,7 +313,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
             for index = 1:9
                 writes = true(1, 9);
                 writes(index) = false;
-                result = inverterhil.evaluateCanDiagnostics( ...
+                result = evaluateCanDiagnostics( ...
                     writes, false, false, false, false);
                 testCase.verifyFalse(result.cycleSucceeded);
                 testCase.verifyEqual(result.failedWriteMask, ...
@@ -322,7 +322,7 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
 
             flags = eye(4, 'logical');
             for index = 1:4
-                result = inverterhil.evaluateCanDiagnostics( ...
+                result = evaluateCanDiagnostics( ...
                     true(1, 9), flags(index, 1), flags(index, 2), ...
                     flags(index, 3), flags(index, 4));
                 testCase.verifyFalse(result.cycleSucceeded);
@@ -330,13 +330,13 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
         end
 
         function diagnosticsRejectMalformedInputs(testCase)
-            testCase.verifyError(@() inverterhil.evaluateCanDiagnostics( ...
+            testCase.verifyError(@() evaluateCanDiagnostics( ...
                 ones(1, 9), false, false, false, false), ...
                 'inverterhil:MalformedDiagnostics');
-            testCase.verifyError(@() inverterhil.evaluateCanDiagnostics( ...
+            testCase.verifyError(@() evaluateCanDiagnostics( ...
                 true(1, 8), false, false, false, false), ...
                 'inverterhil:MalformedDiagnostics');
-            testCase.verifyError(@() inverterhil.evaluateCanDiagnostics( ...
+            testCase.verifyError(@() evaluateCanDiagnostics( ...
                 true(1, 9), NaN, false, false, false), ...
                 'inverterhil:MalformedDiagnostics');
         end
@@ -344,10 +344,10 @@ classdef TestSafetyCalibrationDiagnostics < matlab.unittest.TestCase
 
     methods (Static, Access = private)
         function cal = calibrated()
-            cal = inverterhil.defaultCalibration();
+            cal = defaultCalibration();
             cal.pedals.releasedV = [0.5 0.7 0.4 0.6];
             cal.pedals.pressedV = [4.5 3.8 4.0 3.6];
-            inverterhil.validateCalibration(cal);
+            validateCalibration(cal);
         end
 
         function command = validCommand()

@@ -2,13 +2,13 @@ classdef TestStateMachine < matlab.unittest.TestCase
     methods (Test)
         function defaultsAndInitialStateAreDeterministic(testCase)
             config = TestStateMachine.config();
-            testCase.verifyEqual(inverterhil.defaultStateConfig(), config);
-            testCase.verifyEqual(inverterhil.defaultChannelStateInput(), ...
+            testCase.verifyEqual(defaultStateConfig(), config);
+            testCase.verifyEqual(defaultChannelStateInput(), ...
                 TestStateMachine.channelInput());
-            testCase.verifyEqual(inverterhil.defaultStateInput(), ...
+            testCase.verifyEqual(defaultStateInput(), ...
                 TestStateMachine.systemInput());
 
-            state = inverterhil.initialChannelState( ...
+            state = initialChannelState( ...
                 config.channels(1), config, true);
             testCase.verifyEqual(state.mode, uint8(0));
             testCase.verifyEqual(state.modeName, 'Idle');
@@ -23,10 +23,10 @@ classdef TestStateMachine < matlab.unittest.TestCase
         function exercisesIdleDriveAndExplicitExitTransitions(testCase)
             config = TestStateMachine.config();
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
 
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, ...
@@ -34,30 +34,30 @@ classdef TestStateMachine < matlab.unittest.TestCase
             testCase.verifyTrue(output.zeroTorque);
 
             input.commandEnable = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(1));
             testCase.verifyEqual(output.transitionReason, 'idle_to_drive');
             testCase.verifyFalse(output.zeroTorque);
             testCase.verifyTrue(output.ready);
 
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.transitionReason, 'hold_drive');
             testCase.verifyFalse(output.zeroTorque);
 
             input.commandEnable = false;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, 'can_enable_cleared');
             testCase.verifyTrue(output.zeroTorque);
 
             input.commandEnable = true;
-            [state, ~] = inverterhil.stepChannelState( ...
+            [state, ~] = stepChannelState( ...
                 state, input, channel, config, true);
             input.controlDisable = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, ...
@@ -81,7 +81,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             for index = 1:numel(ages)
                 [state, input] = TestStateMachine.drive(testCase, config, channel);
                 input.commandAgeMs = uint32(ages(index));
-                [~, output] = inverterhil.stepChannelState( ...
+                [~, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, expectedModes(index));
                 testCase.verifyEqual(output.zeroTorque, expectedZero(index));
@@ -101,11 +101,11 @@ classdef TestStateMachine < matlab.unittest.TestCase
             % 9.2 step 4 can transmit fixed Idle status during bring-up.
             config = TestStateMachine.config();
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
             input.commandAgeMs = intmax('uint32');
 
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
 
             testCase.verifyEqual(output.mode, uint8(0));
@@ -121,12 +121,12 @@ classdef TestStateMachine < matlab.unittest.TestCase
             % latch Error from Idle, not only from Drive.
             config = TestStateMachine.config();
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
             input.commandEnable = true;
             input.commandAgeMs = uint32(501);
 
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
 
             testCase.verifyEqual(output.mode, uint8(2));
@@ -141,13 +141,13 @@ classdef TestStateMachine < matlab.unittest.TestCase
             [state, input] = TestStateMachine.drive(testCase, config, channel);
 
             input.positionAgeS = 350e-6;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(1));
             testCase.verifyFalse(output.positionTimeoutQuantized);
 
             input.positionAgeS = 350e-6 + eps(350e-6);
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.activeFault, 'position_timeout');
@@ -156,7 +156,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.controlEnable = false;
             for sample = 1:200
-                [state, output] = inverterhil.stepChannelState( ...
+                [state, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, uint8(1));
                 testCase.verifyTrue(output.zeroTorque);
@@ -165,7 +165,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
                         'hold_drive_control_enable_low');
                 end
             end
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.activeFault, 'control_enable_low');
@@ -177,37 +177,37 @@ classdef TestStateMachine < matlab.unittest.TestCase
             config = TestStateMachine.config();
             channel = config.channels(1);
 
-            [valid, reason] = inverterhil.evaluateMandatoryConfiguration(channel);
+            [valid, reason] = evaluateMandatoryConfiguration(channel);
             testCase.verifyTrue(valid);
             testCase.verifyEqual(reason, 'valid');
 
             channel.encoderType = 'Resolver';
-            [valid, reason] = inverterhil.evaluateMandatoryConfiguration(channel);
+            [valid, reason] = evaluateMandatoryConfiguration(channel);
             testCase.verifyFalse(valid);
             testCase.verifyEqual(reason, 'missing_encoder_reference');
             channel.encoderReference = 0;
-            [valid, reason] = inverterhil.evaluateMandatoryConfiguration(channel);
+            [valid, reason] = evaluateMandatoryConfiguration(channel);
             testCase.verifyTrue(valid);
             testCase.verifyEqual(reason, 'valid');
 
             channel = config.channels(1);
             channel.motorPolePairs = NaN;
-            [valid, reason] = inverterhil.evaluateMandatoryConfiguration(channel);
+            [valid, reason] = evaluateMandatoryConfiguration(channel);
             testCase.verifyFalse(valid);
             testCase.verifyEqual(reason, 'missing_motor_pole_pairs');
 
             channel = config.channels(1);
             channel.connected = false;
-            [valid, reason] = inverterhil.evaluateMandatoryConfiguration(channel);
+            [valid, reason] = evaluateMandatoryConfiguration(channel);
             testCase.verifyTrue(valid);
             testCase.verifyEqual(reason, 'valid');
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             testCase.verifyEqual(state.mode, uint8(0));
             testCase.verifyFalse(state.ready);
             testCase.verifyFalse(state.configErrorLatched);
             input = TestStateMachine.channelInput();
             input.commandEnable = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, 'disconnected');
@@ -217,13 +217,13 @@ classdef TestStateMachine < matlab.unittest.TestCase
             config = TestStateMachine.config();
             config.channels(2).motorPolePairs = NaN;
             config.configErrorScope = uint8(0);
-            state = inverterhil.initialSystemState(config);
+            state = initialSystemState(config);
             testCase.verifyEqual([state.channels.mode], uint8([0 3 0 0]));
             testCase.verifyEqual(state.channels(2).configurationReason, ...
                 'missing_motor_pole_pairs');
 
             config.configErrorScope = uint8(1);
-            state = inverterhil.initialSystemState(config);
+            state = initialSystemState(config);
             testCase.verifyEqual([state.channels.mode], uint8([3 3 3 3]));
             testCase.verifyEqual(state.channels(1).configurationReason, ...
                 'unit_configuration_invalid');
@@ -234,7 +234,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
         function configErrorRequiresPowerCycleToClear(testCase)
             invalidConfig = TestStateMachine.config();
             invalidConfig.channels(1).rotationDirection = NaN;
-            state = inverterhil.initialChannelState( ...
+            state = initialChannelState( ...
                 invalidConfig.channels(1), invalidConfig, true);
             testCase.verifyEqual(state.mode, uint8(3));
             testCase.verifyTrue(state.configErrorLatched);
@@ -242,14 +242,14 @@ classdef TestStateMachine < matlab.unittest.TestCase
             validConfig = TestStateMachine.config();
             input = TestStateMachine.channelInput();
             input.resetError = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, validConfig.channels(1), validConfig, true);
             testCase.verifyEqual(output.mode, uint8(3));
             testCase.verifyEqual(output.transitionReason, ...
                 'hold_config_error_power_cycle_required');
 
             input.powerCycle = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, validConfig.channels(1), validConfig, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, ...
@@ -257,11 +257,11 @@ classdef TestStateMachine < matlab.unittest.TestCase
             testCase.verifyFalse(state.configErrorLatched);
             testCase.verifyTrue(output.zeroTorque);
 
-            state = inverterhil.initialChannelState( ...
+            state = initialChannelState( ...
                 invalidConfig.channels(1), invalidConfig, true);
             input = TestStateMachine.channelInput();
             input.powerCycle = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, invalidConfig.channels(1), invalidConfig, true);
             testCase.verifyEqual(output.mode, uint8(3));
             testCase.verifyEqual(output.transitionReason, ...
@@ -278,10 +278,10 @@ classdef TestStateMachine < matlab.unittest.TestCase
                 'motorTemperatureC', channel.motorShutdownC; ...
                 'switchTemperatureC', 145};
             for index = 1:size(safeCases, 1)
-                state = inverterhil.initialChannelState(channel, config, true);
+                state = initialChannelState(channel, config, true);
                 input = TestStateMachine.channelInput();
                 input.(safeCases{index, 1}) = safeCases{index, 2};
-                [~, output] = inverterhil.stepChannelState( ...
+                [~, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyNotEqual(output.mode, uint8(2));
             end
@@ -297,10 +297,10 @@ classdef TestStateMachine < matlab.unittest.TestCase
                 'dcLinkMeasurementFailure', true, 'dc_link_measurement'; ...
                 'switchTemperatureMeasurementFailure', true, 'switch_temperature_measurement'};
             for index = 1:size(faultCases, 1)
-                state = inverterhil.initialChannelState(channel, config, true);
+                state = initialChannelState(channel, config, true);
                 input = TestStateMachine.channelInput();
                 input.(faultCases{index, 1}) = faultCases{index, 2};
-                [~, output] = inverterhil.stepChannelState( ...
+                [~, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, uint8(2));
                 testCase.verifyEqual(output.activeFault, faultCases{index, 3});
@@ -309,11 +309,11 @@ classdef TestStateMachine < matlab.unittest.TestCase
                 testCase.verifyTrue(output.zeroTorque);
             end
 
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
             input.commandEnable = true;
             input.dcLinkV = config.dcLinkMinimumV;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, ...
@@ -321,7 +321,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
 
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.dcLinkV = config.dcLinkMinimumV - eps(config.dcLinkMinimumV);
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.activeFault, 'dc_link_undervoltage');
@@ -333,7 +333,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.idTrackingErrorA = 10;
             for sample = 1:60
-                [state, output] = inverterhil.stepChannelState( ...
+                [state, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, uint8(1));
             end
@@ -341,11 +341,11 @@ classdef TestStateMachine < matlab.unittest.TestCase
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.iqTrackingErrorA = 10 + eps(10);
             for sample = 1:50
-                [state, output] = inverterhil.stepChannelState( ...
+                [state, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, uint8(1));
             end
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.activeFault, 'current_tracking');
@@ -357,7 +357,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.desaturation = true;
             input.resetError = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.transitionReason, ...
@@ -365,7 +365,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             testCase.verifyEqual(output.resetWaitS, 500e-6);
 
             input.desaturation = false;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, 'error_reset');
@@ -376,20 +376,20 @@ classdef TestStateMachine < matlab.unittest.TestCase
         function resetBackoffDoublesCapsAndRecoversToBase(testCase)
             config = TestStateMachine.config();
             config.resetBackoffMaxS = 0.004;
-            inverterhil.validateStateConfig(config);
+            validateStateConfig(config);
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             expectedWaitUs = uint64([500 1000 2000 4000 4000]);
 
             for occurrence = 1:numel(expectedWaitUs)
                 input = TestStateMachine.channelInput();
                 input.commandEnable = true;
-                [state, output] = inverterhil.stepChannelState( ...
+                [state, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.assertEqual(output.mode, uint8(1));
 
                 input.phaseCurrentsA = [121 0 0];
-                [state, output] = inverterhil.stepChannelState( ...
+                [state, output] = stepChannelState( ...
                     state, input, channel, config, true);
                 testCase.verifyEqual(output.mode, uint8(2));
                 testCase.verifyEqual(state.resetWaitUs, ...
@@ -401,7 +401,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
                 input.resetError = true;
                 clearSamples = max(1, ceil(double(expectedWaitUs(occurrence)) / 1000));
                 for sample = 1:clearSamples
-                    [state, output] = inverterhil.stepChannelState( ...
+                    [state, output] = stepChannelState( ...
                         state, input, channel, config, true);
                     if sample < clearSamples
                         testCase.verifyEqual(output.mode, uint8(2));
@@ -417,14 +417,14 @@ classdef TestStateMachine < matlab.unittest.TestCase
             input = TestStateMachine.channelInput();
             input.speedRpm = 100;
             for sample = 1:51
-                [state, ~] = inverterhil.stepChannelState( ...
+                [state, ~] = stepChannelState( ...
                     state, input, channel, config, true);
             end
             testCase.verifyEqual(state.errorOccurrences, uint32(5));
             testCase.verifyEqual(state.resetWaitUs, uint64(4000));
 
             input.speedRpm = 99;
-            [state, ~] = inverterhil.stepChannelState( ...
+            [state, ~] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(state.errorOccurrences, uint32(0));
             testCase.verifyEqual(state.resetWaitUs, uint64(500));
@@ -435,18 +435,18 @@ classdef TestStateMachine < matlab.unittest.TestCase
             channel = config.channels(1);
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.dcLinkV = 300;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.assertEqual(output.activeFault, 'dc_link_undervoltage');
 
             input.dcLinkV = 400;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.assertEqual(output.mode, uint8(2));
 
             input.dcLinkV = 300;
             input.resetError = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(2));
             testCase.verifyEqual(output.activeFault, 'dc_link_undervoltage');
@@ -457,10 +457,10 @@ classdef TestStateMachine < matlab.unittest.TestCase
         function idleOriginErrorCanResetBelowDriveMinimum(testCase)
             config = TestStateMachine.config();
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
             input.desaturation = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.assertEqual(output.mode, uint8(2));
             testCase.assertEqual(output.activeFault, 'desaturation');
@@ -468,7 +468,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             input.desaturation = false;
             input.dcLinkV = 300;
             input.resetError = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, 'error_reset');
@@ -480,7 +480,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             channel = config.channels(1);
             [state, input] = TestStateMachine.drive(testCase, config, channel);
             input.currentMode = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(0));
             testCase.verifyEqual(output.transitionReason, ...
@@ -490,7 +490,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             testCase.verifyFalse(output.ready);
 
             input.currentMode = false;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyEqual(output.mode, uint8(1));
             testCase.verifyEqual(output.transitionReason, 'idle_to_drive');
@@ -499,7 +499,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             input.ascAllowed = true;
             input.speedRpm = channel.ascThresholdRpm + 1;
             input.dischargeActive = true;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyFalse(output.unsupportedAscEntry);
             testCase.verifyFalse(output.zeroTorque);
@@ -509,7 +509,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             input.speedRpm = channel.ascThresholdRpm;
             input.dischargeActive = true;
             input.controlEnable = false;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyFalse(output.unsupportedAscEntry);
 
@@ -518,7 +518,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             input.speedRpm = channel.ascThresholdRpm + 1;
             input.dischargeActive = true;
             input.controlEnable = false;
-            [~, output] = inverterhil.stepChannelState( ...
+            [~, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.verifyTrue(output.unsupportedAscEntry);
             testCase.verifyEqual(output.mode, uint8(1));
@@ -531,7 +531,7 @@ classdef TestStateMachine < matlab.unittest.TestCase
             config = TestStateMachine.config();
             [state, input] = TestStateMachine.driveSystem(testCase, config);
             input.channels(2).commandAgeMs = uint32(501);
-            [~, output] = inverterhil.stepSystemState(state, input, config);
+            [~, output] = stepSystemState(state, input, config);
             testCase.verifyEqual(output.mode, uint8([1 2 1 1]));
             testCase.verifyEqual(output.zeroTorque, [false true false false]);
             testCase.verifyEqual(output.channels(2).activeFault, ...
@@ -539,25 +539,25 @@ classdef TestStateMachine < matlab.unittest.TestCase
 
             [state, input] = TestStateMachine.driveSystem(testCase, config);
             input.dcLinkV = [300 400];
-            [~, output] = inverterhil.stepSystemState(state, input, config);
+            [~, output] = stepSystemState(state, input, config);
             testCase.verifyEqual(output.mode, uint8([2 2 1 1]));
             testCase.verifyEqual({output.channels.activeFault}, ...
                 {'dc_link_undervoltage', 'dc_link_undervoltage', 'none', 'none'});
 
             [state, input] = TestStateMachine.driveSystem(testCase, config);
             input.dcLinkV = [400 300];
-            [~, output] = inverterhil.stepSystemState(state, input, config);
+            [~, output] = stepSystemState(state, input, config);
             testCase.verifyEqual(output.mode, uint8([1 1 2 2]));
 
             [state, input] = TestStateMachine.driveSystem(testCase, config);
             input.controlDisable = true;
-            [~, output] = inverterhil.stepSystemState(state, input, config);
+            [~, output] = stepSystemState(state, input, config);
             testCase.verifyEqual(output.mode, uint8([0 0 0 0]));
             testCase.verifyEqual(output.zeroTorque, true(1, 4));
 
             [state, input] = TestStateMachine.driveSystem(testCase, config);
             input.controlEnable = false;
-            [~, output] = inverterhil.stepSystemState(state, input, config);
+            [~, output] = stepSystemState(state, input, config);
             testCase.verifyEqual(output.mode, uint8([1 1 1 1]));
             testCase.verifyEqual(output.zeroTorque, true(1, 4));
         end
@@ -565,32 +565,32 @@ classdef TestStateMachine < matlab.unittest.TestCase
         function malformedConfigurationFailsWithDomainError(testCase)
             config = TestStateMachine.config();
             bad = rmfield(config, 'sampleTimeS');
-            testCase.verifyError(@() inverterhil.validateStateConfig(bad), ...
+            testCase.verifyError(@() validateStateConfig(bad), ...
                 'inverterhil:InvalidStateConfig');
             bad = config;
             bad.sampleTimeS = complex(1e-3, 1);
-            testCase.verifyError(@() inverterhil.validateStateConfig(bad), ...
+            testCase.verifyError(@() validateStateConfig(bad), ...
                 'inverterhil:InvalidStateConfig');
             bad = config;
             bad.channels = bad.channels.';
-            testCase.verifyError(@() inverterhil.validateStateConfig(bad), ...
+            testCase.verifyError(@() validateStateConfig(bad), ...
                 'inverterhil:InvalidStateConfig');
             bad = config.channels(1);
             bad.connected = char(1);
             testCase.verifyError( ...
-                @() inverterhil.evaluateMandatoryConfiguration(bad), ...
+                @() evaluateMandatoryConfiguration(bad), ...
                 'inverterhil:InvalidStateConfig');
             bad = config.channels(1);
             bad.encoderType = ["EnDat" "Resolver"];
             testCase.verifyError( ...
-                @() inverterhil.evaluateMandatoryConfiguration(bad), ...
+                @() evaluateMandatoryConfiguration(bad), ...
                 'inverterhil:InvalidStateConfig');
         end
 
         function malformedChannelInputsFailClosed(testCase)
             config = TestStateMachine.config();
             channel = config.channels(1);
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             cases = { ...
                 'commandAgeMs', [1 2]; ...
                 'commandEnable', char(1); ...
@@ -602,15 +602,15 @@ classdef TestStateMachine < matlab.unittest.TestCase
             for index = 1:size(cases, 1)
                 input = TestStateMachine.channelInput();
                 input.(cases{index, 1}) = cases{index, 2};
-                testCase.verifyError(@() inverterhil.stepChannelState( ...
+                testCase.verifyError(@() stepChannelState( ...
                     state, input, channel, config, true), ...
                     'inverterhil:InvalidStateInput');
             end
 
-            systemState = inverterhil.initialSystemState(config);
+            systemState = initialSystemState(config);
             systemInput = TestStateMachine.systemInput();
             systemInput.dcLinkV = [400; 400];
-            testCase.verifyError(@() inverterhil.stepSystemState( ...
+            testCase.verifyError(@() stepSystemState( ...
                 systemState, systemInput, config), ...
                 'inverterhil:InvalidStateInput');
         end
@@ -619,41 +619,41 @@ classdef TestStateMachine < matlab.unittest.TestCase
             config = TestStateMachine.config();
             channel = config.channels(1);
             input = TestStateMachine.channelInput();
-            base = inverterhil.initialChannelState(channel, config, true);
+            base = initialChannelState(channel, config, true);
 
             bad = base;
             bad.errorLatched = [false false];
-            testCase.verifyError(@() inverterhil.stepChannelState( ...
+            testCase.verifyError(@() stepChannelState( ...
                 bad, input, channel, config, true), ...
                 'inverterhil:InvalidChannelState');
 
             bad = base;
             bad.zeroTorque = [true true];
-            testCase.verifyError(@() inverterhil.stepChannelState( ...
+            testCase.verifyError(@() stepChannelState( ...
                 bad, input, channel, config, true), ...
                 'inverterhil:InvalidChannelState');
 
             bad = base;
             bad.modeName = 42;
-            testCase.verifyError(@() inverterhil.stepChannelState( ...
+            testCase.verifyError(@() stepChannelState( ...
                 bad, input, channel, config, true), ...
                 'inverterhil:InvalidChannelState');
 
             bad = base;
             bad.latchedFaultCause = 42;
-            testCase.verifyError(@() inverterhil.stepChannelState( ...
+            testCase.verifyError(@() stepChannelState( ...
                 bad, input, channel, config, true), ...
                 'inverterhil:InvalidChannelState');
 
             bad = base;
             bad.latchedFaultCause = 'not_a_fault';
-            testCase.verifyError(@() inverterhil.stepChannelState( ...
+            testCase.verifyError(@() stepChannelState( ...
                 bad, input, channel, config, true), ...
                 'inverterhil:InvalidChannelState');
 
-            systemState = inverterhil.initialSystemState(config);
+            systemState = initialSystemState(config);
             systemState = rmfield(systemState, 'configErrorScope');
-            testCase.verifyError(@() inverterhil.stepSystemState( ...
+            testCase.verifyError(@() stepSystemState( ...
                 systemState, TestStateMachine.systemInput(), config), ...
                 'inverterhil:InvalidSystemState');
         end
@@ -718,10 +718,10 @@ classdef TestStateMachine < matlab.unittest.TestCase
         end
 
         function [state, input] = drive(testCase, config, channel)
-            state = inverterhil.initialChannelState(channel, config, true);
+            state = initialChannelState(channel, config, true);
             input = TestStateMachine.channelInput();
             input.commandEnable = true;
-            [state, output] = inverterhil.stepChannelState( ...
+            [state, output] = stepChannelState( ...
                 state, input, channel, config, true);
             testCase.assertEqual(output.mode, uint8(1));
             testCase.assertEqual(output.transitionReason, 'idle_to_drive');
@@ -729,12 +729,12 @@ classdef TestStateMachine < matlab.unittest.TestCase
         end
 
         function [state, input] = driveSystem(testCase, config)
-            state = inverterhil.initialSystemState(config);
+            state = initialSystemState(config);
             input = TestStateMachine.systemInput();
             for channel = 1:4
                 input.channels(channel).commandEnable = true;
             end
-            [state, output] = inverterhil.stepSystemState(state, input, config);
+            [state, output] = stepSystemState(state, input, config);
             testCase.assertEqual(output.mode, uint8([1 1 1 1]));
             testCase.assertEqual(output.zeroTorque, false(1, 4));
         end

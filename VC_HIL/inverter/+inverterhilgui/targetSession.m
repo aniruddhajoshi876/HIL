@@ -281,7 +281,7 @@ classdef targetSession < handle
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
             blank = inverterhilgui.blankTelemetry();
-            [~, sensorDlcInit] = inverterhil.sensorTxIds();
+            [~, sensorDlcInit] = sensorTxIds();
             snapshot.steering = blank.steering;
             snapshot.imu = blank.imu;
             snapshot.sensorPayloads = ...
@@ -338,7 +338,7 @@ classdef targetSession < handle
                 % blocks are named "CAN Write Sensor 0x..." (see
                 % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
                 % than one combined ID list.
-                sensorIds = inverterhil.sensorTxIds();
+                sensorIds = sensorTxIds();
                 writeNoOverrun = false(1, numel(writeIds) + numel(sensorIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
@@ -417,9 +417,9 @@ classdef targetSession < handle
                 % PROTOCOL.STATUSCYCLEIDS order: 3X3/3X5 interleaved per
                 % channel (383,385, 393,395, 3A3,3A5, 3B3,3B5) then 0x400.
                 for channel = 1:4
-                    threeX3 = inverterhil.decodeStatus3X3( ...
+                    threeX3 = decodeStatus3X3( ...
                         payloads(2 * channel - 1, :));
-                    threeX5 = inverterhil.decodeStatus3X5( ...
+                    threeX5 = decodeStatus3X5( ...
                         payloads(2 * channel, :));
                     snapshot.inverter(channel).state = threeX3.state;
                     snapshot.inverter(channel).ready = threeX3.ready;
@@ -443,7 +443,7 @@ classdef targetSession < handle
                 % Row 9 is the 0x400 general status, decoded from the same
                 % transmitted bytes as the eight per-channel rows above.
                 snapshot.systemStatus = ...
-                    inverterhil.decodeSystemStatus(payloads(9, :));
+                    decodeSystemStatus(payloads(9, :));
                 % Raw bytes retained so the TX table can show exactly what the
                 % model generated. These bytes alone are not proof of
                 % successful transmission; acknowledgement is reported
@@ -482,7 +482,7 @@ classdef targetSession < handle
                 % CAN Write pairs, so the TX table shows what is genuinely
                 % on the wire rather than a host-side re-encode.
                 try
-                    [~, sensorDlc] = inverterhil.sensorTxIds();
+                    [~, sensorDlc] = sensorTxIds();
                     sensorDlc = double(sensorDlc);
                     % Ports 14-18 are the target-selected wire DLCs. These
                     % differ from the nominal contract only during malformed
@@ -728,9 +728,9 @@ classdef targetSession < handle
                     if ~(fresh(row3X3) && fresh(row3X5))
                         continue;
                     end
-                    threeX3 = inverterhil.decodeStatus3X3( ...
+                    threeX3 = decodeStatus3X3( ...
                         uint8(statusRows(row3X3, 1:8)));
-                    threeX5 = inverterhil.decodeStatus3X5( ...
+                    threeX5 = decodeStatus3X5( ...
                         uint8(statusRows(row3X5, 1:8)));
                     snapshot.inverter(channel).state = threeX3.state;
                     snapshot.inverter(channel).ready = threeX3.ready;
@@ -751,7 +751,7 @@ classdef targetSession < handle
                     snapshot.inverterKnown = true;
                 end
                 if fresh(9)
-                    snapshot.systemStatus = inverterhil.decodeSystemStatus( ...
+                    snapshot.systemStatus = decodeSystemStatus( ...
                         uint8(statusRows(9, 1:8)));
                 end
             catch err
@@ -941,7 +941,7 @@ can = struct('known', false, 'diagnostics', struct( ...
     'transmitOverrun', [], ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
-    'writeSucceeded', false(1, 9 + numel(inverterhil.sensorTxIds())), ...
+    'writeSucceeded', false(1, 9 + numel(sensorTxIds())), ...
     'writeKnown', false));
 end
 

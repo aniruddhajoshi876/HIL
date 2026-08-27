@@ -4,36 +4,36 @@ classdef TestPedalDemand < matlab.unittest.TestCase
             payload = TestPedalDemand.payload(25, 60, true, 3);
             cases = {uint32(hex2dec('501')), uint8(8), payload, false, false, 'wrong_id'; uint32(hex2dec('500')), uint8(7), payload, false, false, 'wrong_dlc'; uint32(hex2dec('500')), uint8(8), payload, true, false, 'extended_frame'; uint32(hex2dec('500')), uint8(8), payload, false, true, 'remote_frame'; uint32(hex2dec('500')), uint8(8), payload(1:7), false, false, 'malformed_payload'};
             for k = 1:size(cases, 1)
-                [accepted, ~, reason] = inverterhil.decodePedalDemandFrame(cases{k,1}, cases{k,2}, cases{k,3}, cases{k,4}, cases{k,5});
+                [accepted, ~, reason] = decodePedalDemandFrame(cases{k,1}, cases{k,2}, cases{k,3}, cases{k,4}, cases{k,5});
                 testCase.verifyFalse(accepted); testCase.verifyEqual(reason, cases{k,6});
             end
             outOfRange = TestPedalDemand.payload(101, 0, true, 0);
-            [accepted, ~, reason] = inverterhil.decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), outOfRange, false, false);
+            [accepted, ~, reason] = decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), outOfRange, false, false);
             testCase.verifyFalse(accepted); testCase.verifyEqual(reason, 'out_of_range');
             badCrc = payload; badCrc(6) = bitxor(badCrc(6), uint8(1));
-            [accepted, ~, reason] = inverterhil.decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), badCrc, false, false);
+            [accepted, ~, reason] = decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), badCrc, false, false);
             testCase.verifyFalse(accepted); testCase.verifyEqual(reason, 'integrity_failure');
             % Reserved1 (B7:B8) must be zero; CRC is recomputed so this fails on
             % the reserved check alone rather than incidentally on integrity.
             reserved = payload; reserved(7) = uint8(1);
-            [accepted, ~, reason] = inverterhil.decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), reserved, false, false);
+            [accepted, ~, reason] = decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), reserved, false, false);
             testCase.verifyFalse(accepted); testCase.verifyEqual(reason, 'reserved_nonzero');
             % Reserved0 (B5 bits 5..7) must be zero too.
             reserved0 = payload; reserved0(5) = bitor(reserved0(5), uint8(32)); reserved0(6) = TestPedalDemand.crc8(reserved0(1:5));
-            [accepted, ~, reason] = inverterhil.decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), reserved0, false, false);
+            [accepted, ~, reason] = decodePedalDemandFrame(uint32(hex2dec('500')), uint8(8), reserved0, false, false);
             testCase.verifyFalse(accepted); testCase.verifyEqual(reason, 'reserved_nonzero');
         end
         function ownershipRequiresAdvanceActiveAndFreshness(testCase)
-            bank = inverterhil.initialPedalDemandBank();
-            bank = inverterhil.receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 7), uint32(10));
-            testCase.verifyFalse(inverterhil.pedalDemandSnapshot(bank, uint32(10)).ownsPedals);
-            bank = inverterhil.receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 8), uint32(11));
-            live = inverterhil.pedalDemandSnapshot(bank, uint32(11)); testCase.verifyTrue(live.ownsPedals); testCase.verifyEqual(live.throttlePercent, 20);
-            stalled = inverterhil.receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 8), uint32(12));
-            testCase.verifyFalse(inverterhil.pedalDemandSnapshot(stalled, uint32(12)).ownsPedals);
-            inactive = inverterhil.receivePedalDemandFrame(stalled, TestPedalDemand.frame(20, 30, false, 9), uint32(13));
-            testCase.verifyFalse(inverterhil.pedalDemandSnapshot(inactive, uint32(13)).ownsPedals);
-            testCase.verifyFalse(inverterhil.pedalDemandSnapshot(bank, uint32(112)).fresh);
+            bank = initialPedalDemandBank();
+            bank = receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 7), uint32(10));
+            testCase.verifyFalse(pedalDemandSnapshot(bank, uint32(10)).ownsPedals);
+            bank = receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 8), uint32(11));
+            live = pedalDemandSnapshot(bank, uint32(11)); testCase.verifyTrue(live.ownsPedals); testCase.verifyEqual(live.throttlePercent, 20);
+            stalled = receivePedalDemandFrame(bank, TestPedalDemand.frame(20, 30, true, 8), uint32(12));
+            testCase.verifyFalse(pedalDemandSnapshot(stalled, uint32(12)).ownsPedals);
+            inactive = receivePedalDemandFrame(stalled, TestPedalDemand.frame(20, 30, false, 9), uint32(13));
+            testCase.verifyFalse(pedalDemandSnapshot(inactive, uint32(13)).ownsPedals);
+            testCase.verifyFalse(pedalDemandSnapshot(bank, uint32(112)).fresh);
         end
     end
     methods (Static, Access = private)

@@ -10,9 +10,9 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.modelTorqueMaxNm(3) = 15;
             cal.modelCurrentMaxA(4) = 5;
             cal.torqueConstantNmPerA(4) = 2;
-            inverterhil.validateCalibration(cal);
+            validateCalibration(cal);
 
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             for index = 1:4
                 input.channels(index).torqueLimitNegativeNm = -100;
@@ -25,7 +25,7 @@ classdef TestPlant < matlab.unittest.TestCase
             input.channels(2).torqueLimitPositiveNm = 20;
             input.channels(2).speedSetpointRpm = -1000;
 
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.torqueSetpointNm, [20 -20 15 10], ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual( ...
@@ -38,11 +38,11 @@ classdef TestPlant < matlab.unittest.TestCase
 
             bad = input;
             bad.channels(1).torqueLimitPositiveNm = -1;
-            testCase.verifyError(@() inverterhil.stepPlant(state, bad, cal), ...
+            testCase.verifyError(@() stepPlant(state, bad, cal), ...
                 'inverterhil:InvalidPlantInput');
             bad = input;
             bad.channels(1).torqueLimitNegativeNm = 1;
-            testCase.verifyError(@() inverterhil.stepPlant(state, bad, cal), ...
+            testCase.verifyError(@() stepPlant(state, bad, cal), ...
                 'inverterhil:InvalidPlantInput');
         end
 
@@ -52,20 +52,20 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = zeros(1, 4);
             cal.torqueSlewNmPerS = repmat(1e9, 1, 4);
             cal.torqueLagS = repmat(1e-6, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).speedSetpointRpm = 100;
-            [next, output] = inverterhil.stepPlant(state, input, cal);
+            [next, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.channels(1).rawControllerTorqueNm, 20, ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual(next.speedIntegratorNm(1), 0);
 
             cal.speedKp = repmat(0.1, 1, 4);
             cal.speedKi = repmat(2, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).speedSetpointRpm = 100;
-            [next, output] = inverterhil.stepPlant(state, input, cal);
+            [next, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(next.speedIntegratorNm(1), 0.2, ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual(output.channels(1).rawControllerTorqueNm, 10.2, ...
@@ -80,19 +80,19 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = repmat(10, 1, 4);
             cal.torqueSlewNmPerS = repmat(1e9, 1, 4);
             cal.torqueLagS = repmat(1e-6, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).torqueLimitNegativeNm = -10;
             input.channels(1).torqueLimitPositiveNm = 10;
             input.channels(1).speedSetpointRpm = 1000;
 
-            [state, output] = inverterhil.stepPlant(state, input, cal);
+            [state, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(state.speedIntegratorNm(1), 0);
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, 10);
 
             state.omegaRadPerS(1) = 0;
             input.channels(1).speedSetpointRpm = -20;
-            [state, output] = inverterhil.stepPlant(state, input, cal);
+            [state, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(state.speedIntegratorNm(1), -0.2, ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual(output.channels(1).rawControllerTorqueNm, -2.2, ...
@@ -105,7 +105,7 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = repmat(100, 1, 4);
             cal.torqueSlewNmPerS = repmat(1e9, 1, 4);
             cal.torqueLagS = repmat(1e-6, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).torqueLimitNegativeNm = -10;
             input.channels(1).torqueLimitPositiveNm = 10;
@@ -113,7 +113,7 @@ classdef TestPlant < matlab.unittest.TestCase
 
             torqueSetpointNm = zeros(1, 5);
             for stepIndex = 1:5
-                [state, output] = inverterhil.stepPlant(state, input, cal);
+                [state, output] = stepPlant(state, input, cal);
                 torqueSetpointNm(stepIndex) = ...
                     output.channels(1).torqueSetpointNm;
             end
@@ -123,19 +123,19 @@ classdef TestPlant < matlab.unittest.TestCase
 
             state.omegaRadPerS(1) = 0;
             input.channels(1).speedSetpointRpm = -1;
-            [state, output] = inverterhil.stepPlant(state, input, cal);
+            [state, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(state.speedIntegratorNm(1), 9.9, ...
                 'AbsTol', 1e-12, ...
                 'Reverse error must unwind a saturated pure-I controller.');
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, 9.9, ...
                 'AbsTol', 1e-12);
 
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).torqueLimitNegativeNm = -10;
             input.channels(1).torqueLimitPositiveNm = 10;
             input.channels(1).speedSetpointRpm = -1000;
-            [state, output] = inverterhil.stepPlant(state, input, cal);
+            [state, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(state.speedIntegratorNm(1), -10);
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, -10, ...
                 'Pure integral control must reach negative saturation.');
@@ -147,24 +147,24 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = zeros(1, 4);
             cal.torqueSlewNmPerS = repmat(1000, 1, 4);
             cal.torqueLagS = repmat(0.01, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).speedSetpointRpm = 100;
             alpha = 1 - exp(-0.001 / 0.01);
 
-            [state, output] = inverterhil.stepPlant(state, input, cal);
+            [state, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, 1, ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual(output.channels(1).torqueActualNm, alpha, ...
                 'AbsTol', 1e-12);
             firstActual = alpha;
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, 2, ...
                 'AbsTol', 1e-12);
             testCase.verifyEqual(output.channels(1).torqueActualNm, ...
                 firstActual + alpha * (2 - firstActual), 'AbsTol', 1e-12);
 
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             state.torqueSetpointNm(1) = 5;
             state.torqueActualNm(1) = 4;
             state.speedIntegratorNm(1) = 7;
@@ -172,7 +172,7 @@ classdef TestPlant < matlab.unittest.TestCase
             input.channels(1).speedSetpointRpm = 1000;
             input.channels(1).zeroTorque = true;
             input.channels(1).authorityReason = 'test_block';
-            [next, output] = inverterhil.stepPlant(state, input, cal);
+            [next, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.channels(1).torqueSetpointNm, 0);
             testCase.verifyEqual(output.channels(1).torqueActualNm, 0);
             testCase.verifyEqual(next.speedIntegratorNm(1), 7);
@@ -181,7 +181,7 @@ classdef TestPlant < matlab.unittest.TestCase
 
             input.channels(1).zeroTorque = false;
             input.channels(1).commandTorqueTimeout = true;
-            [next, output] = inverterhil.stepPlant(state, input, cal);
+            [next, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(next.speedIntegratorNm(1), 7);
             testCase.verifyEqual(output.channels(1).torqueActualNm, 0);
             testCase.verifyEqual(output.channels(1).authorityReason, ...
@@ -198,8 +198,8 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.torqueConstantNmPerA = repmat(2, 1, 4);
             cal.torqueSlewNmPerS = repmat(1e6, 1, 4);
             cal.speedMaxRpm(3) = 100;
-            inverterhil.validateCalibration(cal);
-            state = inverterhil.initialPlantState(cal);
+            validateCalibration(cal);
+            state = initialPlantState(cal);
             state.omegaRadPerS(1:2) = 20;
             state.torqueSetpointNm(1:3) = 10;
             state.torqueActualNm(1:3) = 10;
@@ -210,7 +210,7 @@ classdef TestPlant < matlab.unittest.TestCase
             input.channels(2).loadTorqueNm = -3;
             input.channels(3).loadTorqueNm = -20;
 
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             expectedOmega1 = 20 + 0.1 * ((10 - 3 - 0.5 * 20) / 2);
             expectedOmega2 = 20 + 0.1 * ((10 + 3 - 0.5 * 20) / 2);
             testCase.verifyEqual(output.channels(1).speedRpm, ...
@@ -236,7 +236,7 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.motoringEfficiency = repmat(0.8, 1, 4);
             cal.regenEfficiency = repmat(0.7, 1, 4);
             cal.dcVoltageFloorV = repmat(10, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             state.omegaRadPerS = repmat(100, 1, 4);
             state.torqueSetpointNm = [10 -10 10 10];
             state.torqueActualNm = [10 -10 10 10];
@@ -251,7 +251,7 @@ classdef TestPlant < matlab.unittest.TestCase
             input.channels(3).dcLinkV = 0;
             input.channels(4).dcLinkV = -400;
 
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual([output.channels.mechanicalPowerW], ...
                 [1000 -1000 1000 1000], 'AbsTol', 1e-10);
             testCase.verifyEqual([output.channels.dcPowerW], ...
@@ -279,7 +279,7 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = zeros(1, 4);
             cal.torqueSlewNmPerS = repmat(1e9, 1, 4);
             cal.torqueLagS = repmat(1e-6, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             state.switchTemperatureC = [90 115 140 25];
             input = TestPlant.driveInput(cal);
             for index = 1:4
@@ -287,7 +287,7 @@ classdef TestPlant < matlab.unittest.TestCase
                 input.channels(index).torqueLimitNegativeNm = -50;
                 input.channels(index).torqueLimitPositiveNm = 50;
             end
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual([output.channels.switchDeratingFactor], ...
                 [1 0.5 0 1], 'AbsTol', 1e-12);
             testCase.verifyEqual(output.torqueSetpointNm, [50 25 0 50], ...
@@ -295,9 +295,9 @@ classdef TestPlant < matlab.unittest.TestCase
             testCase.verifyEqual(output.maxAllowedCurrentA, [100 50 0 100], ...
                 'AbsTol', 1e-12);
 
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             state.motorTemperatureC = [120 135 150 25];
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual([output.channels.motorDeratingFactor], ...
                 [1 0.5 0 1], 'AbsTol', 1e-12);
             testCase.verifyEqual(output.torqueSetpointNm, [50 25 0 50], ...
@@ -310,12 +310,12 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.speedKi = zeros(1, 4);
             cal.torqueSlewNmPerS = repmat(1e9, 1, 4);
             cal.torqueLagS = repmat(1e-6, 1, 4);
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(2).speedSetpointRpm = 100;
             input.channels(2).rawTorquePosCounts = int16(8192);
             input.channels(2).rawTorqueNegCounts = int16(-8192);
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
 
             testCase.verifyEqual(output.torqueSetpointNm([1 3 4]), [0 0 0]);
             testCase.verifyEqual(output.speedRpm([1 3 4]), [0 0 0]);
@@ -335,7 +335,7 @@ classdef TestPlant < matlab.unittest.TestCase
                 'dcLink12AboveMinimum', true, ...
                 'dcLink34AboveMinimum', true, ...
                 'controlEnable', true, 'controlDisable', false);
-            cycle = inverterhil.packStatusCycle(channelStatus, systemStatus);
+            cycle = packStatusCycle(channelStatus, systemStatus);
             testCase.verifyEqual(size(cycle.payloads), [9 8]);
             testCase.verifyClass(cycle.payloads, 'uint8');
             testCase.verifyEqual(cycle.ids, uint32([899 901 915 917 ...
@@ -348,13 +348,13 @@ classdef TestPlant < matlab.unittest.TestCase
             % ephorus_driver.hpp:55): DEFAULTCALIBRATION now defaults to the
             % verified 1/256 profile, not the retired 1/512 provisional one.
             cal = TestPlant.calibration();
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             input.channels(1).rawTorquePosCounts = int16(8192);
             input.channels(1).rawTorqueNegCounts = int16(-8192);
             input.channels(1).torqueLimitPositiveNm = 32;
             input.channels(1).torqueLimitNegativeNm = -32;
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.protocolProfileId, ...
                 'ephorus3-v1.03-candidate-1over256');
             testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 256);
@@ -367,12 +367,12 @@ classdef TestPlant < matlab.unittest.TestCase
             badInput = input;
             badInput.protocolProfileId = ...
                 'ephorus3-v1.03-provisional-1over512';
-            testCase.verifyError(@() inverterhil.stepPlant( ...
+            testCase.verifyError(@() stepPlant( ...
                 state, badInput, cal), 'inverterhil:InvalidPlantInput');
             badState = state;
             badState.protocolProfileId = ...
                 'ephorus3-v1.03-provisional-1over512';
-            testCase.verifyError(@() inverterhil.stepPlant( ...
+            testCase.verifyError(@() stepPlant( ...
                 badState, input, cal), 'inverterhil:InvalidPlantState');
 
             % Switching explicitly to the retired, still-unverified 1/512
@@ -382,17 +382,17 @@ classdef TestPlant < matlab.unittest.TestCase
             cal.protocolProfileId = 'ephorus3-v1.03-provisional-1over512';
             cal.torqueScaleNmPerCount = 1 / 512;
             cal.torqueScaleVerified = false;
-            inverterhil.validateCalibration(cal);
-            state = inverterhil.initialPlantState(cal);
+            validateCalibration(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
-            [~, output] = inverterhil.stepPlant(state, input, cal);
+            [~, output] = stepPlant(state, input, cal);
             testCase.verifyEqual(output.torqueScaleNmPerCount, 1 / 512);
             testCase.verifyFalse(output.torqueScaleVerified);
         end
 
         function malformedPlantStateAndInputFailClosed(testCase)
             cal = TestPlant.calibration();
-            state = inverterhil.initialPlantState(cal);
+            state = initialPlantState(cal);
             input = TestPlant.driveInput(cal);
             stateCases = { ...
                 'omegaRadPerS', zeros(4, 1); ...
@@ -403,7 +403,7 @@ classdef TestPlant < matlab.unittest.TestCase
             for index = 1:size(stateCases, 1)
                 bad = state;
                 bad.(stateCases{index, 1}) = stateCases{index, 2};
-                testCase.verifyError(@() inverterhil.stepPlant(bad, input, cal), ...
+                testCase.verifyError(@() stepPlant(bad, input, cal), ...
                     'inverterhil:InvalidPlantState');
             end
 
@@ -418,12 +418,12 @@ classdef TestPlant < matlab.unittest.TestCase
             for index = 1:size(inputCases, 1)
                 bad = input;
                 bad.channels(1).(inputCases{index, 1}) = inputCases{index, 2};
-                testCase.verifyError(@() inverterhil.stepPlant(state, bad, cal), ...
+                testCase.verifyError(@() stepPlant(state, bad, cal), ...
                     'inverterhil:InvalidPlantInput');
             end
             bad = input;
             bad.channels = bad.channels.';
-            testCase.verifyError(@() inverterhil.stepPlant(state, bad, cal), ...
+            testCase.verifyError(@() stepPlant(state, bad, cal), ...
                 'inverterhil:InvalidPlantInput');
         end
 
@@ -433,51 +433,51 @@ classdef TestPlant < matlab.unittest.TestCase
             for index = 1:numel(fields)
                 bad = cal;
                 bad.(fields{index})(1) = 0;
-                testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+                testCase.verifyError(@() validateCalibration(bad), ...
                     'inverterhil:InvalidCalibration');
             end
             bad = cal;
             bad.inertiaKgM2 = bad.inertiaKgM2.';
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.torqueConstantNmPerA = 'four';
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.inertiaKgM2(1) = NaN;
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.motorThermalTimeConstantS(1) = Inf;
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.torqueLagS(2) = complex(0.01, 1);
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.motoringEfficiency(1) = 1 + eps(1);
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.regenEfficiency(1) = 0;
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.motorDerateStartC(1) = bad.motorDerateEndC(1);
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
             bad = cal;
             bad.motorLossFraction(1) = -eps;
-            testCase.verifyError(@() inverterhil.validateCalibration(bad), ...
+            testCase.verifyError(@() validateCalibration(bad), ...
                 'inverterhil:InvalidCalibration');
         end
     end
 
     methods (Static, Access = private)
         function cal = calibration()
-            cal = inverterhil.defaultCalibration();
+            cal = defaultCalibration();
         end
 
         function input = driveInput(cal)

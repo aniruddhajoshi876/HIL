@@ -60,7 +60,7 @@ classdef TestGuiAppArtifact < matlab.unittest.TestCase
 
         function hostHeartbeatTimeoutIsNeverLooserThanTheTarget(testCase)
             host = inverterhilgui.hostHeartbeatTimeout();
-            calibrated = inverterhil.defaultCalibration().guiHeartbeatTimeoutS;
+            calibrated = defaultCalibration().guiHeartbeatTimeoutS;
 
             testCase.verifyTrue(isnumeric(host) && isscalar(host) && ...
                 isreal(host) && isfinite(host) && host > 0);

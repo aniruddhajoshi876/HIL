@@ -235,8 +235,9 @@ The authoritative contract is `inverter_hil/docs/can_pedal_demand_frame_spec.md`
 
 #### Calibration state — all 4 channels set
 
-Single source of truth: **`+inverterhil/pedalCalibrationConstants.m`**, applied to
-the dictionary by **`apply_pedal_calibration.m`**. Do not edit the `.sldd` by hand.
+Single source of truth: **`VC_HIL/inverter/pedalCalibrationConstants.m`**, applied
+to the dictionary by **`VC_HIL/inverter/build/apply_pedal_calibration.m`**. Do not edit
+the `.sldd` by hand.
 
 | Channel | Raw released → pressed | `released_v` | `pressed_v` | Direction |
 |---|---|---|---|---|

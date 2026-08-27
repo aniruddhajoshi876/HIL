@@ -8,8 +8,12 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
     methods (TestClassSetup)
         function loadIoDisconnectedArtifact(testCase)
             testFolder = fileparts(mfilename('fullpath'));
-            repoRoot = fileparts(fileparts(testFolder));
-            testCase.Root = fullfile(repoRoot, 'inverter_hil');
+            % TESTFOLDER is VC_HIL/tests/inverter_hil; two levels up is
+            % VC_HIL itself, whose generated model/app artifacts and their
+            % build/verify/deploy scripts now live one level further in
+            % VC_HIL/build.
+            vcHilRoot = fileparts(fileparts(testFolder));
+            testCase.Root = fullfile(vcHilRoot, 'build');
             addpath(testCase.Root);
             testCase.Root = inverter_hil_setup();
             testCase.assertEqual(version('-release'), '2024b');
@@ -377,7 +381,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 testCase.Root, 'inverter_hil.sldd'));
             cleanup = onCleanup(@() close(dictionary)); %#ok<NASGU>
             section = getSection(dictionary, 'Design Data');
-            constants = inverterhil.pedalCalibrationConstants();
+            constants = pedalCalibrationConstants();
 
             testCase.verifyEqual(TestModelArtifacts.value(section, ...
                 'hil_model_release'), 'R2024b');
@@ -539,10 +543,10 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             testCase.verifyEqual(get_param(testCase.Hardware, 'Commented'), 'off');
             initFcn = get_param(testCase.Model, 'InitFcn');
             testCase.verifyTrue(contains(initFcn, ...
-                'inverterhil.enforceHardwarePreflight'));
+                'enforceHardwarePreflight'));
             % Shipped defaults (operator-attested preflight complete, boundary
             % live): the gate passes.
-            testCase.verifyWarningFree(@() inverterhil.enforceHardwarePreflight( ...
+            testCase.verifyWarningFree(@() enforceHardwarePreflight( ...
                 testCase.Model));
 
             % Commenting the boundary back out short-circuits the gate
@@ -550,7 +554,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             set_param(testCase.Hardware, 'Commented', 'on');
             restoreCommented = onCleanup(@() set_param(testCase.Hardware, ...
                 'Commented', 'off')); %#ok<NASGU>
-            testCase.verifyWarningFree(@() inverterhil.enforceHardwarePreflight( ...
+            testCase.verifyWarningFree(@() enforceHardwarePreflight( ...
                 testCase.Model));
             set_param(testCase.Hardware, 'Commented', 'off');
 
@@ -567,14 +571,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             restoreValue = onCleanup(@() setValue(entry, true)); %#ok<NASGU>
             setValue(entry, false);
             saveChanges(dictionary);
-            testCase.verifyWarning(@() inverterhil.enforceHardwarePreflight( ...
+            testCase.verifyWarning(@() enforceHardwarePreflight( ...
                 testCase.Model), 'inverterhil:HardwarePreflightOpen');
 
             % The flag is still validated, so a non-logical value is still a
             % hard error rather than being waved through.
             setValue(entry, 7);
             saveChanges(dictionary);
-            testCase.verifyError(@() inverterhil.enforceHardwarePreflight( ...
+            testCase.verifyError(@() enforceHardwarePreflight( ...
                 testCase.Model), ...
                 'inverterhil:InvalidHardwarePreflightGate');
             setValue(entry, true);
@@ -582,7 +586,10 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
         end
 
         function generatedArtifactsAreIgnoredRepositoryWide(testCase)
-            text = fileread(fullfile(testCase.Root, '.gitignore'));
+            % .gitignore lives in VC_HIL itself, one level above
+            % TESTCASE.ROOT (VC_HIL/build, where the generated model/app
+            % artifacts and their build scripts live).
+            text = fileread(fullfile(fileparts(testCase.Root), '.gitignore'));
             lines = strip(splitlines(string(text)));
             expected = [".simulink/"; "slprj/"; "*.slxc"; ...
                 "*_sg_rtw/"; "*_grt_rtw/"; "*_ert_rtw/"];

@@ -69,21 +69,21 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 'A silent bus must not retain any command.');
             testCase.verifyEqual(run.bank.acceptedCount, zeros(1, 4, 'uint32'));
 
-            snapshot = inverterhil.decoderSnapshot(run.bank, uint32(10));
+            snapshot = decoderSnapshot(run.bank, uint32(10));
             testCase.verifyEqual(snapshot.ageMs, repmat(intmax('uint32'), 1, 4), ...
                 'Never-received must report the sentinel age, not a real age.');
 
-            testCase.verifyEqual(run.cycle.ids, inverterhil.protocol().statusCycleIds);
+            testCase.verifyEqual(run.cycle.ids, protocol().statusCycleIds);
             testCase.verifyEqual(run.cycle.dlc, repmat(uint8(8), 1, 9));
 
             for channel = 1:4
-                status3X3 = inverterhil.decodeStatus3X3( ...
+                status3X3 = decodeStatus3X3( ...
                     run.cycle.payloads(2 * channel - 1, :));
-                status3X5 = inverterhil.decodeStatus3X5( ...
+                status3X5 = decodeStatus3X5( ...
                     run.cycle.payloads(2 * channel, :));
 
                 testCase.verifyEqual(status3X3.state, ...
-                    double(inverterhil.protocol().state.idle), ...
+                    double(protocol().state.idle), ...
                     sprintf('Channel %d must report Idle on the wire.', channel));
                 testCase.verifyTrue(status3X3.ready, ...
                     'A connected, unfaulted, Idle channel reports ready.');
@@ -123,7 +123,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 run = TestVcuCommandLoop.step(run, frame);
             end
 
-            protocolIds = inverterhil.protocol();
+            protocolIds = protocol();
             testCase.verifyEqual(run.stateOutput.mode(1), protocolIds.state.drive, ...
                 'A commanded, enabled channel must leave Idle for Drive.');
             testCase.verifyEqual(run.stateOutput.mode(2:4), ...
@@ -141,7 +141,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
         % Scenario 3 - every channel answers only its own control identifier.
         % ---------------------------------------------------------------
         function eachChannelRespondsOnlyToItsOwnControlId(testCase)
-            controlIds = inverterhil.protocol().controlIds;
+            controlIds = protocol().controlIds;
             % Same identifiers the VCU emits (EPHORUS_CAN_ID_INV*_CONTROL).
             testCase.assertEqual(controlIds, ...
                 uint32([hex2dec('186') hex2dec('196') ...
@@ -158,8 +158,8 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                     run = TestVcuCommandLoop.step(run, frame);
                 end
 
-                expected = repmat(inverterhil.protocol().state.idle, 1, 4);
-                expected(target) = inverterhil.protocol().state.drive;
+                expected = repmat(protocol().state.idle, 1, 4);
+                expected(target) = protocol().state.drive;
                 testCase.verifyEqual(run.stateOutput.mode, expected, ...
                     sprintf(['Only the channel addressed by 0x%03X may ' ...
                     'respond to it.'], controlIds(target)));
@@ -206,7 +206,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             % verified true; 1/512 was never a torque scale in the firmware
             % at all and stays unverified, retained only as a known-wrong
             % profile.
-            profiles = inverterhil.protocol().torqueProfiles;
+            profiles = protocol().torqueProfiles;
             testCase.verifyFalse(profiles.provisional512.verified, ...
                 'The 1/512 profile was never a real torque scale (see the ' + ...
                 "switchingFreq_khz mixup) and must stay unverified.");
@@ -288,7 +288,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             % authority granted, so a zero result cannot be blamed on a safety
             % gate having correctly fired.
             testCase.assertEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.drive);
+                protocol().state.drive);
             testCase.assertFalse(run.plantOutput.channels(1).zeroTorqueApplied, ...
                 'Torque authority must be granted before this can be judged.');
 
@@ -302,8 +302,8 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             testCase.verifyEqual(run.plantOutput.channels(1).speedSetpointRpm, 3000, ...
                 'The CAN speed setpoint must reach the plant.');
 
-            status3X3 = inverterhil.decodeStatus3X3(run.cycle.payloads(1, :));
-            status3X5 = inverterhil.decodeStatus3X5(run.cycle.payloads(2, :));
+            status3X3 = decodeStatus3X3(run.cycle.payloads(1, :));
+            status3X5 = decodeStatus3X5(run.cycle.payloads(2, :));
             testCase.verifyGreaterThan(status3X3.torqueSetpointNm, 0, ...
                 ['A positive speed error under a positive torque limit must ' ...
                 'produce a positive torque setpoint on the wire.']);
@@ -317,7 +317,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
         % Scenario 5 - command timeouts at the protocol's own boundaries.
         % ---------------------------------------------------------------
         function commandDropoutZeroesTorqueAtFiftyMsAndLatchesErrorAtFiveHundred(testCase)
-            timing = inverterhil.protocol().timing;
+            timing = protocol().timing;
             testCase.assertEqual(timing.commandTorqueZeroMs, uint32(50));
             testCase.assertEqual(timing.commandErrorMs, uint32(500));
 
@@ -339,8 +339,8 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 observed(age).fault = run.stateOutput.channels(1).activeFault;
             end
 
-            drive = inverterhil.protocol().state.drive;
-            errorMode = inverterhil.protocol().state.error;
+            drive = protocol().state.drive;
+            errorMode = protocol().state.error;
             torqueLimit = double(timing.commandTorqueZeroMs);
             errorLimit = double(timing.commandErrorMs);
 
@@ -361,7 +361,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
 
             % And the VCU sees it: the state field on the wire is Error (2).
             testCase.verifyEqual(TestVcuCommandLoop.wireState(run, 1), 2);
-            status3X3 = inverterhil.decodeStatus3X3(run.cycle.payloads(1, :));
+            status3X3 = decodeStatus3X3(run.cycle.payloads(1, :));
             testCase.verifyFalse(status3X3.ready, ...
                 'A channel in Error must not report ready.');
             testCase.verifyEqual(status3X3.actualTorqueNm, 0, 'AbsTol', 1e-9);
@@ -393,7 +393,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 run = TestVcuCommandLoop.step(run, TestVcuCommandLoop.silentFrame());
             end
             testCase.assertEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.error, ...
+                protocol().state.error, ...
                 'Precondition: the dropout must have latched Error.');
 
             for tick = 1:300
@@ -408,7 +408,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 ['A commanded reset with no active cause and the wait ' ...
                 'elapsed must clear the latched Error.']);
             testCase.verifyEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.drive, ...
+                protocol().state.drive, ...
                 ['After a successful reset the still-enabled channel must ' ...
                 'return to Drive.']);
         end
@@ -440,7 +440,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 testCase.verifyEqual(run.bank.hasCommand, false(1, 4), ...
                     sprintf('%s must not retain a command.', invalid{index, 2}));
                 testCase.verifyEqual(run.stateOutput.mode, ...
-                    repmat(inverterhil.protocol().state.idle, 1, 4), ...
+                    repmat(protocol().state.idle, 1, 4), ...
                     sprintf('%s must not move any channel out of Idle.', ...
                     invalid{index, 2}));
             end
@@ -457,7 +457,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 end
                 testCase.verifyEqual(run.bank.lastValidTickMs(1), retainedAt, ...
                     sprintf('%s must not refresh command age.', invalid{index, 2}));
-                snapshot = inverterhil.decoderSnapshot(run.bank, uint32(20));
+                snapshot = decoderSnapshot(run.bank, uint32(20));
                 testCase.verifyEqual(snapshot.ageMs(1), uint32(20), ...
                     sprintf('Command age must keep growing through %s.', ...
                     invalid{index, 2}));
@@ -480,12 +480,12 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             run = TestVcuCommandLoop.newRun();
             run = TestVcuCommandLoop.step(run, frame);
             testCase.assertEqual(run.stateOutput.mode(4), ...
-                inverterhil.protocol().state.drive);
+                protocol().state.drive);
 
             for age = 1:50
                 run = TestVcuCommandLoop.step(run, TestVcuCommandLoop.silentFrame());
                 testCase.verifyEqual(run.stateOutput.mode(4), ...
-                    inverterhil.protocol().state.drive, ...
+                    protocol().state.drive, ...
                     sprintf('Retention must hold Drive at %d ms of age.', age));
                 testCase.verifyFalse(run.stateOutput.channels(4).zeroTorque, ...
                     sprintf('Retention must hold torque authority at %d ms.', age));
@@ -496,7 +496,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
 
             % A refresh arriving inside the window restarts the clock.
             run = TestVcuCommandLoop.step(run, frame);
-            snapshot = inverterhil.decoderSnapshot(run.bank, run.lastTick);
+            snapshot = decoderSnapshot(run.bank, run.lastTick);
             testCase.verifyEqual(snapshot.ageMs(4), uint32(0), ...
                 'A refresh must reset the command age.');
         end
@@ -521,12 +521,12 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             % Command straddles the wrap while being refreshed every tick.
             for tick = 1:40
                 run = TestVcuCommandLoop.step(run, frame);
-                snapshot = inverterhil.decoderSnapshot(run.bank, run.lastTick);
+                snapshot = decoderSnapshot(run.bank, run.lastTick);
                 testCase.verifyEqual(snapshot.ageMs(1), uint32(0), ...
                     'A just-refreshed command has age 0 on either side of the wrap.');
             end
             testCase.verifyEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.drive, ...
+                protocol().state.drive, ...
                 'Drive must survive the tick rollover.');
             testCase.assertLessThan(double(run.lastTick), 100, ...
                 'Precondition: the tick counter must actually have wrapped.');
@@ -536,10 +536,10 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             run = TestVcuCommandLoop.newRun();
             run.tick = intmax('uint32') - uint32(20);
             run = TestVcuCommandLoop.step(run, frame);
-            timing = inverterhil.protocol().timing;
+            timing = protocol().timing;
             for age = 1:601
                 run = TestVcuCommandLoop.step(run, TestVcuCommandLoop.silentFrame());
-                snapshot = inverterhil.decoderSnapshot(run.bank, run.lastTick);
+                snapshot = decoderSnapshot(run.bank, run.lastTick);
                 testCase.assertEqual(snapshot.ageMs(1), uint32(age), ...
                     sprintf('Age must be exactly %d ms across the wrap.', age));
                 if age == double(timing.commandTorqueZeroMs)
@@ -548,10 +548,10 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                     testCase.verifyTrue(run.stateOutput.channels(1).zeroTorque);
                 elseif age == double(timing.commandErrorMs)
                     testCase.verifyEqual(run.stateOutput.mode(1), ...
-                        inverterhil.protocol().state.drive);
+                        protocol().state.drive);
                 elseif age == double(timing.commandErrorMs) + 1
                     testCase.verifyEqual(run.stateOutput.mode(1), ...
-                        inverterhil.protocol().state.error, ...
+                        protocol().state.error, ...
                         'The 500 ms boundary must still fire across a wrap.');
                 end
             end
@@ -587,7 +587,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             testCase.assertTrue(run.bank.commands(1).currentMode, ...
                 'Precondition: bit 3 must have been decoded and retained.');
             testCase.verifyEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.idle, ...
+                protocol().state.idle, ...
                 'Current-control mode must refuse Idle-to-Drive.');
             testCase.verifyTrue(run.stateOutput.channels(1).unsupportedCurrentMode, ...
                 'The unsupported_current_mode diagnostic must be raised.');
@@ -600,10 +600,10 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 run = TestVcuCommandLoop.step(run, driveFrame);
             end
             testCase.assertEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.drive);
+                protocol().state.drive);
             run = TestVcuCommandLoop.step(run, currentModeFrame);
             testCase.verifyEqual(run.stateOutput.mode(1), ...
-                inverterhil.protocol().state.idle, ...
+                protocol().state.idle, ...
                 'Current-control mode asserted in Drive must return to Idle.');
         end
 
@@ -634,7 +634,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
                 testCase.verifyEqual(payload(2), uint8(0));
 
                 [accepted, channel, decoded, reason] = ...
-                    inverterhil.decodeControlFrame(uint32(hex2dec('186')), ...
+                    decodeControlFrame(uint32(hex2dec('186')), ...
                     uint8(8), payload, false, false);
                 testCase.verifyTrue(accepted);
                 testCase.verifyEqual(channel, uint8(1));
@@ -728,11 +728,11 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
 
         function run = newRun()
             %NEWRUN A cold model: initial state, plant, and empty decoder bank.
-            run.config = inverterhil.defaultStateConfig();
-            run.cal = inverterhil.defaultCalibration();
-            run.state = inverterhil.initialSystemState(run.config);
-            run.plantState = inverterhil.initialPlantState(run.cal);
-            run.bank = inverterhil.initialDecoderBank();
+            run.config = defaultStateConfig();
+            run.cal = defaultCalibration();
+            run.state = initialSystemState(run.config);
+            run.plantState = initialPlantState(run.cal);
+            run.bank = initialDecoderBank();
             run.tick = uint32(0);
             run.lastTick = uint32(0);
             run.cycle = [];
@@ -744,7 +744,7 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
             %STEP Advance one 1 ms tick with one received frame.
             run.lastTick = run.tick;
             [run.state, run.plantState, run.cycle, run.stateOutput, ...
-                run.plantOutput, run.bank] = inverterhil.stepModel( ...
+                run.plantOutput, run.bank] = stepModel( ...
                 run.state, run.plantState, run.tick, run.config, run.cal, ...
                 run.bank, frame);
             % MATLAB's uint32 addition saturates at INTMAX; a millisecond
@@ -754,12 +754,12 @@ classdef TestVcuCommandLoop < matlab.unittest.TestCase
 
         function value = wireState(run, channel)
             %WIRESTATE The two-bit state field as the VCU would decode it.
-            status = inverterhil.decodeStatus3X3(run.cycle.payloads(2 * channel - 1, :));
+            status = decodeStatus3X3(run.cycle.payloads(2 * channel - 1, :));
             value = status.state;
         end
 
         function value = wireReady(run, channel)
-            status = inverterhil.decodeStatus3X3(run.cycle.payloads(2 * channel - 1, :));
+            status = decodeStatus3X3(run.cycle.payloads(2 * channel - 1, :));
             value = status.ready;
         end
     end

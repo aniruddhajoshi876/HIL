@@ -91,16 +91,16 @@ for index = 1:4
 end
 
 snapshot.can.rx = blankCanObservations( ...
-    [uint32(hex2dec('1F5')) inverterhil.protocol().controlIds], ...
+    [uint32(hex2dec('1F5')) protocol().controlIds], ...
     {'VCU PEDALS', 'CTRL INV1', 'CTRL INV2', 'CTRL INV3', 'CTRL INV4'});
-statusIds = inverterhil.protocol().statusCycleIds;
+statusIds = protocol().statusCycleIds;
 statusNames = {'3X3 INV1', '3X5 INV1', '3X3 INV2', '3X5 INV2', ...
     '3X3 INV3', '3X5 INV3', '3X3 INV4', '3X5 INV4', 'GENERAL'};
 % The four synchronized sensor frames and Bosch config frame use the same CAN
 % interface and must appear in the TX table too, in the SAME order the model
 % writes them (BUILD_INVERTER_HIL_MODEL's SENSORIDS), because
 % APPLYLIVETXFRAMES indexes payload rows positionally against this list.
-sensorIds = inverterhil.sensorTxIds();
+sensorIds = sensorTxIds();
 sensorNames = {'MTI ACCEL', 'MTI RATE', 'MTI VELOCITY', ...
     'LWS STEERING', 'LWS CONFIG'};
 snapshot.can.tx = blankCanObservations( ...
