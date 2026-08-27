@@ -1,0 +1,775 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:33:31
+TIME	0.000
+SIMULATE	unknown
+
+TIME	65.313
+SIM_END		unknown	65.31s	711.676m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:37:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	22.298
+SIM_END		unknown	22.295s	298.903m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:42:07
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.570
+ERROR		Vehicle leaves road at about x=15.9992, y=53.6849 TireNo=0
+SIM_ABORT	unknown	5.573s	15.8916m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:42:29
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.459
+ERROR		Vehicle leaves road at about x=-48.0821, y=77.0551 TireNo=0
+SIM_ABORT	unknown	9.462s	118.082m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:48:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.633
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 8.633000, ErrInd = 102). (id=200)
+SIM_END		unknown	8.72s	88.7023m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:48:51
+TIME	0.000
+SIMULATE	unknown
+
+TIME	55.719
+ERROR		Vehicle leaves road at about x=24.3049, y=-13.8331 TireNo=1
+SIM_ABORT	unknown	55.722s	784.414m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:59:19
+TIME	0.000
+SIMULATE	unknown
+
+TIME	42.886
+ERROR		Vehicle leaves road at about x=34.359, y=-7.0419 TireNo=1
+SIM_ABORT	unknown	42.889s	123.859m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:00:17
+TIME	0.000
+SIMULATE	unknown
+
+TIME	25.826
+SIM_END		unknown	25.823s	167.78m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:00:54
+TIME	0.000
+SIMULATE	unknown
+
+TIME	51.501
+ERROR		Vehicle leaves road at about x=29.0716, y=1.06604 TireNo=0
+SIM_ABORT	unknown	51.504s	255.252m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:02:01
+TIME	0.000
+SIMULATE	unknown
+
+TIME	19.681
+SIM_END		unknown	19.678s	134.992m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:07:19
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.973
+ERROR		Vehicle leaves road at about x=21.7306, y=-15.3252 TireNo=0
+SIM_ABORT	unknown	10.976s	59.5045m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:07:44
+TIME	0.000
+SIMULATE	unknown
+
+TIME	25.096
+SIM_END		unknown	25.093s	178.631m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:08:20
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.574
+ERROR		Vehicle leaves road at about x=32.9575, y=-5.35131 TireNo=1
+SIM_ABORT	unknown	10.577s	87.7229m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:08:44
+TIME	0.000
+SIMULATE	unknown
+
+TIME	24.896
+ERROR		Vehicle leaves road at about x=20.2675, y=-12.5153 TireNo=2
+SIM_ABORT	unknown	24.899s	255.974m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:09:26
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.712
+ERROR		Vehicle leaves road at about x=25.1431, y=-8.2343 TireNo=1
+SIM_ABORT	unknown	14.715s	117.656m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:09:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.944
+ERROR		Vehicle leaves road at about x=66.8444, y=-7.79844 TireNo=1
+SIM_ABORT	unknown	30.947s	249.237m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 15:52:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	33.682
+ERROR		Vehicle leaves road at about x=66.6464, y=-7.55852 TireNo=1
+SIM_ABORT	unknown	33.685s	247.81m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 16:32:58
+TIME	0.000
+SIMULATE	unknown
+
+TIME	40.745
+SIM_END		unknown	40.742s	257.473m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 17:05:20
+TIME	0.000
+SIMULATE	unknown
+
+TIME	59.525
+SIM_END		unknown	59.522s	243.106m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 15:45:37
+TIME	0.000
+SIMULATE	unknown
+
+TIME	84.066
+ERROR		Vehicle leaves road at about x=-8.15285, y=-9.56146 TireNo=1
+SIM_ABORT	unknown	84.069s	174.049m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 15:48:19
+TIME	0.000
+SIMULATE	unknown
+
+TIME	21.778
+ERROR		Vehicle leaves road at about x=40.13, y=-8.16949 TireNo=2
+SIM_ABORT	unknown	21.781s	132.608m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 15:53:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	41.646
+ERROR		Vehicle leaves road at about x=63.7656, y=0.318793 TireNo=0
+SIM_ABORT	unknown	41.649s	61.7879m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 15:56:48
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.575
+ERROR		Vehicle leaves road at about x=67.6838, y=-1.46962 TireNo=0
+SIM_ABORT	unknown	5.578s	65.656m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 15:59:19
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.439
+ERROR		Vehicle leaves road at about x=64.1203, y=0.213093 TireNo=0
+SIM_ABORT	unknown	8.442s	62.1148m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 16:05:29
+TIME	0.000
+SIMULATE	unknown
+
+TIME	6.345
+ERROR		Vehicle leaves road at about x=68.0784, y=-1.73938 TireNo=0
+SIM_ABORT	unknown	6.348s	66.0451m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 16:54:51
+TIME	0.000
+SIMULATE	unknown
+
+TIME	37.885
+SIM_END		unknown	37.882s	6.10601m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 16:55:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.196
+ERROR		Vehicle leaves road at about x=40.7216, y=0.927251 TireNo=0
+SIM_ABORT	unknown	16.199s	39.571m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 16:56:20
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.209
+ERROR		Vehicle leaves road at about x=39.9803, y=-7.19458 TireNo=0
+SIM_ABORT	unknown	5.212s	39.3243m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 16:56:48
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.628
+ERROR		Vehicle leaves road at about x=39.0536, y=-13.9314 TireNo=0
+SIM_ABORT	unknown	11.631s	90.2556m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 17:03:17
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.267
+ERROR		Vehicle leaves road at about x=20.582, y=-13.3314 TireNo=0
+SIM_ABORT	unknown	16.27s	61.4212m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-02 17:03:50
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.516
+ERROR		Vehicle leaves road at about x=39.7634, y=-12.1648 TireNo=0
+SIM_ABORT	unknown	15.519s	135.378m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 14:56:58
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:02:17
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:05:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	58.154
+SIM_END		unknown	58.151s	4.54931m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:08:00
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (0,7) .. 0.212248 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (1,7) .. 0.212248 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212248 (2,7) .. 0.212248 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (0,7) .. -0.0223673 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (1,7) .. -0.0223673 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0223673 (2,7) .. -0.0223673 (3,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:09:36
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.760
+SIM_END		unknown	9.757s	0.130075m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:29:15
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (0,7) .. -0.0034672 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (1,7) .. -0.0034672 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (2,7) .. -0.0034672 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (3,7) .. -0.0034672 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (4,7) .. -0.0034672 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0034672 (5,7) .. -0.0034672 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (0,7) .. 0.195999 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (1,7) .. 0.195999 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (2,7) .. 0.195999 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (3,7) .. 0.195999 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (4,7) .. 0.195999 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (5,7) .. 0.195999 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195999 (6,7) .. 0.197703 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.197703 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.2 (8,7) .. 0.202413 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.202413 (9,7) .. 0.204953 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.204953 (10,7) .. 0.207628 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.207628 (11,7) .. 0.210449 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.210449 (12,7) .. 0.213422 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.213422 (13,7) .. 0.216549 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.216549 (14,7) .. 0.219823 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.219823 (15,7) .. 0.223216 (16,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (0,7) .. 0.195999 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (1,7) .. 0.195999 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (2,7) .. 0.195999 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (3,7) .. 0.195999 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (4,7) .. 0.195999 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (5,7) .. 0.195999 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195999 (6,7) .. 0.197703 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.197703 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.2 (8,7) .. 0.202413 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.202413 (9,7) .. 0.204953 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.204953 (10,7) .. 0.207628 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.207628 (11,7) .. 0.210449 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.210449 (12,7) .. 0.213422 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.213422 (13,7) .. 0.216549 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.216549 (14,7) .. 0.219823 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.219823 (15,7) .. 0.223216 (16,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (0,7) .. 0.195999 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (1,7) .. 0.195999 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (2,7) .. 0.195999 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (3,7) .. 0.195999 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (4,7) .. 0.195999 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (5,7) .. 0.195999 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195999 (6,7) .. 0.197703 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.197703 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.2 (8,7) .. 0.202413 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.202413 (9,7) .. 0.204953 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.204953 (10,7) .. 0.207628 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.207628 (11,7) .. 0.210449 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.210449 (12,7) .. 0.213422 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.213422 (13,7) .. 0.216549 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.216549 (14,7) .. 0.219823 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.219823 (15,7) .. 0.223216 (16,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (0,7) .. -0.0034672 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (1,7) .. -0.0034672 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (2,7) .. -0.0034672 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (3,7) .. -0.0034672 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (4,7) .. -0.0034672 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0034672 (5,7) .. -0.0034672 (6,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:36:59
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.183944 (0,7) .. 0.185655 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.185655 (1,7) .. 0.18744 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.18744 (2,7) .. 0.189302 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.189302 (3,7) .. 0.191247 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.191247 (4,7) .. 0.193282 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.193282 (5,7) .. 0.195414 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.195414 (6,7) .. 0.19765 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.19765 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.2 (8,7) .. 0.202472 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.202472 (9,7) .. 0.205075 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.205075 (10,7) .. 0.207819 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.207819 (11,7) .. 0.210711 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.210711 (12,7) .. 0.213755 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.213755 (13,7) .. 0.216946 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.216946 (14,7) .. 0.220269 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.220269 (15,7) .. 0.223684 (16,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.183944 (0,7) .. 0.185655 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.185655 (1,7) .. 0.18744 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.18744 (2,7) .. 0.189302 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.189302 (3,7) .. 0.191247 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.191247 (4,7) .. 0.193282 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.193282 (5,7) .. 0.195414 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.195414 (6,7) .. 0.19765 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.19765 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.2 (8,7) .. 0.202472 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.202472 (9,7) .. 0.205075 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.205075 (10,7) .. 0.207819 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.207819 (11,7) .. 0.210711 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.210711 (12,7) .. 0.213755 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.213755 (13,7) .. 0.216946 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.216946 (14,7) .. 0.220269 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.220269 (15,7) .. 0.223684 (16,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.183944 (0,7) .. 0.185655 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.185655 (1,7) .. 0.18744 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.18744 (2,7) .. 0.189302 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.189302 (3,7) .. 0.191247 (4,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.191247 (4,7) .. 0.193282 (5,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.193282 (5,7) .. 0.195414 (6,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.195414 (6,7) .. 0.19765 (7,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.19765 (7,7) .. 0.2 (8,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.2 (8,7) .. 0.202472 (9,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.202472 (9,7) .. 0.205075 (10,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.205075 (10,7) .. 0.207819 (11,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.207819 (11,7) .. 0.210711 (12,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.210711 (12,7) .. 0.213755 (13,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.213755 (13,7) .. 0.216946 (14,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.216946 (14,7) .. 0.220269 (15,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.220269 (15,7) .. 0.223684 (16,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 15:43:25
+TIME	0.001
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0221 (0,7) .. -0.0221 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0221 (1,7) .. -0.0221 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: compression tz is not increasing monotonously [-0.0221 (2,7) .. -0.0221 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212101 (0,7) .. 0.212101 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212101 (1,7) .. 0.212101 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: spring length is not decreasing monotonously [0.212101 (2,7) .. 0.212101 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212101 (0,7) .. 0.212101 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212101 (1,7) .. 0.212101 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: damper length is not decreasing monotonously [0.212101 (2,7) .. 0.212101 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212101 (0,7) .. 0.212101 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212101 (1,7) .. 0.212101 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: buffer length is not decreasing monotonously [0.212101 (2,7) .. 0.212101 (3,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0221 (0,7) .. -0.0221 (1,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0221 (1,7) .. -0.0221 (2,7)],
+ERROR		Suspension KnC 'MapNL' front left: stabilizer deflection is not increasing monotonously [-0.0221 (2,7) .. -0.0221 (3,7)],
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 16:54:15
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.383
+ERROR		Vehicle leaves road at about x=25.2166, y=-10.574 TireNo=1
+SIM_ABORT	unknown	17.386s	56.4937m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 16:55:02
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.314
+ERROR		Vehicle leaves road at about x=33.4524, y=-5.78428 TireNo=1
+SIM_ABORT	unknown	7.317s	33.9067m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 16:55:42
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.324
+SIM_END		unknown	13.321s	0.183852m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:29:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.050
+SIM_END		unknown	11.047s	0.136283m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:31:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	18.834
+ERROR		Vehicle leaves road at about x=39.1023, y=-4.36936 TireNo=0
+SIM_ABORT	unknown	18.837s	38.7874m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:34:03
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.057
+ERROR		Vehicle leaves road at about x=31.3382, y=-4.52685 TireNo=1
+SIM_ABORT	unknown	5.06s	31.9869m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:35:57
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.090
+ERROR		Vehicle leaves road at about x=34.3325, y=-6.98817 TireNo=1
+SIM_ABORT	unknown	7.093s	37.0984m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:38:33
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.516
+ERROR		Vehicle leaves road at about x=67.3075, y=-1.23097 TireNo=0
+SIM_ABORT	unknown	15.519s	65.5653m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:40:01
+TIME	0.000
+SIMULATE	unknown
+
+TIME	4.543
+ERROR		Vehicle leaves road at about x=34.8095, y=-8.40628 TireNo=1
+SIM_ABORT	unknown	4.546s	38.3444m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:42:33
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.178
+ERROR		Vehicle leaves road at about x=63.6625, y=-5.2856 TireNo=1
+SIM_ABORT	unknown	11.181s	63.4961m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:46:13
+TIME	0.000
+SIMULATE	unknown
+
+TIME	44.956
+ERROR		Vehicle leaves road at about x=131.205, y=58.7303 TireNo=0
+SIM_ABORT	unknown	44.959s	208.271m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:49:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	22.748
+SIM_END		unknown	22.745s	59.9112m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:50:41
+TIME	0.000
+SIMULATE	unknown
+
+TIME	51.273
+ERROR		Vehicle leaves road at about x=-18.539, y=15.9652 TireNo=0
+SIM_ABORT	unknown	51.276s	25.7688m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:53:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.689
+ERROR		Embedded FARoadSensor Geo:  xyz (-17.77 14.68 -0.00) not found on Road
+SIM_ABORT	unknown	16.692s	27.6947m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 19:59:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	27.874
+ERROR		Vehicle leaves road at about x=-17.3691, y=14.1955 TireNo=0
+SIM_ABORT	unknown	27.877s	27.2365m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 20:00:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.514
+ERROR		Vehicle leaves road at about x=-16.085, y=12.9284 TireNo=0
+SIM_ABORT	unknown	14.517s	31.3988m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 20:18:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.498
+ERROR		Vehicle leaves road at about x=34.6739, y=12.6485 TireNo=1
+SIM_ABORT	unknown	12.501s	94.3112m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 20:20:32
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.768
+ERROR		Vehicle leaves road at about x=-27.6968, y=14.7919 TireNo=1
+SIM_ABORT	unknown	11.771s	26.7563m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-03 20:32:09
+TIME	0.000
+SIMULATE	unknown
+
+TIME	38.159
+ERROR		Vehicle leaves road at about x=148.17, y=3.0992 TireNo=1
+SIM_ABORT	unknown	38.162s	226.4m

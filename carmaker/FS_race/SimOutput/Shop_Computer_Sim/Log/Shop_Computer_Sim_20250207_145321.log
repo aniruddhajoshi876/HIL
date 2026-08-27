@@ -1,0 +1,183 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 14:56:38
+TIME	0.001
+ERROR		Tire 0 'MF52': Wrong fit type (got 62, expected 6)
+ERROR		Tire 0 'MF52': Error when trying to read infofile
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 14:57:11
+TIME	0.001
+ERROR		Tire 0 'MF52': Wrong fit type (got 62, expected 6)
+ERROR		Tire 0 'MF52': Error when trying to read infofile
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 14:58:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	36.878
+ERROR		Vehicle leaves road at about x=157.934, y=-7.60258 TireNo=1
+SIM_ABORT	unknown	36.881s	156.529m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:01:47
+TIME	0.001
+ERROR		Tire 0 'MF52': Wrong fit type (got 62, expected 6)
+ERROR		Tire 0 'MF52': Error when trying to read infofile
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:06:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	4.105
+SIM_END		unknown	4.102s	2.33051e-05m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:08:13
+TIME	0.000
+SIMULATE	unknown
+
+TIME	49.404
+SIM_END		unknown	49.401s	506.521m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:09:43
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.786
+SIM_END		unknown	13.783s	0.266442m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:21:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.193
+SIM_END		unknown	15.19s	0.433144m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:22:30
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.802
+ERROR		Vehicle leaves road at about x=131.575, y=2.6085 TireNo=0
+SIM_ABORT	unknown	10.805s	132.859m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:22:59
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.240
+SIM_END		unknown	11.237s	0.0792119m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:27:54
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.951
+SIM_END		unknown	17.948s	229.101m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:32:14
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.213
+SIM_END		unknown	11.21s	0.212084m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:33:47
+TIME	0.000
+SIMULATE	unknown
+
+TIME	26.003
+SIM_END		unknown	26s	366.479m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:43:36
+TIME	0.000
+SIMULATE	unknown
+
+TIME	32.093
+SIM_END		unknown	32.09s	303.198m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:49:49
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.725
+ERROR		Vehicle leaves road at about x=176.59, y=2.60826 TireNo=0
+SIM_ABORT	unknown	10.728s	176.012m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:54:35
+TIME	0.001
+ERROR		FTire: Error in ctidlGetInstallFolder (error-code = 2)
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 15:54:59
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.166
+ERROR		Vehicle leaves road at about x=241.318, y=2.61165 TireNo=0
+SIM_ABORT	unknown	13.169s	240.234m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-07 16:04:01
+TIME	0.001
+ERROR		Tire 0 'MF52': Wrong fit type (got 62, expected 6)
+ERROR		Tire 0 'MF52': Error when trying to read infofile
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m

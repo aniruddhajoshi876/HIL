@@ -1,0 +1,19 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-08-02 12:51:18
+TIME	0.001
+ERROR		Evaluation of CM4SL.ActivateFcn/StartFcn failed: No Simulink model selected
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	unknown	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-08-02 12:57:09
+TIME	0.000
+SIMULATE	unknown
+
+TIME	67.176
+SIM_END		unknown	67.176s	411.312m

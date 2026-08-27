@@ -1,0 +1,46 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-12 18:34:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	25.438
+SIM_END		unknown	25.435s	194.518m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-12 18:35:37
+TIME	0.000
+SIMULATE	unknown
+
+TIME	106.643
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 106.643000, ErrInd = 102). (id=200)
+TIME	110.224
+ERROR		Vehicle leaves road at about x=24.1803, y=-13.9714 TireNo=1
+SIM_ABORT	unknown	110.227s	1529.1m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-12 18:37:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	52.852
+ERROR		Vehicle leaves road at about x=-46.7252, y=26.0633 TireNo=1
+SIM_ABORT	unknown	52.855s	1023.27m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-02-12 18:39:30
+TIME	0.000
+SIMULATE	unknown
+
+TIME	260.120
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 260.120000, ErrInd = 102). (id=200)
+TIME	94519.520
+WARNING		DStore: File size reached limit of 5120 MB.

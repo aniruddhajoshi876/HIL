@@ -1,0 +1,126 @@
+#INFOFILE1.1 (UTF-8) - Do not remove this line!
+FileIdent = CarMaker-Driver 5
+DriverResult.nResult = 1
+DriverResult.0.Info.Time = 1284.79
+DriverResult.0.Info.Dist = 17628.97
+DriverResult.0.Info.RoadDist = 22589.89
+DriverResult.0.Info.Time1970 = 1705079853
+DriverResult.0.Learn.Phase = 999
+DriverResult.0.Learn.PhaseTxt = Final
+Driver.ParamIdent = IPGDriver 5
+DriverResult.0.Knowl.Vehicle.xJerkMax = 500.000
+DriverResult.0.Knowl.Vehicle.yJerkMax = 500.000
+DriverResult.0.Knowl.Vehicle.psiJerkMax = 5000.000
+DriverResult.0.Knowl.Vehicle.t_TPacc = 0.001
+DriverResult.0.Knowl.Long.tStart = 0.000
+DriverResult.0.Knowl.Long.tPreStart = 0.100
+DriverResult.0.Knowl.Long.StartRpmOffset = 500.00
+DriverResult.0.Knowl.Long.tActionMin = 0.500
+DriverResult.0.Knowl.Long.dtSwitchGear = 0.000
+DriverResult.0.Knowl.Long.AccPosMax = 1.00
+DriverResult.0.Knowl.Long.BrakePedalFMax = 1.00
+DriverResult.0.Knowl.Long.BrakeLeverFMax = 1.00
+DriverResult.0.Knowl.Long.ThrottleVelRelease = 10.000
+DriverResult.0.Knowl.Long.ThrottleVelPush = 10.000
+DriverResult.0.Knowl.Long.BrakeVelRelease = 10.000
+DriverResult.0.Knowl.Long.BrakeVelPush = 10.000
+DriverResult.0.Knowl.Long.ActuatorAccMax = 1000.000
+DriverResult.0.Knowl.Long.ThrottleAmp = 1.000
+DriverResult.0.Knowl.Long.BrakeAmp = 1.000
+DriverResult.0.Knowl.Long.ClutchAmp = 1.000
+DriverResult.0.Knowl.Lat.tPreview = 0.528
+DriverResult.0.Knowl.Lat.tYawPro = 0.022
+DriverResult.0.Knowl.Lat.tPreDyn = 0.044
+DriverResult.0.Knowl.Lat.StWhlTorqueAmplify = 1.000
+DriverResult.0.Knowl.Lat.StWhlTorqueAmplifyC = 1.000
+DriverResult.0.Knowl.Lat.StWhlTorqueAmplifyV = 1.000
+DriverResult.0.Knowl.Lat.LimitSideSlip = 7.760
+DriverResult.0.Knowl.Long.tPreviewAcc = 0.381
+DriverResult.0.Knowl.Long.tPreviewBra = 1.125
+DriverResult.0.Knowl.Long.tPreEngDyn = 0.077
+DriverResult.0.Knowl.Long.tPreBraDyn = 0.010
+DriverResult.0.Knowl.Long.tPreEngDead = 0.000
+DriverResult.0.Knowl.Long.tPreBraDead = 0.000
+DriverResult.0.Knowl.Long.ThrottlePfP = 0.053
+DriverResult.0.Knowl.Long.BrakePfP = 0.000
+DriverResult.0.Knowl.Vehicle.iDiff = 1.00000
+DriverResult.0.Knowl.Vehicle.rWheel = 0.25111
+DriverResult.0.Knowl.Vehicle.iFGear = 13.39000
+DriverResult.0.Knowl.Vehicle.iBGear =
+DriverResult.0.Learn.JerkYRed = 0.050
+DriverResult.0.Learn.DrivelineKind = 2
+DriverResult.0.Learn.PT_SlipMax = 3.190	3.190	0.917	0.917
+DriverResult.0.Learn.PT_h_COG = 0.531
+DriverResult.0.Learn.nEngineIdle = 0
+DriverResult.0.Learn.nEngineMax = 0
+DriverResult.0.Learn.vIdle = 15.000
+DriverResult.0.Learn.vMax = 140.682
+DriverResult.0.Learn.G2GearNo = 2
+DriverResult.0.Learn.G3GearNo = 3
+DriverResult.0.Learn.vG2nEng025 = 35.171
+DriverResult.0.Learn.vG2nEng075 = 56.273
+DriverResult.0.Learn.axBra_vG2nEng05 = -16.172
+DriverResult.0.Learn.axAccG2 = 9.801
+DriverResult.0.Learn.axDragG1 = 0.500
+DriverResult.0.Learn.tYawPro_YawAcc = 170.664
+DriverResult.0.Learn.tYawPro_StWhlA = 10.189
+DriverResult.0.Learn.vnEng05 = 23	47	70	94	117
+DriverResult.0.Learn.axAccMax = 1.00	1.00	1.00	1.00	1.00
+DriverResult.0.Learn.Engine.TrqMax:
+	# 'nEngine [rpm]'	'Trq [Nm]'
+	0	    0.00
+	0	    0.00
+	0	    0.00
+	0	    0.00
+	0	    0.00
+DriverResult.0.Learn.Engine.PwrMax:
+	# 'nEngine [rpm]'	'Pwr [kW]'
+	0	  0.0000
+	0	  0.0000
+	0	  0.0000
+	0	  0.0000
+	0	  0.0000
+DriverResult.0.Learn.NEng_S = 1
+DriverResult.0.Learn.nEngine.MaxSpeed:
+	# 'nEngineMin [rpm]'	'nEngineMax [rpm]'
+	0	0
+	0	0
+	0	0
+	0	0
+	0	0
+DriverResult.0.Learn.nEngine.Standard:
+	# 'nEngineMin [rpm]'	'nEngineMax [rpm]'
+	0	0
+	0	0
+	0	0
+	0	0
+	0	0
+DriverResult.0.Learn.ayMax = 15.40	20.06	23.98	27.04	28.88
+DriverResult.0.Learn.StWhlA_ayMax = 219.32	83.11	46.60	40.44	27.83
+DriverResult.0.Learn.RaceLearnRate = 0.750
+DriverResult.0.Knowl.Long.SlipMax:
+	# 'Speed [kmh]'	'LongSlip [%]'	'SideSlipAng [deg]'
+	23.46	   4.24	   2.43
+	44.81	   5.94	   3.41
+	67.83	   6.45	   3.70
+	80.98	   7.53	   4.32
+	105.17	   5.58	   3.20
+DriverResult.0.Knowl.Vehicle.Aero.Factor_axDecel = 1.000
+DriverResult.0.Knowl.Vehicle.Aero.Factor_axAccel = 1.000
+DriverResult.0.Knowl.Vehicle.Aero.Factor_ay = 0.950
+DriverResult.0.Knowl.Vehicle.Aero:
+	# 'v [km/h]'	'a_accel [m/s^2]'	'a_decel [m/s^2]'	'a_lat [m/s^2]'
+	20.00	   10.47	  -17.79	   13.34
+	30.00	   10.37	  -17.83	   15.62
+	40.00	   10.18	  -17.90	   17.90
+	50.00	    9.98	  -18.13	   20.21
+	60.00	    9.79	  -18.62	   22.55
+	70.00	    9.57	  -19.14	   24.83
+	80.00	    9.31	  -19.58	   26.68
+	90.00	    9.01	  -19.88	   27.68
+	100.00	    8.69	  -20.00	   28.28
+	110.00	    8.25	  -20.02	   29.12
+	120.00	    7.43	  -20.01	   30.54
+	130.00	    6.09	  -20.00	   32.27
+	140.00	    4.71	  -20.00	   34.04
+	150.00	    4.16	  -20.00	   35.78

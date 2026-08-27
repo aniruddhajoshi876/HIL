@@ -1,0 +1,35 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	HIL/XCP_Bringup	2026-08-14 14:37:43
+TIME	0.001
+WARNING		XCP: Failed to map ASAP2 variable ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_brake to quantity VehicleControl.Brake
+WARNING		XCP: Failed to map ASAP2 variable ModuleName.RTE_Param_Service.hil_cmd_xcp_pedals_throttle to quantity VehicleControl.Gas
+		XCP: ECU #0 - Detected Processor info mismatch:
+	> Overload Indication
+(Master: OVERLOAD_INDICATION_PID Slave: OVERLOAD_INDICATION_EVENT)
+	> TimeStamp Support
+(Master: 0 Slave: 1)
+		XCP: ECU #0 - Detected Resolution info mismatch:
+	> TimeStamp Fixed
+(Master: 0 Slave: 1)
+	> TimeStamp Size
+(Master: NO_TIME_STAMP Slave: SIZE_DWORD)
+WARNING		XCP: Difference in DAQ programming setup between Master and Slave detected
+TIME	0.000
+SIMULATE	HIL/XCP_Bringup
+
+TIME	3.950
+		DVA read: Unknown quantity 'ZZBOGUS.One'
+		DVA read: Unknown quantity 'ZZBOGUS.Two'
+		DVA read: Unknown quantity 'ZZBOGUS.Three'
+		DVA read: Unknown quantity 'ZZBOGUS.Four'
+		DVA read: Unknown quantity 'ZZBOGUS.Five'
+		DVA read: Unknown quantity 'ZZBOGUS.Six'
+		DVA read: Unknown quantity 'VC.Gas_trg'
+		DVA read: Unknown quantity 'ZZBOGUS.Seven'
+		DVA read: Unknown quantity 'ZZBOGUS.Eight'
+		DVA read: Unknown quantity 'ZZBOGUS.Nine'
+TIME	5.998
+SIM_END		HIL/XCP_Bringup	5.995s	0.0836951m

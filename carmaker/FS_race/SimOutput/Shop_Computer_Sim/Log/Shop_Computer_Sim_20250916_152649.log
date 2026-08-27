@@ -1,0 +1,26 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #3 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:09
+ 
+		I/O Configuration: default
+FIRST_INIT	(internal default used)	2025-09-16 15:26:49
+TIME	0.000
+SIM_END			0s	0m
+IDLE	15:26:49
+SIM_START	Competition/FS_Acceleration	2025-09-16 15:26:55
+TIME	0.008
+ERROR		PowerTrain.Control Generic: supports only Generic powertrain
+SIM_ABORT	Competition/FS_Acceleration	0s	0m
+SIM_START	Competition/FS_SkidPad	2025-09-16 15:27:15
+TIME	0.007
+ERROR		PowerTrain.Control Generic: supports only Generic powertrain
+SIM_ABORT	Competition/FS_SkidPad	0s	0m
+SIM_START	Competition/FS_SkidPad	2025-09-16 15:27:23
+TIME	0.001
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	Competition/FS_SkidPad	0s	0m
+SIM_START	Competition/FS_SkidPad	2025-09-16 15:27:34
+TIME	0.002
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	Competition/FS_SkidPad	0s	0m
+SHUTDOWN	CarMaker quick shutdown initiated
+

@@ -1,0 +1,1008 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:03:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.567
+ERROR		Vehicle leaves road at about x=39.1831, y=-4.83554 TireNo=0
+SIM_ABORT	unknown	10.57s	37.3639m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:04:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	37.308
+ERROR		Vehicle leaves road at about x=31.3952, y=-13.964 TireNo=1
+SIM_ABORT	unknown	37.311s	89.6284m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:05:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.076
+ERROR		Vehicle leaves road at about x=32.9948, y=-13.1304 TireNo=1
+SIM_ABORT	unknown	9.079s	45.454m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:08:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.940
+ERROR		Vehicle leaves road at about x=39.5502, y=9.98648 TireNo=1
+SIM_ABORT	unknown	16.943s	89.6965m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:09:01
+TIME	0.000
+SIMULATE	unknown
+
+TIME	26.561
+ERROR		Vehicle leaves road at about x=33.2098, y=-5.55373 TireNo=1
+SIM_ABORT	unknown	26.564s	32.5309m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:09:42
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.497
+ERROR		Vehicle leaves road at about x=40.0046, y=-11.1758 TireNo=2
+SIM_ABORT	unknown	7.5s	43.4639m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:11:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.034
+SIM_END		unknown	5.031s	0.0653887m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:11:56
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.814
+ERROR		Vehicle leaves road at about x=25.0032, y=-18.2002 TireNo=0
+SIM_ABORT	unknown	13.817s	58.0069m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:13:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.031
+ERROR		Vehicle leaves road at about x=40.1036, y=-7.92786 TireNo=0
+SIM_ABORT	unknown	16.034s	86.7954m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:15:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.734
+ERROR		Vehicle leaves road at about x=32.2423, y=-13.6157 TireNo=0
+SIM_ABORT	unknown	9.737s	50.9964m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:16:13
+TIME	0.000
+SIMULATE	unknown
+
+TIME	23.716
+ERROR		Vehicle leaves road at about x=35.5042, y=-17.8529 TireNo=0
+SIM_ABORT	unknown	23.719s	92.3557m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:17:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.108
+ERROR		Vehicle leaves road at about x=123.826, y=2.60161 TireNo=0
+SIM_ABORT	unknown	12.111s	122.348m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:18:22
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.658
+ERROR		Vehicle leaves road at about x=39.6884, y=2.32502 TireNo=1
+SIM_ABORT	unknown	12.661s	84.3384m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:20:31
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.298
+ERROR		Vehicle leaves road at about x=151.177, y=2.60548 TireNo=0
+SIM_ABORT	unknown	9.301s	150.224m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:26:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	21.457
+ERROR		Vehicle leaves road at about x=27.7406, y=1.52757 TireNo=0
+SIM_ABORT	unknown	21.46s	73.7558m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:30:50
+TIME	0.000
+SIMULATE	unknown
+
+TIME	93.042
+ERROR		Vehicle leaves road at about x=39.2177, y=-4.89907 TireNo=0
+SIM_ABORT	unknown	93.045s	37.9442m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:36:37
+TIME	0.000
+SIMULATE	unknown
+
+TIME	25.375
+ERROR		Vehicle leaves road at about x=39.4365, y=0.93142 TireNo=1
+SIM_ABORT	unknown	25.378s	159.176m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:39:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.420
+ERROR		Vehicle leaves road at about x=40.0187, y=-4.37725 TireNo=1
+SIM_ABORT	unknown	15.423s	87.5445m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:40:36
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.288
+ERROR		Embedded FARoadSensor Geo:  xyz (39.08 1.03 -0.00) not found on Road
+SIM_ABORT	unknown	12.291s	79.2152m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:44:27
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.280
+ERROR		Vehicle leaves road at about x=40.354, y=6.04352 TireNo=1
+SIM_ABORT	unknown	17.283s	122.181m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:45:43
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.031
+ERROR		Embedded FARoadSensor Geo:  xyz (39.45 -4.37 -0.00) not found on Road
+SIM_ABORT	unknown	13.034s	88.3771m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:46:24
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.843
+ERROR		Embedded FARoadSensor Geo:  xyz (39.04 -4.55 -0.01) not found on Road
+SIM_ABORT	unknown	7.846s	37.268m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:46:54
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.468
+ERROR		Vehicle leaves road at about x=20.6166, y=-5.09925 TireNo=2
+SIM_ABORT	unknown	10.471s	70.7039m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:47:42
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.935
+ERROR		Vehicle leaves road at about x=24.7787, y=-18.0697 TireNo=0
+SIM_ABORT	unknown	8.938s	57.6004m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:50:19
+TIME	0.000
+SIMULATE	unknown
+
+TIME	18.923
+ERROR		Vehicle leaves road at about x=31.1823, y=10.8858 TireNo=0
+SIM_ABORT	unknown	18.926s	151.075m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:50:51
+TIME	0.000
+SIMULATE	unknown
+
+TIME	6.918
+ERROR		Vehicle leaves road at about x=36.0278, y=-17.4852 TireNo=0
+SIM_ABORT	unknown	6.921s	48.8387m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:51:11
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.843
+ERROR		Vehicle leaves road at about x=38.0786, y=-15.4741 TireNo=2
+SIM_ABORT	unknown	5.846s	47.1837m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:51:29
+TIME	0.000
+SIMULATE	unknown
+
+TIME	31.653
+ERROR		Vehicle leaves road at about x=-13.5861, y=-9.02569 TireNo=3
+SIM_ABORT	unknown	31.656s	365.901m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:53:44
+TIME	0.000
+SIMULATE	unknown
+
+TIME	24.224
+ERROR		Vehicle leaves road at about x=33.3377, y=9.77157 TireNo=0
+SIM_ABORT	unknown	24.227s	144.193m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:56:03
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.160
+ERROR		Vehicle leaves road at about x=144.532, y=-7.60165 TireNo=1
+SIM_ABORT	unknown	7.163s	142.99m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:57:15
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.478
+ERROR		Vehicle leaves road at about x=40.1646, y=-8.5716 TireNo=0
+SIM_ABORT	unknown	5.481s	40.4203m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 19:58:30
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.127
+ERROR		Vehicle leaves road at about x=40.1632, y=-9.97771 TireNo=0
+SIM_ABORT	unknown	5.13s	41.6014m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 20:55:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.091
+ERROR		Vehicle leaves road at about x=37.6986, y=-15.9386 TireNo=0
+SIM_ABORT	unknown	30.094s	203.154m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:03:12
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.938
+ERROR		Vehicle leaves road at about x=40.1438, y=-8.24591 TireNo=0
+SIM_ABORT	unknown	7.941s	39.9507m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:07:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.640
+ERROR		Embedded FARoadSensor Geo:  xyz (20.96 1.02 -0.01) not found on Road
+SIM_ABORT	unknown	14.643s	71.1895m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:10:41
+TIME	0.000
+SIMULATE	unknown
+
+TIME	4.246
+ERROR		Vehicle leaves road at about x=69.4876, y=-2.87571 TireNo=0
+SIM_ABORT	unknown	4.249s	67.4835m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:11:29
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.601
+ERROR		Vehicle leaves road at about x=28.9467, y=1.09306 TireNo=0
+SIM_ABORT	unknown	9.604s	75.9231m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:17:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	4.617
+ERROR		Vehicle leaves road at about x=57.8067, y=0.859555 TireNo=0
+SIM_ABORT	unknown	4.62s	56.2516m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:25:17
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.313
+ERROR		Vehicle leaves road at about x=31.0451, y=-19.425 TireNo=0
+SIM_ABORT	unknown	13.316s	94.4965m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 21:43:56
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.998
+ERROR		Vehicle leaves road at about x=39.1994, y=-4.37456 TireNo=0
+SIM_ABORT	unknown	12.001s	37.439m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:31:14
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.301
+ERROR		Vehicle leaves road at about x=22.5918, y=13.1631 TireNo=0
+SIM_ABORT	unknown	11.304s	84.3563m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:38:05
+TIME	0.000
+SIMULATE	unknown
+
+TIME	49.606
+SIM_END		unknown	49.603s	40.6079m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:39:06
+TIME	0.000
+SIMULATE	unknown
+
+TIME	19.981
+ERROR		Vehicle leaves road at about x=24.481, y=-17.89 TireNo=0
+SIM_ABORT	unknown	19.984s	56.8115m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:46:07
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.607
+ERROR		Vehicle leaves road at about x=27.7138, y=-19.2315 TireNo=0
+SIM_ABORT	unknown	7.61s	54.9013m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:51:31
+TIME	0.000
+SIMULATE	unknown
+
+TIME	23.320
+ERROR		Vehicle leaves road at about x=21.532, y=-15.045 TireNo=0
+SIM_ABORT	unknown	23.323s	57.5626m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:56:07
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.584
+ERROR		Vehicle leaves road at about x=25.4631, y=3.90414 TireNo=1
+SIM_ABORT	unknown	8.587s	76.6301m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:57:11
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.677
+ERROR		Vehicle leaves road at about x=24.4005, y=-17.836 TireNo=0
+SIM_ABORT	unknown	12.68s	58.4517m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 22:58:16
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.462
+ERROR		Vehicle leaves road at about x=38.252, y=-15.2391 TireNo=0
+SIM_ABORT	unknown	8.465s	46.0567m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:03:53
+TIME	0.000
+SIMULATE	unknown
+
+TIME	3.072
+ERROR		Vehicle leaves road at about x=39.5174, y=1.92528 TireNo=1
+SIM_ABORT	unknown	3.075s	37.8323m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:07:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.766
+ERROR		Vehicle leaves road at about x=48.8729, y=-4.4112 TireNo=1
+SIM_ABORT	unknown	11.769s	47.1563m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:10:11
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.298
+ERROR		Vehicle leaves road at about x=28.5234, y=-19.382 TireNo=0
+SIM_ABORT	unknown	9.301s	51.31m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:10:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.096
+ERROR		Vehicle leaves road at about x=39.1267, y=1.11481 TireNo=0
+SIM_ABORT	unknown	15.099s	81.0763m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:16:05
+TIME	0.000
+SIMULATE	unknown
+
+TIME	22.119
+ERROR		Vehicle leaves road at about x=28.0516, y=1.3782 TireNo=0
+SIM_ABORT	unknown	22.122s	74.035m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:23:56
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.085
+ERROR		Vehicle leaves road at about x=30.0958, y=-19.4815 TireNo=0
+SIM_ABORT	unknown	11.088s	97.7665m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:24:28
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.748
+ERROR		Vehicle leaves road at about x=27.8154, y=-19.2532 TireNo=3
+SIM_ABORT	unknown	11.751s	99.6569m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-07 23:24:53
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.174
+ERROR		Vehicle leaves road at about x=45.7414, y=0.904119 TireNo=0
+SIM_ABORT	unknown	11.177s	88.2136m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 16:50:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	33.399
+ERROR		Embedded FARoadSensor Geo:  xyz (39.80 -4.37 -0.00) not found on Road
+SIM_ABORT	unknown	33.402s	140.651m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 16:52:07
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.433
+ERROR		Vehicle leaves road at about x=41.0612, y=-6.99458 TireNo=2
+SIM_ABORT	unknown	16.436s	94.9886m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 16:56:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.192
+ERROR		Vehicle leaves road at about x=30.6464, y=1.00429 TireNo=0
+SIM_ABORT	unknown	15.195s	85.0037m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 16:59:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.606
+ERROR		Vehicle leaves road at about x=23.8855, y=-8.64519 TireNo=1
+SIM_ABORT	unknown	11.609s	70.4531m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 16:59:28
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.302
+ERROR		Vehicle leaves road at about x=41.5556, y=-12.4941 TireNo=0
+SIM_ABORT	unknown	10.305s	97.9785m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:02:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	32.631
+ERROR		Vehicle leaves road at about x=51.4177, y=-22.0182 TireNo=0
+SIM_ABORT	unknown	32.634s	158.828m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:03:05
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.837
+ERROR		Vehicle leaves road at about x=25.0137, y=-21.9056 TireNo=1
+SIM_ABORT	unknown	16.84s	62.6114m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:03:41
+TIME	0.000
+SIMULATE	unknown
+
+TIME	60.703
+ERROR		Vehicle leaves road at about x=39.8325, y=-4.38008 TireNo=0
+SIM_ABORT	unknown	60.706s	38.4958m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:09:13
+TIME	0.000
+SIMULATE	unknown
+
+TIME	20.147
+ERROR		Vehicle leaves road at about x=48.1003, y=-4.40944 TireNo=1
+SIM_ABORT	unknown	20.15s	153.169m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:10:07
+TIME	0.000
+SIMULATE	unknown
+
+TIME	34.844
+SIM_END		unknown	34.841s	0.237649m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:10:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	19.380
+ERROR		Vehicle leaves road at about x=39.966, y=1.08015 TireNo=1
+SIM_ABORT	unknown	19.383s	146.582m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:18:53
+TIME	0.000
+SIMULATE	unknown
+
+TIME	18.954
+ERROR		Vehicle leaves road at about x=25.3671, y=2.93829 TireNo=0
+SIM_ABORT	unknown	18.957s	178.538m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:19:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	35.104
+ERROR		Vehicle leaves road at about x=69.8329, y=-3.20552 TireNo=0
+SIM_ABORT	unknown	35.107s	278.427m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:20:57
+TIME	0.000
+SIMULATE	unknown
+
+TIME	73.919
+ERROR		Vehicle leaves road at about x=-13.9546, y=-10.6107 TireNo=1
+SIM_ABORT	unknown	73.922s	397.734m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:24:04
+TIME	0.000
+SIMULATE	unknown
+
+TIME	23.615
+ERROR		Vehicle leaves road at about x=40.1652, y=-4.37457 TireNo=1
+SIM_ABORT	unknown	23.618s	246.598m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:27:31
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.161
+ERROR		Vehicle leaves road at about x=26.2716, y=18.6984 TireNo=3
+SIM_ABORT	unknown	17.164s	158.36m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:28:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	36.488
+ERROR		Vehicle leaves road at about x=70.04, y=-3.40937 TireNo=0
+SIM_ABORT	unknown	36.491s	328.836m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:33:03
+TIME	0.000
+SIMULATE	unknown
+
+TIME	3.696
+ERROR		Vehicle leaves road at about x=41.0873, y=-14.4425 TireNo=0
+SIM_ABORT	unknown	3.699s	27.6417m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:33:21
+TIME	0.000
+SIMULATE	unknown
+
+TIME	27.151
+ERROR		Vehicle leaves road at about x=58.0412, y=-27.3506 TireNo=0
+SIM_ABORT	unknown	27.154s	283.472m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:35:30
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.748
+ERROR		Vehicle leaves road at about x=26.2387, y=18.6874 TireNo=1
+SIM_ABORT	unknown	15.751s	148.243m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:39:02
+TIME	0.000
+SIMULATE	unknown
+
+TIME	26.544
+ERROR		Vehicle leaves road at about x=26.1518, y=-21.9111 TireNo=0
+SIM_ABORT	unknown	26.547s	42.5806m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-08 17:39:45
+TIME	0.000
+SIMULATE	unknown
+
+TIME	16.020
+ERROR		Vehicle leaves road at about x=26.1825, y=-15.9519 TireNo=1
+SIM_ABORT	unknown	16.023s	99.815m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 14:57:06
+TIME	0.000
+SIMULATE	unknown
+
+TIME	40.405
+SIM_END		unknown	40.402s	322.497m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 14:58:41
+TIME	0.000
+SIMULATE	unknown
+
+TIME	25.467
+ERROR		Vehicle leaves road at about x=39.8602, y=-4.4632 TireNo=1
+SIM_ABORT	unknown	25.47s	237.577m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:03:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	6.198
+ERROR		Vehicle leaves road at about x=144.566, y=2.60312 TireNo=0
+SIM_ABORT	unknown	6.201s	125.39m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:03:31
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.949
+ERROR		Vehicle leaves road at about x=186.496, y=-7.6011 TireNo=1
+SIM_ABORT	unknown	7.952s	167.084m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:04:03
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.032
+ERROR		Vehicle leaves road at about x=116.654, y=2.6068 TireNo=0
+SIM_ABORT	unknown	5.035s	97.446m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:04:24
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.013
+ERROR		Vehicle leaves road at about x=116.108, y=2.60565 TireNo=0
+SIM_ABORT	unknown	5.016s	96.9333m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:04:51
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.646
+ERROR		Vehicle leaves road at about x=133.387, y=-7.60862 TireNo=1
+SIM_ABORT	unknown	5.649s	114.279m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:07:39
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.247
+ERROR		Vehicle leaves road at about x=119.397, y=2.60458 TireNo=0
+SIM_ABORT	unknown	15.25s	100.296m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:09:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.366
+ERROR		Vehicle leaves road at about x=109.1, y=-7.60887 TireNo=1
+SIM_ABORT	unknown	5.369s	90.2772m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:11:52
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.920
+ERROR		Vehicle leaves road at about x=127.646, y=-7.60089 TireNo=1
+SIM_ABORT	unknown	5.923s	108.351m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:13:38
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.627
+ERROR		Vehicle leaves road at about x=118.891, y=2.61209 TireNo=0
+SIM_ABORT	unknown	5.63s	99.9326m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:14:44
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.579
+ERROR		Vehicle leaves road at about x=117.174, y=-7.60477 TireNo=1
+SIM_ABORT	unknown	5.582s	98.4183m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:16:20
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.416
+ERROR		Vehicle leaves road at about x=113.698, y=-7.60994 TireNo=1
+SIM_ABORT	unknown	5.419s	94.8122m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-09 15:18:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	6.668
+ERROR		Vehicle leaves road at about x=130.097, y=-7.60823 TireNo=1
+SIM_ABORT	unknown	6.671s	129.084m

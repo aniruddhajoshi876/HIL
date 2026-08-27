@@ -1,0 +1,121 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 12:55:28
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	22.289
+SIM_END		HIL/CAN_Bringup	22.286s	385.216m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 0 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 1 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 81 rejected, trying next
+ERROR		PCAN-USB FD channel 1: 1 Mbit/s classic-CAN setup failed
+ERROR		PCAN-USB FD channel 1 status 0xfffffffe: 
+		PCAN-USB FD channel 1 initialized: 1 Mbit/s classic CAN ()
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-1)
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 13:19:37
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	28.964
+ERROR		Vehicle leaves road at about x=528.292, y=-7.60054 TireNo=1
+SIM_ABORT	HIL/CAN_Bringup	28.967s	526.332m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 13:30:49
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	59.875
+SIM_END		HIL/CAN_Bringup	59.872s	4.67924e-05m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 13:32:05
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	300.002
+SIM_END		HIL/CAN_Bringup	300s	9.00894e-05m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 13:39:14
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	300.002
+SIM_END		HIL/CAN_Bringup	300s	9.00894e-05m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 0 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 1 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 81 rejected, trying next
+ERROR		PCAN-USB FD channel 1: 1 Mbit/s classic-CAN setup failed
+ERROR		PCAN-USB FD channel 1 status 0xfffffffe: 
+		PCAN-USB FD channel 1 initialized: 1 Mbit/s classic CAN ()
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-1)
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 0 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 1 rejected, trying next
+ERROR		PCANIO: A PCAN Channel has not been initialized yet or the initialization process has failed
+		PCAN-USB FD: channel index 81 rejected, trying next
+ERROR		PCAN-USB FD channel 1: 1 Mbit/s classic-CAN setup failed
+ERROR		PCAN-USB FD channel 1 status 0xfffffffe: 
+		PCAN-USB FD channel 1 initialized: 1 Mbit/s classic CAN ()
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-1)
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-20 14:00:16
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	300.002
+SIM_END		HIL/CAN_Bringup	300s	9.00894e-05m

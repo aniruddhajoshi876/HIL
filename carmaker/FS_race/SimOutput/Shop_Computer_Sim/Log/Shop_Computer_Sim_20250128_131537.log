@@ -1,0 +1,56 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-01-28 13:19:43
+TIME	0.000
+SIMULATE	unknown
+
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 0.102000, ErrInd = 102). (id=200)
+ERROR		Vehicle leaves road at about x=-4.41735e-05, y=-1.89846 TireNo=2
+ERROR		Vehicle leaves road at about x=-4.4213e-05, y=-3.10154 TireNo=3
+SIM_ABORT	unknown	0.416s	0.44012m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-01-28 13:36:00
+TIME	0.000
+SIMULATE	unknown
+
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 0.101000, ErrInd = 102). (id=200)
+ERROR		Vehicle leaves road at about x=-0.000127578, y=-3.09989 TireNo=3
+SIM_ABORT	unknown	0.395s	0.435574m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-01-28 13:36:11
+TIME	0.000
+SIMULATE	unknown
+
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 0.101000, ErrInd = 102). (id=200)
+ERROR		Vehicle leaves road at about x=-0.000127578, y=-3.09989 TireNo=3
+SIM_ABORT	unknown	0.395s	0.435574m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-01-28 13:36:38
+TIME	0.000
+SIMULATE	unknown
+
+WARNING		IPGDriver: Problems for driver: I'm stopping my activities (time = 0.101000, ErrInd = 102). (id=200)
+ERROR		Vehicle leaves road at about x=-0.000127578, y=-3.09989 TireNo=3
+SIM_ABORT	unknown	0.395s	0.435574m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-01-28 13:36:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	10.879
+ERROR		Vehicle leaves road at about x=83.3546, y=-7.60147 TireNo=3
+SIM_ABORT	unknown	10.882s	115.844m

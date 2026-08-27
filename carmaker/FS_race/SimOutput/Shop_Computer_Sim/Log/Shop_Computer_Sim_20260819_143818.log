@@ -1,0 +1,57 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #7 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-18 01:01:57
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-19 14:42:19
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	28.348
+SIM_END		HIL/CAN_Bringup	28.345s	240.447m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #7 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-18 01:01:57
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-19 14:44:11
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	18.217
+SIM_END		HIL/CAN_Bringup	18.214s	107.436m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #7 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-18 01:01:57
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-19 14:45:25
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	20.640
+SIM_END		HIL/CAN_Bringup	20.637s	137.497m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	HIL/CAN_Bringup	2026-08-19 14:46:40
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+SIM_END		HIL/CAN_Bringup	0s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	HIL/CAN_Bringup	2026-08-19 14:50:16
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+SIM_END		HIL/CAN_Bringup	0s	0m

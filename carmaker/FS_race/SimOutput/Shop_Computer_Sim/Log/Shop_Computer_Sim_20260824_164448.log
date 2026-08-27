@@ -1,0 +1,41 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-24 16:45:42
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	292.281
+SIM_END		HIL/CAN_Bringup	292.278s	8.98417e-05m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-24 17:11:29
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	27.371
+ERROR		Vehicle leaves road at about x=292.082, y=2.60112 TireNo=0
+SIM_ABORT	HIL/CAN_Bringup	27.374s	290.123m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #8 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-19 16:14:18
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-24 17:12:49
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+TIME	27.375
+ERROR		Vehicle leaves road at about x=292.485, y=2.60065 TireNo=0
+SIM_ABORT	HIL/CAN_Bringup	27.378s	290.526m
