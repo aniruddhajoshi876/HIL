@@ -77,7 +77,7 @@ if isempty(applicationState)
     return;
 end
 
-lifecycle = inverterhilgui.connectionState(applicationState);
+lifecycle = inverterhilgui.state_machine.connectionState(applicationState);
 if ~lifecycle.valid
     policy.reason = 'unknown_application_state';
     return;

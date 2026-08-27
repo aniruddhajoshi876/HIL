@@ -9,7 +9,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
     methods (Test)
         function heartbeatAdvancesAsAWrapSafeUint32Counter(testCase)
             state = struct('counter', uint32(0), 'lastUpdateS', NaN);
-            result = inverterhilgui.heartbeatState(state, 10, 0.5);
+            result = inverterhilgui.writes.heartbeatState(state, 10, 0.5);
 
             testCase.verifyEqual(result.counter, uint32(1));
             testCase.verifyClass(result.counter, 'uint32');
@@ -18,7 +18,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
 
             state = struct('counter', result.counter, ...
                 'lastUpdateS', result.lastUpdateS);
-            result = inverterhilgui.heartbeatState(state, 10.25, 0.5);
+            result = inverterhilgui.writes.heartbeatState(state, 10.25, 0.5);
             testCase.verifyEqual(result.counter, uint32(2));
             testCase.verifyEqual(result.ageS, 0.25, 'AbsTol', 1e-12);
             testCase.verifyFalse(result.expired);
@@ -26,17 +26,17 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
 
             state = struct('counter', uint32(4294967295), ...
                 'lastUpdateS', 10);
-            result = inverterhilgui.heartbeatState(state, 10.1, 0.5);
+            result = inverterhilgui.writes.heartbeatState(state, 10.1, 0.5);
             testCase.verifyEqual(result.counter, uint32(0));
         end
 
         function stalledHostTimerIsReportedAsAnExpiredHeartbeat(testCase)
             state = struct('counter', uint32(7), 'lastUpdateS', 100);
 
-            result = inverterhilgui.heartbeatState(state, 100.5, 0.5);
+            result = inverterhilgui.writes.heartbeatState(state, 100.5, 0.5);
             testCase.verifyFalse(result.expired);
 
-            result = inverterhilgui.heartbeatState(state, 100.51, 0.5);
+            result = inverterhilgui.writes.heartbeatState(state, 100.51, 0.5);
             testCase.verifyTrue(result.expired);
             testCase.verifyEqual(result.reason, 'heartbeat_expired');
             testCase.verifyEqual(result.ageS, 0.51, 'AbsTol', 1e-12);
@@ -58,7 +58,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 {good, 4, 0.5, 'host_clock_went_backwards'}};
             for index = 1:numel(cases)
                 item = cases{index};
-                result = inverterhilgui.heartbeatState(item{1}, item{2}, ...
+                result = inverterhilgui.writes.heartbeatState(item{1}, item{2}, ...
                     item{3});
                 testCase.verifyTrue(result.expired, item{4});
                 testCase.verifyEqual(result.reason, item{4});
@@ -67,7 +67,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
 
         function healthyApplicationDoesNotFallBack(testCase)
             health = TestGuiSafetyAndHeartbeat.healthyHealth();
-            plan = inverterhilgui.safeFallbackPlan(health);
+            plan = inverterhilgui.state_machine.safeFallbackPlan(health);
 
             testCase.verifyFalse(plan.applyFallback);
             testCase.verifyEqual(plan.reason, 'healthy');
@@ -84,11 +84,11 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
 
             unarmed = base;
             unarmed.armed = false;
-            plan = inverterhilgui.safeFallbackPlan(unarmed);
+            plan = inverterhilgui.state_machine.safeFallbackPlan(unarmed);
             testCase.verifyFalse(plan.applyFallback);
 
             noArmedField = rmfield(base, 'armed');
-            plan = inverterhilgui.safeFallbackPlan(noArmedField);
+            plan = inverterhilgui.state_machine.safeFallbackPlan(noArmedField);
             testCase.verifyFalse(plan.applyFallback);
         end
 
@@ -98,40 +98,40 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
             expired = base;
             expired.heartbeatAgeS = base.heartbeatTimeoutS + 1e-6;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(expired), ...
+                inverterhilgui.state_machine.safeFallbackPlan(expired), ...
                 'heartbeat_expired');
 
             stopped = base;
             stopped.applicationRunning = false;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(stopped), ...
+                inverterhilgui.state_machine.safeFallbackPlan(stopped), ...
                 'application_stopped');
 
             unloaded = base;
             unloaded.applicationLoaded = false;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(unloaded), ...
+                inverterhilgui.state_machine.safeFallbackPlan(unloaded), ...
                 'application_unloaded');
 
             disconnected = base;
             disconnected.targetConnected = false;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(disconnected), ...
+                inverterhilgui.state_machine.safeFallbackPlan(disconnected), ...
                 'target_disconnected');
 
             unhealthy = base;
             unhealthy.ioHealthy = false;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(unhealthy), 'io_unhealthy');
+                inverterhilgui.state_machine.safeFallbackPlan(unhealthy), 'io_unhealthy');
         end
 
         function fallbackFailsClosedOnMalformedInput(testCase)
             base = TestGuiSafetyAndHeartbeat.healthyHealth();
 
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(42), 'malformed_health');
+                inverterhilgui.state_machine.safeFallbackPlan(42), 'malformed_health');
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(struct()), ...
+                inverterhilgui.state_machine.safeFallbackPlan(struct()), ...
                 'missing_applicationRunning');
 
             malformedFlags = {NaN, 2, [true true], complex(1, 1), 'on'};
@@ -139,7 +139,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 candidate = base;
                 candidate.ioHealthy = malformedFlags{index};
                 TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                    inverterhilgui.safeFallbackPlan(candidate), ...
+                    inverterhilgui.state_machine.safeFallbackPlan(candidate), ...
                     'malformed_health_flag');
             end
 
@@ -148,14 +148,14 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 candidate = base;
                 candidate.heartbeatAgeS = malformedAges{index};
                 TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                    inverterhilgui.safeFallbackPlan(candidate), ...
+                    inverterhilgui.state_machine.safeFallbackPlan(candidate), ...
                     'heartbeat_expired');
             end
 
             candidate = base;
             candidate.heartbeatTimeoutS = 0;
             TestGuiSafetyAndHeartbeat.verifyFallback(testCase, ...
-                inverterhilgui.safeFallbackPlan(candidate), ...
+                inverterhilgui.state_machine.safeFallbackPlan(candidate), ...
                 'malformed_heartbeat_timeout');
         end
 
@@ -169,60 +169,60 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
                 'reset', 'loaded'; ...
                 'disconnect', 'disconnected'};
             for index = 1:size(expected, 1)
-                result = inverterhilgui.connectionState(state, ...
+                result = inverterhilgui.state_machine.connectionState(state, ...
                     expected{index, 1});
                 testCase.verifyTrue(result.valid, expected{index, 1});
                 testCase.verifyEqual(result.state, expected{index, 2});
                 state = result.state;
             end
 
-            testCase.verifyTrue(inverterhilgui.connectionState( ...
+            testCase.verifyTrue(inverterhilgui.state_machine.connectionState( ...
                 'disconnected').allowed.connect);
-            testCase.verifyFalse(inverterhilgui.connectionState( ...
+            testCase.verifyFalse(inverterhilgui.state_machine.connectionState( ...
                 'disconnected').allowed.start);
-            testCase.verifyTrue(inverterhilgui.connectionState( ...
+            testCase.verifyTrue(inverterhilgui.state_machine.connectionState( ...
                 'running').allowed.stop);
-            testCase.verifyFalse(inverterhilgui.connectionState( ...
+            testCase.verifyFalse(inverterhilgui.state_machine.connectionState( ...
                 'running').allowed.load);
-            testCase.verifyTrue(inverterhilgui.connectionState( ...
+            testCase.verifyTrue(inverterhilgui.state_machine.connectionState( ...
                 'running').isRunning);
-            testCase.verifyTrue(inverterhilgui.connectionState( ...
+            testCase.verifyTrue(inverterhilgui.state_machine.connectionState( ...
                 'stopped').isConnected);
-            testCase.verifyFalse(inverterhilgui.connectionState( ...
+            testCase.verifyFalse(inverterhilgui.state_machine.connectionState( ...
                 'error').isConnected);
         end
 
         function lifecycleFailsClosedOnUnknownStatesAndEvents(testCase)
-            result = inverterhilgui.connectionState('flying');
+            result = inverterhilgui.state_machine.connectionState('flying');
             testCase.verifyFalse(result.valid);
             testCase.verifyEqual(result.state, 'error');
             testCase.verifyEqual(result.reason, 'unknown_state');
             testCase.verifyFalse(result.isConnected);
             testCase.verifyFalse(result.allowed.start);
 
-            result = inverterhilgui.connectionState('disconnected', 'start');
+            result = inverterhilgui.state_machine.connectionState('disconnected', 'start');
             testCase.verifyFalse(result.valid);
             testCase.verifyEqual(result.state, 'disconnected');
             testCase.verifyEqual(result.reason, 'rejected_event');
 
-            result = inverterhilgui.connectionState('running', 'fail');
+            result = inverterhilgui.state_machine.connectionState('running', 'fail');
             testCase.verifyTrue(result.valid);
             testCase.verifyEqual(result.state, 'error');
             testCase.verifyFalse(result.isRunning);
 
-            result = inverterhilgui.connectionState(42);
+            result = inverterhilgui.state_machine.connectionState(42);
             testCase.verifyFalse(result.valid);
             testCase.verifyEqual(result.state, 'error');
         end
 
         function targetSessionRefusesActionsTheLifecycleForbids(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
-            session = inverterhilgui.targetSession('FakePC', backend);
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
 
             testCase.verifyEqual(session.start().reason, ...
                 'action_not_allowed');
             testCase.verifyEqual( ...
-                inverterhilgui.targetSession('FakePC').start().reason, ...
+                inverterhilgui.live_telemetry.targetSession('FakePC').start().reason, ...
                 'not_connected');
 
             session.connect();
@@ -253,8 +253,8 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
         end
 
         function lifecycleFailureLeavesTheSessionInError(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
-            session = inverterhilgui.targetSession('FakePC', backend);
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
             session.connect();
             % CONNECT starts our application; exercise a mid-lifecycle
             % backend failure through STOP.
@@ -269,7 +269,7 @@ classdef TestGuiSafetyAndHeartbeat < matlab.unittest.TestCase
         end
 
         function noTestRequiresALiveSpeedgoat(testCase)
-            session = inverterhilgui.targetSession('NoSuchTarget');
+            session = inverterhilgui.live_telemetry.targetSession('NoSuchTarget');
             testCase.verifyFalse(session.BackendInjected);
             testCase.verifyEmpty(session.Backend);
             testCase.verifyEqual(session.State, 'disconnected');

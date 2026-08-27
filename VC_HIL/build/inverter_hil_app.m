@@ -154,7 +154,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         % holds a stale value across a disconnect. See REFRESHLIVEIO.
         VcuStateEnteredS = NaN
         VcuStateLast = ''
-        % Resolved at startup from inverterhilgui.hostHeartbeatTimeout so the
+        % Resolved at startup from inverterhilgui.writes.hostHeartbeatTimeout so the
         % host can never report healthy longer than the target-side fallback.
         HeartbeatTimeoutS
         VcuStateNames = {'LV_ON', 'PRECHARGING', 'ENABLE', 'BUZZING', 'RTD'}
@@ -170,7 +170,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function createComponents(app)
             %CREATECOMPONENTS Build the dense dark operator console.
-            app.Theme = inverterhilgui.guiTheme();
+            app.Theme = inverterhilgui.live_telemetry.guiTheme();
             theme = app.Theme;
 
             app.UIFigure = uifigure('Visible', 'off');
@@ -659,7 +659,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             pinPanel = app.makePanel(column, 'VCU OUTPUT PINS');
             pinGrid = app.makeGrid(pinPanel, {26, 26}, ...
                 {'1x', '1x', '1x', '1x', '1x'});
-            blank = inverterhilgui.blankTelemetry();
+            blank = inverterhilgui.live_telemetry.blankTelemetry();
             app.PinNameLabels = gobjects(1, numel(blank.pins));
             app.PinStateLabels = gobjects(1, numel(blank.pins));
             for index = 1:numel(blank.pins)
@@ -719,7 +719,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             for channel = 1:4
                 panel = app.makePanel(panels, sprintf('INVERTER %d', channel));
                 [~, collapsedRows] = ...
-                    inverterhilgui.inverterPanelVisibility(false);
+                    inverterhilgui.live_telemetry.inverterPanelVisibility(false);
                 grid = app.makeGrid(panel, [{20} collapsedRows], ...
                     {170, '1x', 120});
                 app.InverterTitleLabels(channel) = app.makeLabel(grid, ...
@@ -787,7 +787,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             end
 
             [~, fieldRows] = ...
-                inverterhilgui.inverterPanelVisibility(expanded);
+                inverterhilgui.live_telemetry.inverterPanelVisibility(expanded);
             app.InverterExpanded(channel) = expanded;
             app.InverterStatusGrids(channel).RowHeight = [{20} fieldRows];
             if expanded
@@ -836,7 +836,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             app.createSensorHealthPanel(outer);
 
             app.CanDiagnosticsLabel = app.makeLabel(outer, ...
-                app.canDiagnosticsText(inverterhilgui.blankTelemetry()), ...
+                app.canDiagnosticsText(inverterhilgui.live_telemetry.blankTelemetry()), ...
                 theme.font.small, theme.color.secondaryText);
             app.CanDiagnosticsLabel.Layout.Row = 4;
             app.CanDiagnosticsLabel.Layout.Column = [1 2];
@@ -1010,13 +1010,13 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function startupFcn(app)
             %STARTUPFCN Start disconnected with blank telemetry and no target.
-            app.HeartbeatTimeoutS = inverterhilgui.hostHeartbeatTimeout();
-            app.Session = inverterhilgui.targetSession('TargetPC1');
-            app.Log = inverterhilgui.sessionLog();
-            app.Telemetry = inverterhilgui.blankTelemetry();
-            app.ThrottleCoalescer = inverterhilgui.sliderCoalescer(0.030);
-            app.BrakeCoalescer = inverterhilgui.sliderCoalescer(0.030);
-            app.SteeringCoalescer = inverterhilgui.sliderCoalescer(0.030);
+            app.HeartbeatTimeoutS = inverterhilgui.writes.hostHeartbeatTimeout();
+            app.Session = inverterhilgui.live_telemetry.targetSession('TargetPC1');
+            app.Log = inverterhilgui.logging.sessionLog();
+            app.Telemetry = inverterhilgui.live_telemetry.blankTelemetry();
+            app.ThrottleCoalescer = inverterhilgui.writes.sliderCoalescer(0.030);
+            app.BrakeCoalescer = inverterhilgui.writes.sliderCoalescer(0.030);
+            app.SteeringCoalescer = inverterhilgui.writes.sliderCoalescer(0.030);
             app.Heartbeat = struct('counter', uint32(0), ...
                 'lastUpdateS', NaN);
             app.refreshAll();
@@ -1071,14 +1071,14 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function tickHeartbeat(app)
             %TICKHEARTBEAT Advance and write the uint32 GUI heartbeat.
-            beat = inverterhilgui.heartbeatState(app.Heartbeat, ...
+            beat = inverterhilgui.writes.heartbeatState(app.Heartbeat, ...
                 app.hostTimeS(), app.HeartbeatTimeoutS);
             app.Heartbeat = struct('counter', beat.counter, ...
                 'lastUpdateS', beat.lastUpdateS);
             if app.Session.describeState().isRunning
                 app.commitWrite('gui_heartbeat', beat.counter, false);
             end
-            plan = inverterhilgui.safeFallbackPlan(app.fallbackHealth(beat));
+            plan = inverterhilgui.state_machine.safeFallbackPlan(app.fallbackHealth(beat));
             app.HeartbeatLabel.Text = sprintf( ...
                 'GUI HEARTBEAT %u  age %s', beat.counter, ...
                 app.formatSeconds(beat.ageS));
@@ -1114,7 +1114,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   moment CANPEDALSDRIVING clears. Only the COMMITWRITE itself is
             %   gated: while CarMaker owns hil_cmd_pedals_throttle/brake over
             %   CAN, GUI slider movement must not reach SESSION.WRITE at
-            %   all, matching inverterhilgui.controlPolicy's POLICY.PEDALS
+            %   all, matching inverterhilgui.state_machine.controlPolicy's POLICY.PEDALS
             %   (which independently disables the slider widgets) -- this is
             %   the actual enforcement point, not merely the widget Enable
             %   state.
@@ -1308,7 +1308,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 end
                 app.Telemetry.pedals.appliedV = nan(1, 4);
                 app.Telemetry.analogInV = nan(1, 4);
-                blankCan = inverterhilgui.blankTelemetry().can.diagnostics;
+                blankCan = inverterhilgui.live_telemetry.blankTelemetry().can.diagnostics;
                 app.Telemetry.can.diagnostics = blankCan;
                 % Read failed or not connected: fail closed to GUI-owned
                 % pedals, since no external source can report ownership.
@@ -1318,7 +1318,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.appliedPedalPercent(1, 'v1');
             app.Telemetry.pedals.brakeAppliedPercent = ...
                 app.appliedPedalPercent(3, 'v3');
-            app.Telemetry.dcLink = inverterhilgui.blankTelemetry().dcLink;
+            app.Telemetry.dcLink = inverterhilgui.live_telemetry.blankTelemetry().dcLink;
             status = struct('dcLink12V', NaN, 'dcLink34V', NaN, ...
                 'dcLink12AboveMinimum', [], 'dcLink34AboveMinimum', []);
             if live.known && isstruct(live.systemStatus)
@@ -1405,7 +1405,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             else
                 app.TxTransmitting = false;
             end
-            ack = inverterhilgui.canAckStatus( ...
+            ack = inverterhilgui.live_telemetry.canAckStatus( ...
                 app.Telemetry.can.diagnostics, app.TxTransmitting);
 
             % Rows past the Ephorus block are the sensor frames, whose
@@ -1680,7 +1680,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 'targetHealthy', app.Telemetry.io.healthy, ...
                 'heartbeatOk', lifecycle.isConnected, ...
                 'contractResolved', ~isempty(app.Session.Contract));
-            app.Policy = inverterhilgui.controlPolicy(lifecycle.state, ...
+            app.Policy = inverterhilgui.state_machine.controlPolicy(lifecycle.state, ...
                 app.Telemetry.vcu.state, interlocks, app.CanPedalsDriving);
             app.applyEnable([app.ThrottleSlider app.ThrottleField ...
                 app.BrakeSlider app.BrakeField], app.Policy.pedals);
@@ -1751,7 +1751,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             theme = app.Theme;
             current = app.Telemetry.vcu.state;
             for index = 1:numel(app.VcuStateNames)
-                status = inverterhilgui.stateCardStyle(current, ...
+                status = inverterhilgui.state_machine.stateCardStyle(current, ...
                     app.VcuStateNames{index}, ...
                     app.Telemetry.vcu.errorKnown && app.Telemetry.vcu.errorActive);
                 switch status
@@ -1797,7 +1797,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
 
         function refreshGuards(app)
             %REFRESHGUARDS Repaint the NEXT TRANSITION pass/fail rows.
-            guards = inverterhilgui.evaluateTransitionGuards( ...
+            guards = inverterhilgui.state_machine.evaluateTransitionGuards( ...
                 app.Telemetry.guards, struct());
             data = cell(numel(guards), 4);
             for index = 1:numel(guards)
@@ -1864,7 +1864,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             if isfield(app.Telemetry, 'steering')
                 steering = app.Telemetry.steering;
             else
-                steering = inverterhilgui.blankTelemetry().steering;
+                steering = inverterhilgui.live_telemetry.blankTelemetry().steering;
             end
             app.SteeringAppliedLabel.Text = sprintf( ...
                 'REQUESTED %s | APPLIED %s | SPEED %s | LWS %s', ...
@@ -1873,7 +1873,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 app.formatSteeringValue(steering.speedDegPerS, 'deg/s'), ...
                 app.formatSteeringValue(steering.observedAngleDeg, 'deg'));
             for index = 1:4
-                measurement = inverterhilgui.formatMeasurement( ...
+                measurement = inverterhilgui.live_telemetry.formatMeasurement( ...
                     pedals.appliedV(index), NaN, 'V', false);
                 app.PedalVoltageLabels(index).Text = sprintf('%s %s | %s', ...
                     app.PedalChannelNames{index}, measurement.value, ...
@@ -1889,7 +1889,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
                 [value, known] = app.Session.readCached( ...
                     ['digital.' app.DigitalNames{index}]);
                 if known
-                    display = inverterhilgui.formatPinState(value);
+                    display = inverterhilgui.live_telemetry.formatPinState(value);
                     app.DigitalAppliedLabels(index).Text = display.text;
                     app.DigitalAppliedLabels(index).FontColor = display.color;
                 else
@@ -1909,19 +1909,19 @@ classdef inverter_hil_app < matlab.apps.AppBase
             theme = app.Theme;
             for index = 1:2
                 link = app.Telemetry.dcLink(index);
-                measurement = inverterhilgui.formatMeasurement( ...
+                measurement = inverterhilgui.live_telemetry.formatMeasurement( ...
                     link.voltageV, link.rawCount, 'V', link.capturePending);
                 app.DcLinkValueLabels(index).Text = measurement.combined;
-                display = inverterhilgui.formatPinState(link.aboveMinimum);
+                display = inverterhilgui.live_telemetry.formatPinState(link.aboveMinimum);
                 app.DcLinkFlagLabels(index).Text = ['ABOVE MIN ' display.text];
                 app.DcLinkFlagLabels(index).FontColor = display.color;
             end
-            frequency = inverterhilgui.formatMeasurement( ...
+            frequency = inverterhilgui.live_telemetry.formatMeasurement( ...
                 app.Telemetry.switchingFrequencyKHz, ...
                 app.Telemetry.switchingFrequencyRaw, 'kHz', true);
             app.SwitchingFrequencyLabel.Text = frequency.combined;
             for index = 1:numel(app.Telemetry.pins)
-                display = inverterhilgui.formatPinState( ...
+                display = inverterhilgui.live_telemetry.formatPinState( ...
                     app.Telemetry.pins(index).state);
                 app.PinStateLabels(index).Text = display.text;
                 app.PinStateLabels(index).FontColor = display.color;
@@ -1929,7 +1929,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             railNames = {'AI01 5V_THR1', 'AI02 5V_THR2', 'AI03 5V_BP1', ...
                 'AI04 5V_BP2'};
             for index = 1:4
-                measurement = inverterhilgui.formatMeasurement( ...
+                measurement = inverterhilgui.live_telemetry.formatMeasurement( ...
                     app.Telemetry.analogInV(index), NaN, 'V', false);
                 app.AnalogInputLabels(index).Text = sprintf('%s %s', ...
                     railNames{index}, measurement.value);
@@ -1940,7 +1940,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function refreshInverters(app)
             %REFRESHINVERTERS Repaint the four inverter panels.
             for channel = 1:4
-                panel = inverterhilgui.formatInverterPanel(app.Telemetry, ...
+                panel = inverterhilgui.live_telemetry.formatInverterPanel(app.Telemetry, ...
                     channel);
                 values = {panel.state, panel.ready, panel.commandAge, ...
                     panel.torqueCommand, panel.torqueActual, panel.speed, ...
@@ -1968,7 +1968,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function refreshSensors(app)
             %REFRESHSENSORS Repaint the synchronized MTi/LWS health readout.
             theme = app.Theme;
-            blank = inverterhilgui.blankTelemetry();
+            blank = inverterhilgui.live_telemetry.blankTelemetry();
             if isfield(app.Telemetry, 'steering')
                 steering = app.Telemetry.steering;
             else
@@ -2059,9 +2059,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %REFRESHCAN Repaint both CAN tables and the diagnostics strip.
             now = app.hostTimeS();
             app.paintCanTable(app.CanRxTable, ...
-                inverterhilgui.canRowModel(app.Telemetry.can.rx, now));
+                inverterhilgui.live_telemetry.canRowModel(app.Telemetry.can.rx, now));
             app.paintCanTable(app.CanTxTable, ...
-                inverterhilgui.canRowModel(app.Telemetry.can.tx, now));
+                inverterhilgui.live_telemetry.canRowModel(app.Telemetry.can.tx, now));
             app.CanDiagnosticsLabel.Text = ...
                 app.canDiagnosticsText(app.Telemetry);
         end
@@ -2110,20 +2110,20 @@ classdef inverter_hil_app < matlab.apps.AppBase
             text = sprintf(['CAN WRITE %s | BUS LOAD %s | TX OVERRUN %s | ' ...
                 'RX OVERRUN %s | ERROR WARNING %s | BUS-OFF %s | ' ...
                 'RECOVERIES %s | QUEUE %s | BURST %s'], writeText, ...
-                inverterhilgui.formatMeasurement( ...
+                inverterhilgui.live_telemetry.formatMeasurement( ...
                 diagnostics.busLoadPercent, NaN, '%', false).value, ...
-                inverterhilgui.formatPinState( ...
+                inverterhilgui.live_telemetry.formatPinState( ...
                 diagnostics.transmitOverrun).text, ...
-                inverterhilgui.formatPinState( ...
+                inverterhilgui.live_telemetry.formatPinState( ...
                 diagnostics.receiveOverrun).text, ...
-                inverterhilgui.formatPinState( ...
+                inverterhilgui.live_telemetry.formatPinState( ...
                 diagnostics.errorWarning).text, ...
-                inverterhilgui.formatPinState(diagnostics.busOff).text, ...
-                inverterhilgui.formatMeasurement( ...
+                inverterhilgui.live_telemetry.formatPinState(diagnostics.busOff).text, ...
+                inverterhilgui.live_telemetry.formatMeasurement( ...
                 diagnostics.recoveryCount, NaN, '', false).value, ...
-                inverterhilgui.formatMeasurement(diagnostics.queueDepth, ...
+                inverterhilgui.live_telemetry.formatMeasurement(diagnostics.queueDepth, ...
                 NaN, '', false).value, ...
-                inverterhilgui.formatMeasurement( ...
+                inverterhilgui.live_telemetry.formatMeasurement( ...
                 diagnostics.burstDurationS, NaN, 's', false).value);
         end
 
@@ -2165,7 +2165,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   Delegates to FORMATPINSTATE so a single implementation decides
             %   what an unknown flag looks like, and an unset one can never
             %   render as OFF by accident.
-            text = inverterhilgui.formatPinState(state).text;
+            text = inverterhilgui.live_telemetry.formatPinState(state).text;
         end
 
         function text = formatPercent(app, value)
@@ -2492,7 +2492,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
             %   transmit and zero-frame result check. This callback never
             %   sends command bytes and cannot collapse the pair into one
             %   backend call.
-            app.LwsCalibrationSequence = inverterhilgui.sequenceCommand( ...
+            app.LwsCalibrationSequence = inverterhilgui.writes.sequenceCommand( ...
                 app.LwsCalibrationSequence);
             app.commitWrite('steering.calibration_sequence', ...
                 app.LwsCalibrationSequence, true);
@@ -2528,7 +2528,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function onPrechargePushed(app, ~)
             %ONPRECHARGEPUSHED Increment the precharge sequence counter.
             app.PrechargeSequence = ...
-                inverterhilgui.sequenceCommand(app.PrechargeSequence);
+                inverterhilgui.writes.sequenceCommand(app.PrechargeSequence);
             app.commitWrite('digital.precharge_sequence', ...
                 app.PrechargeSequence, true);
             app.refreshDriverInputs();
@@ -2537,7 +2537,7 @@ classdef inverter_hil_app < matlab.apps.AppBase
         function onMainMomentaryPushed(app, ~)
             %ONMAINMOMENTARYPUSHED Increment the main-button sequence counter.
             app.MainButtonSequence = ...
-                inverterhilgui.sequenceCommand(app.MainButtonSequence);
+                inverterhilgui.writes.sequenceCommand(app.MainButtonSequence);
             app.MainButtonLastPressedS = app.hostTimeS();
             app.commitWrite('digital.main_button_sequence', ...
                 app.MainButtonSequence, true);

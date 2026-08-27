@@ -21,7 +21,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
 
             for stateIndex = 1:numel(applicationStates)
                 applicationState = applicationStates{stateIndex};
-                lifecycle = inverterhilgui.connectionState(applicationState);
+                lifecycle = inverterhilgui.state_machine.connectionState(applicationState);
                 for vcuIndex = 1:numel(vcuStates)
                     vcuState = vcuStates{vcuIndex};
                     inDrive = any(strcmp(vcuState, ...
@@ -29,7 +29,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
                     for flagIndex = 1:size(flags, 1)
                         interlocks = TestGuiControlPolicy.interlockStruct( ...
                             flags(flagIndex, :));
-                        policy = inverterhilgui.controlPolicy( ...
+                        policy = inverterhilgui.state_machine.controlPolicy( ...
                             applicationState, vcuState, interlocks);
                         combinations = combinations + 1;
 
@@ -95,7 +95,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             % removed on 2026-08-02 by explicit operator decision, so every
             % group stays live while the VCU is in ENABLE/BUZZING/RTD.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            policy = inverterhilgui.controlPolicy('running', 'RTD', ...
+            policy = inverterhilgui.state_machine.controlPolicy('running', 'RTD', ...
                 interlocks);
 
             testCase.verifyTrue(policy.pedals);
@@ -114,10 +114,10 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             % gates anything; the flag is still validated and carried, so
             % reinstating the gate is a one-line change in CONTROLPOLICY.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            withoutExpert = inverterhilgui.controlPolicy('stopped', ...
+            withoutExpert = inverterhilgui.state_machine.controlPolicy('stopped', ...
                 'LV_ON', interlocks);
             interlocks.expertMode = true;
-            withExpert = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
+            withExpert = inverterhilgui.state_machine.controlPolicy('stopped', 'LV_ON', ...
                 interlocks);
 
             for policy = [withoutExpert withExpert]
@@ -135,7 +135,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             % "hil_cal may change only while stopped until validated" is no
             % longer enforced.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            policy = inverterhilgui.controlPolicy('running', 'LV_ON', ...
+            policy = inverterhilgui.state_machine.controlPolicy('running', 'LV_ON', ...
                 interlocks);
 
             testCase.verifyTrue(policy.plantParameters);
@@ -153,7 +153,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             for index = 1:numel(failures)
                 interlocks = TestGuiControlPolicy.healthyInterlocks();
                 interlocks.(failures{index}) = false;
-                policy = inverterhilgui.controlPolicy('running', 'RTD', ...
+                policy = inverterhilgui.state_machine.controlPolicy('running', 'RTD', ...
                     interlocks);
 
                 testCase.verifyTrue(policy.pedals, failures{index});
@@ -170,13 +170,13 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             % plausibilityOverride interlock no longer gates the group; only
             % the functional running requirement remains.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
-            testCase.verifyTrue(inverterhilgui.controlPolicy('running', ...
+            testCase.verifyTrue(inverterhilgui.state_machine.controlPolicy('running', ...
                 'LV_ON', interlocks).plausibilityViolation);
 
             interlocks.plausibilityOverride = true;
-            testCase.verifyTrue(inverterhilgui.controlPolicy('running', ...
+            testCase.verifyTrue(inverterhilgui.state_machine.controlPolicy('running', ...
                 'LV_ON', interlocks).plausibilityViolation);
-            testCase.verifyFalse(inverterhilgui.controlPolicy('stopped', ...
+            testCase.verifyFalse(inverterhilgui.state_machine.controlPolicy('stopped', ...
                 'LV_ON', interlocks).plausibilityViolation);
         end
 
@@ -189,7 +189,7 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             malformed = {struct(), 42, {true}, ...
                 rmfield(interlocks, 'expertMode')};
             for index = 1:numel(malformed)
-                policy = inverterhilgui.controlPolicy('running', 'LV_ON', ...
+                policy = inverterhilgui.state_machine.controlPolicy('running', 'LV_ON', ...
                     malformed{index});
                 TestGuiControlPolicy.verifyAllFalse(testCase, policy, ...
                     groups, sprintf('malformed %d', index));
@@ -199,14 +199,14 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             for index = 1:numel(badValues)
                 candidate = interlocks;
                 candidate.targetHealthy = badValues{index};
-                policy = inverterhilgui.controlPolicy('running', 'LV_ON', ...
+                policy = inverterhilgui.state_machine.controlPolicy('running', 'LV_ON', ...
                     candidate);
                 TestGuiControlPolicy.verifyAllFalse(testCase, policy, ...
                     groups, sprintf('bad value %d', index));
                 testCase.verifyEqual(policy.reason, 'malformed_targetHealthy');
             end
 
-            policy = inverterhilgui.controlPolicy('not_a_state', 'RTD', ...
+            policy = inverterhilgui.state_machine.controlPolicy('not_a_state', 'RTD', ...
                 interlocks);
             TestGuiControlPolicy.verifyAllFalse(testCase, policy, groups, ...
                 'unknown state');
@@ -224,14 +224,14 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             % existed.
             interlocks = TestGuiControlPolicy.healthyInterlocks();
 
-            withoutArg = inverterhilgui.controlPolicy('running', 'RTD', interlocks);
-            explicitFalse = inverterhilgui.controlPolicy('running', 'RTD', ...
+            withoutArg = inverterhilgui.state_machine.controlPolicy('running', 'RTD', interlocks);
+            explicitFalse = inverterhilgui.state_machine.controlPolicy('running', 'RTD', ...
                 interlocks, false);
             testCase.verifyEqual(withoutArg, explicitFalse);
             testCase.verifyTrue(withoutArg.pedals);
             testCase.verifyFalse(withoutArg.canDriving);
 
-            driving = inverterhilgui.controlPolicy('running', 'RTD', ...
+            driving = inverterhilgui.state_machine.controlPolicy('running', 'RTD', ...
                 interlocks, true);
             testCase.verifyFalse(driving.pedals);
             testCase.verifyTrue(driving.canDriving);
@@ -248,13 +248,13 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
 
             % Not running: pedals is already false regardless of
             % canDriving, and canDriving=true must not change that reason.
-            notRunning = inverterhilgui.controlPolicy('stopped', 'LV_ON', ...
+            notRunning = inverterhilgui.state_machine.controlPolicy('stopped', 'LV_ON', ...
                 interlocks, true);
             testCase.verifyFalse(notRunning.pedals);
 
             badValues = {2, NaN, [true true], complex(1, 1), 'yes'};
             for index = 1:numel(badValues)
-                policy = inverterhilgui.controlPolicy('running', 'RTD', ...
+                policy = inverterhilgui.state_machine.controlPolicy('running', 'RTD', ...
                     interlocks, badValues{index});
                 testCase.verifyFalse(policy.connectionControls, ...
                     sprintf('bad canDriving %d', index));
@@ -269,8 +269,8 @@ classdef TestGuiControlPolicy < matlab.unittest.TestCase
             enableWrites = regexp(text, '\.Enable\s*=', 'match');
             testCase.verifyEmpty(enableWrites, ...
                 ['Enable must only be set through applyEnable, which is ' ...
-                'driven by inverterhilgui.controlPolicy.']);
-            testCase.verifySubstring(text, 'inverterhilgui.controlPolicy');
+                'driven by inverterhilgui.state_machine.controlPolicy.']);
+            testCase.verifySubstring(text, 'inverterhilgui.state_machine.controlPolicy');
         end
     end
 

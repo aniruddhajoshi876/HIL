@@ -47,7 +47,7 @@ end
 lastUpdateS = previous.lastUpdateS;
 if ~isnumeric(lastUpdateS) || ~isscalar(lastUpdateS) || ...
         ~isreal(lastUpdateS) || ~isfinite(lastUpdateS)
-    result.counter = inverterhilgui.sequenceCommand(result.counter);
+    result.counter = inverterhilgui.writes.sequenceCommand(result.counter);
     result.lastUpdateS = double(nowS);
     result.ageS = Inf;
     result.expired = true;
@@ -63,7 +63,7 @@ if ageS < 0
     return;
 end
 
-result.counter = inverterhilgui.sequenceCommand(result.counter);
+result.counter = inverterhilgui.writes.sequenceCommand(result.counter);
 result.lastUpdateS = double(nowS);
 result.ageS = ageS;
 result.expired = ageS > double(timeoutS);

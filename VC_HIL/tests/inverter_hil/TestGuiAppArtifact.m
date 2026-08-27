@@ -59,7 +59,7 @@ classdef TestGuiAppArtifact < matlab.unittest.TestCase
         end
 
         function hostHeartbeatTimeoutIsNeverLooserThanTheTarget(testCase)
-            host = inverterhilgui.hostHeartbeatTimeout();
+            host = inverterhilgui.writes.hostHeartbeatTimeout();
             calibrated = defaultCalibration().guiHeartbeatTimeoutS;
 
             testCase.verifyTrue(isnumeric(host) && isscalar(host) && ...
@@ -74,7 +74,7 @@ classdef TestGuiAppArtifact < matlab.unittest.TestCase
                 TestGuiAppArtifact.workspaceRoot(), 'inverter_hil_app.m'));
 
             testCase.verifySubstring(source, ...
-                'inverterhilgui.hostHeartbeatTimeout()');
+                'inverterhilgui.writes.hostHeartbeatTimeout()');
             testCase.verifyEmpty(regexp(source, ...
                 'HeartbeatTimeoutS\s*=\s*[0-9]', 'once'), ...
                 'The heartbeat timeout must not be hard-coded in the app.');

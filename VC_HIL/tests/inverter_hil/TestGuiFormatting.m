@@ -8,7 +8,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
 
     methods (Test)
         function torqueCountsShowBothCandidateScales(testCase)
-            text = inverterhilgui.formatTorqueCandidates(8192);
+            text = inverterhilgui.live_telemetry.formatTorqueCandidates(8192);
 
             testCase.verifyTrue(text.hasData);
             testCase.verifyEqual(text.raw, '8192');
@@ -18,11 +18,11 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             testCase.verifySubstring(text.summary, '1/512');
             testCase.verifySubstring(text.summary, '8192');
 
-            negative = inverterhilgui.formatTorqueCandidates(-8192);
+            negative = inverterhilgui.live_telemetry.formatTorqueCandidates(-8192);
             testCase.verifyEqual(negative.nm256, '-32.000');
             testCase.verifyEqual(negative.nm512, '-16.000');
 
-            endpoints = inverterhilgui.formatTorqueCandidates(32767);
+            endpoints = inverterhilgui.live_telemetry.formatTorqueCandidates(32767);
             testCase.verifyEqual(endpoints.nm512, '63.998');
             testCase.verifyEqual(endpoints.nm256, '127.996');
         end
@@ -30,7 +30,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         function torqueFormattingShowsDashesWithoutData(testCase)
             invalid = {NaN, Inf, [], 0.5, 40000, -40000, 'x', complex(1, 1)};
             for index = 1:numel(invalid)
-                text = inverterhilgui.formatTorqueCandidates(invalid{index});
+                text = inverterhilgui.live_telemetry.formatTorqueCandidates(invalid{index});
                 testCase.verifyFalse(text.hasData, sprintf('%d', index));
                 testCase.verifyEqual(text.raw, '--');
                 testCase.verifyEqual(text.nm256, '--');
@@ -40,7 +40,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function measurementsCarryRawCountsAndCaptureStatus(testCase)
-            text = inverterhilgui.formatMeasurement(400.5, 25632, 'V', true);
+            text = inverterhilgui.live_telemetry.formatMeasurement(400.5, 25632, 'V', true);
 
             testCase.verifyTrue(text.hasData);
             testCase.verifyEqual(text.value, '400.500 V');
@@ -49,32 +49,32 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             testCase.verifySubstring(text.combined, '25632');
             testCase.verifySubstring(text.combined, 'CAPTURE PENDING');
 
-            quiet = inverterhilgui.formatMeasurement(37.25, 298, 'C', false);
+            quiet = inverterhilgui.live_telemetry.formatMeasurement(37.25, 298, 'C', false);
             testCase.verifyEmpty(quiet.status);
             testCase.verifyEqual(quiet.combined, '37.250 C (298 cnt)');
 
-            blank = inverterhilgui.formatMeasurement(NaN, NaN, 'V', true);
+            blank = inverterhilgui.live_telemetry.formatMeasurement(NaN, NaN, 'V', true);
             testCase.verifyFalse(blank.hasData);
             testCase.verifyEqual(blank.combined, '--');
             testCase.verifyEqual(blank.value, '--');
         end
 
         function pinStateIsTextPlusColourNeverColourAlone(testCase)
-            theme = inverterhilgui.guiTheme();
+            theme = inverterhilgui.live_telemetry.guiTheme();
 
-            on = inverterhilgui.formatPinState(true);
+            on = inverterhilgui.live_telemetry.formatPinState(true);
             testCase.verifyEqual(on.text, 'ON');
             testCase.verifyTrue(on.known);
             testCase.verifyEqual(on.color, theme.color.healthy);
 
-            off = inverterhilgui.formatPinState(false);
+            off = inverterhilgui.live_telemetry.formatPinState(false);
             testCase.verifyEqual(off.text, 'OFF');
             testCase.verifyTrue(off.known);
             testCase.verifyNotEqual(off.color, on.color);
 
             unknown = {[], NaN, 2, -1, 'on', [true true], complex(1, 1)};
             for index = 1:numel(unknown)
-                display = inverterhilgui.formatPinState(unknown{index});
+                display = inverterhilgui.live_telemetry.formatPinState(unknown{index});
                 testCase.verifyFalse(display.known, sprintf('%d', index));
                 testCase.verifyEqual(display.text, '--');
             end
@@ -91,7 +91,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 'dcLink12V', 400, ...
                 'dcLink34V', 120, ...
                 'plausibilityOk', false);
-            guards = inverterhilgui.evaluateTransitionGuards(snapshot, ...
+            guards = inverterhilgui.state_machine.evaluateTransitionGuards(snapshot, ...
                 struct('brakePercent', 20, 'dcLinkMinimumV', 350));
 
             testCase.verifyEqual(numel(guards), 5);
@@ -111,8 +111,8 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function unknownGuardsAreNeverShownAsPassing(testCase)
-            guards = inverterhilgui.evaluateTransitionGuards( ...
-                inverterhilgui.blankTelemetry().guards, struct());
+            guards = inverterhilgui.state_machine.evaluateTransitionGuards( ...
+                inverterhilgui.live_telemetry.blankTelemetry().guards, struct());
 
             testCase.verifyEqual(numel(guards), 5);
             testCase.verifyFalse(any([guards.pass]));
@@ -121,13 +121,13 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 testCase.verifyEqual(guards(index).actual, '--');
             end
 
-            malformed = inverterhilgui.evaluateTransitionGuards(42, struct());
+            malformed = inverterhilgui.state_machine.evaluateTransitionGuards(42, struct());
             testCase.verifyEqual(numel(malformed), 5);
             testCase.verifyFalse(any([malformed.pass]));
         end
 
         function inverterPanelsDoNotLeakBetweenChannels(testCase)
-            snapshot = inverterhilgui.blankTelemetry();
+            snapshot = inverterhilgui.live_telemetry.blankTelemetry();
             snapshot.inverter(2).state = 'DRIVE';
             snapshot.inverter(2).ready = true;
             snapshot.inverter(2).commandAgeS = 0.004;
@@ -141,7 +141,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             snapshot.inverter(2).derating = true;
             snapshot.inverter(2).activeFault = 'OVERTEMP';
 
-            populated = inverterhilgui.formatInverterPanel(snapshot, 2);
+            populated = inverterhilgui.live_telemetry.formatInverterPanel(snapshot, 2);
             testCase.verifyEqual(populated.title, 'INV2');
             testCase.verifyEqual(populated.corner, 'FR');
             testCase.verifyEqual(populated.state, 'DRIVE');
@@ -160,7 +160,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
 
             expectedCorners = struct('c1', 'FL', 'c3', 'RR', 'c4', 'RL');
             for channel = [1 3 4]
-                other = inverterhilgui.formatInverterPanel(snapshot, channel);
+                other = inverterhilgui.live_telemetry.formatInverterPanel(snapshot, channel);
                 testCase.verifyEqual(other.title, sprintf('INV%d', channel));
                 testCase.verifyEqual(other.corner, ...
                     expectedCorners.(sprintf('c%d', channel)));
@@ -172,7 +172,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 testCase.verifyFalse(other.hasData);
             end
 
-            bad = inverterhilgui.formatInverterPanel(snapshot, 5);
+            bad = inverterhilgui.live_telemetry.formatInverterPanel(snapshot, 5);
             testCase.verifyEqual(bad.title, '--');
             testCase.verifyFalse(bad.hasData);
         end
@@ -183,9 +183,9 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % recorded mapping only -- no test can confirm which physical
             % wheel an Ephorus index actually drives.
             expected = {'FL', 'FR', 'RR', 'RL'};
-            snapshot = inverterhilgui.blankTelemetry();
+            snapshot = inverterhilgui.live_telemetry.blankTelemetry();
             for channel = 1:4
-                panel = inverterhilgui.formatInverterPanel(snapshot, channel);
+                panel = inverterhilgui.live_telemetry.formatInverterPanel(snapshot, channel);
                 testCase.verifyEqual(panel.corner, expected{channel});
                 testCase.verifyTrue(panel.cornerVerified);
                 testCase.verifyEqual(panel.title, sprintf('INV%d', channel));
@@ -195,9 +195,9 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         function invalidIndexKeepsUnverifiedPlaceholder(testCase)
             % An out-of-range index must not index into the corner list; it
             % keeps the placeholder and reports the mapping as unconfirmed.
-            snapshot = inverterhilgui.blankTelemetry();
+            snapshot = inverterhilgui.live_telemetry.blankTelemetry();
             for badIndex = [0 5 2.5 NaN]
-                panel = inverterhilgui.formatInverterPanel(snapshot, badIndex);
+                panel = inverterhilgui.live_telemetry.formatInverterPanel(snapshot, badIndex);
                 testCase.verifyEqual(panel.corner, 'UNVERIFIED');
                 testCase.verifyFalse(panel.cornerVerified);
                 testCase.verifyEqual(panel.title, '--');
@@ -205,13 +205,13 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function stateCardsClassifySequence(testCase)
-            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+            testCase.verifyEqual(inverterhilgui.state_machine.stateCardStyle( ...
                 'PRECHARGING', 'LV_ON'), 'passed');
-            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+            testCase.verifyEqual(inverterhilgui.state_machine.stateCardStyle( ...
                 'PRECHARGING', 'PRECHARGING'), 'active');
-            testCase.verifyEqual(inverterhilgui.stateCardStyle( ...
+            testCase.verifyEqual(inverterhilgui.state_machine.stateCardStyle( ...
                 'PRECHARGING', 'ENABLE'), 'upcoming');
-            testCase.verifyEqual(inverterhilgui.stateCardStyle('', ...
+            testCase.verifyEqual(inverterhilgui.state_machine.stateCardStyle('', ...
                 'ENABLE'), 'unknown');
         end
 
@@ -219,20 +219,20 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % Regression test: TIME IN STATE previously never moved because
             % nothing ever updated app.Telemetry.vcu.timeInStateS -- it was
             % initialized to NaN in blankTelemetry.m and left there forever.
-            [entered, elapsed] = inverterhilgui.trackVcuStateEntry( ...
+            [entered, elapsed] = inverterhilgui.state_machine.trackVcuStateEntry( ...
                 'LV_ON', '', NaN, 100.0);
             testCase.verifyEqual(entered, 100.0);
             testCase.verifyEqual(elapsed, 0.0);
 
             % Same state on a later tick: entry timestamp is held, elapsed
             % time keeps advancing -- this is the live-incrementing timer.
-            [entered2, elapsed2] = inverterhilgui.trackVcuStateEntry( ...
+            [entered2, elapsed2] = inverterhilgui.state_machine.trackVcuStateEntry( ...
                 'LV_ON', 'LV_ON', entered, 102.5);
             testCase.verifyEqual(entered2, 100.0);
             testCase.verifyEqual(elapsed2, 2.5);
 
             % A real state change resets the clock to 0 s elapsed.
-            [entered3, elapsed3] = inverterhilgui.trackVcuStateEntry( ...
+            [entered3, elapsed3] = inverterhilgui.state_machine.trackVcuStateEntry( ...
                 'PRECHARGING', 'LV_ON', entered2, 102.5);
             testCase.verifyEqual(entered3, 102.5);
             testCase.verifyEqual(elapsed3, 0.0);
@@ -240,7 +240,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % Reconnecting with a stale/unknown previous timestamp (NaN)
             % also resets, even if the state string happens to match --
             % guards against a fabricated elapsed time across a disconnect.
-            [entered4, elapsed4] = inverterhilgui.trackVcuStateEntry( ...
+            [entered4, elapsed4] = inverterhilgui.state_machine.trackVcuStateEntry( ...
                 'PRECHARGING', 'PRECHARGING', NaN, 200.0);
             testCase.verifyEqual(entered4, 200.0);
             testCase.verifyEqual(elapsed4, 0.0);
@@ -254,7 +254,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 'value', '8192 cnt', ...
                 'timestampsS', 0:0.005:0.05, ...
                 'lastChangeS', 0.05);
-            rows = inverterhilgui.canRowModel(observation, 0.052);
+            rows = inverterhilgui.live_telemetry.canRowModel(observation, 0.052);
 
             testCase.verifyEqual(numel(rows), 1);
             testCase.verifyEqual(rows(1).id, '0x186');
@@ -265,12 +265,12 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
 
             slow = observation;
             slow.timestampsS = 0:0.02:0.1;
-            slowRows = inverterhilgui.canRowModel(slow, 0.101);
+            slowRows = inverterhilgui.live_telemetry.canRowModel(slow, 0.101);
             testCase.verifyEqual(slowRows(1).rateHz, 50, 'RelTol', 1e-9);
 
             single = observation;
             single.timestampsS = 0.05;
-            singleRows = inverterhilgui.canRowModel(single, 0.052);
+            singleRows = inverterhilgui.live_telemetry.canRowModel(single, 0.052);
             testCase.verifyEqual(singleRows(1).rate, '--', ...
                 'A single timestamp cannot imply the 5 ms nominal rate.');
             testCase.verifyEqual(singleRows(1).rateHz, NaN);
@@ -282,7 +282,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 'signal', 'dc link 1/2', 'value', '400.0 V', ...
                 'timestampsS', 10:0.005:10.05, 'lastChangeS', 9.0);
 
-            fresh = inverterhilgui.canRowModel(observation, 10.052);
+            fresh = inverterhilgui.live_telemetry.canRowModel(observation, 10.052);
             testCase.verifyEqual(fresh(1).live, 'LIVE');
             testCase.verifyFalse(fresh(1).highlight, ...
                 'An old payload change must not stay highlighted.');
@@ -290,16 +290,16 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             recent = observation;
             recent.lastChangeS = 10.05;
             testCase.verifyTrue( ...
-                inverterhilgui.canRowModel(recent, 10.052).highlight);
+                inverterhilgui.live_telemetry.canRowModel(recent, 10.052).highlight);
 
-            stale = inverterhilgui.canRowModel(observation, 15.0);
+            stale = inverterhilgui.live_telemetry.canRowModel(observation, 15.0);
             testCase.verifyEqual(stale(1).live, 'STALE');
             testCase.verifyFalse(stale(1).highlight);
         end
 
         function blankCanObservationsRenderAsNoData(testCase)
-            snapshot = inverterhilgui.blankTelemetry();
-            rows = inverterhilgui.canRowModel(snapshot.can.rx, 1.0);
+            snapshot = inverterhilgui.live_telemetry.blankTelemetry();
+            rows = inverterhilgui.live_telemetry.canRowModel(snapshot.can.rx, 1.0);
 
             testCase.verifyEqual(numel(rows), 5);
             expectedIds = {'0x1F5', '0x186', '0x196', '0x1A6', '0x1B6'};
@@ -317,7 +317,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % payload rows to these observations positionally, so a
             % re-ordering here would silently label every sensor row with
             % another frame's bytes.
-            txRows = inverterhilgui.canRowModel(snapshot.can.tx, 1.0);
+            txRows = inverterhilgui.live_telemetry.canRowModel(snapshot.can.tx, 1.0);
             testCase.verifyEqual(numel(txRows), 14);
             testCase.verifyEqual({txRows.id}, {'0x383', '0x385', '0x393', ...
                 '0x395', '0x3A3', '0x3A5', '0x3B3', '0x3B5', '0x400', ...
@@ -331,7 +331,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 testCase.verifyEqual(txRows(index).value, '--');
             end
 
-            testCase.verifyEmpty(inverterhilgui.canRowModel([], 1.0));
+            testCase.verifyEmpty(inverterhilgui.live_telemetry.canRowModel([], 1.0));
 
             % COUNT is shown verbatim from the target, never fabricated: an
             % unread count stays dashes rather than rendering as 0, which is
@@ -346,7 +346,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 'signal', 'x', 'value', 'y', 'timestampsS', 1.0, ...
                 'lastChangeS', 1.0, 'count', 8135);
             testCase.verifyEqual( ...
-                inverterhilgui.canRowModel(base, 1.0).count, '8135');
+                inverterhilgui.live_telemetry.canRowModel(base, 1.0).count, '8135');
 
             % A genuinely zero count is real data and must render as 0, not
             % as dashes: a transmitter that has sent nothing yet is a
@@ -354,7 +354,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             zeroCount = base;
             zeroCount.count = 0;
             testCase.verifyEqual( ...
-                inverterhilgui.canRowModel(zeroCount, 1.0).count, '0');
+                inverterhilgui.live_telemetry.canRowModel(zeroCount, 1.0).count, '0');
 
             % Anything that is not a whole, non-negative count is refused
             % rather than rounded or clamped into looking real.
@@ -362,7 +362,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 item = base;
                 item.count = bad{1};
                 testCase.verifyEqual( ...
-                    inverterhilgui.canRowModel(item, 1.0).count, '--', ...
+                    inverterhilgui.live_telemetry.canRowModel(item, 1.0).count, '--', ...
                     sprintf('A malformed count must not render as a number.'));
             end
         end
@@ -373,25 +373,25 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
             % Transmitting with clean error counters is real evidence of
             % acknowledgement: an unacknowledged transmitter cannot stay out
             % of error-warning and bus-off (see INVERTERHILGUI.CANACKSTATUS).
-            acked = inverterhilgui.canAckStatus(healthy, true);
+            acked = inverterhilgui.live_telemetry.canAckStatus(healthy, true);
             testCase.verifyTrue(acked.known);
             testCase.verifyTrue(acked.acknowledged);
             testCase.verifySubstring(acked.text, 'ACK OK');
 
             % A silent bus proves nothing either way, so a stopped
             % transmitter must never be credited with acknowledgement.
-            silent = inverterhilgui.canAckStatus(healthy, false);
+            silent = inverterhilgui.live_telemetry.canAckStatus(healthy, false);
             testCase.verifyFalse(silent.known);
             testCase.verifyEmpty(silent.acknowledged);
             testCase.verifyEqual(silent.text, '--');
 
-            busOff = inverterhilgui.canAckStatus( ...
+            busOff = inverterhilgui.live_telemetry.canAckStatus( ...
                 struct('busOff', true, 'errorWarning', false), true);
             testCase.verifyTrue(busOff.known);
             testCase.verifyFalse(busOff.acknowledged);
             testCase.verifySubstring(busOff.text, 'NOT ACKED');
 
-            warned = inverterhilgui.canAckStatus( ...
+            warned = inverterhilgui.live_telemetry.canAckStatus( ...
                 struct('busOff', false, 'errorWarning', true), true);
             testCase.verifyTrue(warned.known);
             testCase.verifyFalse(warned.acknowledged);
@@ -399,21 +399,21 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
 
             % Bus-off outranks a clear error-warning flag: it is the
             % terminal state of a transmitter nobody is acknowledging.
-            both = inverterhilgui.canAckStatus( ...
+            both = inverterhilgui.live_telemetry.canAckStatus( ...
                 struct('busOff', true, 'errorWarning', true), true);
             testCase.verifyFalse(both.acknowledged);
 
             % An unread controller reports unknown, never a healthy bus, so
             % a failed telemetry read can never look like a working one.
-            blank = inverterhilgui.blankTelemetry().can.diagnostics;
-            unread = inverterhilgui.canAckStatus(blank, true);
+            blank = inverterhilgui.live_telemetry.blankTelemetry().can.diagnostics;
+            unread = inverterhilgui.live_telemetry.canAckStatus(blank, true);
             testCase.verifyFalse(unread.known);
             testCase.verifyEmpty(unread.acknowledged);
             testCase.verifyEqual(unread.text, '--');
 
             for bad = {struct('busOff', false), struct('errorWarning', false), ...
                     struct(), [], 'x'}
-                result = inverterhilgui.canAckStatus(bad{1}, true);
+                result = inverterhilgui.live_telemetry.canAckStatus(bad{1}, true);
                 testCase.verifyFalse(result.known, ...
                     'A partial or malformed diagnostics block must not decide.');
                 testCase.verifyEmpty(result.acknowledged);
@@ -421,7 +421,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         end
 
         function blankTelemetryContainsNoFabricatedValues(testCase)
-            snapshot = inverterhilgui.blankTelemetry();
+            snapshot = inverterhilgui.live_telemetry.blankTelemetry();
 
             testCase.verifyFalse(snapshot.valid);
             testCase.verifyEqual(snapshot.targetTimeS, NaN);
@@ -455,7 +455,7 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
         function themeUsesTheSpecifiedConsolePalette(testCase)
             % VS Code 2017-style dark console: near-black background with
             % white primary text and readable secondary text on panels.
-            theme = inverterhilgui.guiTheme();
+            theme = inverterhilgui.live_telemetry.guiTheme();
 
             background = theme.color.background;
             primary = theme.color.primaryText;

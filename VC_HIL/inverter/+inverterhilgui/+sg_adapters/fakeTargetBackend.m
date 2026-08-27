@@ -44,7 +44,7 @@ classdef fakeTargetBackend < handle
             obj.Values = containers.Map('KeyType', 'char', ...
                 'ValueType', 'any');
             if nargin < 1 || isempty(availablePaths)
-                contract = inverterhilgui.parameterContract();
+                contract = inverterhilgui.params.parameterContract();
                 availablePaths = cell(1, numel(contract));
                 for index = 1:numel(contract)
                     availablePaths{index} = contract(index).structPath;

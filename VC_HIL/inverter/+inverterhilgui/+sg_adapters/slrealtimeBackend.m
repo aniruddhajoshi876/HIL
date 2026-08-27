@@ -143,7 +143,7 @@ classdef slrealtimeBackend < handle
             % therefore probed individually with GETPARAM; a thrown error
             % means that name is not exposed by the loaded application and is
             % silently excluded rather than treated as a connection failure.
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             candidates = cell(1, 2 * numel(contract));
             for index = 1:numel(contract)
                 candidates{2 * index - 1} = contract(index).structPath;

@@ -358,7 +358,7 @@ explicitly rather than being redeclared at source; that keeps the Constant a
 direct, addressable reference to the boolean dictionary entry the GUI writes.
 
 > ### ⚠ GUI pin order ≠ DIO channel order
-> `inverterhilgui.blankTelemetry` builds its `pins` array as
+> `inverterhilgui.live_telemetry.blankTelemetry` builds its `pins` array as
 > `VC_SD_OUT, MAIN_EN_OUT, PRECH_EN_OUT, INV_CTRL_EN, INV_CTRL_DIS`
 > (test points TP6, TP7, TP8, TP9, TP10).
 >

@@ -9,7 +9,7 @@ classdef TestInverterPanelVisibility < matlab.unittest.TestCase
     methods (Test)
         function collapsedStateShowsOnlyTheThreeSummaryFields(testCase)
             [visible, rowHeights, names] = ...
-                inverterhilgui.inverterPanelVisibility(false);
+                inverterhilgui.live_telemetry.inverterPanelVisibility(false);
 
             testCase.verifyEqual(names, {'STATE', 'READY', 'CMD AGE', ...
                 'TORQUE CMD', 'TORQUE ACT', 'SPEED', 'Id set/act', ...
@@ -25,33 +25,33 @@ classdef TestInverterPanelVisibility < matlab.unittest.TestCase
 
         function expandedStateShowsAllRemainingFields(testCase)
             [visible, rowHeights] = ...
-                inverterhilgui.inverterPanelVisibility(true);
+                inverterhilgui.live_telemetry.inverterPanelVisibility(true);
 
             testCase.verifyTrue(all(visible));
             testCase.verifyEqual(rowHeights, ...
                 {20 20 20 20 20 20 20 20 20 20 20 20});
             testCase.verifyEqual(nnz(visible), 12);
             testCase.verifyEqual(12 - nnz( ...
-                inverterhilgui.inverterPanelVisibility(false)), 9);
+                inverterhilgui.live_telemetry.inverterPanelVisibility(false)), 9);
         end
 
         function malformedExpandedStateIsRejected(testCase)
             invalid = {1, 0, true(1, 2), [], 'false'};
             for index = 1:numel(invalid)
                 testCase.verifyError(@() ...
-                    inverterhilgui.inverterPanelVisibility(invalid{index}), ...
+                    inverterhilgui.live_telemetry.inverterPanelVisibility(invalid{index}), ...
                     'inverterhilgui:InvalidExpandedState');
             end
         end
 
         function onePanelStateDoesNotAffectAnother(testCase)
-            collapsed = inverterhilgui.inverterPanelVisibility(false);
-            expanded = inverterhilgui.inverterPanelVisibility(true);
+            collapsed = inverterhilgui.live_telemetry.inverterPanelVisibility(false);
+            expanded = inverterhilgui.live_telemetry.inverterPanelVisibility(true);
 
             testCase.verifyEqual(nnz(collapsed), 3);
             testCase.verifyEqual(nnz(expanded), 12);
             testCase.verifyEqual(nnz( ...
-                inverterhilgui.inverterPanelVisibility(false)), 3);
+                inverterhilgui.live_telemetry.inverterPanelVisibility(false)), 3);
         end
     end
 

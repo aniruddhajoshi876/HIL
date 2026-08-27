@@ -17,7 +17,7 @@ function guards = evaluateTransitionGuards(snapshot, thresholds)
 if nargin < 2
     thresholds = struct();
 end
-noData = inverterhilgui.guiTheme().text.noData;
+noData = inverterhilgui.live_telemetry.guiTheme().text.noData;
 brakeRequired = numericField(thresholds, 'brakePercent', 20);
 dcRequired = numericField(thresholds, 'dcLinkMinimumV', 350);
 

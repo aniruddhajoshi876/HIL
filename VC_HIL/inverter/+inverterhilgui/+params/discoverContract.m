@@ -13,7 +13,7 @@ function resolved = discoverContract(availablePaths, contract)
 %   missing path rather than silently falling back to a host default.
 
 if nargin < 2
-    contract = inverterhilgui.parameterContract();
+    contract = inverterhilgui.params.parameterContract();
 end
 if ~isstruct(contract) || isempty(contract)
     invalid('Contract must be a nonempty structure array.');

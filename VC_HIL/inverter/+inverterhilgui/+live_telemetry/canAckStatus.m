@@ -44,7 +44,7 @@ function status = canAckStatus(diagnostics, transmitting)
 %                     failed read can never present as a healthy bus.
 %     KNOWN         - whether ACKNOWLEDGED carries a decision.
 
-noData = inverterhilgui.guiTheme().text.noData;
+noData = inverterhilgui.live_telemetry.guiTheme().text.noData;
 status = struct('text', noData, 'acknowledged', [], 'known', false);
 
 if nargin < 2

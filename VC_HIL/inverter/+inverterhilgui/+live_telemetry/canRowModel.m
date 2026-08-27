@@ -26,7 +26,7 @@ if nargin < 3
 end
 highlightS = numericOption(options, 'highlightS', 0.5);
 staleS = numericOption(options, 'staleS', 0.1);
-noData = inverterhilgui.guiTheme().text.noData;
+noData = inverterhilgui.live_telemetry.guiTheme().text.noData;
 
 rows = repmat(emptyRow(noData), 0, 1);
 if ~isstruct(observations) || isempty(observations)

@@ -8,7 +8,7 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
 
     methods (Test)
         function contractDeclaresTypeRangeAndBothBackings(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             testCase.verifyGreaterThan(numel(contract), 20);
 
             allowedTypes = {'double', 'logical', 'uint8', 'uint16', 'uint32'};
@@ -43,38 +43,38 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
                 'gui_heartbeat'};
             for index = 1:numel(required)
                 testCase.verifyNotEmpty( ...
-                    inverterhilgui.contractEntry(contract, required{index}), ...
+                    inverterhilgui.params.contractEntry(contract, required{index}), ...
                     required{index});
             end
         end
 
         function nestedStructBackingIsDiscovered(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = TestGuiParameterContract.pathsOf(contract, 'structPath');
-            resolved = inverterhilgui.discoverContract(paths, contract);
+            resolved = inverterhilgui.params.discoverContract(paths, contract);
 
             testCase.verifyEqual(resolved.backing, 'struct');
             testCase.verifyEqual(resolved.resolvedCount, numel(contract));
             testCase.verifyEmpty(resolved.missing);
-            entry = inverterhilgui.contractEntry(resolved, 'pedals.throttle');
+            entry = inverterhilgui.params.contractEntry(resolved, 'pedals.throttle');
             testCase.verifyEqual(entry.path, 'hil_cmd.pedals.throttle');
             testCase.verifyEqual(entry.backing, 'struct');
         end
 
         function flatScalarBackingIsDiscovered(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = TestGuiParameterContract.pathsOf(contract, 'flatPath');
-            resolved = inverterhilgui.discoverContract(paths, contract);
+            resolved = inverterhilgui.params.discoverContract(paths, contract);
 
             testCase.verifyEqual(resolved.backing, 'flat');
             testCase.verifyEqual(resolved.resolvedCount, numel(contract));
-            entry = inverterhilgui.contractEntry(resolved, 'pedals.brake');
+            entry = inverterhilgui.params.contractEntry(resolved, 'pedals.brake');
             testCase.verifyEqual(entry.path, 'hil_cmd_pedals_brake');
             testCase.verifyEqual(entry.backing, 'flat');
         end
 
         function mixedBackingResolvesEachNameIndependently(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = cell(1, numel(contract));
             for index = 1:numel(contract)
                 if mod(index, 2) == 0
@@ -83,7 +83,7 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
                     paths{index} = contract(index).structPath;
                 end
             end
-            resolved = inverterhilgui.discoverContract(paths, contract);
+            resolved = inverterhilgui.params.discoverContract(paths, contract);
 
             testCase.verifyEqual(resolved.backing, 'mixed');
             testCase.verifyEqual(resolved.resolvedCount, numel(contract));
@@ -92,28 +92,28 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
         end
 
         function structBackingWinsWhenBothArePresent(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = [TestGuiParameterContract.pathsOf(contract, 'structPath'), ...
                 TestGuiParameterContract.pathsOf(contract, 'flatPath')];
-            resolved = inverterhilgui.discoverContract(paths, contract);
+            resolved = inverterhilgui.params.discoverContract(paths, contract);
 
             testCase.verifyEqual(resolved.backing, 'struct');
             testCase.verifyEqual(resolved.flatCount, 0);
         end
 
         function missingRequiredPathIsAVersionMismatchNotAFallback(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = TestGuiParameterContract.pathsOf(contract, 'structPath');
             keep = ~strcmp(paths, 'hil_cmd.pedals.throttle') & ...
                 ~strcmp(paths, 'hil_cmd.gui_heartbeat');
 
             testCase.verifyError( ...
-                @() inverterhilgui.discoverContract(paths(keep), contract), ...
+                @() inverterhilgui.params.discoverContract(paths(keep), contract), ...
                 'inverterhilgui:VersionMismatch');
 
             err = [];
             try
-                inverterhilgui.discoverContract(paths(keep), contract);
+                inverterhilgui.params.discoverContract(paths(keep), contract);
             catch caught
                 err = caught;
             end
@@ -124,35 +124,35 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
         end
 
         function optionalPathsMayBeAbsentWithoutError(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             paths = {};
             for index = 1:numel(contract)
                 if contract(index).required
                     paths{end + 1} = contract(index).structPath; %#ok<AGROW>
                 end
             end
-            resolved = inverterhilgui.discoverContract(paths, contract);
+            resolved = inverterhilgui.params.discoverContract(paths, contract);
 
             testCase.verifyNotEmpty(resolved.missing);
             testCase.verifyTrue(any(strcmp(resolved.missing, ...
                 'cal.pedals.released_v1')));
             testCase.verifyEmpty( ...
-                inverterhilgui.contractEntry(resolved, 'cal.pedals.pressed_v1'));
+                inverterhilgui.params.contractEntry(resolved, 'cal.pedals.pressed_v1'));
         end
 
         function emptyApplicationListingFailsLoudly(testCase)
             testCase.verifyError( ...
-                @() inverterhilgui.discoverContract({}), ...
+                @() inverterhilgui.params.discoverContract({}), ...
                 'inverterhilgui:VersionMismatch');
             testCase.verifyError( ...
-                @() inverterhilgui.discoverContract(42), ...
+                @() inverterhilgui.params.discoverContract(42), ...
                 'inverterhilgui:InvalidContract');
         end
 
         function connectReadsTargetValuesAndPushesNoHostDefaults(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
             backend.Values('hil_cmd.pedals.throttle') = 0.375;
-            session = inverterhilgui.targetSession('FakePC', backend);
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
 
             result = session.connect();
 
@@ -166,8 +166,8 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
         end
 
         function connectAgainstAWrongApplicationReportsVersionMismatch(testCase)
-            backend = inverterhilgui.fakeTargetBackend({'hil_cmd.something'});
-            session = inverterhilgui.targetSession('FakePC', backend);
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend({'hil_cmd.something'});
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
 
             result = session.connect();
 
@@ -179,7 +179,13 @@ classdef TestGuiParameterContract < matlab.unittest.TestCase
 
         function noGuiSourceUsesForceOrStructReadModifyWrite(testCase)
             root = TestGuiParameterContract.workspaceRoot();
-            files = dir(fullfile(root, '+inverterhilgui', '*.m'));
+            % +inverterhilgui's members now live one level down, split by
+            % role into +sg_adapters/+params/+writes/+state_machine/
+            % +live_telemetry/+logging sub-packages, so this must recurse
+            % rather than list '+inverterhilgui' itself (which no longer
+            % holds any .m files directly and would silently check zero
+            % files, disabling this safety-policy scan).
+            files = dir(fullfile(root, '+inverterhilgui', '**', '*.m'));
             files(end + 1) = dir(fullfile(root, 'inverter_hil_app.m'));
             for index = 1:numel(files)
                 code = TestGuiParameterContract.strippedCode(fullfile( ...

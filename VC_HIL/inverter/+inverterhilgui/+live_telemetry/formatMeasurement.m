@@ -35,7 +35,7 @@ if (islogical(capturePending) || isnumeric(capturePending)) && ...
     pending = double(capturePending) ~= 0;
 end
 if pending
-    theme = inverterhilgui.guiTheme();
+    theme = inverterhilgui.live_telemetry.guiTheme();
     text.status = theme.text.capturePending;
 end
 

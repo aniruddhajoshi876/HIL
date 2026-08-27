@@ -8,84 +8,84 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
 
     methods (Test)
         function doubleCommandsAreClampedToTheirDeclaredRange(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
 
-            accepted = inverterhilgui.validateCommandValue(contract, ...
+            accepted = inverterhilgui.writes.validateCommandValue(contract, ...
                 'pedals.throttle', 0.25);
             testCase.verifyTrue(accepted.accepted);
             testCase.verifyFalse(accepted.clamped);
             testCase.verifyEqual(accepted.value, 0.25);
             testCase.verifyEqual(accepted.reason, 'accepted');
 
-            high = inverterhilgui.validateCommandValue(contract, ...
+            high = inverterhilgui.writes.validateCommandValue(contract, ...
                 'pedals.throttle', 4.5);
             testCase.verifyTrue(high.accepted);
             testCase.verifyTrue(high.clamped);
             testCase.verifyEqual(high.value, 1);
             testCase.verifyEqual(high.reason, 'clamped');
 
-            low = inverterhilgui.validateCommandValue(contract, ...
+            low = inverterhilgui.writes.validateCommandValue(contract, ...
                 'pedals.brake', -3);
             testCase.verifyTrue(low.clamped);
             testCase.verifyEqual(low.value, 0);
         end
 
         function integerAndLogicalCommandsAreTypeChecked(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'can.drop_control_mask', 200);
             testCase.verifyTrue(result.accepted);
             testCase.verifyEqual(result.value, uint8(200));
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'can.drop_control_mask', 300);
             testCase.verifyTrue(result.clamped);
             testCase.verifyEqual(result.value, uint8(255));
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'can.drop_control_mask', 12.5);
             testCase.verifyFalse(result.accepted);
             testCase.verifyEqual(result.reason, 'value_not_integer');
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'can.drop_control_mask', -1);
             testCase.verifyFalse(result.accepted);
             testCase.verifyEqual(result.reason, 'value_negative');
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'digital.main_button', true);
             testCase.verifyTrue(result.accepted);
             testCase.verifyEqual(result.value, true);
 
-            result = inverterhilgui.validateCommandValue(contract, ...
+            result = inverterhilgui.writes.validateCommandValue(contract, ...
                 'digital.main_button', 2);
             testCase.verifyFalse(result.accepted);
             testCase.verifyEqual(result.reason, 'value_not_logical');
         end
 
         function validationFailsClosedOnMalformedInput(testCase)
-            contract = inverterhilgui.parameterContract();
+            contract = inverterhilgui.params.parameterContract();
             malformed = {NaN, Inf, complex(1, 1), [0.1 0.2], {}, 'high'};
             for index = 1:numel(malformed)
-                result = inverterhilgui.validateCommandValue(contract, ...
+                result = inverterhilgui.writes.validateCommandValue(contract, ...
                     'pedals.throttle', malformed{index});
                 testCase.verifyFalse(result.accepted, sprintf('%d', index));
                 testCase.verifyEqual(result.reason, 'malformed_value');
             end
 
-            unknown = inverterhilgui.validateCommandValue(contract, ...
+            unknown = inverterhilgui.writes.validateCommandValue(contract, ...
                 'pedals.clutch', 0.5);
             testCase.verifyFalse(unknown.accepted);
             testCase.verifyEqual(unknown.reason, 'unknown_logical_name');
 
-            nameless = inverterhilgui.validateCommandValue(contract, 42, 0.5);
+            nameless = inverterhilgui.writes.validateCommandValue(contract, 42, 0.5);
             testCase.verifyFalse(nameless.accepted);
             testCase.verifyEqual(nameless.reason, 'malformed_logical_name');
         end
 
         function coalescerEmitsTheNewestValueAndDropsIntermediates(testCase)
-            coalescer = inverterhilgui.sliderCoalescer(0.020);
+            coalescer = inverterhilgui.writes.sliderCoalescer(0.020);
 
             first = coalescer.submit(10, 0);
             testCase.verifyTrue(first.hasValue);
@@ -107,7 +107,7 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function coalescerNeverReordersEmissions(testCase)
-            coalescer = inverterhilgui.sliderCoalescer(0.030);
+            coalescer = inverterhilgui.writes.sliderCoalescer(0.030);
             values = 1:200;
             times = linspace(0, 1, numel(values));
             emitted = [];
@@ -130,20 +130,20 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
 
         function coalescerRateIsRestrictedToTheHostWindow(testCase)
             testCase.verifyError( ...
-                @() inverterhilgui.sliderCoalescer(0.010), ...
+                @() inverterhilgui.writes.sliderCoalescer(0.010), ...
                 'inverterhilgui:InvalidCoalescerRate');
             testCase.verifyError( ...
-                @() inverterhilgui.sliderCoalescer(0.060), ...
+                @() inverterhilgui.writes.sliderCoalescer(0.060), ...
                 'inverterhilgui:InvalidCoalescerRate');
             testCase.verifyError( ...
-                @() inverterhilgui.sliderCoalescer(NaN), ...
+                @() inverterhilgui.writes.sliderCoalescer(NaN), ...
                 'inverterhilgui:InvalidCoalescerRate');
             testCase.verifyEqual( ...
-                inverterhilgui.sliderCoalescer(0.050).RateS, 0.050);
+                inverterhilgui.writes.sliderCoalescer(0.050).RateS, 0.050);
             testCase.verifyEqual( ...
-                inverterhilgui.sliderCoalescer().RateS, 0.030);
+                inverterhilgui.writes.sliderCoalescer().RateS, 0.030);
 
-            coalescer = inverterhilgui.sliderCoalescer(0.020);
+            coalescer = inverterhilgui.writes.sliderCoalescer(0.020);
             testCase.verifyError(@() coalescer.submit(NaN, 0), ...
                 'inverterhilgui:InvalidCoalescerValue');
             testCase.verifyError(@() coalescer.submit(1, NaN), ...
@@ -151,20 +151,20 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function sequenceCounterIsMonotonicModuloTwoToThe32(testCase)
-            testCase.verifyEqual(inverterhilgui.sequenceCommand(uint32(0)), ...
+            testCase.verifyEqual(inverterhilgui.writes.sequenceCommand(uint32(0)), ...
                 uint32(1));
-            testCase.verifyEqual(inverterhilgui.sequenceCommand(0), uint32(1));
+            testCase.verifyEqual(inverterhilgui.writes.sequenceCommand(0), uint32(1));
             testCase.verifyEqual( ...
-                inverterhilgui.sequenceCommand(uint32(4294967294)), ...
+                inverterhilgui.writes.sequenceCommand(uint32(4294967294)), ...
                 uint32(4294967295));
             testCase.verifyEqual( ...
-                inverterhilgui.sequenceCommand(uint32(4294967295)), ...
+                inverterhilgui.writes.sequenceCommand(uint32(4294967295)), ...
                 uint32(0), 'The counter must wrap, not saturate.');
 
             value = uint32(4294967290);
             seen = zeros(1, 10, 'uint32');
             for index = 1:10
-                value = inverterhilgui.sequenceCommand(value);
+                value = inverterhilgui.writes.sequenceCommand(value);
                 seen(index) = value;
             end
             testCase.verifyEqual(seen, uint32([4294967291 4294967292 ...
@@ -174,14 +174,14 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
             bad = {-1, 1.5, NaN, Inf, 4294967296, [1 2], 'a', complex(1, 1)};
             for index = 1:numel(bad)
                 testCase.verifyError( ...
-                    @() inverterhilgui.sequenceCommand(bad{index}), ...
+                    @() inverterhilgui.writes.sequenceCommand(bad{index}), ...
                     'inverterhilgui:InvalidSequenceCounter', ...
                     sprintf('%d', index));
             end
         end
 
         function auditRecordsUseAFixedFieldOrder(testCase)
-            record = inverterhilgui.auditRecord(struct( ...
+            record = inverterhilgui.logging.auditRecord(struct( ...
                 'hostTime', '2026-07-31 12:00:00.000', ...
                 'targetTimeS', 12.5, ...
                 'logicalName', 'pedals.throttle', ...
@@ -199,7 +199,7 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
             testCase.verifyEqual(record.requested, '0.25');
             testCase.verifyEqual(record.result, 'applied');
 
-            logical = inverterhilgui.auditRecord(struct( ...
+            logical = inverterhilgui.logging.auditRecord(struct( ...
                 'logicalName', 'digital.main_button', ...
                 'requested', true, 'applied', false, 'result', 'mismatch'));
             testCase.verifyEqual(logical.requested, 'true');
@@ -210,22 +210,22 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function auditRecordsRejectUnattributableCommands(testCase)
-            record = inverterhilgui.auditRecord(struct('result', 'applied'));
+            record = inverterhilgui.logging.auditRecord(struct('result', 'applied'));
             testCase.verifyEqual(record.result, 'rejected');
             testCase.verifyEqual(record.detail, 'missing_logical_name');
 
-            record = inverterhilgui.auditRecord(struct( ...
+            record = inverterhilgui.logging.auditRecord(struct( ...
                 'logicalName', 'pedals.brake', 'result', 'succeeded'));
             testCase.verifyEqual(record.result, 'rejected');
             testCase.verifyEqual(record.detail, 'unknown_result_code');
 
-            record = inverterhilgui.auditRecord(42);
+            record = inverterhilgui.logging.auditRecord(42);
             testCase.verifyEqual(record.result, 'rejected');
             testCase.verifyEqual(record.applied, '--');
         end
 
         function sessionLogIsAppendOnlyAndExportsWithoutMutating(testCase)
-            log = inverterhilgui.sessionLog();
+            log = inverterhilgui.logging.sessionLog();
             testCase.verifyEqual(log.Count, 0);
             for index = 1:5
                 log.append(struct('logicalName', ...
@@ -259,8 +259,8 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function targetWriteReportsRequestedAppliedClampAndMismatch(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
-            session = inverterhilgui.targetSession('FakePC', backend);
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
             session.connect();
 
             applied = session.write('pedals.throttle', 0.4);
@@ -288,8 +288,8 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function failedWritesAreReportedAndNeverLookApplied(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
-            session = inverterhilgui.targetSession('FakePC', backend);
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
             session.connect();
             backend.FailNextCall = true;
 
@@ -299,7 +299,7 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
             testCase.verifyEmpty(failed.applied);
             testCase.verifyEqual(failed.reason, 'write_failed');
 
-            log = inverterhilgui.sessionLog();
+            log = inverterhilgui.logging.sessionLog();
             log.append(struct('logicalName', 'pedals.throttle', ...
                 'targetPath', failed.path, 'requested', failed.requested, ...
                 'applied', failed.applied, 'result', 'failed', ...
@@ -311,8 +311,8 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function writingBeforeConnectionIsRefused(testCase)
-            session = inverterhilgui.targetSession('FakePC', ...
-                inverterhilgui.fakeTargetBackend());
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', ...
+                inverterhilgui.sg_adapters.fakeTargetBackend());
 
             result = session.write('pedals.throttle', 0.5);
 
@@ -321,9 +321,9 @@ classdef TestGuiCommandPipeline < matlab.unittest.TestCase
         end
 
         function logSurvivesDisconnectAndReconnect(testCase)
-            backend = inverterhilgui.fakeTargetBackend();
-            session = inverterhilgui.targetSession('FakePC', backend);
-            log = inverterhilgui.sessionLog();
+            backend = inverterhilgui.sg_adapters.fakeTargetBackend();
+            session = inverterhilgui.live_telemetry.targetSession('FakePC', backend);
+            log = inverterhilgui.logging.sessionLog();
 
             session.connect();
             result = session.write('pedals.throttle', 0.5);

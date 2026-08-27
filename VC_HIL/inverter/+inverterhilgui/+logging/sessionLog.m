@@ -37,7 +37,7 @@ classdef sessionLog < handle
     methods
         function obj = sessionLog()
             %SESSIONLOG Construct an empty append-only session log.
-            obj.Records = inverterhilgui.auditRecord(struct());
+            obj.Records = inverterhilgui.logging.auditRecord(struct());
             obj.Records(:) = [];
             obj.Count = 0;
         end
@@ -45,7 +45,7 @@ classdef sessionLog < handle
         function record = append(obj, info)
             %APPEND Build and store one audit record; returns the record.
             %   Drops the oldest retained record once MAXRECORDS is reached.
-            record = inverterhilgui.auditRecord(info);
+            record = inverterhilgui.logging.auditRecord(info);
             obj.Records(end + 1, 1) = record;
             if numel(obj.Records) > obj.MaxRecords
                 excess = numel(obj.Records) - obj.MaxRecords;

@@ -30,7 +30,7 @@ if ~ischar(name) || isempty(name)
 end
 result.name = name;
 
-entry = inverterhilgui.contractEntry(source, name);
+entry = inverterhilgui.params.contractEntry(source, name);
 if isempty(entry)
     return;
 end

@@ -193,7 +193,7 @@ end
 % INV_CTRL_EN (DIO13) then INV_CTRL_DIS (DIO12), i.e. transposed relative to
 % the DI block's numeric [9 10 11 12 13]. Verify that warning is still true.
 addpath(projectDir);
-snapshot = inverterhilgui.blankTelemetry();
+snapshot = inverterhilgui.live_telemetry.blankTelemetry();
 guiNames = {snapshot.pins.name};
 guiTestPoints = {snapshot.pins.testPoint};
 

@@ -79,7 +79,7 @@ classdef targetSession < handle
                 obj.Backend.connect();
                 obj.applyEvent('connectSucceeded');
                 obj.ensureApplicationRunning();
-                obj.Contract = inverterhilgui.discoverContract( ...
+                obj.Contract = inverterhilgui.params.discoverContract( ...
                     obj.Backend.availableParameters());
                 obj.readAllTargetValues();
                 obj.syncStateFromBackend();
@@ -169,13 +169,13 @@ classdef targetSession < handle
                 result.reason = 'contract_unresolved';
                 return;
             end
-            validation = inverterhilgui.validateCommandValue( ...
+            validation = inverterhilgui.writes.validateCommandValue( ...
                 obj.Contract, name, value);
             if ~validation.accepted
                 result.reason = validation.reason;
                 return;
             end
-            entry = inverterhilgui.contractEntry(obj.Contract, name);
+            entry = inverterhilgui.params.contractEntry(obj.Contract, name);
             result.path = entry.path;
             result.requested = validation.value;
             result.clamped = validation.clamped;
@@ -224,7 +224,7 @@ classdef targetSession < handle
 
         function value = describeState(obj)
             %DESCRIBESTATE Lifecycle description including allowed actions.
-            value = inverterhilgui.connectionState(obj.State);
+            value = inverterhilgui.state_machine.connectionState(obj.State);
         end
 
         function success = addInstrument(obj, instrument)
@@ -280,7 +280,7 @@ classdef targetSession < handle
             % Sensor blocks start from the same honest no-data snapshot the
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
-            blank = inverterhilgui.blankTelemetry();
+            blank = inverterhilgui.live_telemetry.blankTelemetry();
             [~, sensorDlcInit] = sensorTxIds();
             snapshot.steering = blank.steering;
             snapshot.imu = blank.imu;
@@ -771,7 +771,7 @@ classdef targetSession < handle
                     ['Simulink Real-Time is required to address target ' ...
                     '%s and no backend was injected.'], obj.TargetName);
             end
-            obj.Backend = inverterhilgui.slrealtimeBackend(obj.TargetName);
+            obj.Backend = inverterhilgui.sg_adapters.slrealtimeBackend(obj.TargetName);
         end
 
         function result = lifecycleCall(obj, action, requestEvent, doneEvent)
@@ -781,7 +781,7 @@ classdef targetSession < handle
                 result.reason = 'not_connected';
                 return;
             end
-            allowed = inverterhilgui.connectionState(obj.State).allowed;
+            allowed = inverterhilgui.state_machine.connectionState(obj.State).allowed;
             actionName = strrep(requestEvent, 'Succeeded', '');
             if isfield(allowed, actionName) && ~allowed.(actionName)
                 result.reason = 'action_not_allowed';
@@ -803,7 +803,7 @@ classdef targetSession < handle
         end
 
         function applyEvent(obj, event)
-            transition = inverterhilgui.connectionState(obj.State, event);
+            transition = inverterhilgui.state_machine.connectionState(obj.State, event);
             obj.State = transition.state;
         end
 
