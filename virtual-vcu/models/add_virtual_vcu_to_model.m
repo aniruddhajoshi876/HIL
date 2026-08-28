@@ -147,6 +147,16 @@ add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU AI Telemetry'], ..
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU AI Telemetry/1');
 ids = [uint32(hex2dec('1F5')) uint32(hex2dec('186')) ...
     uint32(hex2dec('196')) uint32(hex2dec('1A6')) uint32(hex2dec('1B6'))];
+% Per-frame transmission gating, matching firmware VCComms::run()
+% (vcComms.cpp:263-320) wire behaviour: the four inverter control frames
+% (0x186/0x196/0x1A6/0x1B6) are queued ONLY in the RTD case; 0x1F5 is queued
+% in every state EXCEPT ERROR_SHUTDOWN (and, in firmware, also skipped on the
+% first RTD reset-only cycle -- see docs deviation 1). The speedgoatlib_IO614
+% "CAN Write" block exposes a per-message transmission-control input
+% (enableInput / "Show Transmission Control Input"), already used this way by
+% the base model's own CAN writes, so no enabled subsystem is needed: a
+% nonzero control input transmits the frame that tick, zero suppresses it.
+addTxGate(path);
 for k = 1:5
     add_block('simulink/Signal Attributes/Rate Transition', ...
         [path sprintf('/Port A Payload Rate Transition %d', k)], ...
@@ -162,13 +172,23 @@ for k = 1:5
         'Position', [1060 25 + 55*k 1180 55 + 55*k]);
     set_param(write, 'moduleType', 'IO614', 'id', '1', 'channel', '2', ...
         'canType', 'CAN (HS)', 'useBusIn', 'off', 'numOfMsg', '1', ...
-        'enableStatusPort', 'on', 'ts', '0.005', 'UserData', ids(k), ...
-        'UserDataPersistent', 'on');
+        'enableStatusPort', 'on', 'enableInput', 'on', 'ts', '0.005', ...
+        'UserData', ids(k), 'UserDataPersistent', 'on');
     add_line(path, sprintf('VCU Payload Split/%d', k), ...
         sprintf('Port A Payload Rate Transition %d/1', k));
     add_line(path, sprintf('Port A Payload Rate Transition %d/1', k), ...
         sprintf('Port A CAN Pack %d/1', k));
-    add_line(path, sprintf('Port A CAN Pack %d/1', k), sprintf('Port A CAN Write %d/1', k));
+    add_line(path, sprintf('Port A CAN Pack %d/1', k), ...
+        sprintf('Port A CAN Write %d/1', k));
+    % Inport 2 of the CAN Write is the transmission-control input. k == 1 is
+    % 0x1F5 (pedal), gated on "not ERROR_SHUTDOWN"; k = 2..5 are the control
+    % frames, gated on "in RTD".
+    gateSrc = 2; % Port A TX Gate output 2 = pedal enable
+    if k > 1
+        gateSrc = 1; % output 1 = control-frame enable
+    end
+    add_line(path, sprintf('Port A TX Gate Rate Transition %d/1', gateSrc), ...
+        sprintf('Port A CAN Write %d/2', k), 'autorouting', 'on');
 end
 % Genuine, target-measured transmit count for the pedal frame (0x1F5),
 % mirroring EPHORUSSYSTEMSTATUSSTEP's TXCOUNT pattern
@@ -200,6 +220,7 @@ set_param(path, 'Commented', 'off');
 % the observability port it feeds returned the pedal payload's own shape.
 setMatlabFunctionScript(fcn, vcuScript());
 setCounterScript(counter, pedalTxCounterScript());
+setTxGateScript([path '/Port A TX Gate'], txGateScript());
 save_system(model, modelPath);
 % Persist the chart source once more after a close/reopen. This mirrors the
 % R2024b App/Stateflow serialization behavior and prevents a stale default
@@ -214,7 +235,58 @@ close_system(model, 0);
 load_system(modelPath);
 setMatlabFunctionScript([path '/Virtual VCU LV_ON'], vcuScript());
 setCounterScript([path '/Port A Pedal TX Counter'], pedalTxCounterScript());
+setTxGateScript([path '/Port A TX Gate'], txGateScript());
 save_system(model, modelPath);
+end
+
+function addTxGate(path)
+%ADDTXGATE Per-frame CAN transmission-control source for items 8/9.
+%   Reads the published VirtualVcuStateId (chart payloads(41)) and produces
+%   two scalar enables at the CAN Write rate (0.005 s):
+%     output 1 = control-frame enable  = (state == RTD)
+%     output 2 = pedal-frame  enable   = (state ~= ERROR_SHUTDOWN)
+if getSimulinkBlockHandle([path '/Port A TX Gate']) ~= -1
+    return;
+end
+add_block('simulink/Signal Routing/From', [path '/Port A TX Gate State From'], ...
+    'GotoTag', 'VirtualVcuStateId', 'Position', [560 640 700 660]);
+gate = add_block('simulink/User-Defined Functions/MATLAB Function', ...
+    [path '/Port A TX Gate'], 'Position', [740 620 860 690]);
+setTxGateScript(gate, txGateScript());
+add_line(path, 'Port A TX Gate State From/1', 'Port A TX Gate/1', 'autorouting', 'on');
+for g = 1:2
+    rt = [path sprintf('/Port A TX Gate Rate Transition %d', g)];
+    add_block('simulink/Signal Attributes/Rate Transition', rt, ...
+        'OutPortSampleTime', '0.005', 'Position', [900 610 + 40*g 920 630 + 40*g]);
+    add_line(path, sprintf('Port A TX Gate/%d', g), ...
+        sprintf('Port A TX Gate Rate Transition %d/1', g), 'autorouting', 'on');
+end
+end
+
+function script = txGateScript()
+script = sprintf(['function [ctrlEnable, pedalEnable] = portATxGateStep(stateId)\n' ...
+    '%%#codegen\n' ...
+    '%% Firmware VCComms::run() (vcComms.cpp:263-320): inverter control\n' ...
+    '%% frames are queued only in RTD (state 4); 0x1F5 is queued in every\n' ...
+    '%% state except ERROR_SHUTDOWN (state 5).\n' ...
+    's = double(stateId);\n' ...
+    'ctrlEnable = double(s == 4);\n' ...
+    'pedalEnable = double(s ~= 5);\n' ...
+    'end\n']);
+end
+
+function setTxGateScript(blockPath, script)
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
+rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
+chart(1).Script = script;
+if ~contains(chart(1).Script, ...
+        'function [ctrlEnable, pedalEnable] = portATxGateStep(stateId)')
+    error('virtualvcu:TxGateScript', 'Port A TX Gate script was not installed.');
+end
 end
 
 function addVirtualVcuOutputTags(path)
