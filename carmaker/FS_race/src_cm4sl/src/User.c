@@ -110,6 +110,9 @@ extern double MFE_CAN_PhysicsAngularRate[3];
 extern double MFE_CAN_PhysicsVelocity[3];
 extern double MFE_CAN_PhysicsEuler[3];
 
+extern double MFE_CAN_DriverSteeringAngleDeg;
+extern double MFE_CAN_DriverSteeringSpeedDegPerSec;
+
 
 
 /*
@@ -290,6 +293,20 @@ User_DeclQuants (void)
 	    DDefDouble (NULL, sbuf, "rad",   &MFE_CAN_PhysicsEuler[i], DVA_IO_Out);
 	}
     }
+
+    /* Fanatec / driver steering-wheel position: written by TorqueVect.mdl
+    ** (Read CM Dict the CarMaker steering-wheel angle -> rad-to-deg ->
+    ** optional sign -> saturate to +/-780 deg -> Write CM Dict these), read
+    ** by IO_Out() into the internal 0x507 CarMakerDriverSteering transport
+    ** frame. DEGREES and deg/s; left-hand-positive, matching CarMaker /
+    ** ISO 8855 and the Bosch LWS. DVA_IO_Out (model writes, IO reads), like
+    ** MFE_CAN.Physics.* above. See
+    ** VC_HIL/docs/carmaker_fanatec_lws_steering.md and
+    ** carmaker/docs/carmaker_readcmdict_checklist.md. */
+    DDefDouble (NULL, "MFE_CAN.Driver.SteeringAngleDeg", "deg",
+		&MFE_CAN_DriverSteeringAngleDeg, DVA_IO_Out);
+    DDefDouble (NULL, "MFE_CAN.Driver.SteeringSpeedDegPerSec", "deg/s",
+		&MFE_CAN_DriverSteeringSpeedDegPerSec, DVA_IO_Out);
 }
 
 
