@@ -1,79 +1,62 @@
 # Virtual VCU (MATLAB/Simulink R2024b)
 
-This folder contains the bench-only VCU behavior. It reads only the physical
-IO183 AI/DI inputs assigned to I/O Module 2, decodes inverter status frames on
-IO614 Port A (CAN channel 2), and sends pedal plus four inverter control
-frames on that port. It never uses Module 1 signals or Port B in software.
+Bench VCU stand-in synchronized to MFE26-VC `controls` commit
+`bcd6352e1674ef4b999391f345f675f386718d32`. It reads the physical IO183
+Module 2 pedal/digital loopback and IO614 Port A (CAN channel 2) traffic,
+broadcasts pedal frame `0x1F5` (501), and sends Ephorus control IDs
+`0x186/0x196/0x1A6/0x1B6`.
 
-The pedal constants and Ephorus frame layout are extracted from MFE26-VC
-`todo` commit `39ea8efd3fc4e88f76e876f94fb99d4adabb7749`; firmware source is
-referenced, not copied. `+virtualvcu/step.m` implements
-`LV_ON -> PRECHARGING -> ENABLE -> BUZZING -> RTD`. Precharge and buzzer
-timing are 7.5 s and 1.5 s at the 1 ms task rate. RTD requires the main-button
-DI and at least 25% brake; shutdown feedback forces `ERROR_SHUTDOWN` and safe
-torque. Control frames are disabled outside active HV states and torque is
-zero outside RTD.
+## Torque path
 
-Hardware contract: Module 1 AO01-AO04 -> Module 2 AI01-AI04 through the
-documented 17-pin M12 wiring; Module 1 DIO outputs -> Module 2 DI inputs after
-level/polarity review. IO614 Port A (channel 2) and Port B (channel 1) are
-connected CANH/CANL/ground at 1 Mbit/s with two 120 ohm end terminators.
+The torque commands come from the **real generated `ControlsMFE25` allocator**
+vendored under `vendor/controls_model/` (the exact R2025b-generated C the
+firmware runs — see `vendor/controls_model/VENDORED_FROM.md`), not a
+throttle-scaled approximation. A thin C wrapper (`vvcu_controls_wrapper.c`)
+owns one model instance and is called from the deploy chart via `coder.ceval`
+and from host tests via a MEX built from the same sources.
 
-## Loopback map
+The deploy chart runs at **5 ms**, performs the firmware reset sequence
+(`ResetSignal 1 -> step -> 0`) once at model init, sends a one-cycle
+inverter reset+enable frame (`byte 0 == 0x03`) on the first RTD comms cycle
+with no torque, then steps the allocator once per ordinary RTD cycle. Internal
+allocator state is retained across RTD exit/re-entry and never re-initialized.
+`tau1..tau4 = FL,FR,RL,RR` map to `INV4,INV3,INV1,INV2`; the positive torque
+limit is capped upper-only at 15 Nm and encoded at 1/256 Nm/count.
 
-| Function | Module 1 source | Module 1 pin | Module 2 input | Module 2 pin | Range/level |
-|---|---|---:|---|---:|---|
-| Throttle 1 | IO183 AO01 | A1 | AI01 | A7 | 0-5 V |
-| Throttle 2 | IO183 AO02 | A2 | AI02 | A8 | 0-5 V |
-| Brake 1 | IO183 AO03 | A3 | AI03 | A9 | 0-5 V |
-| Brake 2 | IO183 AO04 | A4 | AI04 | A10 | 0-5 V |
-| Digital 1-8 | IO183 DIO01-DIO08 | B1-B8 | DI01-DI08 | B1-B8 | conditioned TTL; polarity TBD |
+## Pedal and state machine
 
-Digital mapping: DI01 precharge, DI02 main/RTD button, DI03 cooling, DI04 fan,
-and DI05 shutdown feedback. DI06-DI08 are reserved.
+Pedal processing follows the controls branch: 15 % throttle / 25 % brake
+in-range margins, `|t1-t2| <= 0.20` APPS agreement, brake-1-only plausibility
+(`brakeValidPct = brake1Pct`), and the latched 25 %/25 % APPS-brake interlock
+that clears at 5 % throttle. The interlock zeroes `torqueRequestPct` and the
+RTD `0x1F5` throttle byte but, matching firmware, does **not** suppress the
+allocator (`rThrottlePedal` gets ungated `throttleValidPct`). Pedal frame
+front/rear pressure bytes come from brake 1 and brake 2 separately; brake 2 is
+still transmitted even though it is excluded from plausibility.
 
-Analog ground uses A5/A6/A17 and digital reference uses B17 only after the
-ground strategy and signal conditioning are verified. Do not connect 12/24 V
-directly to IO183 digital pins.
+`LV_ON -> PRECHARGING -> ENABLE -> BUZZING -> RTD` with 1500/300 tick
+(7.5 s / 1.5 s) timers. RTD entry needs the main button and brake 1 >= 25 %.
+Both DC-link pairs must exceed 350 V for active HV states to stay healthy;
+`PRECH_EN_OUT` is asserted in PRECHARGING and ENABLE. Inverter-ready status is
+not a fault gate (that firmware check is commented out).
 
-## DBC cross-check
+## Bench evidence boundary
 
-`config/MFE26_Inverter.dbc` is the supplied `MFE26_Inverter.dbc` (SHA-256
-`F5AE64DA3A77D0E071419CC11980FB24A69CA3469A703C855CB6C954F7F429C3`). It
-matches the model and firmware contract: control IDs `0x186/0x196/0x1A6/0x1B6`,
-status IDs `0x383/0x385/0x393/0x395/0x3A3/0x3A5/0x3B3/0x3B5/0x400`, DLC 8,
-standard 11-bit identifiers, and torque-limit scale 1/256 Nm/count. The
-firmware's pedal broadcast `0x1F5` is not defined in this inverter DBC and is
-therefore kept as an explicit VCU-side contract in `packPedalFrame.m`.
+The bench never invents received inverter status. Only a physical `0x3X5`
+frame updates its retained wheel speed. With no physical IMU, steering, or
+load-cell receive path, those allocator inputs stay zero while the firmware
+runtime `use_imu_vel_x/y = 1` overrides are still applied. Analog loopback is
+0-5 V (IO183 Module 1 self-loop). The DI01-DI05 index map is a bench wiring
+choice, not a firmware requirement.
 
-The virtual VCU uses the raw calibrated throttle percentage for `0x1F5` in all
-states, including RTD. The firmware's RTD torque-request substitution is not
-represented because this bench has no separate torque-request input.
-PRECHARGING remains the plain 7.5 s timed state; no additional DC-link-rise
-plausibility fault was invented.
+See `docs/controls_branch_sync.md` for the full firmware fact -> file:line
+mapping, the embedding-approach decision and rejected alternatives, every
+deviation, provenance hashes, and the exact R2024b regen/build/test steps.
 
-After rebuilding or opening an existing model, run
-`virtual-vcu/models/patch_virtual_vcu_state_outputs.m` under R2024b. It adds
-state/control observers and the model-generated pedal-payload observer used
-by the GUI; these are not physical CAN loopback or CAN-ACK evidence.
+## Verification status
 
-Local verification is host-only. No physical analog loopback, CAN ACK, target
-build, or deployment is claimed until it is captured on the bench.
-
-## R2024b validation
-
-From the HIL repository root:
-
-```powershell
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'inverter_hil')); build_inverter_hil_model(true);"
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'inverter_hil')); cd(fullfile(pwd,'inverter_hil')); verify_inverter_hil_model;"
-& 'C:\Program Files\MATLAB\R2024b\bin\matlab.exe' -batch "addpath(fullfile(pwd,'virtual-vcu')); addpath(fullfile(pwd,'virtual-vcu','tests')); run_virtual_vcu_tests;"
-```
-
-The GUI remains `inverter_hil/inverter_hil_app.mlapp`; target telemetry is
-unknown until a target observation exists. The generated model is integrated,
-and R2024b TLC plus object compilation completed locally. The final QNX link
-was blocked by the existing OneDrive path-with-spaces toolchain invocation, so
-no fresh `inverter_hil.mldatx` claim is made from this pass. Target
-deployment/start, physical Port A/Port B ACKs, and analog loopback evidence
-remain hardware-dependent and unverified here.
+- Host: `build_controls_model_mex` (R2025b C compiled under R2024b + MSVC
+  2022) and `run_virtual_vcu_tests` (17/17) pass; Code Analyzer clean.
+- Not verified here: `build_controls_synced_virtual_vcu`, `verify_*`, the
+  Speedgoat `slbuild`, target deployment, CAN ACK capture, and physical
+  loopback. Local source inspection is not bench evidence.

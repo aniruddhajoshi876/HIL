@@ -76,7 +76,7 @@ For CAN RBS, import `MFE26_Inverter.dbc`, select real versus simulated ECUs, act
 
 - TargetPC1 is `10.10.10.5`. `PINOUTS.md` identifies IO614 as the four-channel HS-CAN/LIN module, maps connector A to CAN channel 2 and connector B to CAN channel 1, and records the virtual VCU on Port A/channel 2 at 1 Mbit/s. `README.md` says the existing virtual VCU reads inverter status and transmits pedal plus four control frames on that port.
 - `virtual-vcu/+virtualvcu/config.m` sets CAN channel 2, Port A, `1e6` bit/s, DLC 8, control IDs `0x186/0x196/0x1A6/0x1B6`, status IDs `0x383/0x385/0x393/0x395/0x3A3/0x3A5/0x3B3/0x3B5/0x400`, and pedal CAN ID `0x1F5` (501 decimal). `README.md` records standard 11-bit IDs and that `0x1F5` is not in `MFE26_Inverter.dbc`.
-- The same README records a 1 ms virtual-VCU task with 7.5 s precharge and 1.5 s buzzer states. It expressly says physical CAN ACK and target deployment remain unverified. `PINOUTS.md` records that the IO614 interface itself has no termination and uses HS CANL pin 2 / CANH pin 7, so the physical bus must have two end terminators.
+- The synchronized virtual VCU now runs at 5 ms, with 1500 precharge ticks and 300 buzzer ticks preserving 7.5 s and 1.5 s. It expressly says physical CAN ACK and target deployment remain unverified. `PINOUTS.md` records that the IO614 interface itself has no termination and uses HS CANL pin 2 / CANH pin 7, so the physical bus must have two end terminators.
 
 ### Is CAN coupling plausible?
 
