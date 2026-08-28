@@ -46,44 +46,79 @@ physics decoder / coherent-group retainer and a fresh-vs-stale selector that
 overrides `stepVehicleState`'s output with CarMaker truth when fresh and falls
 back when stale. Everything downstream of the selector is unchanged.
 
-## 0a. Implementation status (2026-08-27, branch `CAN`, uncommitted)
+## 0a. Status ledger (last updated 2026-08-27)
 
-**Built and verified on the R2024b Speedgoat side (section 6.2):**
-- DBC: `0x503`–`0x506` added to `carmaker/config/MFE26_Inverter_CarMaker.dbc`
-  (transmitter `CarMaker`, DLC 8, 3× signed Intel int16, `PhysicsGroupCounter`,
-  `PhysicsIntegrity`, `GenMsgCycleTime = 10`).
-- New functions: `VC_HIL/inverter/rxCAN/decodeCarMakerPhysicsFrame.m`,
-  `receiveCarMakerPhysics.m`, `carMakerPhysicsSnapshot.m`;
-  `VC_HIL/inverter/contructors/initialCarMakerPhysicsBank.m`;
-  `VC_HIL/inverter/state-machine/selectVehicleObservation.m`.
-- `defaultVehicleStateConfig.m` gains `carMakerTruthEnabled = false` — the
-  selector returns the kinematic estimate unchanged until this is flipped, so
-  deployed behaviour is byte-identical to before.
-- `build_inverter_hil_model.m`: `CarMaker Pedal Retention` → `CarMaker RX
-  Retention` (dispatches `0x500` vs `0x503`–`0x506` from the one channel-1
-  FIFO), new `CarMaker Physics Snapshot RT` rate transition, `selectVehicle-
-  Observation` called right after `stepVehicleState()`.
-- `inverter_hil.slx` / `.sldd` regenerated (`build_inverter_hil_model(true)`,
-  clean apart from the tolerated IO183 deprecation notices).
-- Tests: new `TestCarMakerPhysics.m` (6/6); `run_inverter_hil_tests` = **225
-  passed / 7 failed**, the 7 being the pre-existing `inverter_hil_app.m`-absent
-  errors (unrelated). `check_matlab_code` clean on every new file.
+All code is committed and pushed to `origin/CAN` (`af58d9e`..`b94ad17`).
+`defaultVehicleStateConfig.carMakerTruthEnabled = false`, so nothing below has
+changed deployed behaviour yet — the selector still returns the kinematic
+estimate byte-for-byte.
 
-**CM4SL C side — written, not built (section 6.1):**
-`carmaker/FS_race/src_cm4sl/IO.c` and `User.c` now carry the physics
-transmitter: `MFE_CAN.Physics.*` `DVA_IO_Out` quantities registered in
-`User_DeclQuants()`, `MFE_SendPhysicsFrame()` helper, and the
-`0x503`–`0x506` cyclic sends in `IO_Out()` after `0x500`. Copy to IPG-MFE and
-rebuild in R2022a per `CM4SL_CAN_apply_note.md` — not compiled here. The
-`TorqueVect.mdl` Read/Write CM Dict wiring that must populate those
-quantities is `carmaker_readcmdict_checklist.md` — still a manual R2022a task.
-The vehicle config (`Sensor.1` / `Param_B00` position) is untouched.
+### DONE — code (committed, tested where testable)
 
-**Still open:** everything in sections 7–8 — the `TorqueVect.mdl` CM-Dict
-wiring, the CM4SL rebuild, MTi mount survey, `Acc_B` gravity semantics,
-axis-sign proof, A9 (now resolved against firmware — see
-`VC_HIL/imu/protocol.md`), `0x503`–`0x506` ID approval, and the full bench
-acceptance sequence. `carMakerTruthEnabled` must stay `false` until those close.
+| Area | What | Commit | Verified |
+|---|---|---|---|
+| DBC | `0x503`-`0x506` physics frames (3× signed Intel int16 @ 0/16/32, `PhysicsGroupCounter` @48, `PhysicsIntegrity` @56, `GenMsgCycleTime=10`), owner `CarMaker`; header topology comment | `81d5249` | parses; IDs unique |
+| SG decode | `rxCAN/decodeCarMakerPhysicsFrame.m` — ID/DLC/extended/RTR/CRC-8-J1850/range checks, LE int16, per-message scale | `9637e80` | `TestCarMakerPhysics` |
+| SG retain | `rxCAN/receiveCarMakerPhysics.m` + `carMakerPhysicsSnapshot.m` + `contructors/initialCarMakerPhysicsBank.m` — coherent-group retainer keyed on the mod-256 counter, 30 ms freshness timeout, typed reject codes, accepted/rejected counts | `9637e80` | `TestCarMakerPhysics` (6/6) |
+| SG selector | `state-machine/selectVehicleObservation.m` — atomic fresh-CarMaker vs warm-kinematic; `stepVehicleState` physics untouched; default-off gate in `defaultVehicleStateConfig.m` | `9637e80` | `TestCarMakerPhysics` |
+| SG model | `build_inverter_hil_model.m` — `CarMaker Pedal Retention` → `CarMaker RX Retention` (one channel-1 FIFO, dispatches `0x500` vs `0x503`-`0x506`), `CarMaker Physics Snapshot RT` rate transition, `selectVehicleObservation` after `stepVehicleState()` in the status cycle | `9637e80` | `TestModelArtifacts` 15/15; full suite 225 pass / 7 pre-existing fail |
+| SG model regen | `inverter_hil.slx` / `.sldd` rebuilt via `build_inverter_hil_model(true)` | `9637e80` | regen clean bar IO183 deprecation notices |
+| Scalar frames | (prerequisite work) `imuScalarTxIds.m`, `packMti680ScalarPayload.m`, `Scalar Sensor Payloads` block + `0x006/0x005/0x011/0x001` writes | `af58d9e` | full suite |
+| CM4SL C | `carmaker/FS_race/src_cm4sl/IO.c` + `User.c` — `MFE_CAN.Physics.*` `DVA_IO_Out` quantities in `User_DeclQuants()`, `MFE_PhysicsRoundSaturate()` + `MFE_SendPhysicsFrame()`, cyclic `0x503`-`0x506` sends in `IO_Out()` after `0x500` sharing one counter | `f73d319` | **not compiled** (needs R2022a); brace-balanced, style-matched |
+
+### DONE — investigation
+
+| Item | Result | Commit |
+|---|---|---|
+| **A9 — which gyro axis the VCU reads as yaw** | RESOLVED: MFE26-VC `controls` branch `gyroCANRx` → `imu_data.Gyrz` (byte offset 4), `vcComms.cpp` `controls_inputs->yaw_rate = Gyrz`. The HIL's yaw-on-Z (obs index 6) is correct. | `03c7536` |
+| Byte order (A1) | VCU decoder reads big-endian — matches. Still unverified vs a *physical* sensor. | `03c7536` |
+| VelocityXYZ ID (A3) | Firmware `MTI680G_ID_VELOCITY_RAW 0x076u` — matches. Datasheet still self-contradicts. | `03c7536` |
+| IDs / scales / ranges | All match `imuProtocol.m` (`0x034/0x032/0x076`, `2^-8/2^-9/2^-6`, `100/35/500`). | `03c7536` |
+| Backwards mount | Firmware-confirmed: `vcComms.cpp` "IMU is placed 180 deg flipped", negates `ax/ay/v_x/v_y`, passes `Gyrz`. HIL transform ∘ firmware compensation = identity. | `03c7536` |
+| CAN acceptance filter | `BoardManager_create(0, 1024)` → admits `0x000`-`0x400`. All MTi frames + LWS `0x2B0` pass; LWS config `0x7C0` is dropped in hardware. Old "`0x383`-`0x400` only" note was stale. | `03c7536` |
+
+### LEFT — manual, in order (nothing here is code an agent can write)
+
+1. **`TorqueVect.mdl` CM-Dict wiring (R2022a).** Add Read CM Dict blocks for
+   `Sensor.Inertial.Param_B00.{Acc_B,Omega_B,Vel_B}.{x,y,z}` (+ optional
+   `Car.{Roll,Pitch,Yaw}`) and Write CM Dict blocks to
+   `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}`, straight
+   passthrough. Full step-by-step: `carmaker_readcmdict_checklist.md`.
+2. **Confirm the exact CarMaker DD quantity spellings** in the R2022a Read CM
+   Dict browser (`Acc_B/Omega_B/Vel_B` stems are header-confirmed; the
+   `.x/.y/.z` leaves and the `Sensor.Inertial.Param_B00` addressing are not).
+3. **Copy `IO.c` / `User.c` to IPG-MFE and rebuild CM4SL in R2022a**
+   (`CM4SL_CAN_apply_note.md`). The IPG-MFE `src_cm4sl` worktree is currently
+   dirty — reconcile first.
+4. **`GetCRC_J1850_User()` has no definition** in these files or the CarMaker
+   12.0.1 headers — used by both `0x500` and the new physics frames. Confirm it
+   links (i.e. `0x500` currently transmits a valid CRC); if not, define it once
+   for both.
+5. **Survey the real MTi mount** — vehicle-frame X/Y/Z from Fr1, and orientation.
+   `Sensor.1.pos = 1.3 0 0.15` is an unconfirmed guess; lever-arm terms in
+   `Acc_B`/`Vel_B` are only as good as it. Then update the vehicle config.
+6. **Confirm `Acc_B` gravity semantics** — a real MTi reports specific force
+   (gravity included). CarMaker's plain `Acc_B` should too; `SENS_BODY_FRAME_noGN`
+   excludes it. Bench: stationary ⇒ `Acceleration.z ≈ +9.81`.
+7. **Axis-sign proof** — isolated positive-axis maneuvers, `_B.x/y/z` match the
+   Speedgoat vehicle convention; verify the Euler sequence/wrap before enabling
+   `0x506`.
+8. **Get `0x503`-`0x506` approved** against the vehicle-wide CAN registry.
+9. **Run the section-7 bench acceptance** (capture the frames; counter/CRC/byte
+   order; fresh↔stale fallback; fault injection; channel-2 MTi capture; compare
+   against a real MTi).
+10. **Then** set `defaultVehicleStateConfig.carMakerTruthEnabled = true` and
+    re-run `build_inverter_hil_model(true)`.
+
+### LEFT — optional / later
+
+- `0x506` Euler wiring (not required for freshness; the VCU has no Euler
+  handler; `use_imu_vel_x/y` also default to `0` so MTi velocity is not consumed
+  by the controls model yet either).
+- Migrate the CM4SL transmitter to RBS if a supported CarMaker-side physical CAN
+  adapter is ever proven (the largest gate below).
+- `references/sensors/imu_contract_delta.md` still carries A9 as open — update
+  it to point at `protocol.md`.
 
 ---
 
