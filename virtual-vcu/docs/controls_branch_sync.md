@@ -37,15 +37,18 @@ Rationale:
   ...)` in `configure_controls_model.m` rather than through R2025b's build
   infrastructure (`.mk`/TLC), so the release mismatch does not reach the
   toolchain.
-- The only platform substitution is `coder_posix_time.c` (firmware backs the
-  generated `tic/toc` with STM32 TIM2/HAL; the HIL backs it with the C
-  runtime `clock()`). `ControlsMFE25.c` discards the `toc` return value, so
-  the substitution cannot change allocator state or outputs.
+- The only platform substitution is `coder_posix_time.c`. Firmware backs the
+  generated `tic/toc` with STM32 TIM2/HAL; the HIL uses a **deliberate no-op
+  stub** (round-2 item 5) since `ControlsMFE25.c` discards the `toc` return
+  value at its sole call site (line 6806) and nothing else reads the
+  timekeeper state — see deviation 11.
 - `ControlsMFE25()` `malloc`s the model, block-IO, dwork, input and output
-  structs **once** (`ControlsMFE25.c:7295-7335`); `ControlsMFE25_step` does no
-  allocation. The wrapper calls `ControlsMFE25()` once, from the deploy
-  chart's persistent-init branch. One-shot heap at model init is acceptable
-  for Simulink Real-Time.
+  structs **once** (5 calls, `ControlsMFE25.c:7268-7335`); `ControlsMFE25_step`
+  and `ControlsMFE25_initialize` do no allocation. The wrapper calls
+  `ControlsMFE25()` once, from the deploy chart's persistent-init branch,
+  which in generated code runs on the first 5 ms sample. One-shot heap on
+  the first sample is acceptable for Simulink Real-Time (round-2 item 4
+  analysis below).
 
 **Rejected: (b) reference / regenerate from the R2022a source model**
 (`MFE25-Controls/02 Controls Model/Codegen/Template/ControlsMFE25.slx`,
@@ -137,7 +140,8 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
 | State sequence `LV_ON -> PRECHARGING -> ENABLE -> BUZZING -> RTD` (`vcStateMachine.cpp:9`) | `config.m:27`; `step.m`; deploy `state` machine |
 | RTD entry from ENABLE: `mainButton && brakeValidPct >= 0.25` (`vcStateMachine.cpp:333`) | `step.m:91`; deploy `state == 2 && mainButton && brakeValidPct >= 0.25` |
 | RTD `prechargeButton` press -> PRECHARGING (`mainEnable=false; osDelay(50)`) (`vcStateMachine.cpp:367-371`) | `step.m:96`; deploy `state == 4 && precharge -> state 1` (the 50 ms is not modeled) |
-| `prechargeComplete()` requires `dcLink12_v > 350` **and** `dcLink34_v > 350` and `sys.valid` (`vcStateMachine.cpp:131-146`) | `step.m:73-75` (needs a decoded `0x400`, both > 350); deploy `dcLinkAccum12 <= 350 \|\| dcLinkAccum34 <= 350` on two bench-plant ramp accumulators |
+| `prechargeComplete()` requires `sys.valid` **then** `dcLink12_v > 350` **and** `dcLink34_v > 350` (`vcStateMachine.cpp:131-146`) | host `step.m`: `dcLink12Valid && dcLink34Valid && dcLink12V > 350 && dcLink34V > 350`, each pair-valid set on a decoded `0x400`; deploy: `~dcLink12Valid \|\| ~dcLink34Valid \|\| dcLinkAccum12 <= 350 \|\| dcLinkAccum34 <= 350`, pair-valid set once the pair's bench-plant ramp has run (simulated `sys.valid`, no `0x400` receive path) |
+| Inverter control frames queued **only** in the `RTD` case of `VCComms::run()`; `0x1F5` queued in every state except `ERROR_SHUTDOWN`, and skipped on the first RTD reset-only cycle (`vcComms.cpp:263-320,286-292,314-317`) | Every Port-A `CAN Write` uses its transmission-control input (`enableInput`); `Port A TX Gate` drives control-frame enable = `stateId == 4`, pedal-frame enable = `stateId ~= 5`. Host `step.m` exposes `controlFrameTxEnabled` / `pedalFrameTxEnabled` (the latter also false on the first RTD reset cycle). Deploy chart is unchanged. |
 | ENABLE/BUZZING fault if `!prechargeComplete()`; RTD faults if `!prechargeComplete() || sdError` (`vcStateMachine.cpp:195-227`) | `step.m:78-81`; deploy `enterFault` / `enterFaultFromRtd` |
 | `allInvertersReady()` inverter-status fault gate **commented out** (`vcStateMachine.cpp:211-213`) | no readiness fault gate anywhere in the HIL |
 | PRECHARGING never faults (`vcStateMachine.cpp:198-199`) | deploy `enterFault` only for `state == 2 || state == 3` |
@@ -147,14 +151,18 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
 | Cooling every cycle: `coolingSwitch -> griRelay1/2 + cometRelay` (`vcStateMachine.cpp:248-258`) | deploy `payloads(45:47) = DI03` |
 | Fan every cycle: `fanSwitch -> fanRelay` (`vcStateMachine.cpp:260-265`) | deploy `payloads(48) = DI04` |
 | GPIO inputs are semantic names (PRECH_BTN_IN, MAIN_BTN_IN, COOLING_SW_IN, FAN_SW_IN, SD_FB_IN) (`vcStateMachine.cpp:54-85`) | `config.m:37-38` `digitalMap` — **bench wiring choice**, see deviation below |
-| `0x3X5` bits 48-63 actual speed int16 RPM -> rad/s via `2*pi/60 / GEAR_RATIO`, `GEAR_RATIO = 13.39` (`ephorus_driver.cpp:285-289`; `ephorus_driver.hpp:162`) | `decodeStatusFrame.m:29-31`; deploy wheel-speed decode; `config.m:33` |
+| `0x3X5` bits 48-63 actual speed int16 RPM -> rad/s via `2*pi/60 / GEAR_RATIO`, `GEAR_RATIO = 13.39` (`ephorus_driver.cpp:285-289`; `ephorus_driver.hpp:162`) | `decodeStatusFrame.m:29-31`; `models/virtualVcuRxRetain.m` (1 ms retention); deploy chart reads retained `u(26:29)`; `config.m:33` |
+| RX FIFO fully drained every comms cycle, updating all four `wheel_speed` slots that arrived (`vcComms.cpp:327-374`) | `models/virtualVcuRxRetain.m` latches all four `0x3X5` frames at the 1 ms base rate ahead of the 5 ms `VCU 5 ms Rate Transition`; host `+virtualvcu/step.m` retains per-corner in `context.can.wheelSpeedRadS` across samples |
 
 ## Bench inputs and evidence boundary
 
 - **Wheel speeds**: the allocator's `om_*` are updated only after a physical
   Ephorus `0x385/0x395/0x3A5/0x3B5` frame is actually read on Port A. Before
   the first frame each retained speed is its initialized zero. No
-  received/valid flag is set and no status frame is synthesized.
+  received/valid flag is set and no status frame is synthesized. Retention
+  now happens at the 1 ms base rate in `models/virtualVcuRxRetain.m` (item 2)
+  so every frame in a 5 ms window is captured; the block still only latches
+  frames the hardware FIFO actually delivered.
 - **IMU / steering / load cells**: this Port-A bench has **no physical
   receive path** for MTi velocity/accel/gyro, LWS steering, or pushrod load
   cells. Firmware zeroes those inputs before the first frame and then
@@ -165,18 +173,30 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
   `update_ctrls_inputs()` which sets them unconditionally.
 - **DC link**: `dcLinkAccum12` / `dcLinkAccum34` are two internal bench-plant
   ramps (0 -> 400 V over the precharge window), not a CAN receive claim. The
-  bench drives both identically, but the fault gate is
-  `dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350`, so the structure matches
-  firmware `prechargeComplete()`. The host reference (`step.m`) is stricter:
-  it will not consider DC link healthy until a real `0x400` payload has been
-  decoded and both pair voltages exceed 350 V.
+  bench drives both identically. The fault gate is
+  `~dcLink12Valid || ~dcLink34Valid || dcLinkAccum12 <= 350 ||
+  dcLinkAccum34 <= 350` (item 1); `dcLink12Valid` / `dcLink34Valid` are the
+  simulated per-pair `sys.valid` (true once the pair's ramp has run), so the
+  structure matches firmware `prechargeComplete()`
+  (`if (!sys.valid) ...; if (v12 <= 350 || v34 <= 350) ...`). The host
+  reference (`step.m`) is stricter: `dcLink12Valid` / `dcLink34Valid` are set
+  only on a genuinely decoded `0x400`, and both pair voltages must exceed
+  350 V.
 
 ## Known deviations and firmware issues preserved
 
-1. **`0x1F5` is emitted every 5 ms** on the bench. Firmware skips it entirely
-   on the first RTD (reset) cycle (`vcComms.cpp:286-292`) and in
-   `ERROR_SHUTDOWN` (`vcComms.cpp:314-317`). The Port-A CAN Write path is not
-   gated per cycle; adding a per-frame enable is the correct future fix.
+1. **`0x1F5` still emitted on the first RTD reset-only cycle** (one 5 ms
+   frame). Items 8/9 added per-frame transmission gating: every Port-A
+   `CAN Write` now uses its transmission-control input, driven by
+   `Port A TX Gate` from the published `VirtualVcuStateId` — control frames
+   transmit only in RTD (`state == 4`), `0x1F5` transmits in every state
+   except `ERROR_SHUTDOWN` (`state ~= 5`). Firmware additionally skips
+   `0x1F5` on the first RTD comms cycle (reset-only, `vcComms.cpp:286-292`);
+   the gate keys on state alone, so that single frame is still sent. The
+   host reference (`step.m` `pedalFrameTxEnabled`) models the first-cycle
+   skip fully. No consumer infers fault state from `0x1F5` presence and the
+   RTD-entry gap is one cycle, so this residual is immaterial (orchestrator
+   decision, round 2). **Verify via slbuild** — see checklist item F.
 2. **`ERROR_SHUTDOWN` recovery**: firmware falls through state 5 to `LV_ON`
    within a single call (`vcStateMachine.cpp:375-383` `forceLvOn()`). In the
    HIL the fault-entry branch runs before the `elseif state == 5` recovery,
@@ -209,38 +229,173 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
    cycle. The HIL drives the relays purely from the switch and ignores that
    one-cycle blip.
 9. **DC-link plant, not a receive path.** The deploy chart has no physical
-   `0x400` system-status receive path, so it cannot assert firmware's
-   `sys.valid` term. It stands in with two identical bench-plant ramp
-   accumulators (`dcLinkAccum12` / `dcLinkAccum34`) and gates the fault on
-   `either <= 350`, matching the *structure* of firmware
-   `prechargeComplete()` (`vcStateMachine.cpp:131-145`) even though the bench
-   models a single bus. The host reference `+virtualvcu/step.m:73-75` is
-   stricter: it requires a decoded `0x400` and both pair voltages > 350 V.
-   A real dual-pair `0x400` decode is a follow-up once that frame is wired.
+   `0x400` system-status receive path, so its `sys.valid` term is
+   **simulated**: `dcLink12Valid` / `dcLink34Valid` (item 1) are set once
+   each pair's bench-plant ramp accumulator (`dcLinkAccum12` /
+   `dcLinkAccum34`) has been active, not on a received frame. The fault gate
+   is `~dcLink12Valid || ~dcLink34Valid || dcLinkAccum12 <= 350 ||
+   dcLinkAccum34 <= 350`, structurally mirroring
+   `if (!sys.valid) return false; if (v12 <= 350 || v34 <= 350) return
+   false;` (`vcStateMachine.cpp:131-146`), even though the bench models a
+   single bus driving both ramps identically. The host reference
+   `+virtualvcu/step.m` is genuine: `dcLink12Valid` / `dcLink34Valid` are
+   set only when a `0x400` is actually decoded, and both pair voltages must
+   exceed 350 V. A real dual-pair `0x400` decode on the bench is a follow-up
+   once that frame is wired.
 10. **Generated-C release**: the vendored allocator C is R2025b-generated and
     the HIL builds under R2024b. The C compiles cleanly (verified for the host
     MEX); the Speedgoat link is covered by the checklist below.
-11. **`coder_posix_time.c`** is a portable `clock()` substitution for the
-    firmware's STM32 TIM2 timer; the generated code discards `toc`.
-12. **Outside RTD** the model's four periodic CAN Write blocks still publish
-    disabled zero control payloads. Firmware queues no normal inverter
-    control frames outside RTD. In RTD, reset and torque-cycle payload bytes
-    are exact.
-13. **CAN RX sub-sampling (open item).** The base boundary's Port-A FIFO
-    reader publishes one frame's fields per base tick; the chart samples them
-    through a 5 ms Rate Transition, so when several Ephorus `0x3X5` frames
-    arrive inside one 5 ms window only the last is seen and
-    `virtualVcuDeployStep.m` updates at most one corner's retained wheel
-    speed per tick. The persistent `wheelSpeedRadS` degrades to stale-but-held
-    rather than lost. A 1 ms multi-corner retention/latch subsystem ahead of
-    the Rate Transition is the correct fix; it is a Simulink wiring change
-    that could not be built or verified in this environment. On the current
-    bench there is no wheel-speed feedback source, so this does not affect
-    present operation.
+11. **`coder_posix_time.c` is a deliberate no-op stub** (item 5).
+    `coderInitTimeFunctions` sets `freq = 1.0`; `coderTimeClockGettimeMonotonic`
+    returns constant zeros with no syscall. `ControlsMFE25.c` calls
+    `ControlsMFE25_toc` exactly once per step (line 6806 at `bcd6352`) and
+    **discards the return**; the timekeeper's state (`savedTime` on the
+    stack, `DW->freq*`) is read only by the timing functions themselves, so
+    constant zeros cannot change allocator outputs or state evolution. A real
+    `clock_gettime`/`clock()` body (in git history) need only be restored if
+    a future allocator revision starts consuming `toc`. Rationale: on the
+    slrealtime (QNX) target a monotonic-clock syscall every 5 ms is pure
+    overhead and a portability risk for a discarded value.
+12. **Inverter control frames outside RTD (RESOLVED, item 8).** Every Port-A
+    `CAN Write` now uses its transmission-control input; `Port A TX Gate`
+    disables the four control-frame writes whenever `stateId ~= 4`, so a
+    bench CAN logger sees exactly firmware's wire behaviour (no frame, not a
+    disabled zero frame). In RTD, reset and torque-cycle payload bytes are
+    exact. **Verify via slbuild** — checklist item F.
+13. **CAN RX sub-sampling (RESOLVED pending slbuild, item 2).**
+    `models/virtualVcuRxRetain.m` is a 1 ms MATLAB Function inserted ahead of
+    `VCU 5 ms Rate Transition` (`patch_virtual_vcu_inputs.m`). On every base
+    tick it decodes whichever of `0x385/0x395/0x3A5/0x3B5` is present into a
+    persistent per-corner rad/s slot and outputs all four; the chart reads
+    the coherent 4-vector as `u(26:29)` and no longer decodes raw RX bytes
+    itself. Every `0x3X5` frame in a 5 ms window is now retained, not just
+    the last. Host coverage: `rxRetentionKeepsAllFourCornersInAWindow`,
+    `hostContextRetainsPerCornerWheelSpeed`. The Simulink wiring itself
+    (mux width 8->9, new block) is **verify via slbuild** — checklist item E.
+    On the current bench there is still no wheel-speed feedback source.
 14. The base `VC_HIL/build/build_inverter_hil_model.m` builds a real-VCU
     topology; this task is constrained to `virtual-vcu/`, so
     `build_controls_synced_virtual_vcu` builds the base artifact and then
     applies the virtual-VCU overlay. No base-builder file was changed.
+
+## Round-2 follow-up items
+
+| # | Item | Status | Where |
+|---|---|---|---|
+| 1 | Track both DC-link pairs independently + per-pair valid flags | Done (host-verified); chart pending slbuild | `virtualVcuDeployStep.m` (`dcLink12Valid`/`dcLink34Valid`), `+virtualvcu/initialContext.m`, `+virtualvcu/step.m`; tests `neitherDcLinkPairValidFaultsActiveHv`, `onePairValidButBelowFloorFaultsRtd` |
+| 2 | Preserve latest RX for all four corners between VCU executions | Done pending slbuild | new `models/virtualVcuRxRetain.m`, `patch_virtual_vcu_inputs.m` (mux 8->9), chart reads `u(26:29)`; tests `rxRetentionKeepsAllFourCornersInAWindow`, `hostContextRetainsPerCornerWheelSpeed` |
+| 3 | `slbuild('inverter_hil')` + Speedgoat download | BLOCKED (disk 100 % full, target `10.0.1.1` offline) — ordered steps below | — |
+| 4 | Confirm `malloc()` support + when allocation happens | Done (analysis) | this doc, "malloc / one-time allocation" below |
+| 5 | Replace/validate the `clock()` timing impl | Done — deliberate no-op stub | `vendor/controls_model/coder_posix_time.c`, `VENDORED_FROM.md`, deviation 11 |
+| 6 | Quantize pedal voltages to integer ADC counts | Verified only (already in `076a476`) | `virtualVcuDeployStep.m:27` `raw = round(...)`, matches `+virtualvcu/voltageToRaw.m` |
+| 7 | Host torque `round()` -> truncation | Verified only (already in `076a476`) | `+virtualvcu/packControlFrame.m:14` `fix(...)`, matches `ephorus_driver.cpp:206-210`; `packPedalFrame.m` correctly keeps `round` |
+| 8 | Gate the 4 control-frame Port-A CAN writes to RTD-only | Done pending slbuild | `add_virtual_vcu_to_model.m` (`enableInput` + `Port A TX Gate`), `verify_virtual_vcu_model.m`; host `step.m` `controlFrameTxEnabled`; test `canFrameTransmissionGatingMatchesFirmwareStates` |
+| 9 | Fold `0x1F5` gating into the item-8 mechanism | Done pending slbuild, with one residual | Same as item 8: `pedalFrameTxEnabled` = `state ~= 5`. Firmware's extra first-RTD-reset-cycle skip is modelled host-side only; the Simulink gate sends that one frame (deviation 1, orchestrator-accepted). |
+
+### Item 3 — ordered steps to build + download once disk and target are available
+
+Prerequisites: free **at least ~8 GB on C:** (MATLAB codegen cache/`slprj` and
+`VC_HIL\build\.simulink` live on C:), and confirm `ping 10.0.1.1` succeeds
+(Speedgoat `TargetPC1` powered and on the link).
+
+```matlab
+cd('C:\Users\MFE-HPC\Documents\GitHub\HIL-vvcu-sync')
+addpath(fullfile(pwd,'virtual-vcu'))
+addpath(fullfile(pwd,'virtual-vcu','models'))
+addpath(fullfile(pwd,'virtual-vcu','tests'))
+addpath(fullfile(pwd,'VC_HIL','build'))
+
+% 1. Host regression first (no disk cost).
+build_controls_model_mex(true);
+run_virtual_vcu_tests;                       % expect 22/22
+
+% 2. Rebuild base + overlay, persist chart/custom-C, verify boundary.
+result = build_controls_synced_virtual_vcu(true);
+verify_virtual_vcu_model(result.modelPath);  % now also checks enableInput + Port A TX Gate
+cd(fullfile(pwd,'VC_HIL','build')); verify_inverter_hil_model; cd('..\..')
+
+% 3. Force diagram compilation (validates every MATLAB Function codegen:
+%    the chart at u(29), virtualVcuRxRetain, Port A TX Gate).
+load_system(result.modelPath);
+set_param('inverter_hil','SimulationCommand','update');
+
+% 4. Generate + link the Speedgoat application.
+slbuild('inverter_hil');
+
+% 5. Download + run on the target (target must be online).
+tg = slrealtime('TargetPC1');
+load(tg,'inverter_hil');
+start(tg);
+% ... bench checks G below ...
+stop(tg);
+close_system('inverter_hil',0);
+```
+
+### Item 4 — malloc / one-time allocation analysis
+
+- `ControlsMFE25(void)` (`vendor/controls_model/ControlsMFE25.c:7268-7335`)
+  performs **5 `malloc()` calls** — the `RT_MODEL_ControlsMFE25_T` (7271),
+  block-IO `B_ControlsMFE25_T` (7282), `DW_ControlsMFE25_T` (7289), input
+  `ExtU_ControlsMFE25_T` (7297) and output `ExtY_ControlsMFE25_T` (7305)
+  structs. `ControlsMFE25_initialize` and `ControlsMFE25_step` (entry at
+  `:4630`) contain **no** `malloc`/`calloc`/`free` (grep-confirmed: the only
+  allocation lines in the file are 7271-7305). `free()` happens only in
+  `ControlsMFE25_terminate`.
+- Call chain on the HIL: the deploy chart's persistent-init branch
+  (`virtualVcuDeployStep.m` `if isempty(state)`) calls `vvcu_controls_reset`
+  (host: `vvcu_controls_mex('reset')`), which calls `ControlsMFE25()` once.
+  In generated Simulink code that persistent-init branch runs on the **first
+  chart execution (first 5 ms sample hit)**, not in `mdlInitialize`. So:
+  **allocation = 5 mallocs, once, on the first 5 ms sample**, long before RTD
+  (RTD is >= 7.5 s + 1.5 s later).
+- Simulink Real-Time (slrealtime, QNX) **does support `malloc` on the
+  target**. Dynamic allocation is discouraged for hard-real-time, but a
+  one-time allocation on the first sample produces only a **one-time
+  first-sample timing transient**, not a per-step cost, and nothing
+  allocates once RTD steps the allocator. **Assessment: ACCEPTABLE.**
+- Optional future improvement (not required, do not force if it risks
+  codegen): regenerate `ControlsMFE25` with Simulink Coder "static memory
+  allocation" to remove the heap entirely, or move the `ControlsMFE25()`
+  call into an explicit model-init `coder.ceval` so the malloc lands in
+  `mdlInitialize` rather than the first step.
+
+### Verify-via-slbuild checklist (per Simulink-side change)
+
+None of the following could be built here (C: at 100 %, target offline).
+Each was verified by careful reading + a host-test equivalent; confirm on the
+next slbuild:
+
+- **A. Deploy chart input width 25 -> 29.** `set_param('inverter_hil',
+  'SimulationCommand','update')` must compile the `Virtual VCU LV_ON` chart
+  with `u` width 29; `VCU Input Mux` must be 9 inputs and its output width 29
+  into `VCU 5 ms Rate Transition`. Host equiv: `deployedChartUsesResetThenRealAllocator`
+  (`u = zeros(29,1)`).
+- **B. Item 1 per-pair valid flags in the chart.** New persistents
+  `dcLink12Valid` / `dcLink34Valid` must codegen (plain logical persistents,
+  not output-aliased). Confirm ENABLE/BUZZING/RTD still fault when a pair
+  ramp is forced low. Host equiv: the two new DC-link tests.
+- **C. Item 5 stub.** `configure_controls_model` links the same file list;
+  confirm `coder_posix_time.c` compiles for the target toolchain (it already
+  compiles for the host MEX — re-verified this session) and that `slbuild`
+  reports no unresolved `clock`/`clock_gettime`.
+- **D. `verify_virtual_vcu_model` additions.** It now asserts every Port-A
+  CAN write has `enableInput == 'on'` and that `Port A TX Gate` exists — run
+  it after the overlay.
+- **E. Item 2 retention block.** `models/virtualVcuRxRetain.m` installed on
+  `Virtual VCU/Virtual VCU RX Retain` (6 inputs from the `Port A RX * From`
+  blocks, 1 output to `VCU Input Mux/9`), running at the 1 ms base rate.
+  Confirm the base-rate persistent survives across chart executions and that
+  the `From` tags (`EphorusRx*`) resolve. Host equiv:
+  `rxRetentionKeepsAllFourCornersInAWindow`.
+- **F. Items 8/9 transmission gating.** `Port A TX Gate` reads
+  `VirtualVcuStateId` and drives inport 2 of each `Port A CAN Write` through
+  `Port A TX Gate Rate Transition 1/2`. Bench check: with a CAN logger on
+  Port A, confirm **no** `0x186/0x196/0x1A6/0x1B6` outside RTD; `0x1F5`
+  present in LV_ON..BUZZING and absent in `ERROR_SHUTDOWN`; on RTD entry the
+  four reset frames then (next cycle) enable-bit-set torque frames. Confirm
+  the transmission-control input type the block expects (double 0/1 is fed;
+  the base model's own CAN writes use `enableInput` the same way). Host
+  equiv: `canFrameTransmissionGatingMatchesFirmwareStates`.
 
 ## Corrections applied to the Codex checkpoint (`d9e306e`)
 
@@ -273,9 +428,11 @@ test `goldenControlBytesAndReset`).
 ## MATLAB R2024b regeneration, build and test checklist
 
 Run from the repository root in a clean MATLAB R2024b session. Steps 1-2
-were run during this sync and passed; steps 3-6 still require a machine with
-enough free disk for a full Simulink code-generation (~several GB) and are
-**not verified here**.
+were re-run during round 2 and passed (22/22, Code Analyzer clean on every
+touched `.m`, MEX recompiled with the item-5 stub); steps 3-6 still require a
+machine with enough free disk for a full Simulink code-generation
+(~several GB) and are **not verified here**. See the round-2
+"Verify-via-slbuild checklist" above for the per-change confirmations.
 
 ```matlab
 cd('C:\Users\MFE-HPC\Documents\GitHub\HIL-vvcu-sync')
@@ -287,7 +444,7 @@ addpath(fullfile(pwd,'VC_HIL','build'))
 % 1. [RUN, PASSED] Compile the vendored R2025b allocator C under R2024b and
 %    exercise it, plus all host-reference behavior tests.
 build_controls_model_mex(true);
-run_virtual_vcu_tests;                 % 17/17 passed
+run_virtual_vcu_tests;                 % 22/22 passed
 
 % 2. [RUN, PASSED] Static analysis of every touched .m (Code Analyzer clean).
 

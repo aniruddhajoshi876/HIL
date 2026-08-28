@@ -43,11 +43,17 @@ not a fault gate (that firmware check is commented out).
 ## Bench evidence boundary
 
 The bench never invents received inverter status. Only a physical `0x3X5`
-frame updates its retained wheel speed. With no physical IMU, steering, or
-load-cell receive path, those allocator inputs stay zero while the firmware
-runtime `use_imu_vel_x/y = 1` overrides are still applied. Analog loopback is
-0-5 V (IO183 Module 1 self-loop). The DI01-DI05 index map is a bench wiring
-choice, not a firmware requirement.
+frame updates its retained wheel speed; `models/virtualVcuRxRetain.m` latches
+all four corners at the 1 ms base rate so no frame in a 5 ms window is lost.
+With no physical IMU, steering, or load-cell receive path, those allocator
+inputs stay zero while the firmware runtime `use_imu_vel_x/y = 1` overrides
+are still applied. Analog loopback is 0-5 V (IO183 Module 1 self-loop). The
+DI01-DI05 index map is a bench wiring choice, not a firmware requirement.
+
+Each Port-A CAN write is transmission-gated (`Port A TX Gate`): the four
+inverter control frames transmit only in RTD and `0x1F5` stops in
+`ERROR_SHUTDOWN`, matching firmware's wire behaviour. Both DC-link pairs
+carry an independent "received/valid" flag mirroring `EphorusSystemStatus`.
 
 See `docs/controls_branch_sync.md` for the full firmware fact -> file:line
 mapping, the embedding-approach decision and rejected alternatives, every
@@ -56,7 +62,10 @@ deviation, provenance hashes, and the exact R2024b regen/build/test steps.
 ## Verification status
 
 - Host: `build_controls_model_mex` (R2025b C compiled under R2024b + MSVC
-  2022) and `run_virtual_vcu_tests` (17/17) pass; Code Analyzer clean.
+  2022) and `run_virtual_vcu_tests` (22/22) pass; Code Analyzer clean.
 - Not verified here: `build_controls_synced_virtual_vcu`, `verify_*`, the
   Speedgoat `slbuild`, target deployment, CAN ACK capture, and physical
-  loopback. Local source inspection is not bench evidence.
+  loopback. Local source inspection is not bench evidence. The Simulink-side
+  round-2 changes (chart `u(29)`, `virtualVcuRxRetain`, `Port A TX Gate`)
+  carry a per-change "verify via slbuild" checklist in
+  `docs/controls_branch_sync.md`.
