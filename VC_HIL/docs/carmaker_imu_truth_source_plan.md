@@ -69,15 +69,21 @@ back when stale. Everything downstream of the selector is unchanged.
   passed / 7 failed**, the 7 being the pre-existing `inverter_hil_app.m`-absent
   errors (unrelated). `check_matlab_code` clean on every new file.
 
-**Drafted, not built (section 6.1):**
-`carmaker/FS_race/src_cm4sl/physics_can_snippet.c` — ready-to-apply `IO.c` /
-`User.c` / `User.h` additions for the R2022a CM4SL rebuild. `TorqueVect.mdl`
-and the vehicle config are untouched.
+**CM4SL C side — written, not built (section 6.1):**
+`carmaker/FS_race/src_cm4sl/IO.c` and `User.c` now carry the physics
+transmitter: `MFE_CAN.Physics.*` `DVA_IO_Out` quantities registered in
+`User_DeclQuants()`, `MFE_SendPhysicsFrame()` helper, and the
+`0x503`–`0x506` cyclic sends in `IO_Out()` after `0x500`. Copy to IPG-MFE and
+rebuild in R2022a per `CM4SL_CAN_apply_note.md` — not compiled here. The
+`TorqueVect.mdl` Read/Write CM Dict wiring that must populate those
+quantities is `carmaker_readcmdict_checklist.md` — still a manual R2022a task.
+The vehicle config (`Sensor.1` / `Param_B00` position) is untouched.
 
-**Still open:** everything in sections 7–8 — R2022a rebuild, MTi mount survey,
-`Acc_B` gravity semantics, axis-sign proof, A9, `0x503`–`0x506` ID approval,
-and the full bench acceptance sequence. `carMakerTruthEnabled` must stay
-`false` until those close.
+**Still open:** everything in sections 7–8 — the `TorqueVect.mdl` CM-Dict
+wiring, the CM4SL rebuild, MTi mount survey, `Acc_B` gravity semantics,
+axis-sign proof, A9 (now resolved against firmware — see
+`VC_HIL/imu/protocol.md`), `0x503`–`0x506` ID approval, and the full bench
+acceptance sequence. `carMakerTruthEnabled` must stay `false` until those close.
 
 ---
 
