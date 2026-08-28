@@ -51,15 +51,26 @@ snapshot.steering.calibrationState = NaN;
 % Whether the transmitted LWS frame was genuinely read and decoded this
 % poll, as opposed to the fields above still being their no-data defaults.
 snapshot.steering.known = false;
-% Which steering source the target selected this tick: the GUI dial, or
-% CarMaker's 0x507 CarMakerDriverSteering value (see SELECTSTEERINGSOURCE and
-% defaultVehicleStateConfig.carMakerSteeringEnabled). Empty / NaN / [] with a
-% KNOWN flag, like every other no-data field here.
+% Which steering source the target selected this tick: the GUI dial in
+% manual mode, CarMaker's 0x507 CarMakerSteeringTruth value in CarMaker mode,
+% or "CarMaker unavailable" -- CarMaker mode selected but the truth is stale,
+% so the LWS is transmitting the Bosch failure state rather than a
+% measurement. See SELECTSTEERINGSOURCE and
+% defaultVehicleStateConfig.steeringSourceMode. Empty / NaN / [] with a KNOWN
+% flag, like every other no-data field here.
 snapshot.steering.source = '';
 snapshot.steering.sourceKnown = false;
+% Whether the selected angle is a measurement at all. False is the
+% CarMaker-unavailable case above; it is NOT a GUI fault injection, and the
+% operator needs the two told apart.
+snapshot.steering.sourceValid = [];
 snapshot.steering.carMakerFresh = [];
 snapshot.steering.carMakerAgeMs = NaN;
 snapshot.steering.carMakerAngleDeg = NaN;
+% The same angle in the unit CarMaker sent it in, so the bench operator can
+% compare the retained value directly against Steer.WhlAng in the CarMaker
+% GUI without converting anything by hand.
+snapshot.steering.carMakerAngleRad = NaN;
 
 snapshot.imu.accelerationMps2 = nan(1, 3);
 snapshot.imu.rateOfTurnRadPerS = nan(1, 3);

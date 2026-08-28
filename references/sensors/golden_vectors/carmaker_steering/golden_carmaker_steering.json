@@ -1,23 +1,24 @@
 {
-  "frame": "0x507 CarMakerDriverSteering (internal HIL transport, CarMaker -> SpeedgoatHIL on the CarMaker bus / IO614 channel 1)",
-  "provisional": "CAN ID 0x507 is PROVISIONAL -- no authoritative vehicle-wide CAN ID registry exists; team approval still required.",
-  "derivation": "Hand-derived from BO_ 1287 in carmaker/config/MFE26_Inverter_CarMaker.dbc. NOT produced by running decodeCarMakerSteeringFrame.m or IO.c.",
+  "frame": "0x507 CarMakerSteeringTruth (internal HIL transport, CarMaker -> SpeedgoatHIL on the CarMaker bus / IO614 channel 1)",
+  "provisional": "CAN ID 0x507 is PROVISIONAL -- no authoritative vehicle-wide CAN ID registry exists. The ID is unused elsewhere in this repository, but that is a HIL-local audit, not vehicle-wide approval.",
+  "derivation": "Hand-derived from BO_ 1287 in carmaker/config/MFE26_Inverter_CarMaker.dbc by tmp/gen_golden_steering.py, which re-implements the scale, byte order and CRC independently. NOT produced by running decodeCarMakerSteeringFrame.m or IO.c.",
   "byteOrder": "little-endian (Intel), matching the physics frames 0x503-0x506",
-  "scaling": "angle 0.1 deg/bit, speed 0.5 (deg/s)/bit, both signed int16",
-  "integrity": "byte 6 alive counter mod 256; byte 7 CRC-8/SAE-J1850 over bytes 0-6 (poly 0x1D, init 0xFF, non-reflected, xorout 0xFF)",
+  "scaling": "angle 0.001 rad/count, signed int16. RADIANS on the wire because radians is the unit of the CarMaker source quantity Steer.WhlAng; the rad -> deg conversion happens once on the Speedgoat, just before Bosch LWS encoding.",
+  "reserved": "bytes 2-5 must be zero",
+  "integrity": "byte 6 is the modulo-256 truth-group counter SHARED with 0x503-0x506; byte 7 CRC-8/SAE-J1850 over bytes 0-6 (poly 0x1D, init 0xFF, non-reflected, xorout 0xFF)",
   "signConvention": "left-hand-positive (CarMaker / ISO 8855, matching the Bosch LWS)",
-  "downstream": "The SpeedgoatHIL LWS emulator, not CarMaker, turns this into the Bosch LWS 0x2B0 frame. 0x507 never reaches the VC bus.",
+  "range": "The decoder accepts |angle| <= 13.614 rad, which is 13614 counts -- the Bosch LWS +/-780 deg limit quantised to whole counts. Testing against the unrounded 13.6135... rad would reject the sender's own saturation value.",
+  "downstream": "The SpeedgoatHIL LWS emulator, not CarMaker, turns this into the Bosch LWS 0x2B0 frame, and derives LWS_SPEED from successive 10 ms samples of this angle. 0x507 never reaches the VC bus.",
   "vectors": {
     "accepted": [
       {
         "name": "cmsteer_centred",
         "canId": "0x507",
         "dlc": 8,
+        "angleRad": 0.0,
         "angleDeg": 0.0,
         "angleCounts": 0,
-        "speedDegPerSec": 0.0,
-        "speedCounts": 0,
-        "aliveCounter": 0,
+        "groupCounter": 0,
         "payloadHex": "00 00 00 00 00 00 00 0A",
         "payloadBytes": [
           0,
@@ -29,17 +30,16 @@
           0,
           10
         ],
-        "note": "straight-ahead, zero rate"
+        "note": "straight ahead; Steer.WhlAng = 0 rad"
       },
       {
-        "name": "cmsteer_one_lsb_angle",
+        "name": "cmsteer_one_lsb",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": 0.1,
+        "angleRad": 0.001,
+        "angleDeg": 0.057296,
         "angleCounts": 1,
-        "speedDegPerSec": 0.0,
-        "speedCounts": 0,
-        "aliveCounter": 1,
+        "groupCounter": 1,
         "payloadHex": "01 00 00 00 00 00 01 4A",
         "payloadBytes": [
           1,
@@ -51,139 +51,175 @@
           1,
           74
         ],
-        "note": "angle LSB = 0.1 deg, matching the Bosch LWS_ANGLE resolution"
+        "note": "one count = 0.001 rad = 0.0573 deg, the transport resolution"
       },
       {
-        "name": "cmsteer_plus90_left",
+        "name": "cmsteer_minus_one_lsb",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": 90.0,
-        "angleCounts": 900,
-        "speedDegPerSec": 120.0,
-        "speedCounts": 240,
-        "aliveCounter": 7,
-        "payloadHex": "84 03 F0 00 00 00 07 C8",
+        "angleRad": -0.001,
+        "angleDeg": -0.057296,
+        "angleCounts": -1,
+        "groupCounter": 2,
+        "payloadHex": "FF FF 00 00 00 00 02 CC",
         "payloadBytes": [
-          132,
-          3,
-          240,
+          255,
+          255,
+          0,
+          0,
+          0,
+          0,
+          2,
+          204
+        ],
+        "note": "-1 count = 0xFFFF LE; proves the field is signed, not offset"
+      },
+      {
+        "name": "cmsteer_plus105_fanatec_max",
+        "canId": "0x507",
+        "dlc": 8,
+        "angleRad": 1.833,
+        "angleDeg": 105.023164,
+        "angleCounts": 1833,
+        "groupCounter": 7,
+        "payloadHex": "29 07 00 00 00 00 07 76",
+        "payloadBytes": [
+          41,
+          7,
+          0,
           0,
           0,
           0,
           7,
-          200
+          118
         ],
-        "note": "900 counts = 0x0384 LE; left-hand-positive (CarMaker / ISO 8855)"
+        "note": "+105 deg = the active Fanatec Device.0 Steer.Whl_MaxDeg; left-hand-positive (CarMaker / ISO 8855)"
       },
       {
-        "name": "cmsteer_minus90_right",
+        "name": "cmsteer_minus105_fanatec_min",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": -90.0,
-        "angleCounts": -900,
-        "speedDegPerSec": -120.0,
-        "speedCounts": -240,
-        "aliveCounter": 8,
-        "payloadHex": "7C FC 10 FF 00 00 08 DA",
+        "angleRad": -1.833,
+        "angleDeg": -105.023164,
+        "angleCounts": -1833,
+        "groupCounter": 8,
+        "payloadHex": "D7 F8 00 00 00 00 08 6C",
         "payloadBytes": [
-          124,
-          252,
-          16,
-          255,
+          215,
+          248,
+          0,
+          0,
           0,
           0,
           8,
-          218
+          108
         ],
-        "note": "twos-complement -900 = 0xFC7C LE; speed -240 counts = 0xFF10 LE"
+        "note": "-105 deg = the active Fanatec Device.0 Steer.Whl_MinDeg"
       },
       {
-        "name": "cmsteer_full_left",
+        "name": "cmsteer_plus450_device1_max",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": 780.0,
-        "angleCounts": 7800,
-        "speedDegPerSec": 0.0,
-        "speedCounts": 0,
-        "aliveCounter": 254,
-        "payloadHex": "78 1E 00 00 00 00 FE 9E",
+        "angleRad": 7.854,
+        "angleDeg": 450.001052,
+        "angleCounts": 7854,
+        "groupCounter": 9,
+        "payloadHex": "AE 1E 00 00 00 00 09 A7",
         "payloadBytes": [
-          120,
+          174,
           30,
           0,
           0,
           0,
           0,
-          254,
-          158
+          9,
+          167
         ],
-        "note": "Bosch LWS measuring range +780 deg; TorqueVect saturates here"
+        "note": "+450 deg = the disabled Device.1 range; the 0.001 rad/count scale must already cover it"
       },
       {
-        "name": "cmsteer_full_right",
+        "name": "cmsteer_minus450_device1_min",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": -780.0,
-        "angleCounts": -7800,
-        "speedDegPerSec": 0.0,
-        "speedCounts": 0,
-        "aliveCounter": 255,
-        "payloadHex": "88 E1 00 00 00 00 FF 23",
+        "angleRad": -7.854,
+        "angleDeg": -450.001052,
+        "angleCounts": -7854,
+        "groupCounter": 10,
+        "payloadHex": "52 E1 00 00 00 00 0A 9B",
         "payloadBytes": [
-          136,
+          82,
           225,
           0,
           0,
           0,
           0,
-          255,
-          35
+          10,
+          155
         ],
-        "note": "Bosch LWS measuring range -780 deg; counter about to wrap 255->0"
+        "note": "-450 deg = the disabled Device.1 range"
+      },
+      {
+        "name": "cmsteer_full_left",
+        "canId": "0x507",
+        "dlc": 8,
+        "angleRad": 13.614,
+        "angleDeg": 780.024742,
+        "angleCounts": 13614,
+        "groupCounter": 254,
+        "payloadHex": "2E 35 00 00 00 00 FE C2",
+        "payloadBytes": [
+          46,
+          53,
+          0,
+          0,
+          0,
+          0,
+          254,
+          194
+        ],
+        "note": "+780 deg = the Bosch LWS measuring range, quantised to 13614 counts; the decoder's accept limit is exactly this value"
+      },
+      {
+        "name": "cmsteer_full_right",
+        "canId": "0x507",
+        "dlc": 8,
+        "angleRad": -13.614,
+        "angleDeg": -780.024742,
+        "angleCounts": -13614,
+        "groupCounter": 255,
+        "payloadHex": "D2 CA 00 00 00 00 FF C4",
+        "payloadBytes": [
+          210,
+          202,
+          0,
+          0,
+          0,
+          0,
+          255,
+          196
+        ],
+        "note": "-780 deg = the Bosch LWS measuring range; counter about to wrap 255->0"
       },
       {
         "name": "cmsteer_counter_wrap",
         "canId": "0x507",
         "dlc": 8,
-        "angleDeg": 12.5,
-        "angleCounts": 125,
-        "speedDegPerSec": 30.0,
-        "speedCounts": 60,
-        "aliveCounter": 0,
-        "payloadHex": "7D 00 3C 00 00 00 00 09",
+        "angleRad": 0.218,
+        "angleDeg": 12.49048,
+        "angleCounts": 218,
+        "groupCounter": 0,
+        "payloadHex": "DA 00 00 00 00 00 00 A4",
         "payloadBytes": [
-          125,
-          0,
-          60,
+          218,
           0,
           0,
           0,
           0,
-          9
+          0,
+          0,
+          164
         ],
         "note": "counter wrapped 255->0; a decoder must treat this as advancing"
-      },
-      {
-        "name": "cmsteer_fast_sweep",
-        "canId": "0x507",
-        "dlc": 8,
-        "angleDeg": 45.0,
-        "angleCounts": 450,
-        "speedDegPerSec": 1500.0,
-        "speedCounts": 3000,
-        "aliveCounter": 3,
-        "payloadHex": "C2 01 B8 0B 00 00 03 F3",
-        "payloadBytes": [
-          194,
-          1,
-          184,
-          11,
-          0,
-          0,
-          3,
-          243
-        ],
-        "note": "a fast hand sweep; 3000 speed counts = 0x0BB8 LE. Well within the +/-3600 deg/s transport range; the LWS packer clamps to 1016."
       }
     ],
     "rejected": [
@@ -192,43 +228,102 @@
         "canId": "0x507",
         "dlc": 7,
         "payloadHex": "00 00 00 00 00 00 00",
-        "expectation": "REJECT wrong_dlc. The frame is always DLC 8."
+        "expectation": "REJECT wrong_dlc. The frame is always DLC 8.",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
       },
       {
         "name": "cmsteer_reject_reserved_nonzero",
         "canId": "0x507",
         "dlc": 8,
         "payloadHex": "64 00 00 00 01 00 04 29",
-        "expectation": "REJECT reserved_nonzero. Byte 4 must be zero; a non-zero reserved byte flags a mis-scaled sender."
+        "expectation": "REJECT reserved_nonzero. Bytes 2-5 must be zero; a non-zero reserved byte flags a sender still using the superseded degrees+speed layout.",
+        "payloadBytes": [
+          100,
+          0,
+          0,
+          0,
+          1,
+          0,
+          4,
+          41
+        ]
       },
       {
         "name": "cmsteer_reject_bad_crc",
         "canId": "0x507",
         "dlc": 8,
         "payloadHex": "64 00 00 00 00 00 04 00",
-        "expectation": "REJECT integrity_failure. Byte 7 is not the CRC-8/SAE-J1850 of bytes 0-6."
+        "expectation": "REJECT integrity_failure. Byte 7 is not the CRC-8/SAE-J1850 of bytes 0-6.",
+        "payloadBytes": [
+          100,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0
+        ]
       },
       {
         "name": "cmsteer_reject_angle_over_range",
         "canId": "0x507",
         "dlc": 8,
-        "payloadHex": "28 23 00 00 00 00 01 48",
-        "expectation": "REJECT out_of_range. 9000 counts = 900.0 deg exceeds the Bosch +/-780 deg range; the previous retained value is kept."
+        "payloadHex": "2F 35 00 00 00 00 01 5B",
+        "expectation": "REJECT out_of_range. 13615 counts = 13.615 rad is one count past the quantised Bosch +/-780 deg limit; the previously retained value is kept.",
+        "payloadBytes": [
+          47,
+          53,
+          0,
+          0,
+          0,
+          0,
+          1,
+          91
+        ]
       },
       {
         "name": "cmsteer_reject_wrong_id",
         "canId": "0x508",
         "dlc": 8,
         "payloadHex": "00 00 00 00 00 00 00 0A",
-        "expectation": "REJECT wrong_id. Only 0x507 is CarMakerDriverSteering."
+        "expectation": "REJECT wrong_id. Only 0x507 is CarMakerSteeringTruth.",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10
+        ]
       },
       {
         "name": "cmsteer_reject_extended",
         "canId": "0x507",
         "dlc": 8,
-        "payloadHex": "00 00 00 00 00 00 00 0A",
         "extended": true,
-        "expectation": "REJECT extended_frame. 0x507 is an 11-bit standard ID."
+        "payloadHex": "00 00 00 00 00 00 00 0A",
+        "expectation": "REJECT extended_frame. 0x507 is an 11-bit standard ID.",
+        "payloadBytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10
+        ]
       }
     ]
   }

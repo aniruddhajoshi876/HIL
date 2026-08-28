@@ -328,6 +328,117 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             end
         end
 
+        function theTwoCanBusesStayIndependentAndUnbridged(testCase)
+            % Channel 1 is the private CarMaker bus; channel 2 is the VC bus.
+            % The Speedgoat is the only node on both, and the two must never
+            % be bridged: a CarMaker-truth frame reaching the VCU, or an MTi /
+            % Bosch LWS frame reaching CarMaker, would put a second
+            % transmitter of the same physical quantity on a bus whose
+            % consumer has no way to tell the two apart.
+            writes = find_system(testCase.Hardware, 'SearchDepth', 1, ...
+                'LookUnderMasks', 'all', 'FollowLinks', 'on', ...
+                'ReferenceBlock', 'speedgoatlib_IO614/CAN Write ');
+            testCase.verifyNotEmpty(writes);
+            channelOne = uint32([]);
+            channelTwo = uint32([]);
+            for index = 1:numel(writes)
+                id = get_param(writes{index}, 'UserData');
+                if strcmp(get_param(writes{index}, 'channel'), '1')
+                    channelOne(end+1) = id; %#ok<AGROW>
+                else
+                    channelTwo(end+1) = id; %#ok<AGROW>
+                end
+            end
+
+            % Channel 1 carries CarMaker traffic only, and the Speedgoat's
+            % half of it is exactly the two frames CarMaker needs back.
+            testCase.verifyEqual(sort(channelOne), ...
+                sort(uint32(hex2dec({'501', '502'})).'), ...
+                ['Channel 1 must carry only the two Speedgoat -> CarMaker ' ...
+                'telemetry frames.']);
+
+            % No sensor frame the VCU reads may be transmitted on channel 1.
+            sensorIds = uint32(hex2dec({'032', '034', '076', '2B0', '7C0', ...
+                '006', '005', '011', '001'})).';
+            testCase.verifyEmpty(intersect(channelOne, sensorIds), ...
+                'Raw MTi/LWS frames must never appear on the CarMaker bus.');
+
+            % And no CarMaker-truth frame may be transmitted at all: CarMaker
+            % owns 0x500 and 0x503-0x507, the Speedgoat only receives them.
+            truthIds = uint32(hex2dec({'500', '503', '504', '505', '506', ...
+                '507'})).';
+            allTx = [channelOne channelTwo];
+            testCase.verifyEmpty(intersect(allTx, truthIds), ...
+                ['The Speedgoat must never transmit a CarMaker-owned frame; ' ...
+                'the steering truth 0x507 in particular must not reach the ' ...
+                'VC bus.']);
+
+            % Every sensor frame is on channel 2, where the real VCU reads it.
+            testCase.verifyEqual(sort(intersect(channelTwo, sensorIds)), ...
+                sort(sensorIds), ...
+                'Every MTi/LWS sensor frame must be VC-bus traffic.');
+        end
+
+        function carMakerRxIsTheOnlyChannelOneConsumerAndDispatchesTruth(testCase)
+            % One FIFO, one popper. A second channel-1 CAN Read would race
+            % this block for frames, and the loser would see an intermittent
+            % bus rather than an error.
+            reads = find_system(testCase.Model, 'LookUnderMasks', 'all', ...
+                'FollowLinks', 'on', ...
+                'ReferenceBlock', 'speedgoatlib_IO614/CAN Read ');
+            channelOneReads = reads(cellfun(@(b) ...
+                strcmp(get_param(b, 'channel'), '1'), reads));
+            testCase.verifyNumElements(channelOneReads, 1, ...
+                'Channel 1 must have exactly one FIFO consumer.');
+
+            % That single consumer dispatches every channel-1 ID the contract
+            % defines: 0x500 pedal demand, 0x503-0x506 physics, 0x507
+            % steering truth.
+            script = TestModelArtifacts.functionScript( ...
+                [testCase.Model '/Ephorus System Status/CarMaker RX Retention']);
+            testCase.verifySubstring(script, 'receivePedalDemandFrame');
+            testCase.verifySubstring(script, 'receiveCarMakerPhysics');
+            testCase.verifySubstring(script, 'receiveCarMakerSteering');
+            testCase.verifySubstring(script, 'hex2dec(''507'')');
+            testCase.verifySubstring(script, 'hex2dec(''503'')');
+            testCase.verifySubstring(script, 'hex2dec(''506'')');
+        end
+
+        function generatedModelUsesTheIntendedSelectors(testCase)
+            % The generated chart must call the host-verifiable selector
+            % functions rather than re-implementing the policy inline, or the
+            % focused tests would be proving something the target does not do.
+            steering = TestModelArtifacts.functionScript( ...
+                [testCase.Model '/Ephorus System Status/Steering Source Select']);
+            testCase.verifySubstring(steering, 'selectSteeringSource(');
+            testCase.verifySubstring(steering, 'steeringValid = valid;');
+
+            status = TestModelArtifacts.functionScript( ...
+                [testCase.Model '/Ephorus System Status/Ephorus Status Cycle']);
+            testCase.verifySubstring(status, 'selectVehicleObservation(');
+
+            % The LWS emulator derives its speed from successive angle
+            % samples through LWSANGULARSPEED, and encodes the Bosch failure
+            % state when the selected angle is not a measurement.
+            sensors = TestModelArtifacts.functionScript( ...
+                [testCase.Hardware '/Synchronized Sensor Payloads']);
+            testCase.verifySubstring(sensors, 'lwsAngularSpeed(angleDeg, lastSteeringDeg');
+            testCase.verifySubstring(sensors, 'if ~logical(steeringValid)');
+            testCase.verifyEmpty(strfind(sensors, 'yawRate'), ...
+                'LWS_SPEED must never be sourced from vehicle yaw rate.');
+        end
+
+        function carMakerTruthShipsDisabledPendingRuntimeAcceptance(testCase)
+            % Both gates ship off. They are turned on only after the
+            % documented bench acceptance passes, and this is the guard that
+            % stops that happening by accident in a commit.
+            config = defaultVehicleStateConfig();
+            testCase.verifyFalse(config.carMakerTruthEnabled, ...
+                'CarMaker physics truth must ship disabled.');
+            testCase.verifyEqual(config.steeringSourceMode, uint8(0), ...
+                'Steering must ship in manual mode.');
+        end
+
         function ephorusRxRetentionRunsFasterThanStatusCycle(testCase)
             % Locks in the CAN RX drain-rate fix: retention (EPHORUS RX
             % RETENTION) must run at the 1 ms base rate so it can pop the
@@ -377,13 +488,14 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'CarMaker Pedal Retention takes the 6 physical RX fields.');
             testCase.verifyNumElements(carMakerPorts.Outport, 3, ...
                 ['CarMaker RX Retention emits pedal demand, physics snapshot, ' ...
-                'and the 0x507 steering snapshot -- it is the sole channel-1 ' ...
+                'and the 0x507 steering truth snapshot -- it is the sole ' ...
+                'channel-1 ' ...
                 'FIFO consumer so 0x507 is dispatched here too.']);
             physicsRt = [statusPath '/CarMaker Physics Snapshot RT'];
             testCase.verifyNotEqual(getSimulinkBlockHandle(physicsRt), -1);
 
-            % STEERING SOURCE SELECT chooses between the GUI dial and
-            % CarMaker's retained 0x507 value and publishes the result on the
+            % STEERING SOURCE SELECT applies the explicit steering-source
+            % selection and publishes the result on the
             % HILSelectedSteeringAngleDeg global Goto. It runs at the 1 ms
             % base rate (same as its two 1 ms inputs) and is upstream of both
             % the LWS emulator and the shared vehicle state.
@@ -395,12 +507,19 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             steeringSelectPorts = get_param(steeringSelect, 'PortHandles');
             testCase.verifyNumElements(steeringSelectPorts.Inport, 2, ...
                 'Steering Source Select takes the 0x507 snapshot and the GUI dial.');
-            testCase.verifyNumElements(steeringSelectPorts.Outport, 2, ...
-                'Steering Source Select emits the selected angle and a diagnostic.');
+            testCase.verifyNumElements(steeringSelectPorts.Outport, 3, ...
+                ['Steering Source Select emits the selected angle, its ' ...
+                'validity, and a diagnostic. The validity output is what ' ...
+                'lets the LWS emulator encode the Bosch failure state ' ...
+                'instead of silently substituting the GUI dial.']);
             selectedGoto = find_system(statusPath, 'SearchDepth', 1, ...
                 'BlockType', 'Goto', 'GotoTag', 'HILSelectedSteeringAngleDeg');
             testCase.verifyNumElements(selectedGoto, 1, ...
                 'The selected steering angle must be published on one global Goto.');
+            validGoto = find_system(statusPath, 'SearchDepth', 1, ...
+                'BlockType', 'Goto', 'GotoTag', 'HILSelectedSteeringValid');
+            testCase.verifyNumElements(validGoto, 1, ...
+                'The selected angle''s validity must travel with it.');
             % The LWS emulator and the shared vehicle state must both read the
             % SELECTED steering, not the raw GUI dial -- no From of
             % GuiCmdSteeringAngleDeg may remain in the hardware boundary or
@@ -409,6 +528,12 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'BlockType', 'From', 'GotoTag', 'GuiCmdSteeringAngleDeg');
             testCase.verifyEmpty(hwDialFroms, ...
                 'The LWS emulator must read HILSelectedSteeringAngleDeg, not the raw dial.');
+            % ... and the LWS emulator must actually consume that validity.
+            hwValidFroms = find_system(testCase.Hardware, 'SearchDepth', 1, ...
+                'BlockType', 'From', 'GotoTag', 'HILSelectedSteeringValid');
+            testCase.verifyNumElements(hwValidFroms, 1, ...
+                ['The LWS emulator must read the steering validity, or a ' ...
+                'stale CarMaker source would reach the VCU as a live angle.']);
             statusPorts = get_param(statusCycle, 'PortHandles');
             testCase.verifyNumElements(statusPorts.Inport, 13, ...
                 ['Ephorus Status Cycle takes the rate-transitioned ' ...
@@ -449,8 +574,9 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
 
             producer = [testCase.Hardware '/Synchronized Sensor Payloads'];
             ports = get_param(producer, 'PortHandles');
-            testCase.verifyNumElements(ports.Inport, 12, ...
-                'Sensor producer must receive all independent fault controls.');
+            testCase.verifyNumElements(ports.Inport, 13, ...
+                ['Sensor producer must receive all independent fault ' ...
+                'controls plus the steering-source validity.']);
             testCase.verifyNumElements(ports.Outport, 18, ...
                 ['Payload/control, target count/age/state, and runtime DLC ' ...
                 'outputs must all be published.']);
@@ -774,6 +900,13 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
     end
 
     methods (Static, Access = private)
+        function script = functionScript(block)
+            %FUNCTIONSCRIPT The MATLAB code inside a MATLAB Function block.
+            chart = find(slroot, '-isa', 'Stateflow.EMChart', 'Path', block);
+            assert(numel(chart) == 1, 'No MATLAB Function block at %s.', block);
+            script = chart.Script;
+        end
+
         function verifyParameters(testCase, block, expected)
             for index = 1:size(expected, 1)
                 testCase.verifyEqual(get_param(block, expected{index, 1}), ...

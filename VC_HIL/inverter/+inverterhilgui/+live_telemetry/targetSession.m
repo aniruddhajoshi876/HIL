@@ -631,27 +631,35 @@ classdef targetSession < handle
                     % Unknown stays NaN; the panel shows a dash.
                 end
                 % Which steering source the target actually selected this
-                % tick: the GUI dial or CarMaker's 0x507 CarMakerDriverSteering
-                % value. STEERING SOURCE SELECT publishes an 8-element
+                % tick. STEERING SOURCE SELECT publishes an 8-element
                 % diagnostic on the TestPoint'd Signal Conversion below it;
                 % [selectedAngle source carMakerFresh carMakerAgeMs
-                %  carMakerAngle carMakerSpeed acceptedCount rejectedCount],
-                % source 0 GUI / 1 CarMaker / 2 GUI fallback (CarMaker stale).
+                %  carMakerAngleDeg carMakerAngleRad acceptedCount
+                %  rejectedCount], source 0 manual GUI dial / 1 CarMaker
+                % truth / 2 CarMaker mode with unusable truth.
+                %
+                % Source 2 is NOT a fallback to the dial -- there is no
+                % measurement at all and the LWS is transmitting the Bosch
+                % failure state. Naming it plainly matters: an operator who
+                % reads "GUI dial" there would think the bench was still
+                % steering when the VCU is actually seeing a failed sensor.
                 try
                     diag = obj.Backend.getsignal( ...
                         ['inverter_hil/Ephorus System Status/' ...
                         'Steering Select Diag Copy'], 1);
                     diag = double(diag(:).');
                     if numel(diag) == 8 && all(isfinite(diag([2 4])))
-                        sources = {'GUI dial', 'CarMaker (0x507)', ...
-                            'GUI dial (CarMaker stale)'};
+                        sources = {'GUI dial (manual)', 'CarMaker (0x507)', ...
+                            'CarMaker unavailable - LWS failure state'};
                         idx = round(diag(2)) + 1;
                         if idx >= 1 && idx <= numel(sources)
                             snapshot.steering.source = sources{idx};
                         end
+                        snapshot.steering.sourceValid = round(diag(2)) ~= 2;
                         snapshot.steering.carMakerFresh = diag(3) ~= 0;
                         snapshot.steering.carMakerAgeMs = diag(4);
                         snapshot.steering.carMakerAngleDeg = diag(5);
+                        snapshot.steering.carMakerAngleRad = diag(6);
                         snapshot.steering.sourceKnown = true;
                     end
                 catch

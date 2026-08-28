@@ -168,6 +168,28 @@ for index = 1:numel(writes)
     end
 end
 
+% The steering path the LWS emulator encodes. STEERING SOURCE SELECT must
+% publish both the selected angle and its validity, and the LWS emulator must
+% read both -- without the validity a stale CarMaker source reaches the VCU
+% as a live steering angle, which is the failure the selector exists to
+% prevent.
+statusSubsystem = [model '/Ephorus System Status'];
+for tag = {'HILSelectedSteeringAngleDeg', 'HILSelectedSteeringValid'}
+    published = find_system(statusSubsystem, 'SearchDepth', 1, ...
+        'BlockType', 'Goto', 'GotoTag', tag{1});
+    assert(numel(published) == 1, 'inverterhil:MissingSteeringGoto', ...
+        'Expected exactly one %s Goto.', tag{1});
+    consumed = find_system(hardware, 'SearchDepth', 1, ...
+        'BlockType', 'From', 'GotoTag', tag{1});
+    assert(numel(consumed) == 1, 'inverterhil:MissingSteeringFrom', ...
+        'The LWS emulator must consume %s.', tag{1});
+end
+% And it must not still be reading the raw GUI dial behind the selector.
+assert(isempty(find_system(hardware, 'SearchDepth', 1, 'BlockType', 'From', ...
+    'GotoTag', 'GuiCmdSteeringAngleDeg')), ...
+    'inverterhil:RawDialInSensorPath', ...
+    'The LWS emulator must read the SELECTED steering, not the raw dial.');
+
 set_param(model, 'SimulationCommand', 'update');
 
 dictionary = Simulink.data.dictionary.open(dictionaryPath);
