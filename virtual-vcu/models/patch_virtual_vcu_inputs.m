@@ -6,10 +6,13 @@ end
 model = 'inverter_hil';
 load_system(modelPath);
 cleanup = onCleanup(@() close_system(model, 0));
+configure_controls_model(model);
 path = [model '/Virtual VCU'];
 if getSimulinkBlockHandle([path '/VCU Input Mux']) == -1
 add_block('simulink/Signal Routing/Mux', [path '/VCU Input Mux'], ...
-        'Inputs', '7', 'Position', [430 25 450 180]);
+        'Inputs', '8', 'Position', [430 25 450 200]);
+else
+    set_param([path '/VCU Input Mux'],'Inputs','8');
 end
 if getSimulinkBlockHandle([path '/Module 2 Digital Mux']) == -1
     add_block('simulink/Signal Routing/Mux', [path '/Module 2 Digital Mux'], ...
@@ -33,7 +36,7 @@ deleteExistingLine(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 deleteExistingLine(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1');
 deleteExistingLine(path, 'Module 2 Analog Mux/1', 'VCU Input Mux/1');
 deleteExistingLine(path, 'Module 1 Analog Inputs From/1', 'VCU Input Mux/1');
-for k = 2:7
+for k = 2:8
     name = sprintf('VCU Input Double %d', k);
     if getSimulinkBlockHandle([path '/' name]) == -1
         add_block('simulink/Signal Attributes/Data Type Conversion', ...
@@ -48,8 +51,9 @@ end
 deleteExistingLine(path, 'Module 2 DI01-DI08/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Mux/2');
-for k = 1:5
-    deleteExistingLine(path, sprintf('Port A RX Selector/%d', k), ...
+rxNames = {'Present','ID','Extended','Remote','Length','Data'};
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('VCU Input Mux/%d', k+2));
 end
 add_line(path, 'Module 1 Analog Inputs From/1', 'VCU Input Mux/1', 'autorouting', 'on');
@@ -124,13 +128,28 @@ end
 deleteExistingLine(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1');
 add_line(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1', 'autorouting', 'on');
 add_line(path, 'VCU Input Double 2/1', 'VCU Input Mux/2', 'autorouting', 'on');
-for k = 1:5
-    add_line(path, sprintf('Port A RX Selector/%d', k), ...
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('VCU Input Double %d/1', k+2));
+    deleteExistingLine(path, sprintf('VCU Input Double %d/1', k+2), ...
+        sprintf('VCU Input Mux/%d', k+2));
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('VCU Input Double %d/1', k+2), 'autorouting', 'on');
     add_line(path, sprintf('VCU Input Double %d/1', k+2), ...
         sprintf('VCU Input Mux/%d', k+2), 'autorouting', 'on');
 end
-add_line(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1', 'autorouting', 'on');
+deleteExistingLine(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1');
+rate = [path '/VCU 5 ms Rate Transition'];
+if getSimulinkBlockHandle(rate) == -1
+    add_block('simulink/Signal Attributes/Rate Transition', rate, ...
+        'OutPortSampleTime','0.005','Position',[465 25 500 180]);
+else
+    set_param(rate,'OutPortSampleTime','0.005');
+end
+deleteExistingLine(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1');
+deleteExistingLine(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1');
+add_line(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1','autorouting','on');
+add_line(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1','autorouting','on');
 chart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', ...
     'Path', [path '/Virtual VCU LV_ON']);
 chart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...

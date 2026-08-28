@@ -1,8 +1,7 @@
 function result = verify_virtual_vcu_model(modelPath)
 %VERIFY_VIRTUAL_VCU_MODEL Verify actual Module 2 / Port A block parameters.
 if nargin < 1
-    modelPath = fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))), ...
-        'inverter_hil', 'inverter_hil.slx');
+    modelPath = default_virtual_vcu_model_path();
 end
 load_system(modelPath);
 cleanup = onCleanup(@() close_system('inverter_hil', 0));
@@ -16,6 +15,14 @@ assert(strcmp(get_param(ai, 'parAdChannelLow'), '1'));
 assert(strcmp(get_param(ai, 'parAdChannelHigh'), '4'));
 assert(strcmp(get_param(di, 'parModuleId'), '2'));
 assert(strcmp(get_param(di, 'parDiChannels'), '[1 2 3 4 5 6 7 8]'));
+assert(strcmp(get_param([root '/VCU 5 ms Rate Transition'], ...
+    'OutPortSampleTime'),'0.005'));
+assert(contains(get_param('inverter_hil','CustomSource'),'ControlsMFE25.c'), ...
+    'Pinned ControlsMFE25 source is not linked into the model.');
+assert(getSimulinkBlockHandle([root '/Port A CAN FIFO Read']) == -1, ...
+    'Virtual VCU must reuse the base boundary''s sole physical FIFO reader.');
+assert(strcmp(get_param([root '/Port A RX Present From'],'GotoTag'), ...
+    'EphorusRxDataPresent'));
 writes = find_system(root, 'LookUnderMasks', 'all', 'FollowLinks', 'on', ...
     'ReferenceBlock', 'speedgoatlib_IO614/CAN Write ');
 assert(numel(writes) == 5, 'Expected five Port A CAN writes.');

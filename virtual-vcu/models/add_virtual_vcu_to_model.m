@@ -6,12 +6,14 @@ end
 root = fileparts(fileparts(mfilename('fullpath')));
 addpath(root);
 if nargin < 1
-    modelPath = fullfile(fileparts(root), 'inverter_hil', 'inverter_hil.slx');
+    modelPath = default_virtual_vcu_model_path();
 end
 model = 'inverter_hil';
 load_system(modelPath);
 cleanup = onCleanup(@() close_system(model, 0));
+configure_controls_model(model);
 if getSimulinkBlockHandle([model '/Virtual VCU']) ~= -1
+    save_system(model, modelPath);
     return;
 end
 path = [model '/Virtual VCU'];
@@ -34,11 +36,11 @@ set_param([path '/IO183 Module 2 Setup'], 'parModuleId', '2', ...
     'parIOPullReferenceFront', 'Pull-down');
 ai = add_block('speedgoatlib_IO183/Analog Input', [path '/Module 2 AI01-AI04'], ...
     'Position', [25 120 190 175]);
-set_param(ai, 'parModuleId', '2', 'parSampTime', '0.001', ...
+set_param(ai, 'parModuleId', '2', 'parSampTime', '0.005', ...
     'parAdChannelLow', '1', 'parAdChannelHigh', '4');
 di = add_block('speedgoatlib_IO183/Digital Input', [path '/Module 2 DI01-DI08'], ...
     'Position', [25 205 190 260]);
-set_param(di, 'parModuleId', '2', 'parSampTime', '0.001', ...
+set_param(di, 'parModuleId', '2', 'parSampTime', '0.005', ...
     'parDiChannels', '[1 2 3 4 5 6 7 8]');
 add_block('simulink/Signal Routing/Mux', [path '/Module 2 Analog Mux'], ...
     'Inputs', '4', 'Position', [220 120 240 175]);
@@ -52,33 +54,32 @@ for k = 1:8
     add_line(path, sprintf('Module 2 DI01-DI08/%d', k), ...
         sprintf('Module 2 Digital Mux/%d', k));
 end
-% IO614 has one module-level setup. The main inverter boundary owns it and
-% enables both channel 1/Port B and channel 2/Port A at the same bitrate.
-read = add_block('speedgoatlib_IO614/CAN Read ', [path '/Port A CAN FIFO Read'], ...
-    'Position', [270 120 440 180]);
-set_param(read, 'moduleType', 'IO614', 'id', '1', 'channel', '2', ...
-    'canType', 'CAN (HS)', 'useBusOut', 'on', ...
-    'HasMulRead', 'Single Read from Buffer (FIFO)', 'LabelInHex', 'on', ...
-    'ts', '0.001');
-selector = add_block('simulink/Signal Routing/Bus Selector', ...
-    [path '/Port A RX Selector'], 'Position', [475 115 490 250]);
-set_param(selector, 'OutputSignals', 'ID,Extended,Remote,Length,Data');
-add_line(path, 'Port A CAN FIFO Read/2', 'Port A RX Selector/1');
+% The base hardware boundary owns the sole Port-A FIFO reader and publishes
+% its physical fields globally. Reuse those fields so two readers cannot race
+% for (and consume different entries from) the same hardware FIFO.
+rxNames = {'Present','ID','Extended','Remote','Length','Data'};
+rxTags = {'EphorusRxDataPresent','EphorusRxId','EphorusRxExtended', ...
+    'EphorusRxRemote','EphorusRxLength','EphorusRxData'};
+for k = 1:numel(rxNames)
+    add_block('simulink/Signal Routing/From', ...
+        [path '/Port A RX ' rxNames{k} ' From'], 'GotoTag',rxTags{k}, ...
+        'Position',[270 90+30*k 430 110+30*k]);
+end
 fcn = add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [path '/Virtual VCU LV_ON'], 'Position', [520 25 750 260]);
 setMatlabFunctionScript(fcn, vcuScript());
 % No immediate PortHandles assertion here (an earlier version checked for
-% exactly 1 input/3 outputs right after SETMATLABFUNCTIONSCRIPT): a freshly
+% exactly 1 input/4 outputs right after SETMATLABFUNCTIONSCRIPT): a freshly
 % created MATLAB Function block reports its ORIGINAL DEFAULT port count
 % (1 input/1 output) until Simulink actually compiles/updates the diagram
 % against the new script, so that check failed even on a correctly
-% installed 3-output script -- confirmed by a from-scratch build. The
+% installed 4-output script -- confirmed by a from-scratch build. The
 % ADD_LINE calls below on ports 2/3 are themselves a sufficient check:
 % Simulink errors clearly if those ports genuinely do not exist once the
 % diagram is compiled.
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 add_block('simulink/Signal Routing/Demux', [path '/VCU Payload Split'], ...
-    'Outputs', '[8 8 8 8 8 1 1 1 1]', 'Position', [780 25 800 300]);
+    'Outputs', '[8 8 8 8 8 1 1 1 1 1 1 1 1]', 'Position', [780 25 800 350]);
 add_line(path, 'Virtual VCU LV_ON/1', 'VCU Payload Split/1');
 % Outputs 2/3 (DCLINKV, APPSBRAKEFAULT) are genuine typed values (double
 % volts, logical), not CAN payload bytes, so they bypass VCU PAYLOAD SPLIT
@@ -129,12 +130,12 @@ end
 addVirtualVcuOutputTags(path);
 % The CAN receive path remains physical and observable. No-data is preserved
 % as false/unknown; it is not converted into a fabricated status frame.
-for k = 1:5
+for k = 1:6
     add_block('simulink/Signal Routing/Goto', ...
         [path sprintf('/Port A RX Field %d', k)], ...
         'GotoTag', sprintf('VirtualVcuRxField%d', k), 'TagVisibility', 'global', ...
         'Position', [520 285 + 25*k 680 305 + 25*k]);
-    add_line(path, sprintf('Port A RX Selector/%d', k), ...
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('Port A RX Field %d/1', k));
 end
 add_block('simulink/Sinks/Terminator', [path '/Module 2 Digital Monitor'], ...
@@ -147,7 +148,7 @@ add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU AI Telemetry/1');
 ids = [uint32(hex2dec('1F5')) uint32(hex2dec('186')) ...
     uint32(hex2dec('196')) uint32(hex2dec('1A6')) uint32(hex2dec('1B6'))];
 for k = 1:5
-    transition = add_block('simulink/Signal Attributes/Rate Transition', ...
+    add_block('simulink/Signal Attributes/Rate Transition', ...
         [path sprintf('/Port A Payload Rate Transition %d', k)], ...
         'Position', [820 25 + 55*k 840 55 + 55*k]);
     pack = add_block('canlib/CAN Pack', [path sprintf('/Port A CAN Pack %d', k)], ...
@@ -226,12 +227,12 @@ if getSimulinkBlockHandle([path '/Virtual VCU Pedal Payload']) == -1
     add_line(path, 'VCU Payload Split/1', ...
         'Virtual VCU Pedal Payload/1', 'autorouting', 'on');
 end
-% VCU Payload Split port 2 is control frame 1 (bytes 9-16 of the 44-byte
+% VCU Payload Split port 2 is control frame 1 (bytes 9-16 of the 48-byte
 % payload array), which carries torque at local bytes 5-6
 % (VIRTUALVCUDEPLOYSTEP.M's payloads(13)/(14)) -- not observable from the
 % pedal payload alone (port 1, bytes 1-8), which only carries throttle %
-% and brake. Published the same way as the pedal payload so torque gating
-% (RTD + valid pedals) can actually be verified instead of assumed.
+% and brake. Published the same way as the pedal payload so allocator output
+% packing in RTD can be verified instead of assumed.
 if getSimulinkBlockHandle([path '/Virtual VCU Control Frame 1']) == -1
     add_block('simulink/Signal Routing/Goto', ...
         [path '/Virtual VCU Control Frame 1'], ...
@@ -300,7 +301,7 @@ function setMatlabFunctionScript(blockPath, script)
 %   a string, so a raw handle here silently found zero charts and left
 %   CHART(1).SCRIPT a no-op on an empty array -- confirmed by a
 %   from-scratch build reproducing it (the chart quietly stayed on its
-%   default 1-output template while every caller believed the 3-output
+%   default 1-output template while every caller believed the 4-output
 %   script had been installed).
 if isnumeric(blockPath)
     blockPath = getfullname(blockPath);
