@@ -6,19 +6,20 @@ end
 root = fileparts(fileparts(mfilename('fullpath')));
 addpath(root);
 if nargin < 1
-    modelPath = fullfile(fileparts(root), 'inverter_hil', 'inverter_hil.slx');
+    modelPath = default_virtual_vcu_model_path();
 end
 model = 'inverter_hil';
 load_system(modelPath);
 cleanup = onCleanup(@() close_system(model, 0));
+configure_controls_model(model);
 if getSimulinkBlockHandle([model '/Virtual VCU']) ~= -1
+    save_system(model, modelPath);
     return;
 end
 path = [model '/Virtual VCU'];
 add_block('simulink/Ports & Subsystems/Subsystem', path, ...
     'Position', [960 80 1190 230], ...
-    'Description', ['Virtual VCU: IO183 Module 2 and IO614 Port A ' ...
-    '(CAN channel 2, bridged to Port B/channel 1 on the bench).']);
+    'Description', 'Virtual VCU: IO183 Module 2 and IO614 Port A (CAN channel 2).');
 open_system(path);
 add_block('speedgoatlib_IO183/Setup', [path '/IO183 Module 2 Setup'], ...
     'Position', [25 25 190 90]);
@@ -35,11 +36,11 @@ set_param([path '/IO183 Module 2 Setup'], 'parModuleId', '2', ...
     'parIOPullReferenceFront', 'Pull-down');
 ai = add_block('speedgoatlib_IO183/Analog Input', [path '/Module 2 AI01-AI04'], ...
     'Position', [25 120 190 175]);
-set_param(ai, 'parModuleId', '2', 'parSampTime', '0.001', ...
+set_param(ai, 'parModuleId', '2', 'parSampTime', '0.005', ...
     'parAdChannelLow', '1', 'parAdChannelHigh', '4');
 di = add_block('speedgoatlib_IO183/Digital Input', [path '/Module 2 DI01-DI08'], ...
     'Position', [25 205 190 260]);
-set_param(di, 'parModuleId', '2', 'parSampTime', '0.001', ...
+set_param(di, 'parModuleId', '2', 'parSampTime', '0.005', ...
     'parDiChannels', '[1 2 3 4 5 6 7 8]');
 add_block('simulink/Signal Routing/Mux', [path '/Module 2 Analog Mux'], ...
     'Inputs', '4', 'Position', [220 120 240 175]);
@@ -53,37 +54,32 @@ for k = 1:8
     add_line(path, sprintf('Module 2 DI01-DI08/%d', k), ...
         sprintf('Module 2 Digital Mux/%d', k));
 end
-% Virtual VCU owns its own IO614 FIFO reader on channel 2/connector A,
-% separate from the inverter boundary's channel-1/connector B reader (see
-% BUILD_INVERTER_HIL_MODEL.M's "IO614 CAN Setup", which enables both
-% channels on module id 1). Connector A and connector B are bridged
-% together on the bench onto one physical CAN bus, so this reader still
-% sees the inverter's status frames and the LWS/IMU sensor sim frames.
-read = add_block('speedgoatlib_IO614/CAN Read ', ...
-    [path '/Port A CAN FIFO Read Raw'], 'Position', [270 120 440 180]);
-set_param(read, 'moduleType', 'IO614', 'id', '1', 'channel', '2', ...
-    'canType', 'CAN (HS)', 'useBusOut', 'on', ...
-    'HasMulRead', 'Single Read from Buffer (FIFO)', ...
-    'LabelInHex', 'on', 'ts', '0.001');
-selector = add_block('simulink/Signal Routing/Bus Selector', ...
-    [path '/Port A RX Selector'], 'Position', [475 115 490 250]);
-set_param(selector, 'OutputSignals', 'ID,Extended,Remote,Length,Data');
-add_line(path, 'Port A CAN FIFO Read Raw/2', 'Port A RX Selector/1');
+% The base hardware boundary owns the sole Port-A FIFO reader and publishes
+% its physical fields globally. Reuse those fields so two readers cannot race
+% for (and consume different entries from) the same hardware FIFO.
+rxNames = {'Present','ID','Extended','Remote','Length','Data'};
+rxTags = {'EphorusRxDataPresent','EphorusRxId','EphorusRxExtended', ...
+    'EphorusRxRemote','EphorusRxLength','EphorusRxData'};
+for k = 1:numel(rxNames)
+    add_block('simulink/Signal Routing/From', ...
+        [path '/Port A RX ' rxNames{k} ' From'], 'GotoTag',rxTags{k}, ...
+        'Position',[270 90+30*k 430 110+30*k]);
+end
 fcn = add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [path '/Virtual VCU LV_ON'], 'Position', [520 25 750 260]);
 setMatlabFunctionScript(fcn, vcuScript());
 % No immediate PortHandles assertion here (an earlier version checked for
-% exactly 1 input/3 outputs right after SETMATLABFUNCTIONSCRIPT): a freshly
+% exactly 1 input/4 outputs right after SETMATLABFUNCTIONSCRIPT): a freshly
 % created MATLAB Function block reports its ORIGINAL DEFAULT port count
 % (1 input/1 output) until Simulink actually compiles/updates the diagram
 % against the new script, so that check failed even on a correctly
-% installed 3-output script -- confirmed by a from-scratch build. The
+% installed 4-output script -- confirmed by a from-scratch build. The
 % ADD_LINE calls below on ports 2/3 are themselves a sufficient check:
 % Simulink errors clearly if those ports genuinely do not exist once the
 % diagram is compiled.
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 add_block('simulink/Signal Routing/Demux', [path '/VCU Payload Split'], ...
-    'Outputs', '[8 8 8 8 8 1 1 1 1]', 'Position', [780 25 800 300]);
+    'Outputs', '[8 8 8 8 8 1 1 1 1 1 1 1 1]', 'Position', [780 25 800 350]);
 add_line(path, 'Virtual VCU LV_ON/1', 'VCU Payload Split/1');
 % Outputs 2/3 (DCLINKV, APPSBRAKEFAULT) are genuine typed values (double
 % volts, logical), not CAN payload bytes, so they bypass VCU PAYLOAD SPLIT
@@ -116,8 +112,7 @@ add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU APPS Brake Fault']
 add_line(path, 'Virtual VCU LV_ON/3', 'Virtual VCU APPS Brake Fault/1', 'autorouting', 'on');
 % TORQUEREQUESTNM (port 4): same physical Nm value already packed into the
 % control-frame payload bytes, published here as its own typed double so
-% it can be marked for XCP measurement directly -- see
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
+% it can be read as a measurement directly.
 % Republished through VIRTUAL VCU OBSERVABILITY like APPSBRAKEFAULT (see
 % PATCH_VIRTUAL_VCU_STATE_OUTPUTS.M).
 add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU Torque Request Nm'], ...
@@ -135,12 +130,12 @@ end
 addVirtualVcuOutputTags(path);
 % The CAN receive path remains physical and observable. No-data is preserved
 % as false/unknown; it is not converted into a fabricated status frame.
-for k = 1:5
+for k = 1:6
     add_block('simulink/Signal Routing/Goto', ...
         [path sprintf('/Port A RX Field %d', k)], ...
         'GotoTag', sprintf('VirtualVcuRxField%d', k), 'TagVisibility', 'global', ...
         'Position', [520 285 + 25*k 680 305 + 25*k]);
-    add_line(path, sprintf('Port A RX Selector/%d', k), ...
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('Port A RX Field %d/1', k));
 end
 add_block('simulink/Sinks/Terminator', [path '/Module 2 Digital Monitor'], ...
@@ -152,8 +147,21 @@ add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU AI Telemetry'], ..
 add_line(path, 'Module 2 Analog Mux/1', 'Virtual VCU AI Telemetry/1');
 ids = [uint32(hex2dec('1F5')) uint32(hex2dec('186')) ...
     uint32(hex2dec('196')) uint32(hex2dec('1A6')) uint32(hex2dec('1B6'))];
+% Per-frame transmission gating, matching firmware VCComms::run()
+% (vcComms.cpp:263-320) wire behaviour: the four inverter control frames
+% (0x186/0x196/0x1A6/0x1B6) are queued ONLY in the RTD case; 0x1F5 is queued
+% in every state EXCEPT ERROR_SHUTDOWN (and, in firmware, also skipped on the
+% first RTD reset-only cycle -- see docs deviation 1). The speedgoatlib_IO614
+% "CAN Write" block exposes a per-message transmission-control input
+% (enableInput / "Show Transmission Control Input"), already used this way by
+% the base model's own CAN writes, so no enabled subsystem is needed: a
+% nonzero (uint32) control input transmits the frame that tick, zero
+% suppresses it. Per the base contract (build_inverter_hil_model.m:769-776,
+% 1047-1052) enableInput moves the Tx-control input to PORT 1 and the CAN
+% Pack data input to PORT 2.
+addTxGate(path);
 for k = 1:5
-    transition = add_block('simulink/Signal Attributes/Rate Transition', ...
+    add_block('simulink/Signal Attributes/Rate Transition', ...
         [path sprintf('/Port A Payload Rate Transition %d', k)], ...
         'Position', [820 25 + 55*k 840 55 + 55*k]);
     pack = add_block('canlib/CAN Pack', [path sprintf('/Port A CAN Pack %d', k)], ...
@@ -167,27 +175,40 @@ for k = 1:5
         'Position', [1060 25 + 55*k 1180 55 + 55*k]);
     set_param(write, 'moduleType', 'IO614', 'id', '1', 'channel', '2', ...
         'canType', 'CAN (HS)', 'useBusIn', 'off', 'numOfMsg', '1', ...
-        'enableStatusPort', 'on', 'ts', '0.005', 'UserData', ids(k), ...
-        'UserDataPersistent', 'on');
+        'enableStatusPort', 'on', 'enableInput', 'on', 'ts', '0.005', ...
+        'UserData', ids(k), 'UserDataPersistent', 'on');
     add_line(path, sprintf('VCU Payload Split/%d', k), ...
         sprintf('Port A Payload Rate Transition %d/1', k));
     add_line(path, sprintf('Port A Payload Rate Transition %d/1', k), ...
         sprintf('Port A CAN Pack %d/1', k));
-    add_line(path, sprintf('Port A CAN Pack %d/1', k), sprintf('Port A CAN Write %d/1', k));
+    % Port 2 = CAN Pack data, port 1 = transmission control (enableInput
+    % moves them; see comment above). k == 1 is 0x1F5 (pedal), gated on
+    % "not ERROR_SHUTDOWN"; k = 2..5 are the control frames, gated on "in RTD".
+    add_line(path, sprintf('Port A CAN Pack %d/1', k), ...
+        sprintf('Port A CAN Write %d/2', k));
+    gateSrc = 2; % Port A TX Gate output 2 = pedal enable
+    if k > 1
+        gateSrc = 1; % output 1 = control-frame enable
+    end
+    add_line(path, sprintf('Port A TX Gate Rate Transition %d/1', gateSrc), ...
+        sprintf('Port A CAN Write %d/1', k), 'autorouting', 'on');
 end
 % Genuine, target-measured transmit count for the pedal frame (0x1F5),
 % mirroring EPHORUSSYSTEMSTATUSSTEP's TXCOUNT pattern
 % (BUILD_INVERTER_HIL_MODEL.M): the CAN Write driver itself exposes no
 % cumulative counter, so this counts how many times a pedal payload was
-% actually emitted at the write path's own 5 ms rate. Tapped from the same
-% rate-transitioned signal 'Port A CAN Pack 1' consumes (k==1 is 0x1F5, the
-% first id in IDS), not the chart's 1 kHz base rate, so the count matches
-% the frame's real transmit cadence.
+% actually PUT ON THE WIRE. Input 1 is the rate-transitioned pedal payload
+% (k==1 is 0x1F5); input 2 is the same pedal-frame transmission enable that
+% gates CAN Write 1 (Port A TX Gate output 2), so ERROR_SHUTDOWN cycles --
+% where 0x1F5 is now suppressed -- are NOT counted. The count therefore
+% tracks the frame's real transmit cadence at the write path's 5 ms rate.
 counter = add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [path '/Port A Pedal TX Counter'], 'Position', [920 900 1030 940]);
 setCounterScript(counter, pedalTxCounterScript());
 add_line(path, 'Port A Payload Rate Transition 1/1', ...
     'Port A Pedal TX Counter/1', 'autorouting', 'on');
+add_line(path, 'Port A TX Gate Rate Transition 2/1', ...
+    'Port A Pedal TX Counter/2', 'autorouting', 'on');
 add_block('simulink/Signal Routing/Goto', [path '/Virtual VCU Pedal TX Count'], ...
     'GotoTag', 'VirtualVcuPedalTxCount', 'TagVisibility', 'global', ...
     'Position', [1060 900 1230 920]);
@@ -205,6 +226,7 @@ set_param(path, 'Commented', 'off');
 % the observability port it feeds returned the pedal payload's own shape.
 setMatlabFunctionScript(fcn, vcuScript());
 setCounterScript(counter, pedalTxCounterScript());
+setTxGateScript([path '/Port A TX Gate'], txGateScript());
 save_system(model, modelPath);
 % Persist the chart source once more after a close/reopen. This mirrors the
 % R2024b App/Stateflow serialization behavior and prevents a stale default
@@ -219,7 +241,61 @@ close_system(model, 0);
 load_system(modelPath);
 setMatlabFunctionScript([path '/Virtual VCU LV_ON'], vcuScript());
 setCounterScript([path '/Port A Pedal TX Counter'], pedalTxCounterScript());
+setTxGateScript([path '/Port A TX Gate'], txGateScript());
 save_system(model, modelPath);
+end
+
+function addTxGate(path)
+%ADDTXGATE Per-frame CAN transmission-control source for items 8/9.
+%   Reads the published VirtualVcuStateId (chart payloads(41)) and produces
+%   two scalar uint32 transmit-control values at the CAN Write rate
+%   (0.005 s) -- 1 transmits this tick, 0 suppresses it (the base model's
+%   CAN Write Tx Control input is uint32, not boolean):
+%     output 1 = control-frame enable  = (state == RTD)
+%     output 2 = pedal-frame  enable   = (state ~= ERROR_SHUTDOWN)
+if getSimulinkBlockHandle([path '/Port A TX Gate']) ~= -1
+    return;
+end
+add_block('simulink/Signal Routing/From', [path '/Port A TX Gate State From'], ...
+    'GotoTag', 'VirtualVcuStateId', 'Position', [560 640 700 660]);
+gate = add_block('simulink/User-Defined Functions/MATLAB Function', ...
+    [path '/Port A TX Gate'], 'Position', [740 620 860 690]);
+setTxGateScript(gate, txGateScript());
+add_line(path, 'Port A TX Gate State From/1', 'Port A TX Gate/1', 'autorouting', 'on');
+for g = 1:2
+    rt = [path sprintf('/Port A TX Gate Rate Transition %d', g)];
+    add_block('simulink/Signal Attributes/Rate Transition', rt, ...
+        'OutPortSampleTime', '0.005', 'Position', [900 610 + 40*g 920 630 + 40*g]);
+    add_line(path, sprintf('Port A TX Gate/%d', g), ...
+        sprintf('Port A TX Gate Rate Transition %d/1', g), 'autorouting', 'on');
+end
+end
+
+function script = txGateScript()
+script = sprintf(['function [ctrlEnable, pedalEnable] = portATxGateStep(stateId)\n' ...
+    '%%#codegen\n' ...
+    '%% Firmware VCComms::run() (vcComms.cpp:263-320): inverter control\n' ...
+    '%% frames are queued only in RTD (state 4); 0x1F5 is queued in every\n' ...
+    '%% state except ERROR_SHUTDOWN (state 5).\n' ...
+    '%% CAN Write Tx Control is uint32 (1 = transmit this tick, 0 = skip).\n' ...
+    's = double(stateId);\n' ...
+    'ctrlEnable = uint32(s == 4);\n' ...
+    'pedalEnable = uint32(s ~= 5);\n' ...
+    'end\n']);
+end
+
+function setTxGateScript(blockPath, script)
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
+rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
+chart(1).Script = script;
+if ~contains(chart(1).Script, ...
+        'function [ctrlEnable, pedalEnable] = portATxGateStep(stateId)')
+    error('virtualvcu:TxGateScript', 'Port A TX Gate script was not installed.');
+end
 end
 
 function addVirtualVcuOutputTags(path)
@@ -232,12 +308,12 @@ if getSimulinkBlockHandle([path '/Virtual VCU Pedal Payload']) == -1
     add_line(path, 'VCU Payload Split/1', ...
         'Virtual VCU Pedal Payload/1', 'autorouting', 'on');
 end
-% VCU Payload Split port 2 is control frame 1 (bytes 9-16 of the 44-byte
+% VCU Payload Split port 2 is control frame 1 (bytes 9-16 of the 48-byte
 % payload array), which carries torque at local bytes 5-6
 % (VIRTUALVCUDEPLOYSTEP.M's payloads(13)/(14)) -- not observable from the
 % pedal payload alone (port 1, bytes 1-8), which only carries throttle %
-% and brake. Published the same way as the pedal payload so torque gating
-% (RTD + valid pedals) can actually be verified instead of assumed.
+% and brake. Published the same way as the pedal payload so allocator output
+% packing in RTD can be verified instead of assumed.
 if getSimulinkBlockHandle([path '/Virtual VCU Control Frame 1']) == -1
     add_block('simulink/Signal Routing/Goto', ...
         [path '/Virtual VCU Control Frame 1'], ...
@@ -282,19 +358,24 @@ rt = sfroot(); chart = rt.find('-isa', 'Stateflow.EMChart', '-and', 'Path', bloc
 assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
     'No Stateflow chart found at %s.', blockPath);
 chart(1).Script = script;
-if ~contains(chart(1).Script, 'function count = pedalTxCountStep(payload)')
+if ~contains(chart(1).Script, ...
+        'function count = pedalTxCountStep(payload, txEnable)')
     error('virtualvcu:CounterScript', 'Pedal TX counter script was not installed.');
 end
 end
 
 function script = pedalTxCounterScript()
-script = sprintf(['function count = pedalTxCountStep(payload) %%#ok<INUSD>\n' ...
+script = sprintf(['function count = pedalTxCountStep(payload, txEnable) %%#ok<INUSD>\n' ...
     '%%#codegen\n' ...
+    '%% Count only ticks where the pedal frame was actually transmitted:\n' ...
+    '%% txEnable is Port A TX Gate output 2 (0 in ERROR_SHUTDOWN).\n' ...
     'persistent n\n' ...
     'if isempty(n)\n' ...
     '    n = uint32(0);\n' ...
     'end\n' ...
-    'n = n + 1;\n' ...
+    'if txEnable > 0\n' ...
+    '    n = n + 1;\n' ...
+    'end\n' ...
     'count = n;\n' ...
     'end\n']);
 end
@@ -306,7 +387,7 @@ function setMatlabFunctionScript(blockPath, script)
 %   a string, so a raw handle here silently found zero charts and left
 %   CHART(1).SCRIPT a no-op on an empty array -- confirmed by a
 %   from-scratch build reproducing it (the chart quietly stayed on its
-%   default 1-output template while every caller believed the 3-output
+%   default 1-output template while every caller believed the 4-output
 %   script had been installed).
 if isnumeric(blockPath)
     blockPath = getfullname(blockPath);

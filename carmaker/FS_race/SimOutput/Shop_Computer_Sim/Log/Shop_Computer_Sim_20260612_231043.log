@@ -1,0 +1,160 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:12:02
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.851
+SIM_END		unknown	9.851s	77.0367m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:12:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.148
+SIM_END		unknown	8.145s	44.8619m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:13:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.117
+SIM_END		unknown	7.114s	29.584m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:13:38
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.851
+SIM_END		unknown	9.851s	77.0367m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	ModelCheck	2026-06-12 23:14:06
+TIME	0.001
+WARNING		ModelCheck Drive Unit Mount: Option has no effect for rigid mounting
+ERROR		ModelCheck PowerTrain failed: PT could not be started
+SIM_ABORT	ModelCheck	0.001s	0m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:15:53
+TIME	0.000
+SIMULATE	unknown
+
+TIME	8.680
+SIM_END		unknown	8.677s	53.9855m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:16:49
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.851
+SIM_END		unknown	9.851s	77.0367m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:19:47
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.494
+SIM_END		unknown	11.491s	61.4747m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:20:10
+TIME	0.000
+SIMULATE	unknown
+
+TIME	5.807
+SIM_END		unknown	5.807s	72.1098m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:20:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	41.771
+SIM_END		unknown	41.768s	241.022m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:25:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	43.193
+SIM_END		unknown	43.19s	226.103m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:31:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	21.015
+ERROR		Vehicle leaves road at about x=23.5205, y=7.23447 TireNo=0
+SIM_ABORT	unknown	21.018s	169.876m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:32:12
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.524
+ERROR		Vehicle leaves road at about x=24.4009, y=-13.9788 TireNo=1
+SIM_ABORT	unknown	14.527s	119.375m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:34:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	20.109
+ERROR		Vehicle leaves road at about x=35.302, y=11.3294 TireNo=0
+SIM_ABORT	unknown	20.112s	207.738m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:34:45
+TIME	0.000
+SIMULATE	unknown
+
+TIME	29.706
+SIM_END		unknown	29.703s	291.21m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2026-06-12 23:38:13
+TIME	0.001
+WARNING		IPGDriver: Problem in getting Z-coordinate at sZPos[2]=0.000000m sZPos[1]=0.970000m. (id=200)
+WARNING		IPGDriver: Problem in getting LatInc at sLatInc[2]=0.000000m sLatInc[1]=0.970000m. (id=200)

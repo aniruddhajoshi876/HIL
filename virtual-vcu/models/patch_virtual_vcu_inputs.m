@@ -6,10 +6,13 @@ end
 model = 'inverter_hil';
 load_system(modelPath);
 cleanup = onCleanup(@() close_system(model, 0));
+configure_controls_model(model);
 path = [model '/Virtual VCU'];
 if getSimulinkBlockHandle([path '/VCU Input Mux']) == -1
 add_block('simulink/Signal Routing/Mux', [path '/VCU Input Mux'], ...
-        'Inputs', '7', 'Position', [430 25 450 180]);
+        'Inputs', '9', 'Position', [430 25 450 220]);
+else
+    set_param([path '/VCU Input Mux'],'Inputs','9');
 end
 if getSimulinkBlockHandle([path '/Module 2 Digital Mux']) == -1
     add_block('simulink/Signal Routing/Mux', [path '/Module 2 Digital Mux'], ...
@@ -33,7 +36,7 @@ deleteExistingLine(path, 'Module 2 Analog Mux/1', 'Virtual VCU LV_ON/1');
 deleteExistingLine(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1');
 deleteExistingLine(path, 'Module 2 Analog Mux/1', 'VCU Input Mux/1');
 deleteExistingLine(path, 'Module 1 Analog Inputs From/1', 'VCU Input Mux/1');
-for k = 2:7
+for k = 2:8
     name = sprintf('VCU Input Double %d', k);
     if getSimulinkBlockHandle([path '/' name]) == -1
         add_block('simulink/Signal Attributes/Data Type Conversion', ...
@@ -48,8 +51,9 @@ end
 deleteExistingLine(path, 'Module 2 DI01-DI08/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Double 2/1');
 deleteExistingLine(path, 'Module 2 Digital Mux/1', 'VCU Input Mux/2');
-for k = 1:5
-    deleteExistingLine(path, sprintf('Port A RX Selector/%d', k), ...
+rxNames = {'Present','ID','Extended','Remote','Length','Data'};
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('VCU Input Mux/%d', k+2));
 end
 add_line(path, 'Module 1 Analog Inputs From/1', 'VCU Input Mux/1', 'autorouting', 'on');
@@ -124,18 +128,76 @@ end
 deleteExistingLine(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1');
 add_line(path, 'Module 1 Digital Mux/1', 'VCU Input Double 2/1', 'autorouting', 'on');
 add_line(path, 'VCU Input Double 2/1', 'VCU Input Mux/2', 'autorouting', 'on');
-for k = 1:5
-    add_line(path, sprintf('Port A RX Selector/%d', k), ...
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('VCU Input Double %d/1', k+2));
+    deleteExistingLine(path, sprintf('VCU Input Double %d/1', k+2), ...
+        sprintf('VCU Input Mux/%d', k+2));
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
         sprintf('VCU Input Double %d/1', k+2), 'autorouting', 'on');
     add_line(path, sprintf('VCU Input Double %d/1', k+2), ...
         sprintf('VCU Input Mux/%d', k+2), 'autorouting', 'on');
 end
-add_line(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1', 'autorouting', 'on');
-chart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', ...
-    'Path', [path '/Virtual VCU LV_ON']);
-chart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
-    'virtualVcuDeployStep.m'));
+% Item 2: 1 ms multi-corner wheel-speed retention ahead of the 5 ms rate
+% transition. Firmware drains its whole RX FIFO each comms cycle
+% (vcComms.cpp:327-374); the base boundary publishes one FIFO item per 1 ms
+% base tick, so without retention a 5 ms chart tick sees only the last
+% 0x3X5 frame in the window. This block latches all four Ephorus
+% actual-speed frames at the base rate and feeds the chart a coherent
+% 4-vector as VCU Input Mux input 9 -> chart u(26:29).
+retain = [path '/Virtual VCU RX Retain'];
+if getSimulinkBlockHandle(retain) == -1
+    add_block('simulink/User-Defined Functions/MATLAB Function', retain, ...
+        'Position', [270 250 400 340]);
+end
+setRxRetainScript(retain, fileread(fullfile(fileparts(mfilename('fullpath')), ...
+    'virtualVcuRxRetain.m')));
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('Virtual VCU RX Retain/%d', k));
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('Virtual VCU RX Retain/%d', k), 'autorouting', 'on');
+end
+deleteExistingLine(path, 'Virtual VCU RX Retain/1', 'VCU Input Mux/9');
+add_line(path, 'Virtual VCU RX Retain/1', 'VCU Input Mux/9', 'autorouting', 'on');
+
+deleteExistingLine(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1');
+rate = [path '/VCU 5 ms Rate Transition'];
+if getSimulinkBlockHandle(rate) == -1
+    add_block('simulink/Signal Attributes/Rate Transition', rate, ...
+        'OutPortSampleTime','0.005','Position',[465 25 500 180]);
+else
+    set_param(rate,'OutPortSampleTime','0.005');
+end
+deleteExistingLine(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1');
+deleteExistingLine(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1');
+add_line(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1','autorouting','on');
+add_line(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1','autorouting','on');
+% Re-assert both MATLAB Function scripts AFTER every signal connection.
+% R2024b silently reverts a MATLAB Function block to its default passthrough
+% template when a downstream vector-width diagnostic is first evaluated
+% against a script installed before the block's inputs/outputs were wired
+% (see the same reassert pattern in add_virtual_vcu_to_model.m for the
+% chart / pedal TX counter). virtualVcuRxRetain's script was installed
+% above before its 6 inputs and its VCU Input Mux/9 output existed.
+reassertInputScripts(path);
 save_system(model, modelPath);
+% Persist once more after a close/reopen, mirroring add_virtual_vcu_to_model.
+close_system(model, 0);
+load_system(modelPath);
+reassertInputScripts(path);
+save_system(model, modelPath);
+end
+
+function reassertInputScripts(path)
+deployChart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', ...
+    'Path', [path '/Virtual VCU LV_ON']);
+assert(~isempty(deployChart), 'virtualvcu:MissingChart', ...
+    'Virtual VCU LV_ON chart is missing.');
+deployChart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
+    'virtualVcuDeployStep.m'));
+setRxRetainScript([path '/Virtual VCU RX Retain'], ...
+    fileread(fullfile(fileparts(mfilename('fullpath')), 'virtualVcuRxRetain.m')));
 end
 
 function deleteExistingLine(path, src, dst)
@@ -143,5 +205,24 @@ try
     delete_line(path, src, dst);
 catch
     % Idempotent patch: no line is fine when rebuilding or repairing a model.
+end
+end
+
+function setRxRetainScript(blockPath, script)
+%SETRXRETAINSCRIPT Install the wheel-speed retention script on its MATLAB
+%   Function block. Mirrors ADD_VIRTUAL_VCU_TO_MODEL's SETMATLABFUNCTIONSCRIPT
+%   (a raw handle must be resolved to a path before Stateflow's 'Path' find
+%   filter matches it).
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
+chart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
+chart(1).Script = script;
+if ~contains(chart(1).Script, ...
+        'function omInv = virtualVcuRxRetain(present, id, extended, remote, len, data)')
+    error('virtualvcu:RxRetainScript', ...
+        'Virtual VCU RX Retain script was not installed.');
 end
 end

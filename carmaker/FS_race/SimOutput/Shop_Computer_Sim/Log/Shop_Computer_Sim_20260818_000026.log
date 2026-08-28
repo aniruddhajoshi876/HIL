@@ -1,0 +1,12 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #6 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-17 23:59:29
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-18 00:02:10
+TIME	0.001
+ERROR		Tire: Can't read file 'Data/Tire/Examples/CONTINENTAL_FS_205_510_R13_80kPa': No such file or directory
+ERROR		CM_Main.c: Initialization failed (CM_Main_Begin()=-3)
+SIM_ABORT	HIL/CAN_Bringup	0s	0m

@@ -1,14 +1,30 @@
 # CarMaker CAN / RBS setup — MFE HIL bench
 
-## Verified physical baseline
+## Bus topology — two independent buses
 
-**Confirmed.** Connect the PCAN-USB FD to IO614 connector **B**, which is CAN
-channel 1; connector A is channel 2.  The lettering does not follow channel
-order.  A 4-second, 1-Mbaud capture on connector B contained 9,561 frames:
-status IDs `0x383`, `0x385`, `0x393`, `0x395`, `0x3A3`, `0x3A5`, `0x3B3`,
-`0x3B5`, `0x400` at about 207 Hz (5 ms), plus `0x032`, `0x034`, `0x2B0`, with
-`0x2B0` at about 105 Hz (10 ms).  Receiver status was No Error and payloads
-decoded sensibly.  This is the healthy passive-reception baseline.
+The IO614's connectors A and B are **not bridged**. They are two separate CAN
+buses and the Speedgoat is the only node on both:
+
+- **Channel 1 / connector B — CarMaker bus.** CarMaker's PCAN-USB FD ⇄
+  Speedgoat only. CarMaker transmits `0x500` (pedal demand); the Speedgoat
+  transmits `0x501` (four inverter torque setpoints) and `0x502` (four ready
+  bits). CarMaker never sees the raw VC control or inverter-status frames — the
+  Speedgoat interprets them and republishes what CarMaker needs.
+- **Channel 2 / connector A — VC bus.** The real MFE26-VC ⇄ Speedgoat only.
+  VC control `0x186/0x196/0x1A6/0x1B6`; Speedgoat status `0x383…0x400` and
+  sensor `0x032/0x034/0x076/0x2B0/0x7C0`.
+
+Each bus needs its own pair of 120 Ω terminators (see `PINOUTS.md` section 5.2).
+
+## Verified physical baseline (single-bus era — superseded)
+
+**Historical.** Before the split, a 4-second, 1-Mbaud capture on connector B
+(then bridged to the VC bus) contained 9,561 frames: status IDs `0x383`,
+`0x385`, `0x393`, `0x395`, `0x3A3`, `0x3A5`, `0x3B3`, `0x3B5`, `0x400` at about
+207 Hz (5 ms), plus `0x032`, `0x034`, `0x2B0`, with `0x2B0` at about 105 Hz
+(10 ms).  Receiver status was No Error and payloads decoded sensibly.  On the
+split bench that traffic is on channel 2 (connector A); channel 1 carries only
+`0x500/0x501/0x502`.
 
 **Confirmed.** The CarMaker host has one usable `PCAN_USBBUS1`: PEAK PCAN-USB
 FD, USB `VID_0C72 PID_0012`, PnP status OK, and
@@ -17,12 +33,16 @@ declares `pcan_usb = 5` and PCANIO classic/FD APIs in `pcanio.h`; PCANIO
 symbols are linked in `libcarmaker.a`.  Local source:
 `C:\IPG\carmaker\win64-12.0.1\include\pcanio.h:31-70`.
 
-**Open question.** Speedgoat persistently reports `busLoad=88`, `txOverrun=1`,
-and `busWarning=1`, even after application restart, while measured traffic is
-only about 2,390 frames/s of approximately 120-us frames (about 29% utilisation).
-This is not fixed.  Inspect termination first: the IO614 supplies none and the
-bus requires exactly two 120-ohm terminators across pins 2 and 7.  Local source:
-`PINOUTS.md:section 5.2`.
+**Open question.** Speedgoat persistently reported `busLoad=88`, `txOverrun=1`,
+and `busWarning=1` on the pre-split bridged bus, even after application restart,
+while measured traffic was only about 2,390 frames/s of approximately 120-us
+frames (about 29% utilisation).  This is not fixed and now applies to the
+**channel-2 VC bus**, which carries essentially all of that traffic.  Inspect
+termination first: the IO614 supplies none and each bus requires exactly two
+120-ohm terminators across pins 2 and 7.  The model now has a separate
+`IO614 CarMaker CAN Diagnostics` block on channel 1, so the two buses'
+bus-load/overrun/bus-off signatures can be read independently in the operator
+GUI.  Local source: `PINOUTS.md:section 5.2`.
 
 ## RBS configuration
 
@@ -33,11 +53,16 @@ from the smallest assigned cyclic PDU time.  Use the already-settled DBC
 CarMaker/HIL User's Guide 12.0.1, section 4.9, pp. 73-75.
 
 **Proposed design not built.** In the Rest Bus Configurator import
-`carmaker/config/MFE26_Inverter_CarMaker.dbc`; set `VC` and `SpeedgoatHIL` as
-real ECUs and `CarMaker` as simulated.  Receive the observed inverter/sensor
-IDs only; only CarMaker transmits `0x500`.  Map `DM.Gas` and `DM.Brake` to the
-percent signals using factor 100 and offset 0.  Map `Active` as the explicitly
-armed command; reserved fields must remain zero.
+`carmaker/config/MFE26_Inverter_CarMaker.dbc` on the **CarMaker bus (channel 1)
+only**; set `SpeedgoatHIL` as a real ECU and `CarMaker` as simulated.  After the
+bus split CarMaker's only frames are `0x500` (transmit — pedal demand) and
+`0x501`/`0x502` (receive — the Speedgoat's interpreted per-inverter torque
+setpoints and ready bits).  The raw VC control and inverter-status frames are on
+channel 2 and are not visible to CarMaker.  Map `DM.Gas` and `DM.Brake` to the
+`0x500` percent signals using factor 100 and offset 0.  Map `Active` as the
+explicitly armed command; reserved fields must remain zero.  Map `0x501`'s four
+`InverterNTorqueSetpointNm` and `0x502`'s four ready bits into the vehicle
+dynamics inputs.
 
 **Confirmed.** Native RBS mapping supports `CRC J1850 [Start Count]` and
 `RollCnt Std [Min Max Incr]`.  Configure `Integrity` as `CRC J1850 1 5` only

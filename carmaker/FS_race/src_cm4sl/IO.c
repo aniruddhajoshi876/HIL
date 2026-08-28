@@ -77,6 +77,16 @@ static const int MFE_PCAN_CHANNEL_CANDIDATES[] = { 0, 1, 0x51 };
 double MFE_CAN_InverterTorqueSetpointNm[4];
 unsigned char MFE_CAN_InverterReady[4];
 
+/* CarMaker vehicle-physics truth sent to the Speedgoat on channel 1 as the
+** 0x503-0x506 frames (see VC_HIL/docs/carmaker_imu_truth_source_plan.md).
+** Written by TorqueVect.mdl through the MFE_CAN.Physics.* dictionary
+** quantities; sampled here in IO_Out(). Vehicle/Fr1 frame, SI units -- the
+** Speedgoat applies the sensor mounting transform, not this side. */
+double MFE_CAN_PhysicsAcceleration[3];
+double MFE_CAN_PhysicsAngularRate[3];
+double MFE_CAN_PhysicsVelocity[3];
+double MFE_CAN_PhysicsEuler[3];
+
 /* Aggregates of the four per-inverter values above, maintained here rather
 ** than as extra Simulink blocks so the vehicle model keeps a single scalar
 ** demand and a single gate, exactly as the superseded XCP path provided.
@@ -86,6 +96,7 @@ unsigned char MFE_CAN_DriveActive;
 
 static int MFE_PCAN_Initialized;
 static unsigned char MFE_PCAN_AliveCounter;
+static unsigned char MFE_PCAN_PhysicsGroupCounter;
 static int MFE_PCAN_Ready;
 
 
@@ -505,6 +516,47 @@ IO_In (unsigned CycleNo)
 
 
 
+/* Round-and-saturate a physical value to a signed 16-bit count. */
+static short
+MFE_PhysicsRoundSaturate (double value, double scale)
+{
+    double counts = value / scale;
+    if (counts >  32767.0) counts =  32767.0;
+    if (counts < -32768.0) counts = -32768.0;
+    return (short)(counts >= 0.0 ? counts + 0.5 : counts - 0.5);
+}
+
+/* Pack and send one physics frame (0x503-0x506): three little-endian int16
+** at bytes 0/2/4, the shared group counter at byte 6, and CRC-8/SAE-J1850
+** over bytes 0-6 at byte 7 -- the same helper the 0x500 frame uses. */
+static void
+MFE_SendPhysicsFrame (unsigned id, const double value[3], double scale,
+		      unsigned char counter)
+{
+    CAN_Msg Msg;
+    int i;
+
+    memset(&Msg, 0, sizeof(Msg));
+    Msg.MsgId    = id;
+    Msg.FrameFmt = 0;
+    Msg.RTR      = 0;
+    Msg.FrameLen = 8;
+    for (i = 0; i < 3; i++) {
+	unsigned short raw =
+	    (unsigned short)MFE_PhysicsRoundSaturate(value[i], scale);
+	Msg.Data[2*i]   = raw & 0xff;
+	Msg.Data[2*i+1] = (raw >> 8) & 0xff;
+    }
+    Msg.Data[6] = counter;
+    Msg.Data[7] = GetCRC_J1850_User(Msg.Data, 7, 0xff, 0xff);
+
+    if (PCANIO_Send(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, &Msg) != 0)
+	LogErrF(EC_General,
+		"PCAN-USB FD channel %d: physics CAN 0x%03x send failed",
+		MFE_PCAN_CHANNEL, id);
+}
+
+
 /*
 ** IO_Out ()
 **
@@ -558,6 +610,20 @@ IO_Out (unsigned CycleNo)
     if (PCANIO_Send(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, &Msg) != 0)
 	LogErrF(EC_General, "PCAN-USB FD channel %d: CAN send failed",
 		MFE_PCAN_CHANNEL);
+
+    /* Vehicle-physics group: four consecutive frames on the same 10-ms cycle
+    ** sharing one modulo-256 counter, sent right after 0x500. Scales match
+    ** carmaker/config/MFE26_Inverter_CarMaker.dbc; the values are decoded by
+    ** the Speedgoat, never by CarMaker. */
+    MFE_SendPhysicsFrame(0x503, MFE_CAN_PhysicsAcceleration, 0.01,
+			 MFE_PCAN_PhysicsGroupCounter);
+    MFE_SendPhysicsFrame(0x504, MFE_CAN_PhysicsAngularRate,  0.002,
+			 MFE_PCAN_PhysicsGroupCounter);
+    MFE_SendPhysicsFrame(0x505, MFE_CAN_PhysicsVelocity,     0.01,
+			 MFE_PCAN_PhysicsGroupCounter);
+    MFE_SendPhysicsFrame(0x506, MFE_CAN_PhysicsEuler,        0.0001,
+			 MFE_PCAN_PhysicsGroupCounter);
+    MFE_PCAN_PhysicsGroupCounter++;
 
 }
 

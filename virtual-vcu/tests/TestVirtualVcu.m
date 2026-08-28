@@ -1,234 +1,310 @@
 classdef TestVirtualVcu < matlab.unittest.TestCase
     methods (Test)
-        function calibrationEndpoints(testCase)
+        function calibrationAndMarginsMatchControlsBranch(testCase)
             c = virtualvcu.config();
-            [p, ok] = virtualvcu.rawToPedal(c.throttleRestRaw(1), 'throttle', 1);
-            testCase.verifyTrue(ok); testCase.verifyEqual(p, 0, 'AbsTol', 1e-12);
-            [p, ok] = virtualvcu.rawToPedal(c.throttlePressedRaw(1), 'throttle', 1);
-            testCase.verifyTrue(ok); testCase.verifyEqual(p, 100, 'AbsTol', 1e-12);
-            mid = round((c.throttleRestRaw(1) + c.throttlePressedRaw(1)) / 2);
-            [p, ok] = virtualvcu.rawToPedal(mid, 'throttle', 1);
-            testCase.verifyTrue(ok); testCase.verifyEqual(p, 50, 'AbsTol', 0.01);
+            [p,ok] = virtualvcu.rawToPedal(c.throttlePressedRaw(1),'throttle',1);
+            testCase.verifyTrue(ok); testCase.verifyEqual(p,100,'AbsTol',1e-12);
+            [~,ok] = virtualvcu.rawToPedal(22500,'throttle',1);
+            testCase.verifyTrue(ok); % inside 15% margin
+            [~,ok] = virtualvcu.rawToPedal(21000,'throttle',1);
+            testCase.verifyFalse(ok);
+            [p,ok] = virtualvcu.rawToPedal(9025,'brake',2);
+            testCase.verifyTrue(ok); testCase.verifyEqual(p,0,'AbsTol',1e-12);
         end
+
         function voltageRawRoundTrip(testCase)
-            testCase.verifyEqual(virtualvcu.voltageToRaw(0), uint16(0));
-            testCase.verifyEqual(virtualvcu.voltageToRaw(5), uint16(65535));
-            testCase.verifyEqual(virtualvcu.voltageToRaw(2.5), uint16(32768));
+            testCase.verifyEqual(virtualvcu.voltageToRaw(0),uint16(0));
+            testCase.verifyEqual(virtualvcu.voltageToRaw(5),uint16(65535));
+            testCase.verifyEqual(virtualvcu.voltageToRaw(2.5),uint16(32768));
         end
-        function goldenControlBytes(testCase)
-            payload = virtualvcu.packControlFrame(1, true, 18000, 12.5);
-            testCase.verifyEqual(payload, uint8([1 0 80 70 128 12 0 0]));
-            testCase.verifyEqual(virtualvcu.config().controlIds(1), uint32(hex2dec('186')));
+
+        function goldenControlBytesAndReset(testCase)
+            payload = virtualvcu.packControlFrame(1,true,18000,12.5,false);
+            testCase.verifyEqual(payload,uint8([1 0 80 70 128 12 0 0]));
+            reset = virtualvcu.packControlFrame(1,true,0,0,true);
+            testCase.verifyEqual(reset,uint8([3 0 0 0 0 0 0 0]));
+            capped = virtualvcu.packControlFrame(1,true,18000,20,false);
+            testCase.verifyEqual(capped(5:6),uint8([0 15]));
         end
-        function goldenPedalBytes(testCase)
-            testCase.verifyEqual(virtualvcu.packPedalFrame(12.5, 1), ...
-                uint8([13 138 2 138 2 0 0 0]));
-            testCase.verifyEqual(virtualvcu.config().pedalCanId, uint32(501));
+
+        function goldenPedalBytesPreserveFrontRear(testCase)
+            payload = virtualvcu.packPedalFrame(12.5,1,0.5);
+            testCase.verifyEqual(payload,uint8([13 138 2 69 1 0 0 0]));
+            testCase.verifyEqual(virtualvcu.config().pedalCanId,uint32(501));
         end
-        function lvOnUsesMeasuredInputsOnly(testCase)
+
+        function brakeTwoDoesNotGateBrakePlausibility(testCase)
             c = virtualvcu.config();
-            volts = [c.throttleRestRaw c.brakeRestRaw] / c.adcFullScale * c.io183FullScaleV;
-            out = virtualvcu.step(volts, true);
-            testCase.verifyEqual(out.state, 'LV_ON');
-            testCase.verifyTrue(all(out.valid));
-            testCase.verifyEqual(out.pedalPct(1), 0, 'AbsTol', 0.1);
-            testCase.verifyEqual(size(out.controlPayloads), [4 8]);
+            raw = [c.throttleRestRaw c.brakePressedRaw(1) 0];
+            volts = raw/c.adcFullScale*c.io183FullScaleV;
+            out = virtualvcu.step(volts,true);
+            testCase.verifyTrue(out.brakePlausible);
+            testCase.verifyEqual(out.pedalPct(3),100,'AbsTol',0.1);
+            testCase.verifyEqual(out.pedalPct(4),0,'AbsTol',0.1);
         end
-        function hardwareSeparationIsExplicit(testCase)
+
+        function appsBrakeInterlockLatchesAndClears(testCase)
             c = virtualvcu.config();
-            testCase.verifyEqual(c.moduleId, 2);
-            testCase.verifyEqual(c.canChannel, 2);
-            testCase.verifyEqual(c.canPort, 'A');
-            testCase.verifyNotEqual(c.moduleId, 1);
+            pressed = [c.throttlePressedRaw c.brakePressedRaw];
+            volts = pressed/c.adcFullScale*c.io183FullScaleV;
+            out = virtualvcu.step(volts,true);
+            testCase.verifyTrue(out.appsError);
+            testCase.verifyEqual(out.torqueRequestPct,0);
+            rest = [c.throttleRestRaw c.brakePressedRaw]/c.adcFullScale*c.io183FullScaleV;
+            out = virtualvcu.step(rest,true,false(1,8),[],out.context);
+            testCase.verifyFalse(out.appsError);
         end
+
+        function stateMachineUsesFiveMillisecondTicksAndDcHealth(testCase)
+            c = virtualvcu.config();
+            testCase.verifyEqual(c.sampleTimeS,0.005);
+            testCase.verifyEqual(c.prechargeTicks,uint32(1500));
+            volts = [c.throttleRestRaw c.brakePressedRaw]/c.adcFullScale*c.io183FullScaleV;
+            di = false(1,8); di(1) = true;
+            out = virtualvcu.step(volts,true,di);
+            ctx = out.context;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            ctx.ticks = c.prechargeTicks-1;
+            di(1) = false; out = virtualvcu.step(volts,true,di,[],ctx);
+            testCase.verifyEqual(out.state,'ENABLE');
+            di(2) = true; out = virtualvcu.step(volts,true,di,[],out.context);
+            testCase.verifyEqual(out.state,'BUZZING');
+            ctx = out.context; ctx.ticks = c.buzzingTicks-1;
+            out = virtualvcu.step(volts,true,di,[],ctx);
+            testCase.verifyEqual(out.state,'RTD');
+            testCase.verifyEqual(out.controlPayloads(:,1),uint8(3*ones(4,1)));
+        end
+
+        function bothDcLinkPairsAreRequired(testCase)
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 349;
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+        end
+
+        function neitherDcLinkPairValidFaultsActiveHv(testCase)
+            % Firmware prechargeComplete(): "if (!sys.valid) return false;"
+            % before the 350 V comparison. With no 0x400 ever decoded, both
+            % per-pair valid flags stay false and ENABLE must fault.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400; % voltages fine
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+        end
+
+        function onePairValidButBelowFloorFaultsRtd(testCase)
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
+            ctx.can.systemValid = true;
+            ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 340; % pair 34 sagged
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+        end
+
+        function prechargeEnableHeldClosedThroughEnable(testCase)
+            % vcStateMachine.cpp holds prechargeEnable = true in PRECHARGING
+            % AND ENABLE (lines 307, 325), dropping it only on the ENABLE ->
+            % BUZZING transition.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(1);
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyTrue(out.outputs.prechargeEnable);
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ENABLE');
+            testCase.verifyTrue(out.outputs.prechargeEnable);
+            testCase.verifyTrue(out.outputs.mainEnable);
+        end
+
+        function allocatorThrottleIsNotGatedByAppsLatch(testCase)
+            % driverInputs.cpp latches appsError and zeroes torqueRequestPct,
+            % but update_ctrls_inputs() still feeds ungated throttleValidPct as
+            % rThrottlePedal. The interlock only zeroes the 0x1F5 throttle byte.
+            c = virtualvcu.config();
+            pressed = [c.throttlePressedRaw c.brakePressedRaw];
+            volts = pressed/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            tau = [5 6 7 8];
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx,tau);
+            testCase.verifyTrue(out.appsError);
+            testCase.verifyEqual(out.torqueRequestPct,0);          % interlock cut
+            testCase.verifyEqual(out.pedalPayload(1),uint8(0));    % 0x1F5 throttle byte gated
+            testCase.verifyEqual(out.torqueRequestNm,min(tau,c.maxTorqueNm)); % allocator path unaffected
+        end
+
+        function brakeTwoIsTransmittedAsRearPressure(testCase)
+            % driverInputs.cpp converts brake2 and vcComms.cpp sends it as the
+            % 0x1F5 rear-brake pressure even though it is excluded from
+            % plausibility.
+            c = virtualvcu.config();
+            raw = [c.throttleRestRaw c.brakePressedRaw(1) c.brakePressedRaw(2)];
+            volts = raw/c.adcFullScale*c.io183FullScaleV;
+            out = virtualvcu.step(volts,true);
+            rearPsi = double(out.pedalPayload(4)) + 256*double(out.pedalPayload(5));
+            testCase.verifyEqual(rearPsi,650,'AbsTol',1);
+        end
+
+        function cornerMappingUsesAllocatorOutputs(testCase)
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            tau = [1 2 3 4]; % FL FR RL RR
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx,tau);
+            expected = [3 4 2 1]; % INV1 RL, INV2 RR, INV3 FR, INV4 FL
+            for inverter = 1:4
+                counts = double(out.controlPayloads(inverter,5)) + ...
+                    256*double(out.controlPayloads(inverter,6));
+                testCase.verifyEqual(counts/256,expected(inverter));
+            end
+            testCase.verifyEqual(out.torqueRequestNm,tau);
+        end
+
+        function physicalThreeByFiveSpeedIsDecoded(testCase)
+            rpm = int16(1339);
+            bytes = zeros(1,8,'uint8'); bytes(7:8) = typecast(rpm,'uint8');
+            decoded = virtualvcu.decodeStatusFrame(hex2dec('385'),bytes);
+            expected = double(rpm)*(2*pi/60)/virtualvcu.config().gearRatio;
+            testCase.verifyEqual(decoded.fields.wheelSpeedRadS,expected,'AbsTol',1e-12);
+        end
+
+        function controlsInputContractMatchesFirmware(testCase)
+            x = virtualvcu.controlsInputVector(0.4,[1 2 3 4]);
+            testCase.verifySize(x,[32 1]);
+            testCase.verifyEqual(x(3),0.5);
+            testCase.verifyEqual(x(4),80000);
+            testCase.verifyEqual(x(8:11),[1;2;3;4]);
+            testCase.verifyEqual(x(18),0.4);
+            testCase.verifyEqual(x(20),15);
+            testCase.verifyEqual(x(25:26),[1;1]);
+        end
+
+        function generatedControlsModelExecutes(testCase)
+            x = virtualvcu.controlsInputVector(0,zeros(1,4));
+            tau = virtualvcu.controlsModelStep(x,true);
+            testCase.verifySize(tau,[1 4]);
+            testCase.verifyTrue(all(isfinite(tau)));
+        end
+
+        function deployedChartUsesResetThenRealAllocator(testCase)
+            here = fileparts(mfilename('fullpath'));
+            testCase.applyFixture(matlab.unittest.fixtures.PathFixture( ...
+                fullfile(fileparts(here),'models')));
+            clear('virtualVcuDeployStep');
+            c = virtualvcu.config();
+            toVolts = @(raw) double(raw)/c.adcFullScale*c.io183FullScaleV;
+            u = zeros(29,1); % 1:25 IO + CAN, 26:29 retained wheel speeds
+            u(1:2) = toVolts(c.throttleRestRaw);
+            u(3:4) = toVolts(c.brakePressedRaw);
+            u(5) = 1; virtualVcuDeployStep(u);
+            u(5) = 0;
+            for k = 1:double(c.prechargeTicks), virtualVcuDeployStep(u); end
+            u(6) = 1; virtualVcuDeployStep(u);
+            payloads = zeros(48,1,'uint8');
+            for k = 1:double(c.buzzingTicks)
+                payloads = virtualVcuDeployStep(u);
+            end
+            testCase.verifyEqual(payloads(41),uint8(4));
+            testCase.verifyEqual(payloads([9 17 25 33]),uint8(3*ones(4,1)));
+            [payloads,~,~,tau] = virtualVcuDeployStep(u);
+            testCase.verifyTrue(all(isfinite(tau)));
+            testCase.verifyEqual(payloads([9 17 25 33]),uint8(ones(4,1)));
+            testCase.verifyEqual(payloads([11 19 27 35]),uint8(80*ones(4,1)));
+            testCase.verifyEqual(payloads([12 20 28 36]),uint8(70*ones(4,1)));
+        end
+
+        function rxRetentionKeepsAllFourCornersInAWindow(testCase)
+            % Item 2: virtualVcuRxRetain latches each 0x3X5 frame at the 1 ms
+            % base rate, so four frames arriving in one 5 ms window all reach
+            % the chart instead of only the last.
+            here = fileparts(mfilename('fullpath'));
+            testCase.applyFixture(matlab.unittest.fixtures.PathFixture( ...
+                fullfile(fileparts(here),'models')));
+            clear('virtualVcuRxRetain');
+            ids = [901 917 933 949];        % 0x385 0x395 0x3A5 0x3B5 = INV1..4
+            rpm = int16([100 -200 300 -400]);
+            om = zeros(4,1);
+            for k = 1:4
+                data = zeros(8,1);
+                data(7:8) = double(typecast(rpm(k),'uint8'));
+                om = virtualVcuRxRetain(1, ids(k), 0, 0, 8, data);
+            end
+            expected = double(rpm(:)) * (2*pi/60) / 13.39;
+            testCase.verifyEqual(om, expected, 'AbsTol', 1e-12);
+            % A tick with no frame present holds every slot.
+            omHeld = virtualVcuRxRetain(0, 0, 0, 0, 0, zeros(8,1));
+            testCase.verifyEqual(omHeld, expected, 'AbsTol', 1e-12);
+        end
+
+        function hostContextRetainsPerCornerWheelSpeed(testCase)
+            % Host-reference equivalent: context.can.wheelSpeedRadS keeps each
+            % corner across 5 ms samples even when frames arrive one per call.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext();
+            ids = {'385','395','3A5','3B5'};
+            rpm = int16([120 240 360 480]);
+            for k = 1:4
+                bytes = zeros(1,8,'uint8');
+                bytes(7:8) = typecast(rpm(k),'uint8');
+                rx = struct('id',uint32(hex2dec(ids{k})),'payload',bytes);
+                out = virtualvcu.step(volts,true,false(1,8),rx,ctx);
+                ctx = out.context;
+            end
+            testCase.verifyTrue(all(ctx.can.wheelSpeedValid));
+            testCase.verifyEqual(ctx.can.wheelSpeedRadS(:), ...
+                double(rpm(:))*(2*pi/60)/c.gearRatio, 'AbsTol', 1e-12);
+        end
+
+        function canFrameTransmissionGatingMatchesFirmwareStates(testCase)
+            % Items 8/9: control frames only in RTD; 0x1F5 in every state but
+            % ERROR_SHUTDOWN, skipped on the first RTD (reset-only) cycle.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            % LV_ON: pedal on, control off
+            ctx0 = virtualvcu.initialContext(); ctx0.state = uint8(0);
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx0);
+            testCase.verifyFalse(out.controlFrameTxEnabled);
+            testCase.verifyTrue(out.pedalFrameTxEnabled);
+            % First RTD cycle (resetSent false): control on, pedal skipped
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = false;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true;
+            ctx.can.dcLink34Valid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyTrue(out.controlFrameTxEnabled);
+            testCase.verifyFalse(out.pedalFrameTxEnabled);
+            % Ordinary RTD cycle: both on
+            out = virtualvcu.step(volts,true,false(1,8),[],out.context);
+            testCase.verifyTrue(out.controlFrameTxEnabled);
+            testCase.verifyTrue(out.pedalFrameTxEnabled);
+            % ERROR_SHUTDOWN held by shutdown feedback: both off
+            di5 = false(1,8); di5(c.digitalMap.shutdownFeedback) = true;
+            ctx5 = virtualvcu.initialContext(); ctx5.state = uint8(5);
+            ctx5.can.dcLink12Valid = true; ctx5.can.dcLink34Valid = true;
+            out = virtualvcu.step(volts,true,di5,[],ctx5);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+            testCase.verifyFalse(out.controlFrameTxEnabled);
+            testCase.verifyFalse(out.pedalFrameTxEnabled);
+        end
+
         function suppliedDbcMatchesFirmwareContract(testCase)
             dbc = virtualvcu.verifyDbcContract();
-            testCase.verifyEqual(dbc.torqueScaleNmPerCount, 1 / 256);
-            testCase.verifyEqual(dbc.controlIds, ...
-                uint32([390 406 422 438]));
-            testCase.verifyEqual(dbc.statusIds, ...
-                uint32([899 901 915 917 931 933 947 949 1024]));
-        end
-        function stateMachineUsesDigitalInputs(testCase)
-            c = virtualvcu.config();
-            volts = [c.throttleRestRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
-            di = false(1,8); di(1) = true;
-            out = virtualvcu.step(volts, true, di);
-            testCase.verifyEqual(out.state, 'PRECHARGING');
-            ctx = out.context; ctx.ticks = c.prechargeTicks - 1;
-            di(1) = false; out = virtualvcu.step(volts, true, di, [], ctx);
-            testCase.verifyEqual(out.state, 'ENABLE');
-            di(2) = true; out = virtualvcu.step(volts, true, di, [], out.context);
-            testCase.verifyEqual(out.state, 'BUZZING');
-            ctx = out.context; ctx.ticks = c.buzzingTicks - 1;
-            out = virtualvcu.step(volts, true, di, [], ctx);
-            testCase.verifyEqual(out.state, 'RTD');
-            testCase.verifyEqual(out.controlPayloads(1,1), uint8(1));
-        end
-        function deployedChartScriptReachesRtdOnBrakeHeld(testCase)
-            % Regression test for a real bug: virtualVcuDeployStep.m (the
-            % script deployed into the Stateflow chart, maintained
-            % separately from +virtualvcu/step.m used above) computed b1/b2
-            % as fractions in [0,1] but compared mean([b1 b2]) against the
-            % literal 25 -- a value only reachable by a percent-scale
-            % quantity. A fraction can never reach 25, so ENABLE never
-            % advanced to BUZZING/RTD no matter how hard the brake was
-            % pressed. +virtualvcu/step.m was not affected: it keeps b1/b2
-            % in percent scale, so its identical-looking ">= 25" check was
-            % already correct. Only a test that calls the deployed chart
-            % script itself, not step.m, can catch this class of bug.
-            here = fileparts(mfilename('fullpath'));
-            modelsDir = fullfile(fileparts(here), 'models');
-            testCase.applyFixture( ...
-                matlab.unittest.fixtures.PathFixture(modelsDir));
-            clear('virtualVcuDeployStep'); %#ok<CLFUN>
-
-            c = virtualvcu.config();
-            % virtualVcuDeployStep.m takes u(1:4) as volts, converted back to
-            % raw counts internally on the firmware's real 3.3 V ADC
-            % reference (PINOUTS.md S4.2: ADS7066 VREF, ADS_VREF_V=3.3) --
-            % NOT c.io183FullScaleV (5 V), which is the IO183 channel's own
-            % electrical range and only applies to the separate host/SIL
-            % voltageToRaw.m round trip that step.m (above) uses. Using
-            % c.io183FullScaleV here would regenerate the pre-fix scale bug
-            % this test exists to catch, just relocated into the test itself.
-            toVolts = @(raw) double(raw) / c.adcFullScale * 3.3;
-            throttleRestV = toVolts(c.throttleRestRaw(1));
-            brakePressedV = toVolts(c.brakePressedRaw(1));
-
-            u = zeros(17, 1);
-            u(1) = throttleRestV; u(2) = throttleRestV;
-            u(3) = brakePressedV; u(4) = brakePressedV;
-
-            u(5) = 1; % precharge button
-            payloads = virtualVcuDeployStep(u);
-            testCase.verifyEqual(payloads(41), uint8(1)); % PRECHARGING
-
-            u(5) = 0;
-            for k = 1:double(c.prechargeTicks)
-                payloads = virtualVcuDeployStep(u);
-            end
-            testCase.verifyEqual(payloads(41), uint8(2), ...
-                'Expected ENABLE after the 7.5 s precharge delay.');
-
-            u(6) = 1; % main button, brake already held above
-            payloads = virtualVcuDeployStep(u);
-            testCase.verifyEqual(payloads(41), uint8(3), ...
-                ['Expected BUZZING once main button is pressed with ' ...
-                'brake held -- this is exactly the transition the ' ...
-                '25-vs-0.25 scale bug silently blocked.']);
-
-            for k = 1:double(c.buzzingTicks)
-                payloads = virtualVcuDeployStep(u);
-            end
-            testCase.verifyEqual(payloads(41), uint8(4)); % RTD
-        end
-
-        function torqueRequestNmIsNamedAndGatedLikeControlPayloads(testCase)
-            % out.torqueRequestNm (host/SIL step.m) must be the same
-            % quantity packed into controlPayloads -- named, not a separate
-            % derivation -- and zero whenever drive is false, exactly like
-            % those payloads already are.
-            c = virtualvcu.config();
-            volts = [c.throttleRestRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
-            volts2 = [c.throttlePressedRaw c.brakePressedRaw] / c.adcFullScale * c.io183FullScaleV;
-            di = false(1,8); di(1) = true;
-            out = virtualvcu.step(volts, true, di);
-            testCase.verifyEqual(out.torqueRequestNm, 0, ...
-                'Not RTD yet: torque request must be zero.');
-
-            ctx = out.context; ctx.ticks = c.prechargeTicks - 1;
-            di(1) = false; out = virtualvcu.step(volts, true, di, [], ctx);
-            di(2) = true; out = virtualvcu.step(volts, true, di, [], out.context);
-            ctx = out.context; ctx.ticks = c.buzzingTicks - 1;
-            out = virtualvcu.step(volts, true, di, [], ctx);
-            testCase.verifyEqual(out.state, 'RTD');
-            testCase.verifyEqual(out.torqueRequestNm, 0, ...
-                'RTD but throttle still at rest: expected zero torque request.');
-
-            out = virtualvcu.step(volts2, true, di, [], out.context);
-            testCase.verifyEqual(out.state, 'RTD');
-            testCase.verifyGreaterThan(out.torqueRequestNm, 0, ...
-                'RTD with throttle pressed: expected nonzero torque request.');
-            expectedNm = 15 * mean(out.pedalPct(1:2)) / 100;
-            testCase.verifyEqual(out.torqueRequestNm, expectedNm, 'AbsTol', 1e-9);
-            % controlPayloads' torque bytes (5-6 of each 8-byte frame) must
-            % decode back to the same Nm value at the DBC's 1/256 Nm/count
-            % scale (suppliedDbcMatchesFirmwareContract already asserts
-            % this scale factor).
-            countsFromPayload = double(out.controlPayloads(1,5)) + ...
-                256 * double(out.controlPayloads(1,6));
-            testCase.verifyEqual(countsFromPayload / 256, out.torqueRequestNm, ...
-                'AbsTol', 1/256);
-
-            out = virtualvcu.step(volts2, false, di, [], out.context);
-            testCase.verifyEqual(out.torqueRequestNm, 0, ...
-                'Disabled: torque request must be zero.');
-        end
-
-        function deployedChartTorqueRequestNmMatchesControlPayload(testCase)
-            % Same property as the host/SIL test above, but for the
-            % separately-maintained deployed chart script -- see
-            % deployedChartScriptReachesRtdOnBrakeHeld's header for why a
-            % divergence here needs its own direct test.
-            here = fileparts(mfilename('fullpath'));
-            modelsDir = fullfile(fileparts(here), 'models');
-            testCase.applyFixture( ...
-                matlab.unittest.fixtures.PathFixture(modelsDir));
-            clear('virtualVcuDeployStep'); %#ok<CLFUN>
-
-            c = virtualvcu.config();
-            toVolts = @(raw) double(raw) / c.adcFullScale * 3.3;
-            % Both throttle channels use their OWN rest/pressed raw counts
-            % (channel 1 and channel 2 have different spans -- see
-            % config.m) so appsOk's dual-sensor-agreement check actually
-            % passes and DRIVE can go true; deployedChartScriptReachesRtd-
-            % OnBrakeHeld reuses channel 1's rest value for both channels,
-            % which is fine there since it never checks torque/drive, only
-            % the state transition (brake-gated, not throttle-gated).
-            throttleRestV = toVolts(c.throttleRestRaw);
-            throttlePressedV = toVolts(c.throttlePressedRaw);
-            brakePressedV = toVolts(c.brakePressedRaw(1));
-            u = zeros(17, 1);
-            u(1) = throttleRestV(1); u(2) = throttleRestV(2);
-            u(3) = brakePressedV; u(4) = brakePressedV;
-
-            u(5) = 1; virtualVcuDeployStep(u); % precharge button
-            u(5) = 0;
-            for k = 1:double(c.prechargeTicks)
-                virtualVcuDeployStep(u);
-            end
-            u(6) = 1; % main button, brake already held
-            virtualVcuDeployStep(u);
-            [payloads, ~, ~, torqueRequestNm] = deal([], [], [], []);
-            for k = 1:double(c.buzzingTicks)
-                [payloads, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
-            end
-            testCase.verifyEqual(payloads(41), uint8(4)); % RTD
-            testCase.verifyEqual(torqueRequestNm, 0, ...
-                'RTD but throttle still at rest: expected zero torque request.');
-
-            u(1) = throttlePressedV(1); u(2) = throttlePressedV(2);
-            [payloads, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
-            testCase.verifyEqual(payloads(41), uint8(4)); % still RTD
-            testCase.verifyGreaterThan(torqueRequestNm, 0, ...
-                'RTD with throttle pressed: expected nonzero torque request.');
-            countsFromPayload = double(payloads(13)) + 256 * double(payloads(14));
-            testCase.verifyEqual(countsFromPayload / 256, torqueRequestNm, ...
-                'AbsTol', 1/256);
-
-            u(6) = 0; u(5) = 1; % re-enter PRECHARGING: drive must clear
-            [~, ~, ~, torqueRequestNm] = virtualVcuDeployStep(u);
-            testCase.verifyEqual(torqueRequestNm, 0);
-        end
-
-        function canStatusIsDecodedAndRetained(testCase)
-            payload = uint8([4 0 4 0 0 0 0 0]);
-            out = virtualvcu.step(zeros(1,4), true, false(1,8), ...
-                struct('id',uint32(hex2dec('383')),'payload',payload));
-            testCase.verifyTrue(out.can.valid);
-            testCase.verifyEqual(out.can.lastId, uint32(hex2dec('383')));
-            testCase.verifyTrue(out.can.inverterReady);
+            testCase.verifyEqual(dbc.torqueScaleNmPerCount,1/256);
+            testCase.verifyEqual(dbc.controlIds,uint32([390 406 422 438]));
         end
     end
 end

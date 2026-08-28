@@ -2,12 +2,14 @@
 FileIdent = CarMaker-TestRun 12
 FileCreator = CarMaker 12.0.1
 Description:
-	Proposed design not built: CAN/RBS HIL bring-up for the real VC.
+	Implemented direct-PCAN 0x500 bring-up for the real-VCU HIL.
 	CarMaker is the SOURCE of pedals: this maneuver ramps then holds Gas, so
 	the last transmitted CarMakerPedalDemand value is non-zero. A zero-hold
 	proves no command path. Vehicle is a 4-motor BEV so TorqueVect.mdl's
 	PT.Motor{,1,2,3}.{Trq,rotv} and PT.PwrSupply.HV1.Pwr quantities exist.
-	Do not use until GUI-generated RBS configuration and physical CAN proof pass.
+	Commit 61a9dd6 records direct PCAN 0x500 reaching Speedgoat with ownership
+	in 80/80 samples during a live 14.49 to 20 percent ramp. That test did not
+	include the real VCU or prove connector voltages, harness, or torque output.
 Vehicle = Examples_FS/MFE24_V3
 Road.FName = straigth7500.rd5
 Vehicle.Routing.Type = Route
@@ -28,14 +30,14 @@ DrivMan.Man.0.MaxExec = 1
 DrivMan.Man.0.Transition.Interrupt = end
 DrivMan.Man.0.Transition.EndCond = end
 DrivMan.Man.0.LongStep.0.Info = Ramp Gas to 20 percent over 10 s, then hold
-DrivMan.Man.0.LongStep.0.TimeLimit = 300
+DrivMan.Man.0.LongStep.0.TimeLimit = 120
 DrivMan.Man.0.LongStep.0.Dyn = Manual
 DrivMan.Man.0.LongStep.0.Gas = 0.2 0.0 10.0 abs
 DrivMan.Man.0.LongStep.0.Brake = 0.0 0.0 0.0 abs
 DrivMan.Man.0.LongStep.0.Clutch = 0.0 0.0 0.0 abs
 DrivMan.Man.0.LongStep.0.BrakePark = 0.0 0.0 0.0 abs
 DrivMan.Man.0.LatStep.0.Info = Hold straight
-DrivMan.Man.0.LatStep.0.TimeLimit = 300
+DrivMan.Man.0.LatStep.0.TimeLimit = 120
 DrivMan.Man.0.LatStep.0.Dyn = Step 0 0.0 1.0 abs 1
 DrivMan.Man.0.LatStep.0.SteerMode = Angle
 Traffic.SpeedUnit = ms

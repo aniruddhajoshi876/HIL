@@ -1,0 +1,22 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #3 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:09
+ 
+		I/O Configuration: default
+FIRST_INIT	(internal default used)	2026-08-13 00:13:59
+TIME	0.000
+SIM_END			0s	0m
+IDLE	00:14:00
+SIM_START	unknown	2026-08-13 00:14:03
+TIME	0.003
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	unknown	0s	0m
+TIME	5.168
+SIM_START	unknown	2026-08-13 00:14:55
+TIME	0.001
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	unknown	0s	0m
+TIME	10.908
+SIM_START	unknown	2026-08-13 00:16:44
+TIME	0.001
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	unknown	0s	0m

@@ -429,7 +429,7 @@ in order.
 ## Part 5 — recommended diff to the HIL simulator
 
 The concurrent `virtual-vcu` port had **not** landed at the time of writing
-(`git log --oneline virtual-vcu` HEAD = `2f4567f`, all XCP/A2L work, no
+(`git log --oneline virtual-vcu` HEAD = `2f4567f`, all measurement-boundary work, no
 `inverter_hil/imu/**`). Per instructions, `imuProtocol.m` and `protocol.md` were
 **not** edited. The exact intended change is below; apply it after the port lands.
 

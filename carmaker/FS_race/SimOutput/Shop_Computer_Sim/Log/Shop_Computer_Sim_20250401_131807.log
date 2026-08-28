@@ -1,0 +1,155 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:21:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	2.683
+SIM_END		unknown	2.68s	0.0368836m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:25:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.277
+SIM_END		unknown	7.274s	0.0986804m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:26:47
+TIME	0.000
+SIMULATE	unknown
+
+TIME	36.668
+SIM_END		unknown	36.665s	0.258333m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:27:45
+TIME	0.000
+SIMULATE	unknown
+
+TIME	21.973
+SIM_END		unknown	21.97s	376.839m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:28:25
+TIME	0.000
+SIMULATE	unknown
+
+TIME	21.248
+SIM_END		unknown	21.245s	379.823m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:29:02
+TIME	0.000
+SIMULATE	unknown
+
+TIME	20.478
+SIM_END		unknown	20.475s	397.443m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:29:54
+TIME	0.000
+SIMULATE	unknown
+
+TIME	11.588
+SIM_END		unknown	11.585s	225.534m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:30:22
+TIME	0.000
+SIMULATE	unknown
+
+TIME	15.273
+SIM_END		unknown	15.27s	294.098m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 13:41:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	7.698
+SIM_END		unknown	7.695s	51.1836m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:04:23
+TIME	0.000
+SIMULATE	unknown
+
+TIME	3.020
+ERROR		Embedded FARoadSensor Geo:  xyz (22.58 42.43 -0.00) not found on Road
+SIM_ABORT	unknown	3.023s	15.4312m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:04:45
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	1.12s	4.26371m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:07:10
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	0.61s	1.20653m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:10:10
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	0.085s	0.0123919m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:10:31
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	0.63s	1.28696m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:11:50
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	0.63s	1.28696m
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	unknown	2025-04-01 14:12:45
+TIME	0.000
+SIMULATE	unknown
+
+SIM_END		unknown	0.57s	1.20664m

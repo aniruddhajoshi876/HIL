@@ -144,7 +144,7 @@ end
 % assigns ao1/ao2 from throttle and ao3/ao4 from brake, so the input order below
 % is what makes "throttle -> AO01/AO02, brake -> AO03/AO04" true. Inputs 1/2
 % arrive through the final CAN-priority Throttle/Brake Source Switch blocks,
-% not directly from either XCP or GUI values.
+% not directly from the GUI values.
 % The two final selector control ports must share CarMakerPedalDemand's atomic
 % ownership flag; independent sources could split throttle/brake authority.
 for item = {'Throttle', 'Brake'}
@@ -193,7 +193,7 @@ end
 % INV_CTRL_EN (DIO13) then INV_CTRL_DIS (DIO12), i.e. transposed relative to
 % the DI block's numeric [9 10 11 12 13]. Verify that warning is still true.
 addpath(projectDir);
-snapshot = inverterhilgui.blankTelemetry();
+snapshot = inverterhilgui.live_telemetry.blankTelemetry();
 guiNames = {snapshot.pins.name};
 guiTestPoints = {snapshot.pins.testPoint};
 

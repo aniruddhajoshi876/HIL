@@ -1,0 +1,10 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #5 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:25
+ 
+		I/O Configuration: default
+SIM_START	HIL/XCP_Bringup	2026-08-14 15:48:22
+TIME	0.000
+SIMULATE	HIL/XCP_Bringup
+
+TIME	29.002
+SIM_END		HIL/XCP_Bringup	29.002s	2.10588m

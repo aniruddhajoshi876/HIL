@@ -1,100 +1,104 @@
 function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeployStep(u)
 %#codegen
-% Elements 1:40 are the five CAN payloads. Elements 41:44 expose the
-% virtual VCU state and its three control outputs to the model observer.
-% TORQUEREQUESTNM is a 4th, later addition: the same physical Nm value
-% packed into byte pairs 13-14/21-22/29-30/37-38 below, now also exposed
-% as its own typed double so it can be marked for XCP measurement without
-% requiring a downstream consumer to decode raw CAN bytes. See
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-5.
+% Deployed 5 ms virtual-VCU step, synchronized to MFE26-VC controls branch
+% bcd6352e1674ef4b999391f345f675f386718d32.
 %
-% Pedal thresholds, plausibility rules, the APPS+brake interlock, and the
-% ERROR_SHUTDOWN fault causes below are read directly from the real VCU
-% firmware (git@github.com:McGillFormulaElectric/MFE26-VC.git, main branch
-% at commit 47a1f50): Core/Src/DriverInputs.cpp for pedals/plausibility/
-% interlock, Core/Src/vcStateMachine.cpp for the state machine and
-% shouldFault()/prechargeComplete(). Verified against real firmware
-% source, not re-derived, since this chart's whole purpose is standing in
-% for that firmware on a bench with no real VCU.
-payloads = zeros(44,1,'uint8');
-ai = u(1:4);
-% Raw ADC counts on the firmware's own 3.3 V ADS7066 reference (PINOUTS.md
-% S4.2: ADS_VREF_V = 3.3).
-rawRead = min(max(double(ai(:)),0),3.3) / 3.3 * 65535;
-persistent state ticks rawFilt dcLinkAccum appsErrorLatch
-if isempty(state)
-    state = uint8(0); ticks = uint32(0); rawFilt = rawRead;
-    dcLinkAccum = 0; appsErrorLatch = false;
+% U is fixed-size (29): AI01..04 (1:4), DI01..08 (5:12), physical CAN
+% Present, ID, Extended, Remote, Length (13:17), physical CAN payload
+% (18:25), and the four per-inverter wheel speeds rad/s (26:29) retained at
+% the 1 ms base rate by virtualVcuRxRetain ahead of the 5 ms rate
+% transition, order [INV1 INV2 INV3 INV4] = [RL RR FR FL].
+% No CAN status is synthesized. Only physically received Ephorus 3x5 frames
+% update the retained wheel speeds. IMU, steering, and load-cell inputs stay
+% zero because this Port-A bench does not physically supply those messages.
+%
+% The generated ControlsMFE25 model is called exactly once per RTD comms
+% cycle through vvcu_controls_wrapper.c. Its output order is
+% TORQUEREQUESTNM=[tau1 tau2 tau3 tau4]=[FL FR RL RR]. Persistent state is
+% never output-aliased; all outputs are fixed-size local copies.
+coder.extrinsic('vvcu_controls_mex');
+% Simulation paths (interpreted MATLAB, the accelerator MEX, and the Stateflow
+% chart S-function) run the allocator through the already-built host MEX
+% vvcu_controls_mex. Only the real code-generation target (RTW / Speedgoat)
+% links the vendored generated C directly through coder.ceval on
+% vvcu_controls_wrapper.c. This keeps the chart S-function -- which slbuild
+% builds first as a prerequisite -- free of any custom code, so it is not
+% subject to Stateflow's under-provisioned custom-code pre-parse (which cannot
+% resolve <stdlib.h>/<math.h> pulled in by the generated ControlsMFE25.h).
+generateCode = ~coder.target('MATLAB') && ~coder.target('Sfun') && ~coder.target('MEX');
+if generateCode
+    coder.cinclude('vvcu_controls_wrapper.h');
+    % For the RTW / Speedgoat build the vendored allocator .c files are
+    % attached at model level by configure_controls_model.m (CustomSource with
+    % full paths -- ControlsMFE25.c, ControlsMFE25_data.c, coder_posix_time.c,
+    % vvcu_controls_wrapper.c). rt_nonfinite/rtGetInf/rtGetNaN are deliberately
+    % NOT included: Simulink Coder generates its own for every model and the
+    % vendored copies would collide ("multiple definition of rtIsNaN") at link.
+    % The host MEX (build_controls_model_mex) still compiles all seven -- a
+    % standalone MEX has no MathWorks rt_* to collide with.
 end
-% First-order low-pass on the raw ADC counts, matching how real VCU
-% firmware filters pedal sensors before computing torque. This bench's
-% physical throttle/brake self-loop jumpers pick up genuine electrical
-% noise; an unfiltered pass-through reflected every count of that noise
-% straight into the torque number every tick. alpha = 1 - exp(-dt/tau)
-% with dt = 1 ms (this chart's own tick rate) and tau = 20 ms.
-filterAlpha = 0.05;
-rawFilt = rawFilt + filterAlpha * (rawRead - rawFilt);
-raw = rawFilt;
 
-% Percent conversions: DriverInputs.cpp's convertThrottle1ToPercent
-% (throttle1Min=23100, throttle1Max=30100 -- span 7000, NOT the 9200 this
-% chart previously used, which put the full-press point at raw=20900
-% instead of firmware's real 23100), convertThrottle2ToPercent
-% (throttle2Min=46500, throttle2Max=63600), convertBrakeToPercent
-% (brakeMin=9025, brakeMax=31800, brake channel 1 only -- see BRAKEOK
-% below for why the shared channel-1 boundary is used).
+payloads = zeros(48,1,'uint8');
+torqueRequestNm = zeros(4,1);
+ai = u(1:4);
+% IO183 Module 2 analog range is 0..5 V (config.m io183FullScaleV and the AI
+% block parAdRange). Convert to the ADS7066-style 16-bit count the firmware
+% pedal calibration expects. Firmware reads the ADC directly with no pedal
+% filter (Core/Src/driverInputs.cpp convertInputs), so no smoothing is
+% applied here either.
+% Round to integer ADC counts, matching the host +virtualvcu/voltageToRaw.m.
+raw = round(min(max(double(ai(:)),0),5) / 5 * 65535);
+
+persistent state ticks dcLinkAccum12 dcLinkAccum34 dcLink12Valid dcLink34Valid ...
+    appsErrorLatch resetSent
+if isempty(state)
+    state = uint8(0);
+    ticks = uint32(0);
+    dcLinkAccum12 = 0;
+    dcLinkAccum34 = 0;
+    % Per-pair "received at least once" flags, mirroring firmware
+    % EphorusSystemStatus.valid (ephorus_driver.hpp:214). On this bench each
+    % pair becomes valid once its plant ramp has been active (an HV state was
+    % reached), since there is no physical 0x400 receive path.
+    dcLink12Valid = false;
+    dcLink34Valid = false;
+    appsErrorLatch = false;
+    resetSent = false;
+    if generateCode
+        coder.ceval('vvcu_controls_reset');
+    else
+        vvcu_controls_mex('reset');
+    end
+end
+
+% Controls-branch conversions. Brake 2 uses the same 9025 conversion zero
+% as brake 1; 8280 exists only as brake-2's unused range-check low bound.
 t1 = min(max((30100-raw(1))/7000,0),1);
 t2 = min(max((63600-raw(2))/17100,0),1);
 b1 = min(max((raw(3)-9025)/22775,0),1);
+b2 = min(max((raw(4)-9025)/22775,0),1);
 
-% Range plausibility: DriverInputs.cpp's isThrottle1InRange/
-% isThrottle2InRange/isBrake1InRange. A WIDER band around the nominal span
-% (15% margin for throttle, 25% for brake) that fails a sensor reading
-% clearly out of range (disconnected/shorted) even before checking
-% dual-sensor agreement -- this chart previously had no equivalent, only
-% the percent-conversion clamp to [0,1], which cannot distinguish "at
-% rest" from "sensor railed/disconnected".
-throttle1Margin = (30100 - 23100) * 0.15;
-throttle1InRange = raw(1) >= (23100 - throttle1Margin) && raw(1) <= (30100 + throttle1Margin);
-throttle2Margin = (63600 - 46500) * 0.15;
-throttle2InRange = raw(2) >= (46500 - throttle2Margin) && raw(2) <= (63600 + throttle2Margin);
-brake1Margin = (31800 - 9025) * 0.25;
-brake1InRange = raw(3) >= (9025 - brake1Margin) && raw(3) <= (31800 + brake1Margin);
-
-% isThrottlePlausible(): both channels in range AND agree within 20%
-% (FSAE T11.8 dual-sensor rule).
-appsOk = throttle1InRange && throttle2InRange && abs(t1 - t2) <= 0.20;
-% isBrakePlausible(): "Brake2 sensor is inactive (hardware fault). Only
-% brake1 range is checked." -- real firmware's own comment. Only brake1
-% gates plausibility; brake2 is not read into BRAKEVALIDPCT at all, which
-% is why this chart no longer averages b1/b2 anywhere below.
-brakeOk = brake1InRange;
-if ~isfinite(raw(1)) || ~isfinite(raw(2)) || ~isfinite(raw(3))
-    appsOk = false; brakeOk = false;
-end
-
-% checkPlausibility(): an implausible channel is zeroed at the source, not
-% just excluded from downstream gating -- THROTTLEVALIDPCT/BRAKEVALIDPCT
-% are 0 whenever their own plausibility check fails, matching
-% DriverInputs.cpp exactly (both the APPS+brake interlock below and the
-% transmitted pedal percentages read these, not the raw t1/t2/b1).
+t1Margin = 7000 * 0.15;
+t2Margin = 17100 * 0.15;
+b1Margin = 22775 * 0.25;
+t1InRange = raw(1) >= 23100-t1Margin && raw(1) <= 30100+t1Margin;
+t2InRange = raw(2) >= 46500-t2Margin && raw(2) <= 63600+t2Margin;
+b1InRange = raw(3) >= 9025-b1Margin && raw(3) <= 31800+b1Margin;
+appsOk = t1InRange && t2InRange && abs(t1-t2) <= 0.20;
+brakeOk = b1InRange;
 if appsOk
-    throttleValidPct = mean([t1 t2]);
+    throttleValidPct = (t1+t2)/2;
 else
+    % Firmware also zeroes throttle1Pct/throttle2Pct here; only the combined
+    % throttleValidPct is consumed downstream in this bench step.
     throttleValidPct = 0;
 end
 if brakeOk
     brakeValidPct = b1;
 else
-    brakeValidPct = 0;
+    b1 = 0; b2 = 0; brakeValidPct = 0; % b1/b2 feed the 0x1F5 pressure bytes
 end
 
-% APPS+brake interlock (FSAE T11.9, DriverInputs.cpp run()): triggers at
-% throttle>=25% AND brake>=25% together -- not the 5%/25% this chart
-% previously used -- and LATCHES via APPSERRORLATCH (mirroring firmware's
-% own persistent SHARED.APPSERROR): once tripped, torque stays cut until
-% throttle drops to <=5%, not merely until the pedals are no longer both
-% pressed past threshold simultaneously.
 if throttleValidPct >= 0.25 && brakeValidPct >= 0.25
     appsErrorLatch = true;
 end
@@ -102,57 +106,41 @@ if appsErrorLatch && throttleValidPct <= 0.05
     appsErrorLatch = false;
 end
 appsBrakeFault = appsErrorLatch;
+if appsOk && ~appsErrorLatch
+    torqueRequestPct = throttleValidPct;
+else
+    torqueRequestPct = 0;
+end
 
 precharge = u(5) > 0.5;
 mainButton = u(6) > 0.5;
 shutdownFeedback = u(9) > 0.5;
 
-% shouldFault() (vcStateMachine.cpp): DC-link<=350V faults ENABLE/
-% BUZZING/RTD (PRECHARGECOMPLETE()'s health check); SDERROR only faults
-% RTD specifically -- real firmware's shouldFault() reads shared.sdError
-% only in the RTD case, not universally, presumably because the physical
-% shutdown loop is hardware-enforced independent of software state in
-% every other state, and software only needs to react to it once actually
-% driving. PRECHARGING never faults. The previous version of this chart
-% used a CAN-status-bit trigger (rxStatus3x3/bitand(...)>=2) modeled on
-% real firmware's ALLINVERTERSREADY(), but that check is CURRENTLY
-% COMMENTED OUT OF SHOULDFAULT() in real firmware ("unused ... while
-% inverter bring-up is in progress") -- removed here to match; re-add if
-% real firmware re-enables it.
-%
-% DCLINKACCUM (this tick's value, before it is updated further down)
-% stands in for EPHORUSDRIVER's measured dcLink12_v/34_v: this bench has
-% no real DC bus, so this chart's own simulated ramp (below) is what
-% PRECHARGECOMPLETE() would be reading on real hardware.
-dcLinkFault = dcLinkAccum <= 350;
+% Per-inverter wheel speeds (rad/s) retained at the 1 ms base rate by
+% virtualVcuRxRetain, which drains every 0x3X5 frame in the 5 ms window
+% before this chart samples. Raw CAN fields u(13:25) remain available for
+% telemetry but are no longer decoded here. Order [INV1..INV4] = [RL RR FR FL].
+wheelSpeedRadS = u(26:29);
+
+% Two independent pair accumulators stand in for the DC-link 12 V and 34 V
+% pair voltages. The bench drives them identically, but the fault structure
+% matches firmware prechargeComplete() (vcStateMachine.cpp:131-146):
+%   if (!sys.valid) return false;
+%   if (sys.dcLink12_v <= 350 || sys.dcLink34_v <= 350) return false;
+% dcLink12Valid/dcLink34Valid stand in for sys.valid per pair. This bench has
+% no received 0x400 system-status frame, so sys.valid is SIMULATED (set once
+% the pair's plant ramp has run), not received; the host reference
+% (+virtualvcu/step.m) is stricter and requires a decoded 0x400.
+dcLinkFault = ~dcLink12Valid || ~dcLink34Valid || ...
+    dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350;
 enterFault = (state == 2 || state == 3) && dcLinkFault;
 enterFaultFromRtd = state == 4 && (dcLinkFault || shutdownFeedback);
-% Real firmware's ENTERSTATE(ERROR_SHUTDOWN) is followed, in the SAME
-% RUN() CALL, by FORCELVON() -- an immediate, same-cycle fall-through back
-% to LV_ON, which would make ERROR_SHUTDOWN invisible to a human operator
-% or even this bench's 250 ms-polling GUI. This chart deliberately HOLDS
-% in ERROR_SHUTDOWN (state 5) until the underlying cause clears, rather
-% than replicating that same-cycle auto-recovery: the bench's value is in
-% being able to observe and manually clear a fault, and there's no
-% indication the instant-recovery is an intentional competition-rules
-% behavior rather than an artifact of how ENTERSTATE/FORCELVON happen to
-% be sequenced. HOLDFAULT re-checks SHUTDOWNFEEDBACK every tick regardless
-% of current state (state is already 5 by the tick after entry, so
-% checking only STATE==2/3/4 as above would let it clear itself the very
-% next tick, silently reproducing the same instant-recovery this is meant
-% to avoid).
-%
-% HOLDFAULT deliberately does NOT also re-check DCLINKFAULT: entering
-% ERROR_SHUTDOWN zeroes DCLINKACCUM below (state no longer in [1,4]), so
-% DCLINKFAULT is trivially true for as long as ERROR_SHUTDOWN lasts --
-% including it here would make a DC-link-triggered fault permanently
-% unrecoverable regardless of SHUTDOWNFEEDBACK, a real deadlock confirmed
-% live on hardware (state never left ERROR_SHUTDOWN after clearing
-% shutdown feedback, because DCLINKFAULT alone kept HOLDFAULT true
-% forever). DC-link health is what PRECHARGING re-establishes on the way
-% back to RTD, not a condition LV_ON itself needs to satisfy.
+% Deviation: this fault-entry branch runs before the "elseif state == 5"
+% recovery, so ANY fault entry (DC-link-only included) parks state 5 for one
+% full 5 ms cycle before recovery is evaluated; firmware falls through
+% state 5 to LV_ON within a single call. shutdownFeedback additionally
+% latches the hold until it clears.
 holdFault = state == 5 && shutdownFeedback;
-
 if enterFault || enterFaultFromRtd || holdFault
     state = uint8(5); ticks = uint32(0);
 elseif state == 5
@@ -161,71 +149,130 @@ elseif state == 0 && precharge
     state = uint8(1); ticks = uint32(0);
 elseif state == 1
     ticks = ticks + 1;
-    if ticks >= 7500, state = uint8(2); ticks = uint32(0); end
+    if ticks >= 1500, state = uint8(2); ticks = uint32(0); end
 elseif state == 2 && mainButton && brakeValidPct >= 0.25
     state = uint8(3); ticks = uint32(0);
 elseif state == 3
     ticks = ticks + 1;
-    if ticks >= 1500, state = uint8(4); ticks = uint32(0); end
+    if ticks >= 300, state = uint8(4); ticks = uint32(0); end
 elseif state == 4 && precharge
     state = uint8(1); ticks = uint32(0);
 end
-active = state >= 2 && state <= 4;
-% torqueRequestPct (DriverInputs.cpp run()): appsPlausible && !appsError,
-% full stop -- real firmware does NOT also require brakePlausible/
-% brakeOk to authorize torque. STATE==4 (RTD) is kept as an additional
-% gate here, standing in for whatever ultimately gates the real inverter
-% accepting a torque command outside RTD (VC firmware itself computes
-% TORQUEREQUESTPCT every cycle regardless of state; this repo does not
-% contain the Ephorus inverter's own enable logic to confirm it refuses
-% torque before RTD, so RTD-only is the conservative choice here).
-drive = state == 4 && appsOk && ~appsBrakeFault;
-t = uint8(round(100*throttleValidPct));
-brake = uint16(round(650*brakeValidPct));
-payloads(1) = t;
-payloads(2) = uint8(mod(brake,256));
-payloads(3) = uint8(floor(double(brake)/256));
-payloads(4) = payloads(2); payloads(5) = payloads(3);
-torque = uint16(round(256*15*throttleValidPct));
-% Named double alongside the uint16 CAN-count encoding above: same
-% underlying physical quantity (15 Nm full scale times throttleValidPct),
-% zeroed by the same DRIVE gate below, computed directly rather than by
-% dividing TORQUE back out of its quantized counts.
-torqueRequestNm = 15*throttleValidPct;
-payloads(9) = uint8(active); payloads(11) = 80; payloads(12) = 70;
-payloads(17) = uint8(active); payloads(19) = 80; payloads(20) = 70;
-payloads(25) = uint8(active); payloads(27) = 80; payloads(28) = 70;
-payloads(33) = uint8(active); payloads(35) = 80; payloads(36) = 70;
-if ~drive, torque = uint16(0); torqueRequestNm = 0; end
-payloads(13) = uint8(mod(torque,256)); payloads(14) = uint8(floor(double(torque)/256));
-payloads(21) = payloads(13); payloads(22) = payloads(14);
-payloads(29) = payloads(13); payloads(30) = payloads(14);
-payloads(37) = payloads(13); payloads(38) = payloads(14);
-payloads(41) = state;
-payloads(42) = uint8(state >= 2 && state <= 4); % MAIN_EN_OUT
-payloads(43) = uint8(state == 1);              % PRECH_EN_OUT
-payloads(44) = uint8(state >= 1 && state <= 4); % INV_CTRL_EN
-% DCLINKV simulates the DC bus capacitance charging through the precharge
-% resistor: 0 V at LV_ON, ramping at a FIXED rate (RAMPVOLTSPERTICK, volts
-% per 1 ms tick) while PRECHARGING through RTD, capping at NOMINALDCLINKV
-% once reached. The ramp rate is deliberately independent of the
-% PRECHARGING timeout (the ELSEIF STATE==1 branch above, currently 7500
-% ticks). NOMINALDCLINKV=400 is a placeholder, not read from real
-% firmware: MFE26-VC only encodes a 350 V FLOOR (PRECHARGECOMPLETE()'s
-% health check, used as DCLINKFAULT above), not this car's actual nominal
-% pack voltage, which is not in firmware source -- replace 400 with the
-% real value once known.
-%
-% DCLINKACCUM, not DCLINKV itself, is the persistent state: a variable
-% that is both persistent and a direct MATLAB Function output breaks
-% Simulink's code generation size inference (the same pitfall TXCOUNTER/
-% TXCOUNT already works around elsewhere in this file).
-nominalDcLinkV = 400;
-rampVoltsPerTick = 400 / 7500;
-if state >= 1 && state <= 4
-    dcLinkAccum = min(dcLinkAccum + rampVoltsPerTick, nominalDcLinkV);
+
+% Pedal broadcast: front=b1, rear=b2 (brake 2 is still converted and sent as
+% rear pressure even though it is excluded from plausibility). In RTD the
+% throttle byte uses the interlock-gated torqueRequestPct; other states use
+% throttleValidPct.
+% This chart re-packs the pedal payload every 5 ms; transmission is gated
+% downstream by "Port A TX Gate" (add_virtual_vcu_to_model.m), which
+% suppresses 0x1F5 in ERROR_SHUTDOWN to match firmware. RESIDUAL DEVIATION:
+% firmware also skips 0x1F5 on the first RTD reset-only cycle; the
+% state-keyed gate still sends that one frame. See
+% docs/controls_branch_sync.md deviation 1.
+pedalThrottle = throttleValidPct;
+if state == 4, pedalThrottle = torqueRequestPct; end
+frontBrake = uint16(round(650*b1));
+rearBrake = uint16(round(650*b2));
+payloads(1) = uint8(round(100*pedalThrottle));
+payloads(2) = uint8(mod(frontBrake,256));
+payloads(3) = uint8(floor(double(frontBrake)/256));
+payloads(4) = uint8(mod(rearBrake,256));
+payloads(5) = uint8(floor(double(rearBrake)/256));
+
+if state ~= 4
+    resetSent = false;
+elseif ~resetSent
+    % First RTD comms cycle: reset+enable, zero speed and torque, no model step.
+    payloads(9) = uint8(3);
+    payloads(17) = uint8(3);
+    payloads(25) = uint8(3);
+    payloads(33) = uint8(3);
+    resetSent = true;
 else
-    dcLinkAccum = 0;
+    controlsInputs = zeros(32,1);
+    controlsInputs(1) = 0;
+    controlsInputs(2) = 0;      % vehicle_speed; no received IMU velocity
+    controlsInputs(3) = 0.5;
+    controlsInputs(4) = 80000;
+    controlsInputs(5) = 1;
+    controlsInputs(6) = 1;
+    controlsInputs(7) = 0.1;
+    % Model order FL,FR,RL,RR from physical inverter order RL,RR,FR,FL.
+    controlsInputs(8) = wheelSpeedRadS(4);
+    controlsInputs(9) = wheelSpeedRadS(3);
+    controlsInputs(10) = wheelSpeedRadS(1);
+    controlsInputs(11) = wheelSpeedRadS(2);
+    controlsInputs(12) = 0.99;
+    controlsInputs(13) = 100;
+    controlsInputs(14) = 0;     % ax; no received IMU acceleration
+    controlsInputs(15) = 0;     % SWA; no received steering frame
+    controlsInputs(16) = 0;     % vy; no received IMU velocity
+    controlsInputs(17) = 0;     % yaw_rate; no received IMU gyro
+    controlsInputs(18) = throttleValidPct;
+    controlsInputs(19) = 0;
+    controlsInputs(20) = 15;
+    controlsInputs(21) = 0;
+    controlsInputs(22) = 1;
+    controlsInputs(23) = 1;
+    controlsInputs(24) = 0;     % ay
+    controlsInputs(25) = 1;     % firmware runtime override
+    controlsInputs(26) = 1;     % firmware runtime override
+    controlsInputs(27) = 0;
+    controlsInputs(28:31) = 0;
+    controlsInputs(32) = 1;
+    rawTau = zeros(4,1);
+    if generateCode
+        coder.ceval('vvcu_controls_step',coder.rref(controlsInputs),coder.wref(rawTau));
+    else
+        rawTau = reshape(vvcu_controls_mex(controlsInputs),4,1);
+    end
+    % Firmware caps only the upper positive limit. tau order remains FL/FR/RL/RR.
+    for k = 1:4
+        if rawTau(k) > 15
+            torqueRequestNm(k) = 15;
+        else
+            torqueRequestNm(k) = rawTau(k);
+        end
+    end
+    inverterTau = [torqueRequestNm(3); torqueRequestNm(4); ...
+        torqueRequestNm(2); torqueRequestNm(1)];
+    for inverter = 1:4
+        base = 1 + 8*inverter;
+        payloads(base) = uint8(1);
+        payloads(base+2) = uint8(80); % 18000 RPM little-endian
+        payloads(base+3) = uint8(70);
+        % ephorus_driver.cpp buildControlFrame truncates nm/(1/256) toward
+        % zero, then clampToI16 before the little-endian split.
+        signedCounts = int32(fix(256*inverterTau(inverter)));
+        if signedCounts > 32767, signedCounts = int32(32767); end
+        if signedCounts < -32768, signedCounts = int32(-32768); end
+        if signedCounts < 0, signedCounts = signedCounts + 65536; end
+        payloads(base+4) = uint8(mod(signedCounts,256));
+        payloads(base+5) = uint8(floor(double(signedCounts)/256));
+    end
 end
-dcLinkV = dcLinkAccum;
+
+payloads(41) = state;
+payloads(42) = uint8(state >= 2 && state <= 4); % MAIN_EN_OUT (ENABLE/BUZZING/RTD)
+payloads(43) = uint8(state == 1 || state == 2); % PRECH_EN_OUT (PRECHARGING + ENABLE, vcStateMachine.cpp:307,325)
+payloads(44) = uint8(state >= 1 && state <= 4); % INV_CTRL_EN
+payloads(45) = uint8(u(7) > 0.5); % GRI_RELAY_1, cooling DI03
+payloads(46) = payloads(45);       % GRI_RELAY_2
+payloads(47) = payloads(45);       % COMET_RELAY
+payloads(48) = uint8(u(8) > 0.5); % FAN_RELAY, fan DI04
+
+% Existing bench plant: a deterministic 400 V ramp per pair. It is an internal
+% plant signal, never a fabricated received CAN frame.
+nominalDcLinkV = 400;
+rampVoltsPerTick = nominalDcLinkV/1500;
+if state >= 1 && state <= 4
+    dcLinkAccum12 = min(dcLinkAccum12+rampVoltsPerTick,nominalDcLinkV);
+    dcLinkAccum34 = min(dcLinkAccum34+rampVoltsPerTick,nominalDcLinkV);
+    dcLink12Valid = true;
+    dcLink34Valid = true;
+else
+    dcLinkAccum12 = 0;
+    dcLinkAccum34 = 0;
+end
+dcLinkV = min(dcLinkAccum12,dcLinkAccum34);
 end

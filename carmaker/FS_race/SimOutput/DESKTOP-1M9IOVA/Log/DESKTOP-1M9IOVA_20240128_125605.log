@@ -1,0 +1,249 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #3 (win64-12.0.1)
+COMPILED	jetbrains@66e0c34c4bd1 2023-05-24 12:39:09
+ 
+		I/O Configuration: default
+FIRST_INIT	(internal default used)	2024-01-28 12:56:06
+TIME	0.000
+SIM_END			0s	0m
+IDLE	12:56:06
+SIM_START	unknown	2024-01-28 12:56:09
+TIME	0.286
+ERROR		SuspF.Stabi: Unknown kind 'CM4SL', version 1
+ERROR		PowerTrain.Motor Mapping: motor/generator torque must be positive and non zero
+TIME	0.004
+SIM_ABORT	unknown	0s	0m
+TIME	2.384
+SIM_START	unknown	2024-01-28 12:56:33
+TIME	2.384
+ERROR		SuspF.Stabi: Unknown kind 'CM4SL', version 1
+ERROR		PowerTrain.Motor Mapping: motor/generator torque must be positive and non zero
+TIME	0.002
+SIM_ABORT	unknown	0s	0m
+TIME	3.385
+SIM_START	unknown	2024-01-28 12:57:07
+TIME	3.385
+ERROR		SuspF.Stabi: Unknown kind 'CM4SL', version 1
+ERROR		PowerTrain.Motor Mapping: motor/generator torque must be positive and non zero
+TIME	0.004
+SIM_ABORT	unknown	0s	0m
+TIME	6.965
+SIM_START	unknown	2024-01-28 12:58:16
+TIME	6.965
+ERROR		SuspF.Buffer: Unknown kind 'CM4SL', version 1
+ERROR		PowerTrain.Motor Mapping: motor/generator torque must be positive and non zero
+TIME	0.004
+SIM_ABORT	unknown	0s	0m
+TIME	2.721
+SIM_START	unknown	2024-01-28 12:58:43
+TIME	2.721
+ERROR		PowerTrain.Motor Mapping: motor/generator torque must be positive and non zero
+TIME	0.004
+SIM_ABORT	unknown	0s	0m
+TIME	4.237
+SIM_START	unknown	2024-01-28 12:59:26
+TIME	4.237
+ERROR		PowerTrain.Control BEV: first normed torque value in curve 'PowerTrain.Control.GasInterpret.NormTrq' must be zero
+TIME	0.004
+SIM_ABORT	unknown	0s	0m
+TIME	3.756
+SIM_START	unknown	2024-01-28 13:00:03
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.065
+ERROR		Vehicle leaves road at about x=-29.8568, y=36.7381 TireNo=1
+SIM_ABORT	unknown	30.066s	328.435m
+TIME	32.539
+SIM_START	unknown	2024-01-28 13:01:00
+TIME	32.539
+ERROR		Negative amplification is set for 'SuspF.Damp_Pull'
+TIME	0.004
+SIM_ABORT	unknown	0s	328.435m
+SIM_START	unknown	2024-01-28 13:01:18
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.065
+ERROR		Vehicle leaves road at about x=-29.8568, y=36.7381 TireNo=1
+SIM_ABORT	unknown	30.066s	328.435m
+SIM_START	unknown	2024-01-28 13:02:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.065
+ERROR		Vehicle leaves road at about x=-29.8568, y=36.7381 TireNo=1
+SIM_ABORT	unknown	30.066s	328.435m
+TIME	78.887
+SIM_START	unknown	2024-01-28 13:10:39
+TIME	0.000
+SIMULATE	unknown
+
+TIME	30.304
+ERROR		Vehicle leaves road at about x=-29.7653, y=35.3665 TireNo=1
+SIM_ABORT	unknown	30.305s	329.429m
+TIME	44.120
+SIM_START	unknown	2024-01-28 13:13:29
+TIME	0.000
+SIMULATE	unknown
+
+TIME	12.163
+SIM_END		unknown	12.16s	150.877m
+SIM_START	unknown	2024-01-28 13:14:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.214
+SIM_END		unknown	17.211s	212.769m
+TIME	21.941
+SIM_START	unknown	2024-01-28 13:15:06
+TIME	0.000
+SIMULATE	unknown
+
+TIME	44.166
+ERROR		Vehicle leaves road at about x=-26.1973, y=-43.2369 TireNo=1
+SIM_ABORT	unknown	44.167s	438.618m
+TIME	55.734
+SIM_START	unknown	2024-01-28 13:17:48
+TIME	0.000
+SIMULATE	unknown
+
+TIME	42.272
+SIM_END		unknown	42.269s	1080.93m
+TIME	101.886
+SIM_START	unknown	2024-01-28 13:28:28
+TIME	0.000
+SIMULATE	unknown
+
+TIME	40.883
+SIM_END		unknown	40.88s	1044.12m
+SIM_START	unknown	2024-01-28 13:29:28
+TIME	0.000
+SIMULATE	unknown
+
+TIME	92.293
+SIM_END		unknown	92.29s	2472.17m
+SIM_START	unknown	2024-01-28 13:31:08
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.686
+SIM_END		unknown	14.683s	316.396m
+TIME	23.629
+SIM_START	unknown	2024-01-28 13:32:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	14.394
+SIM_END		unknown	14.391s	319.846m
+TIME	65.857
+SIM_START	unknown	2024-01-28 13:41:46
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.587
+SIM_END		unknown	9.584s	0.0538749m
+SIM_START	unknown	2024-01-28 13:42:18
+TIME	0.000
+SIMULATE	unknown
+
+TIME	9.469
+SIM_END		unknown	9.466s	0.0532065m
+TIME	14.684
+SIM_START	unknown	2024-01-28 13:43:22
+TIME	0.000
+SIMULATE	unknown
+
+TIME	67.232
+ERROR		Roll angle too high (-80.16 deg)
+SIM_ABORT	unknown	67.233s	1280.22m
+SIM_START	unknown	2024-01-28 13:44:43
+TIME	0.000
+SIMULATE	unknown
+
+TIME	53.726
+ERROR		Vehicle leaves road at about x=406.739, y=-7.60339 TireNo=1
+SIM_ABORT	unknown	53.727s	412.418m
+TIME	61.567
+SIM_START	unknown	2024-01-28 13:46:58
+TIME	61.567
+ERROR		PowerTrain.MCU: Missing parameter 'PowerTrain.MCU.Kind'
+TIME	0.004
+SIM_ABORT	unknown	0s	412.418m
+TIME	3.614
+SIM_START	unknown	2024-01-28 13:47:34
+TIME	0.000
+SIMULATE	unknown
+
+TIME	17.240
+SIM_END		unknown	17.237s	227.567m
+TIME	19.300
+SIM_START	unknown	2024-01-28 13:48:14
+TIME	0.000
+SIMULATE	unknown
+
+TIME	27.148
+ERROR		Vehicle leaves road at about x=280.37, y=-7.60137 TireNo=0
+SIM_ABORT	unknown	27.149s	328.409m
+SIM_START	unknown	2024-01-28 13:49:00
+TIME	0.000
+SIMULATE	unknown
+
+TIME	133.418
+SIM_END		unknown	133.415s	300.791m
+SIM_START	unknown	2024-01-28 13:51:17
+TIME	0.000
+SIMULATE	unknown
+
+TIME	34.776
+ERROR		Roll angle too high (80.04 deg)
+SIM_ABORT	unknown	34.777s	491.181m
+SIM_START	unknown	2024-01-28 13:52:13
+TIME	0.000
+SIMULATE	unknown
+
+TIME	38.843
+SIM_END		unknown	38.84s	150.089m
+SIM_START	unknown	2024-01-28 13:52:55
+TIME	0.000
+SIMULATE	unknown
+
+TIME	13.603
+SIM_END		unknown	13.6s	64.7929m
+TIME	22.528
+SIM_START	unknown	2024-01-28 13:54:40
+TIME	0.006
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	unknown	0s	64.7929m
+SIM_START	unknown	2024-01-28 13:54:53
+TIME	0.000
+SIMULATE	unknown
+
+TIME	36.342
+ERROR		Vehicle leaves road at about x=-45.8026, y=0.0253804 TireNo=0
+SIM_ABORT	unknown	36.343s	256.817m
+SIM_START	unknown	2024-01-28 13:55:36
+TIME	0.000
+SIMULATE	unknown
+
+TIME	295.426
+SIM_END		unknown	295.423s	1826.51m
+SIM_START	unknown	2024-01-28 14:00:35
+TIME	0.000
+SIMULATE	unknown
+
+TIME	110.762
+SIM_END		unknown	110.759s	758.316m
+SIM_START	unknown	2024-01-28 14:02:30
+TIME	0.006
+ERROR		PowerTrain.Control: Unknown kind 'CM4SL', version 1
+SIM_ABORT	unknown	0s	758.316m
+SIM_START	unknown	2024-01-28 14:02:41
+TIME	0.000
+SIMULATE	unknown
+
+TIME	29.375
+ERROR		Vehicle leaves road at about x=-43.012, y=6.62196 TireNo=3
+SIM_ABORT	unknown	29.376s	232.354m
+TIME	42.822
+SHUTDOWN	CarMaker quick shutdown initiated
+

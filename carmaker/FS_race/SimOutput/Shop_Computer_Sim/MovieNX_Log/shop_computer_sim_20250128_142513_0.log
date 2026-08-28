@@ -1,0 +1,15 @@
+
+
+SYSTEM_START	-	Shop_Computer_Sim	Tue Jan 28 14:25:13 2025
+
+
+SYSTEM_INFO	MovieNX pro 12.0.1 2023-05-24
+APO: Successfully connected to: CarMaker 12.0.1 - Car_Generic @ Shop_Computer_Sim(127.0.0.1):15600
+Using RenderSettingsProfile: RenderSettings_high.cfg -> template_high.render
+Loading Installed scripts...
+Loading User scripts...
+Loading TestRun from path C:/Users/MFE-HPC/Documents/GitHub/IPG-MFE/FCM_Projects/FS_race/Data/TestRun/.tmp_Shop_Computer_Sim_MFE-HPC.0
+WARNING: Could not find file 3D/StreetFurniture/Construction/Construction_Barrier.png. Search paths: C:/Users/MFE-HPC/Documents/GitHub/IPG-MFE/FCM_Projects/FS_race/MovieNX/data/, C:/IPG/movienx/win64-12.0.1/bin/../data/
+WARNING: Could not find file ./FS_RaceCar.objinfo. Search paths: C:/Users/MFE-HPC/Documents/GitHub/IPG-MFE/FCM_Projects/FS_race/MovieNX/data/, C:/IPG/movienx/win64-12.0.1/bin/../data/
+WARNING: Invalid configuration file for Creator "MovieNX". Perhaps the file was not yet created? Path: C:/Users/MFE-HPC/Documents/GitHub/IPG-MFE/FCM_Projects/FS_race/MovieNX/data/Camera/Camera.cfg)
+ApoConnection: Disconnecting...

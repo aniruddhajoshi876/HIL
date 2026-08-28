@@ -3,8 +3,8 @@ function patch_virtual_vcu_state_outputs(modelPath)
 %
 % R2024b-only model edit. The saved model is changed through Simulink and
 % Stateflow APIs; the SLX archive is never edited directly. The existing
-% five 8-byte CAN payloads remain elements 1:40. Elements 41:44 are state
-% ID, MAIN_EN_OUT, PRECH_EN_OUT, and INV_CTRL_EN. This script deliberately
+% five 8-byte CAN payloads remain elements 1:40. Elements 41:48 are state,
+% contactor/inverter control, cooling, and fan outputs. This script deliberately
 % does not rewire physical IO183 outputs.
 %
 % GETSIGNAL(target, blockPath, portIndex) reads port PORTINDEX of the
@@ -22,8 +22,7 @@ function patch_virtual_vcu_state_outputs(modelPath)
 % created the old standalone blocks, they are removed first.
 
 if nargin < 1
-    modelPath = fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))), ...
-        'inverter_hil', 'inverter_hil.slx');
+    modelPath = default_virtual_vcu_model_path();
 end
 if ~strcmp(version('-release'), '2024b')
     error('virtualvcu:WrongRelease', 'Build with MATLAB R2024b only.');
@@ -32,6 +31,7 @@ end
 model = 'inverter_hil';
 load_system(modelPath);
 cleanup = onCleanup(@() close_system(model, 0));
+configure_controls_model(model);
 root = [model '/Virtual VCU'];
 chartPath = [root '/Virtual VCU LV_ON'];
 assert(getSimulinkBlockHandle(root) ~= -1, ...
@@ -49,7 +49,7 @@ chart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
 split = [root '/VCU Payload Split'];
 assert(getSimulinkBlockHandle(split) ~= -1, ...
     'virtualvcu:MissingPayloadSplit', 'VCU payload split is missing.');
-set_param(split, 'Outputs', '[8 8 8 8 8 1 1 1 1]');
+set_param(split, 'Outputs', '[8 8 8 8 8 1 1 1 1 1 1 1 1]');
 
 names = {'State ID', 'Main Enable', 'Precharge Enable', ...
     'Inverter Control Enable'};
@@ -83,7 +83,6 @@ end
 % Remove the old, broken standalone top-level Out1 blocks and their From
 % blocks, if a previous (incorrect) run of this script created them.
 legacyNames = [{'Pedal Payload'}, names];
-legacyTags = [{pedalTag}, tags];
 for k = 1:numel(legacyNames)
     outPath = [model '/Virtual VCU ' legacyNames{k}];
     fromPath = [model '/From Virtual VCU ' legacyNames{k}];
@@ -116,13 +115,13 @@ if getSimulinkBlockHandle([obsPath '/Out1']) ~= -1
 end
 
 % A bare From->Outport passthrough is not enough: GETSIGNAL on these ports
-% returned the SAME wrong (44-element, upstream chart-sized) data for
+% returned the SAME wrong (48-element, upstream chart-sized) data for
 % every port. Root cause (see MathWorks "Troubleshoot Signals Not
 % Accessible by Name", slrealtime doc set): Simulink's block-IO
 % optimization eliminates a passthrough signal that nothing else in the
 % model consumes -- these are observability-only dead ends -- and its
 % compiled storage collapses onto its upstream signal, which is exactly
-% why every port here read back the chart's raw 44-element output.
+% why every port here read back the chart's raw 48-element output.
 % Plain TestPoint marking on the From block's output was NOT sufficient
 % (tried and confirmed still broken after a clean rebuild). The actual
 % documented fix is an explicit Signal Copy, which in the Simulink API is
@@ -149,9 +148,8 @@ end
 % zero.
 % Torque Request Nm (9th): virtualVcuDeployStep.m's 4th output, published
 % directly as a global Goto by ADD_VIRTUAL_VCU_TO_MODEL.M like APPS Brake
-% Fault -- reused via the same Signal Copy pattern so it can be marked for
-% XCP measurement without decoding a raw CAN payload byte pair. See
-% virtual-vcu/docs/carmaker_speedgoat_interface.md section 7 items 4-6.
+% Fault -- reused via the same Signal Copy pattern so it can be read as a
+% measurement without decoding a raw CAN payload byte pair.
 obsNames = [{'Pedal Payload'}, names, ...
     {'Pedal TX Count', 'Control Frame 1', 'APPS Brake Fault', ...
     'Torque Request Nm'}];
@@ -168,6 +166,7 @@ measurementNames = { ...
     'hil_obs_virtual_vcu_control_frame_1'; ...
     'hil_obs_virtual_vcu_apps_brake_fault'; ...
     'hil_obs_virtual_vcu_torque_request_nm'};
+ensureMeasurementSignals(model, modelPath, measurementNames);
 assert(numel(obsNames) == numel(measurementNames), ...
     'virtualvcu:MeasurementContract', ...
     'Every observability output must have one measurement Signal object.');
@@ -203,14 +202,41 @@ for k = 1:numel(obsNames)
         [obsNames{k} '/1'], 'autorouting', 'on');
     copyPorts = get_param(copyName, 'PortHandles');
     set_param(copyPorts.Outport, 'TestPoint', 'on');
-    % TestPoint alone does not cause SLRT's calibration-file generator to
-    % emit an A2L measurement. Resolve this Signal Copy output to the
-    % ExportedGlobal Simulink.Signal object created by the model builder.
+    % TestPoint alone does not make the output resolvable by name. Resolve
+    % this Signal Copy output to the ExportedGlobal Simulink.Signal object
+    % created by the model builder.
     set_param(copyPorts.Outport, 'Name', measurementNames{k}, ...
         'MustResolveToSignalObject', 'on');
 end
 
 save_system(model, modelPath);
+end
+
+function ensureMeasurementSignals(model, modelPath, names)
+% The controls-branch base builder intentionally omits virtual-VCU signals.
+% Create the overlay's exported measurements in its existing dictionary.
+dictionaryName = get_param(model,'DataDictionary');
+assert(~isempty(dictionaryName),'virtualvcu:MissingDictionary', ...
+    'The inverter model must use a data dictionary.');
+dictionaryPath = fullfile(fileparts(modelPath),dictionaryName);
+dictionary = Simulink.data.dictionary.open(dictionaryPath);
+cleanup = onCleanup(@() close(dictionary));
+section = getSection(dictionary,'Design Data');
+types = {'uint8','uint8','uint8','uint8','uint8','uint32','uint8','boolean','double'};
+dimensions = {8,1,1,1,1,1,8,1,4};
+for k = 1:numel(names)
+    signal = Simulink.Signal;
+    signal.DataType = types{k};
+    signal.Dimensions = dimensions{k};
+    signal.CoderInfo.StorageClass = 'ExportedGlobal';
+    try
+        entry = getEntry(section,names{k});
+        setValue(entry,signal);
+    catch
+        addEntry(section,names{k},signal);
+    end
+end
+saveChanges(dictionary);
 end
 
 function deleteExistingLine(path, src, dst)
