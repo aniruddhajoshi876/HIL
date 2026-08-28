@@ -1,4 +1,4 @@
-../app_tmp.c: makefile $(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK)
+src/app_tmp.c: makefile $(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK)
 	$(QECHO) " MK     $@"
 	$Q $(CREATE_INFO_CMD)
 
@@ -10,4 +10,3 @@ macros:
 	-@ echo > ../.settings/macros
 	-@ for macro in $(macros); do echo >> ../.settings/macros \#define $$macro; done	
 	
-

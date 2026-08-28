@@ -32,7 +32,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <PreprocessorDefinitions>WIN32;CM_NUMVER=$(CARMAKER_NUMVER);NDEBUG;_CONSOLE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;CM4SL;MATLAB_MEX_FILE</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>"$(CARMAKER_INC_DIR)/Car";"$(CARMAKER_INC_DIR)";"$(MATSUPP_DIR)/include";"$(MAT_HOME)/extern/include";"$(MAT_HOME)/simulink/include"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>"$(ProjectDir)inc";"$(CARMAKER_INC_DIR)/Car";"$(CARMAKER_INC_DIR)";"$(MATSUPP_DIR)/include";"$(MAT_HOME)/extern/include";"$(MAT_HOME)/simulink/include"</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableFunctionLevelLinking>true</EnableFunctionLevelLinking>

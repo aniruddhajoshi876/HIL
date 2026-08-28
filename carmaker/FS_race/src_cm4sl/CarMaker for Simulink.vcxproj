@@ -49,11 +49,12 @@
   </ImportGroup>
 
   <ItemGroup>
-    <ClCompile Include="IO.c" />
-    <ClCompile Include="User.c" />
-    <ClCompile Include="CM_Vehicle.c" />
-    <ClCompile Include="CM_Main.c" />
-    <ClCompile Include="app_tmp.c" />
+    <ClCompile Include="src\IO.c" />
+    <ClCompile Include="src\User.c" />
+    <ClCompile Include="src\CM_Vehicle.c" />
+    <ClCompile Include="src\CM_Main.c" />
+    <ClCompile Include="src\app_tmp.c" />
+    <ClCompile Include="src\security_cookie_stub.c" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

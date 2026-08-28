@@ -30,7 +30,7 @@ endif
 
 LD_LIBS = $(CAR4SL_LIB) $(CARMAKER4SL_LIB) $(DRIVER_LIB) $(ROAD_LIB) $(TIRE_LIB)
 
-OBJ_APP = ../app_tmp.cm4sl.o
+OBJ_APP = src/app_tmp.cm4sl.o
 
 
 # Prepend local include/library directory to include path:
