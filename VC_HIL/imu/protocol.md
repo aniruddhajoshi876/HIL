@@ -93,17 +93,21 @@ LWS sentinel convention (`0x7FFF` / `0xFF`) must not be carried onto this bus.
 
 ## Open assumptions
 
-- **A1 — byte order is assumed, not verified.** MT1604P never states the
-  byte order of CAN output payloads. Big-endian is inherited from the MT Low
-  Level Communication Protocol Documentation section 5.1.1 and is
-  *independently assumed by the MFE26-VC decoder as well*. Because both
-  sides assume the same thing, a passing HIL test proves nothing about what
-  the real sensor emits. `imuProtocol.byteOrderVerified` is `false`. Golden
-  vector `edge_little_endian_confusion_probe` exists to settle it against
-  hardware.
+- **A1 — byte order matches the VCU, not verified against a real sensor.**
+  MT1604P never states the byte order of CAN output payloads. Big-endian is
+  inherited from the MT Low Level Communication Protocol Documentation
+  section 5.1.1. Confirmed 2026-08-27 that the MFE26-VC `controls`-branch
+  decoder reads big-endian: `MTi680G_driver.cpp` decodes each field as
+  `((uint16_t)data[0] << 8) | data[1]` with the comment "DBC @0 (Motorola)
+  => big-endian". Both sides now provably agree, but a passing HIL test
+  still proves nothing about what the *physical* sensor emits.
+  `imuProtocol.byteOrderVerified` stays `false`; golden vector
+  `edge_little_endian_confusion_probe` exists to settle it against hardware.
 - **A3 — VelocityXYZ ID.** MT1604P Table 4 lists `0x75` while section 6.8.3
   lists `0x076`. `0x076` is adopted because that is what the firmware
-  decodes. Unresolved against a real sensor.
+  decodes — confirmed 2026-08-27: `MTi680G_driver.hpp:14`
+  `MTI680G_ID_VELOCITY_RAW 0x076u`. Still unresolved against a real sensor
+  (the datasheet contradicts itself).
 - **Output rates are a simulator choice.** MT1604P gives a per-message
   frequency field and no default; mirror whatever the real MTi-680G is
   programmed to.
@@ -122,22 +126,35 @@ LWS sentinel convention (`0x7FFF` / `0xFF`) must not be carried onto this bus.
   axis while X/Y negate. The remaining open item is whether the 180 deg mount
   is the *intended* installation or an integration error to be corrected in
   hardware — `imuProtocol.mounting` is a one-line change if so.
-- **Which gyro axis the VCU reads as vehicle yaw is still not documented.**
-  `references/sensors/imu_contract_delta.md` assumption A9 explicitly places
-  vehicle-frame axis conventions out of scope for the wire contract, and the
-  MFE26-VC `gyroCANRx` decoder is not quoted anywhere in `references/` as
-  treating gyrY or gyrZ as yaw. This simulator now emits yaw rate on the
-  sensor Z axis (gyrZ) on the physical basis that yaw is rotation about
-  vehicle vertical; confirm against the VCU control model before trusting a
-  closed-loop yaw result.
+- **Which gyro axis the VCU reads as vehicle yaw — RESOLVED against firmware
+  (2026-08-27).** MFE26-VC `controls` branch: `gyroCANRx` decodes the third
+  field (byte offset 4) into `imu_data.Gyrz`, commented "yaw rate", and
+  `vcComms.cpp` does `controls_inputs->yaw_rate = MTiDriver.imu_data.Gyrz`
+  unconditionally. So the VCU reads yaw rate from the Z field, exactly where
+  this simulator now emits it. `use_imu_vel_x/y` still default to `0` so the
+  controls model ignores MTi *velocity* for now, but `ax`, `ay`, `yaw_rate`
+  feed the model directly.
+- **The 180 deg mount is confirmed by the firmware too.** `vcComms.cpp`
+  `update_ctrls_inputs()` carries the comment "IMU is placed 180 deg
+  flipped" and negates `ax`, `ay`, `v_x`, `v_y` while passing `Gyrz`
+  through — the exact mirror of `imuProtocol.mounting.axisSign`. The
+  HIL transform and the firmware compensation compose to identity, so the
+  round trip is correct. Open item is unchanged: whether the flip is the
+  intended install or an error to fix in hardware.
 - **No DBC exists in MFE26-VC** for these messages, so there is no third
-  artifact to cross-check against.
+  artifact to cross-check against — but the driver constants
+  (`MTi680G_driver.hpp`) now serve that role and agree with `imuProtocol.m`
+  on every ID, scale, and range.
 
-There is one further gate outside this repository: the MFE26-VC CAN
-acceptance filter is currently configured to admit only `0x383`-`0x400`,
-which rejects every MTi and LWS identifier before software sees it. Until
-that is widened, none of these frames reach the VCU regardless of whether
-this contract is right. That is firmware work, not HIL work.
+The MFE26-VC CAN acceptance filter — `CANDriver::initialize` sets a
+`FDCAN_FILTER_RANGE` with `ConfigGlobalFilter(REJECT, REJECT, ...)`, and
+`main.c` calls `BoardManager_create(0, 1024)` — admits standard IDs
+**`0x000`-`0x400` inclusive**. Every MTi frame this simulator sends
+(`0x032` / `0x034` / `0x076` and the four scalars `0x006` / `0x005` /
+`0x011` / `0x001`) and the LWS standard frame `0x2B0` are inside that range
+and reach the VCU. The LWS configuration frame `0x7C0` (1984) is outside it
+and is dropped in hardware. Any earlier note here about a `0x383`-`0x400`
+-only filter is stale.
 
 The simulator must not import or call the VCU MTi decoder. Its golden
 vectors are the test oracle for both simulator encoding and VCU decoding.
