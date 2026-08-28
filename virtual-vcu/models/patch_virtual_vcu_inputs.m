@@ -10,9 +10,9 @@ configure_controls_model(model);
 path = [model '/Virtual VCU'];
 if getSimulinkBlockHandle([path '/VCU Input Mux']) == -1
 add_block('simulink/Signal Routing/Mux', [path '/VCU Input Mux'], ...
-        'Inputs', '8', 'Position', [430 25 450 200]);
+        'Inputs', '9', 'Position', [430 25 450 220]);
 else
-    set_param([path '/VCU Input Mux'],'Inputs','8');
+    set_param([path '/VCU Input Mux'],'Inputs','9');
 end
 if getSimulinkBlockHandle([path '/Module 2 Digital Mux']) == -1
     add_block('simulink/Signal Routing/Mux', [path '/Module 2 Digital Mux'], ...
@@ -138,6 +138,29 @@ for k = 1:6
     add_line(path, sprintf('VCU Input Double %d/1', k+2), ...
         sprintf('VCU Input Mux/%d', k+2), 'autorouting', 'on');
 end
+% Item 2: 1 ms multi-corner wheel-speed retention ahead of the 5 ms rate
+% transition. Firmware drains its whole RX FIFO each comms cycle
+% (vcComms.cpp:327-374); the base boundary publishes one FIFO item per 1 ms
+% base tick, so without retention a 5 ms chart tick sees only the last
+% 0x3X5 frame in the window. This block latches all four Ephorus
+% actual-speed frames at the base rate and feeds the chart a coherent
+% 4-vector as VCU Input Mux input 9 -> chart u(26:29).
+retain = [path '/Virtual VCU RX Retain'];
+if getSimulinkBlockHandle(retain) == -1
+    add_block('simulink/User-Defined Functions/MATLAB Function', retain, ...
+        'Position', [270 250 400 340]);
+end
+setRxRetainScript(retain, fileread(fullfile(fileparts(mfilename('fullpath')), ...
+    'virtualVcuRxRetain.m')));
+for k = 1:6
+    deleteExistingLine(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('Virtual VCU RX Retain/%d', k));
+    add_line(path, ['Port A RX ' rxNames{k} ' From/1'], ...
+        sprintf('Virtual VCU RX Retain/%d', k), 'autorouting', 'on');
+end
+deleteExistingLine(path, 'Virtual VCU RX Retain/1', 'VCU Input Mux/9');
+add_line(path, 'Virtual VCU RX Retain/1', 'VCU Input Mux/9', 'autorouting', 'on');
+
 deleteExistingLine(path, 'VCU Input Mux/1', 'Virtual VCU LV_ON/1');
 rate = [path '/VCU 5 ms Rate Transition'];
 if getSimulinkBlockHandle(rate) == -1
@@ -162,5 +185,24 @@ try
     delete_line(path, src, dst);
 catch
     % Idempotent patch: no line is fine when rebuilding or repairing a model.
+end
+end
+
+function setRxRetainScript(blockPath, script)
+%SETRXRETAINSCRIPT Install the wheel-speed retention script on its MATLAB
+%   Function block. Mirrors ADD_VIRTUAL_VCU_TO_MODEL's SETMATLABFUNCTIONSCRIPT
+%   (a raw handle must be resolved to a path before Stateflow's 'Path' find
+%   filter matches it).
+if isnumeric(blockPath)
+    blockPath = getfullname(blockPath);
+end
+chart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', 'Path', blockPath);
+assert(~isempty(chart), 'virtualvcu:ChartNotFound', ...
+    'No Stateflow chart found at %s.', blockPath);
+chart(1).Script = script;
+if ~contains(chart(1).Script, ...
+        'function omInv = virtualVcuRxRetain(present, id, extended, remote, len, data)')
+    error('virtualvcu:RxRetainScript', ...
+        'Virtual VCU RX Retain script was not installed.');
 end
 end

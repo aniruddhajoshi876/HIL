@@ -63,7 +63,8 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             di = false(1,8); di(1) = true;
             out = virtualvcu.step(volts,true,di);
             ctx = out.context;
-            ctx.can.systemValid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
             ctx.ticks = c.prechargeTicks-1;
             di(1) = false; out = virtualvcu.step(volts,true,di,[],ctx);
             testCase.verifyEqual(out.state,'ENABLE');
@@ -79,7 +80,31 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             c = virtualvcu.config();
             volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
             ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
-            ctx.can.systemValid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 349;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 349;
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+        end
+
+        function neitherDcLinkPairValidFaultsActiveHv(testCase)
+            % Firmware prechargeComplete(): "if (!sys.valid) return false;"
+            % before the 350 V comparison. With no 0x400 ever decoded, both
+            % per-pair valid flags stay false and ENABLE must fault.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400; % voltages fine
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+        end
+
+        function onePairValidButBelowFloorFaultsRtd(testCase)
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
+            ctx.can.systemValid = true;
+            ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 340; % pair 34 sagged
             out = virtualvcu.step(volts,true,false(1,8),[],ctx);
             testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
         end
@@ -94,7 +119,8 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             out = virtualvcu.step(volts,true,false(1,8),[],ctx);
             testCase.verifyTrue(out.outputs.prechargeEnable);
             ctx = virtualvcu.initialContext(); ctx.state = uint8(2);
-            ctx.can.systemValid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
             out = virtualvcu.step(volts,true,false(1,8),[],ctx);
             testCase.verifyEqual(out.state,'ENABLE');
             testCase.verifyTrue(out.outputs.prechargeEnable);
@@ -109,7 +135,8 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             pressed = [c.throttlePressedRaw c.brakePressedRaw];
             volts = pressed/c.adcFullScale*c.io183FullScaleV;
             ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
-            ctx.can.systemValid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
             tau = [5 6 7 8];
             out = virtualvcu.step(volts,true,false(1,8),[],ctx,tau);
             testCase.verifyTrue(out.appsError);
@@ -134,7 +161,8 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             c = virtualvcu.config();
             volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
             ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = true;
-            ctx.can.systemValid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true; ctx.can.dcLink34Valid = true;
+            ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
             tau = [1 2 3 4]; % FL FR RL RR
             out = virtualvcu.step(volts,true,false(1,8),[],ctx,tau);
             expected = [3 4 2 1]; % INV1 RL, INV2 RR, INV3 FR, INV4 FL
@@ -176,10 +204,10 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             here = fileparts(mfilename('fullpath'));
             testCase.applyFixture(matlab.unittest.fixtures.PathFixture( ...
                 fullfile(fileparts(here),'models')));
-            clear('virtualVcuDeployStep'); %#ok<CLFUN>
+            clear('virtualVcuDeployStep');
             c = virtualvcu.config();
             toVolts = @(raw) double(raw)/c.adcFullScale*c.io183FullScaleV;
-            u = zeros(25,1);
+            u = zeros(29,1); % 1:25 IO + CAN, 26:29 retained wheel speeds
             u(1:2) = toVolts(c.throttleRestRaw);
             u(3:4) = toVolts(c.brakePressedRaw);
             u(5) = 1; virtualVcuDeployStep(u);
@@ -197,6 +225,80 @@ classdef TestVirtualVcu < matlab.unittest.TestCase
             testCase.verifyEqual(payloads([9 17 25 33]),uint8(ones(4,1)));
             testCase.verifyEqual(payloads([11 19 27 35]),uint8(80*ones(4,1)));
             testCase.verifyEqual(payloads([12 20 28 36]),uint8(70*ones(4,1)));
+        end
+
+        function rxRetentionKeepsAllFourCornersInAWindow(testCase)
+            % Item 2: virtualVcuRxRetain latches each 0x3X5 frame at the 1 ms
+            % base rate, so four frames arriving in one 5 ms window all reach
+            % the chart instead of only the last.
+            here = fileparts(mfilename('fullpath'));
+            testCase.applyFixture(matlab.unittest.fixtures.PathFixture( ...
+                fullfile(fileparts(here),'models')));
+            clear('virtualVcuRxRetain');
+            ids = [901 917 933 949];        % 0x385 0x395 0x3A5 0x3B5 = INV1..4
+            rpm = int16([100 -200 300 -400]);
+            om = zeros(4,1);
+            for k = 1:4
+                data = zeros(8,1);
+                data(7:8) = double(typecast(rpm(k),'uint8'));
+                om = virtualVcuRxRetain(1, ids(k), 0, 0, 8, data);
+            end
+            expected = double(rpm(:)) * (2*pi/60) / 13.39;
+            testCase.verifyEqual(om, expected, 'AbsTol', 1e-12);
+            % A tick with no frame present holds every slot.
+            omHeld = virtualVcuRxRetain(0, 0, 0, 0, 0, zeros(8,1));
+            testCase.verifyEqual(omHeld, expected, 'AbsTol', 1e-12);
+        end
+
+        function hostContextRetainsPerCornerWheelSpeed(testCase)
+            % Host-reference equivalent: context.can.wheelSpeedRadS keeps each
+            % corner across 5 ms samples even when frames arrive one per call.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            ctx = virtualvcu.initialContext();
+            ids = {'385','395','3A5','3B5'};
+            rpm = int16([120 240 360 480]);
+            for k = 1:4
+                bytes = zeros(1,8,'uint8');
+                bytes(7:8) = typecast(rpm(k),'uint8');
+                rx = struct('id',uint32(hex2dec(ids{k})),'payload',bytes);
+                out = virtualvcu.step(volts,true,false(1,8),rx,ctx);
+                ctx = out.context;
+            end
+            testCase.verifyTrue(all(ctx.can.wheelSpeedValid));
+            testCase.verifyEqual(ctx.can.wheelSpeedRadS(:), ...
+                double(rpm(:))*(2*pi/60)/c.gearRatio, 'AbsTol', 1e-12);
+        end
+
+        function canFrameTransmissionGatingMatchesFirmwareStates(testCase)
+            % Items 8/9: control frames only in RTD; 0x1F5 in every state but
+            % ERROR_SHUTDOWN, skipped on the first RTD (reset-only) cycle.
+            c = virtualvcu.config();
+            volts = [c.throttleRestRaw c.brakeRestRaw]/c.adcFullScale*c.io183FullScaleV;
+            % LV_ON: pedal on, control off
+            ctx0 = virtualvcu.initialContext(); ctx0.state = uint8(0);
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx0);
+            testCase.verifyFalse(out.controlFrameTxEnabled);
+            testCase.verifyTrue(out.pedalFrameTxEnabled);
+            % First RTD cycle (resetSent false): control on, pedal skipped
+            ctx = virtualvcu.initialContext(); ctx.state = uint8(4); ctx.resetSent = false;
+            ctx.can.systemValid = true; ctx.can.dcLink12Valid = true;
+            ctx.can.dcLink34Valid = true; ctx.can.dcLink12V = 400; ctx.can.dcLink34V = 400;
+            out = virtualvcu.step(volts,true,false(1,8),[],ctx);
+            testCase.verifyTrue(out.controlFrameTxEnabled);
+            testCase.verifyFalse(out.pedalFrameTxEnabled);
+            % Ordinary RTD cycle: both on
+            out = virtualvcu.step(volts,true,false(1,8),[],out.context);
+            testCase.verifyTrue(out.controlFrameTxEnabled);
+            testCase.verifyTrue(out.pedalFrameTxEnabled);
+            % ERROR_SHUTDOWN held by shutdown feedback: both off
+            di5 = false(1,8); di5(c.digitalMap.shutdownFeedback) = true;
+            ctx5 = virtualvcu.initialContext(); ctx5.state = uint8(5);
+            ctx5.can.dcLink12Valid = true; ctx5.can.dcLink34Valid = true;
+            out = virtualvcu.step(volts,true,di5,[],ctx5);
+            testCase.verifyEqual(out.state,'ERROR_SHUTDOWN');
+            testCase.verifyFalse(out.controlFrameTxEnabled);
+            testCase.verifyFalse(out.pedalFrameTxEnabled);
         end
 
         function suppliedDbcMatchesFirmwareContract(testCase)

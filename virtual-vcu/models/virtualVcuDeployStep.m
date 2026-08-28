@@ -3,11 +3,14 @@ function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeploy
 % Deployed 5 ms virtual-VCU step, synchronized to MFE26-VC controls branch
 % bcd6352e1674ef4b999391f345f675f386718d32.
 %
-% U is fixed-size: AI01..04 (1:4), DI01..08 (5:12), physical CAN Present,
-% ID, Extended, Remote, Length (13:17), and physical CAN payload (18:25).
-% No CAN status is synthesized. Only received Ephorus 3x5 frames update the
-% four retained wheel speeds. IMU, steering, and load-cell inputs stay zero
-% because this Port-A bench does not physically supply those messages.
+% U is fixed-size (29): AI01..04 (1:4), DI01..08 (5:12), physical CAN
+% Present, ID, Extended, Remote, Length (13:17), physical CAN payload
+% (18:25), and the four per-inverter wheel speeds rad/s (26:29) retained at
+% the 1 ms base rate by virtualVcuRxRetain ahead of the 5 ms rate
+% transition, order [INV1 INV2 INV3 INV4] = [RL RR FR FL].
+% No CAN status is synthesized. Only physically received Ephorus 3x5 frames
+% update the retained wheel speeds. IMU, steering, and load-cell inputs stay
+% zero because this Port-A bench does not physically supply those messages.
 %
 % The generated ControlsMFE25 model is called exactly once per RTD comms
 % cycle through vvcu_controls_wrapper.c. Its output order is
@@ -26,15 +29,21 @@ ai = u(1:4);
 % Round to integer ADC counts, matching the host +virtualvcu/voltageToRaw.m.
 raw = round(min(max(double(ai(:)),0),5) / 5 * 65535);
 
-persistent state ticks dcLinkAccum12 dcLinkAccum34 appsErrorLatch resetSent wheelSpeedRadS
+persistent state ticks dcLinkAccum12 dcLinkAccum34 dcLink12Valid dcLink34Valid ...
+    appsErrorLatch resetSent
 if isempty(state)
     state = uint8(0);
     ticks = uint32(0);
     dcLinkAccum12 = 0;
     dcLinkAccum34 = 0;
+    % Per-pair "received at least once" flags, mirroring firmware
+    % EphorusSystemStatus.valid (ephorus_driver.hpp:214). On this bench each
+    % pair becomes valid once its plant ramp has been active (an HV state was
+    % reached), since there is no physical 0x400 receive path.
+    dcLink12Valid = false;
+    dcLink34Valid = false;
     appsErrorLatch = false;
     resetSent = false;
-    wheelSpeedRadS = zeros(4,1);
     if coder.target('MATLAB')
         vvcu_controls_mex('reset');
     else
@@ -87,35 +96,23 @@ precharge = u(5) > 0.5;
 mainButton = u(6) > 0.5;
 shutdownFeedback = u(9) > 0.5;
 
-% Preserve the last physically received 3x5 speed for each inverter. CAN
-% input layout is the flattened Bus Selector output documented above.
-rxPresent = u(13) > 0.5;
-rxId = uint32(max(0,round(u(14))));
-rxExtended = u(15) > 0.5;
-rxRemote = u(16) > 0.5;
-rxLength = round(u(17));
-if rxPresent && ~rxExtended && ~rxRemote && rxLength == 8
-    inv = uint8(0);
-    if rxId == uint32(901), inv = uint8(1); end % 0x385 INV1 RL
-    if rxId == uint32(917), inv = uint8(2); end % 0x395 INV2 RR
-    if rxId == uint32(933), inv = uint8(3); end % 0x3A5 INV3 FR
-    if rxId == uint32(949), inv = uint8(4); end % 0x3B5 INV4 FL
-    if inv > 0
-        lo = uint16(min(max(round(u(24)),0),255));
-        hi = uint16(min(max(round(u(25)),0),255));
-        speedCounts = double(lo + bitshift(hi,8));
-        if speedCounts >= 32768, speedCounts = speedCounts-65536; end
-        wheelSpeedRadS(inv) = speedCounts * (2*pi/60) / 13.39;
-    end
-end
+% Per-inverter wheel speeds (rad/s) retained at the 1 ms base rate by
+% virtualVcuRxRetain, which drains every 0x3X5 frame in the 5 ms window
+% before this chart samples. Raw CAN fields u(13:25) remain available for
+% telemetry but are no longer decoded here. Order [INV1..INV4] = [RL RR FR FL].
+wheelSpeedRadS = u(26:29);
 
 % Two independent pair accumulators stand in for the DC-link 12 V and 34 V
 % pair voltages. The bench drives them identically, but the fault structure
-% matches firmware prechargeComplete(), which requires BOTH pairs above 350 V
-% (vcStateMachine.cpp:131-145). This bench has no received 0x400
-% system-status frame, so it cannot assert sys.valid; the host reference
-% (+virtualvcu/step.m) is stricter and also requires a decoded 0x400.
-dcLinkFault = dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350;
+% matches firmware prechargeComplete() (vcStateMachine.cpp:131-146):
+%   if (!sys.valid) return false;
+%   if (sys.dcLink12_v <= 350 || sys.dcLink34_v <= 350) return false;
+% dcLink12Valid/dcLink34Valid stand in for sys.valid per pair. This bench has
+% no received 0x400 system-status frame, so sys.valid is SIMULATED (set once
+% the pair's plant ramp has run), not received; the host reference
+% (+virtualvcu/step.m) is stricter and requires a decoded 0x400.
+dcLinkFault = ~dcLink12Valid || ~dcLink34Valid || ...
+    dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350;
 enterFault = (state == 2 || state == 3) && dcLinkFault;
 enterFaultFromRtd = state == 4 && (dcLinkFault || shutdownFeedback);
 % Deviation: this fault-entry branch runs before the "elseif state == 5"
@@ -249,6 +246,8 @@ rampVoltsPerTick = nominalDcLinkV/1500;
 if state >= 1 && state <= 4
     dcLinkAccum12 = min(dcLinkAccum12+rampVoltsPerTick,nominalDcLinkV);
     dcLinkAccum34 = min(dcLinkAccum34+rampVoltsPerTick,nominalDcLinkV);
+    dcLink12Valid = true;
+    dcLink34Valid = true;
 else
     dcLinkAccum12 = 0;
     dcLinkAccum34 = 0;

@@ -65,12 +65,20 @@ if isstruct(rx) && isfield(rx,'id') && isfield(rx,'payload')
                 context.can.dcLink12V = decoded.fields.dcLink12V;
                 context.can.dcLink34V = decoded.fields.dcLink34V;
                 context.can.systemValid = true;
+                % Per-pair "received at least once" flags kept separate even
+                % though one 0x400 carries both pairs -- firmware-structural
+                % parity with EphorusSystemStatus and room for future
+                % per-pair frames.
+                context.can.dcLink12Valid = true;
+                context.can.dcLink34Valid = true;
             end
         end
     end
 end
 
-dcHealthy = context.can.systemValid && ...
+% Mirrors firmware prechargeComplete() (vcStateMachine.cpp:131-146): both
+% pairs must have been received AND both must exceed the 350 V floor.
+dcHealthy = context.can.dcLink12Valid && context.can.dcLink34Valid && ...
     context.can.dcLink12V > c.prechargeFloorV && ...
     context.can.dcLink34V > c.prechargeFloorV;
 if ~enabled
@@ -100,6 +108,13 @@ end
 if context.state ~= 4
     context.resetSent = false;
 end
+% Firmware VCComms::run() wire behaviour (vcComms.cpp:263-320):
+%   - the four inverter control frames are queued only in RTD (state 4);
+%   - 0x1F5 is queued in every state except ERROR_SHUTDOWN, and is also
+%     skipped on the first RTD comms cycle (reset-only, resetSent == false).
+firstRtdResetCycle = context.state == 4 && ~context.resetSent;
+controlFrameTxEnabled = context.state == 4;
+pedalFrameTxEnabled = context.state ~= 5 && ~firstRtdResetCycle;
 controlPayloads = zeros(4,8,'uint8');
 cornerTorqueNm = zeros(1,4);
 if context.state == 4 && ~context.resetSent
@@ -136,6 +151,8 @@ out = struct('state', c.stateNames{double(context.state)+1}, ...
     'appsError',context.appsError,'torqueRequestPct',torqueRequestPct, ...
     'digitalInputs', di, 'outputs',outputs,'can', context.can, ...
     'torqueRequestNm', cornerTorqueNm, ...
+    'controlFrameTxEnabled', logical(controlFrameTxEnabled), ...
+    'pedalFrameTxEnabled', logical(pedalFrameTxEnabled), ...
     'pedalPayload', virtualvcu.packPedalFrame(pedalThrottlePct, b1/100, b2/100), ...
     'controlPayloads', controlPayloads);
 end
