@@ -8,6 +8,13 @@ sources. The HIL repository is the source of truth; the local
 survive.** Edit them here, then deploy with
 `carmaker/deploy/apply_cm4sl.ps1` (see `carmaker/docs/cm4sl_integration.md`).
 
+## Directory layout
+
+The canonical files are organized as follows: C sources are in `src/`, public
+headers are in `inc/`, and Simulink vehicle models plus their parameter data are
+in `vehicle_models/`. Build files and model-update tooling remain at this
+directory level.
+
 ## Canonical files
 
 | File | Purpose |

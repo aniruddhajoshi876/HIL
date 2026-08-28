@@ -67,7 +67,7 @@ default deploy**:
 
 | Copy | Lines (LF-normalized) |
 |---|---|
-| HIL `carmaker/FS_race/src_cm4sl/TorqueVect.mdl` (committed) | 176 170 |
+| HIL `carmaker/FS_race/src_cm4sl/vehicle_models/TorqueVect.mdl` (committed) | 176 170 |
 | IPG-MFE committed (`HEAD`) | 177 365 |
 | IPG-MFE working tree (uncommitted) | 176 252 |
 
