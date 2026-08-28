@@ -1,31 +1,61 @@
-# CarMaker CAN apply note
+# CM4SL CAN apply note
 
-Copy `IO.c` and `User.c` back over
-`IPG-MFE/FCM_Projects/FS_race/src_cm4sl/{IO.c,User.c}`, then rebuild with the
-CarMaker for Simulink solution file or the `src_cm4sl` Makefile in MATLAB
-R2022a. Do not use the MATLAB R2024b environment used for `inverter_hil`.
+This directory holds the **canonical** CarMaker-for-Simulink integration
+sources. The HIL repository is the source of truth; the local
+`IPG-MFE/FCM_Projects/FS_race` project is only a build/deploy workspace.
 
-`User.h` is unchanged — the `MFE_CAN*` globals are defined in `IO.c` and
-re-declared `extern` locally in `User.c`, matching the existing pedal/torque
-quantities.
+**Do not edit these files inside the IPG-MFE project and expect them to
+survive.** Edit them here, then deploy with
+`carmaker/deploy/apply_cm4sl.ps1` (see `carmaker/docs/cm4sl_integration.md`).
 
-## Contents
+## Canonical files
 
-- **`0x500` / `0x501` / `0x502`** — CarMaker pedal demand out, per-inverter
-  torque setpoints and ready bits in. Original channel-1 link.
-- **`0x503`-`0x506`** — CarMaker vehicle-physics truth out (acceleration,
-  angular rate, velocity, Euler), added so the Speedgoat can pack the MTi
-  frames from CarMaker instead of its kinematic estimate. `IO_Out()` sends
-  the four frames every 10-ms cycle right after `0x500`, sharing one
-  modulo-256 counter, CRC-8/SAE-J1850 over bytes 0-6. The values come from
-  the `MFE_CAN.Physics.*` dictionary quantities, which `TorqueVect.mdl` must
-  populate — see `VC_HIL/docs/carmaker_readcmdict_checklist.md` for the
-  Read/Write CM Dict wiring to add before rebuilding.
+| File | Purpose |
+|---|---|
+| `IO.c` | PCANIO channel-1 traffic: `0x500` pedal demand out, `0x501`/`0x502` in, and `0x503`-`0x506` CarMaker vehicle-physics out. |
+| `User.c` | `User_DeclQuants()` — registers `MFE_CAN.*` dictionary quantities, including `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}` (`DVA_IO_Out`). |
+| `User.h` | Unchanged from IPG's baseline — the `MFE_CAN*` globals are defined in `IO.c` and re-declared `extern` in `User.c`. |
+| `security_cookie_stub.c` | Provides `__security_cookie` for the MinGW-w64 link (IPG's prebuilt `libcarmaker4sl.a` references it; MinGW does not supply it). Originated in the IPG-MFE working tree during CM4SL link bring-up; imported here 2026-08-27. |
+| `Makefile` | Adds `security_cookie_stub.cm4sl.o` to `OBJS`. Same origin as the stub. |
+| `TorqueVect.mdl` | The CM4SL vehicle/controls model. See the reconciliation note in `carmaker/docs/cm4sl_integration.md` — the HIL and IPG copies have diverged and this file is **not** synced automatically. |
 
-## Known unresolved
+## Frames on channel 1
 
-`GetCRC_J1850_User()` (used by both the `0x500` and the `0x503`-`0x506`
-paths) has no definition in these files or the CarMaker 12.0.1 headers. If
-the `0x500` frame currently links and transmits a correct CRC, the physics
-frames inherit that. If it does not, that is a pre-existing gap in the
-`0x500` work, not introduced here — resolve it once for both.
+- `0x500` `CarMakerPedalDemand` — CarMaker → Speedgoat. Throttle/brake %, active,
+  4-bit alive counter, CRC-8/SAE-J1850 over bytes 1-5.
+- `0x501` / `0x502` — Speedgoat → CarMaker. Per-inverter torque setpoints and
+  ready bits.
+- `0x503`-`0x506` `CarMakerPhysics{Acceleration,AngularRate,Velocity,Euler}` —
+  CarMaker → Speedgoat. Three little-endian `int16` at bytes 0/2/4, a shared
+  modulo-256 group counter at byte 6, CRC-8/SAE-J1850 over bytes 0-6 at byte 7.
+  Sent every 10-ms cycle in `IO_Out()` right after `0x500`. Vehicle/Fr1 frame,
+  SI units — the Speedgoat applies the sensor mounting transform, not this
+  side. Scales match `carmaker/config/MFE26_Inverter_CarMaker.dbc`
+  (`0.01` / `0.002` / `0.01` / `0.0001`).
+
+  The values come from the `MFE_CAN.Physics.*` dictionary quantities, which
+  `TorqueVect.mdl` must populate with nine Read CM Dict → Write CM Dict
+  passthroughs — see `carmaker/docs/cm4sl_integration.md`.
+
+## CRC — resolved
+
+`GetCRC_J1850_User()` is **not** a project function. It is declared in
+`C:\IPG\carmaker\win64-12.0.1\include\E2E.h:210`:
+
+```c
+unsigned char GetCRC_J1850_User (unsigned char *Data, int nBytes,
+                                 unsigned char StartVal, unsigned char XORVal);
+```
+
+and supplied at link time by `libcarmaker.a` / `librbsutil.a`. `IO.c` already
+`#include <E2E.h>`. Both the `0x500` path and the `0x503`-`0x506` path call it
+as `GetCRC_J1850_User(data, n, 0xff, 0xff)` (init `0xFF`, xorout `0xFF`,
+poly `0x1D` — matches the Speedgoat decoder's `crc8` in
+`VC_HIL/inverter/rxCAN/decodeCarMakerPhysicsFrame.m`). No local definition is
+needed; do not add one.
+
+## Build
+
+Rebuild with `carmaker/deploy/apply_cm4sl.ps1 -Verify` after deploy, then the
+`CarMaker for Simulink.sln` solution or the `Makefile` in **MATLAB R2022a**.
+Do not use the R2024b environment used for `inverter_hil`.

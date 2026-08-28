@@ -131,9 +131,13 @@ LWS sentinel convention (`0x7FFF` / `0xFF`) must not be carried onto this bus.
   field (byte offset 4) into `imu_data.Gyrz`, commented "yaw rate", and
   `vcComms.cpp` does `controls_inputs->yaw_rate = MTiDriver.imu_data.Gyrz`
   unconditionally. So the VCU reads yaw rate from the Z field, exactly where
-  this simulator now emits it. `use_imu_vel_x/y` still default to `0` so the
-  controls model ignores MTi *velocity* for now, but `ax`, `ay`, `yaw_rate`
-  feed the model directly.
+  this simulator now emits it. `ax`, `ay`, `yaw_rate` and **velocity** all feed
+  the controls model: `vcComms.cpp` `update_ctrls_inputs()` forces
+  `use_imu_vel_x = use_imu_vel_y = 1.0` every cycle, overriding the `0` default
+  set once in `controls_init()` (and the tuning-guidance default in
+  `CONTROLS.md`). A wrong sign or scale on the velocity path (`0x076`, fed from
+  CarMaker `0x505`) would therefore corrupt vehicle control, not just a
+  readout.
 - **The 180 deg mount is confirmed by the firmware too.** `vcComms.cpp`
   `update_ctrls_inputs()` carries the comment "IMU is placed 180 deg
   flipped" and negates `ax`, `ay`, `v_x`, `v_y` while passing `Gyrz`

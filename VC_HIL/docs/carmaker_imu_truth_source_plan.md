@@ -83,17 +83,19 @@ estimate byte-for-byte.
    `Sensor.Inertial.Param_B00.{Acc_B,Omega_B,Vel_B}.{x,y,z}` (+ optional
    `Car.{Roll,Pitch,Yaw}`) and Write CM Dict blocks to
    `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}`, straight
-   passthrough. Full step-by-step: `carmaker_readcmdict_checklist.md`.
+   passthrough. Full step-by-step: `carmaker/docs/carmaker_readcmdict_checklist.md`.
 2. **Confirm the exact CarMaker DD quantity spellings** in the R2022a Read CM
    Dict browser (`Acc_B/Omega_B/Vel_B` stems are header-confirmed; the
    `.x/.y/.z` leaves and the `Sensor.Inertial.Param_B00` addressing are not).
-3. **Copy `IO.c` / `User.c` to IPG-MFE and rebuild CM4SL in R2022a**
-   (`CM4SL_CAN_apply_note.md`). The IPG-MFE `src_cm4sl` worktree is currently
-   dirty — reconcile first.
-4. **`GetCRC_J1850_User()` has no definition** in these files or the CarMaker
-   12.0.1 headers — used by both `0x500` and the new physics frames. Confirm it
-   links (i.e. `0x500` currently transmits a valid CRC); if not, define it once
-   for both.
+3. **Deploy the canonical CM4SL sources and rebuild in R2022a.** Run
+   `carmaker/deploy/apply_cm4sl.ps1 -ProjectPath <CarMaker project>`, then build
+   the `CarMaker for Simulink.sln` / `Makefile` in R2022a. Full procedure:
+   `carmaker/docs/cm4sl_integration.md`. (`GetCRC_J1850_User()` is resolved — it
+   is a CarMaker library function from `<E2E.h>`, not a project gap.)
+4. **Reconcile `TorqueVect.mdl`.** HIL, IPG-`HEAD`, and IPG-working have diverged
+   (176 170 / 177 365 / 176 252 lines). Run a Simulink model comparison in
+   R2022a, decide the canonical `.mdl`, commit it to HIL, then deploy with
+   `apply_cm4sl.ps1 -IncludeModel`. See `carmaker/docs/cm4sl_integration.md`.
 5. **Survey the real MTi mount** — vehicle-frame X/Y/Z from Fr1, and orientation.
    `Sensor.1.pos = 1.3 0 0.15` is an unconfirmed guess; lever-arm terms in
    `Acc_B`/`Vel_B` are only as good as it. Then update the vehicle config.
@@ -107,14 +109,17 @@ estimate byte-for-byte.
 9. **Run the section-7 bench acceptance** (capture the frames; counter/CRC/byte
    order; fresh↔stale fallback; fault injection; channel-2 MTi capture; compare
    against a real MTi).
-10. **Then** set `defaultVehicleStateConfig.carMakerTruthEnabled = true` and
-    re-run `build_inverter_hil_model(true)`.
+10. **Then** set `defaultVehicleStateConfig.carMakerTruthEnabled = true`,
+    re-run `build_inverter_hil_model(true)`, and redeploy to `TargetPC1`.
+    Revert with the same two steps and the flag back to `false`.
 
 ### LEFT — optional / later
 
-- `0x506` Euler wiring (not required for freshness; the VCU has no Euler
-  handler; `use_imu_vel_x/y` also default to `0` so MTi velocity is not consumed
-  by the controls model yet either).
+- `0x506` Euler wiring is not required for freshness and the VCU has no Euler
+  handler. (Velocity **is** consumed by the controls model — `vcComms.cpp`
+  forces `use_imu_vel_x/y = 1.0` every cycle, overriding the `0` default in
+  `controls.c` / `CONTROLS.md`; a wrong sign or scale on `0x505` would corrupt
+  vehicle control, so treat it as load-bearing.)
 - Migrate the CM4SL transmitter to RBS if a supported CarMaker-side physical CAN
   adapter is ever proven (the largest gate below).
 - `references/sensors/imu_contract_delta.md` still carries A9 as open — update

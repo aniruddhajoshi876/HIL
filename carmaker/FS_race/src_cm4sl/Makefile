@@ -43,7 +43,8 @@ APP_NAME =		libcarmaker4sl.$(MAT_EXT)
 
 LD_LIBS =		$(CAR4SL_LIB) \
 			$(CARMAKER4SL_LIB) $(DRIVER_LIB) $(ROAD_LIB) $(TIRE_LIB)
-OBJS =			User.cm4sl.o CM_Main.cm4sl.o CM_Vehicle.cm4sl.o IO.cm4sl.o
+OBJS =			User.cm4sl.o CM_Main.cm4sl.o CM_Vehicle.cm4sl.o IO.cm4sl.o \
+			security_cookie_stub.cm4sl.o
 
 # Prepend local include/library directory to include path:
 # PREINC_CFLAGS +=	-I../include -I../lib/$(ARCH) -I../lib

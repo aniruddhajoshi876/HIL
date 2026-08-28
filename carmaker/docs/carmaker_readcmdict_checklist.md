@@ -1,6 +1,7 @@
 # R2022a checklist — TorqueVect.mdl Read/Write CM Dict wiring for the CarMaker physics frames
 
-Companion to `carmaker_imu_truth_source_plan.md` (section 2, 6.1). This is the
+Companion to `VC_HIL/docs/carmaker_imu_truth_source_plan.md` (section 2, 6.1)
+and `carmaker/docs/cm4sl_integration.md`. This is the
 step-by-step a human executes in **MATLAB R2022a** to feed the CarMaker inertial
 sensor into the four new `0x503`–`0x506` CAN frames sent by
 `physics_can_snippet.c`.
