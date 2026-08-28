@@ -105,6 +105,11 @@ extern unsigned char MFE_CAN_InverterReady[4];
 extern double MFE_CAN_TorqueRequestTotalNm;
 extern unsigned char MFE_CAN_DriveActive;
 
+extern double MFE_CAN_PhysicsAcceleration[3];
+extern double MFE_CAN_PhysicsAngularRate[3];
+extern double MFE_CAN_PhysicsVelocity[3];
+extern double MFE_CAN_PhysicsEuler[3];
+
 
 
 /*
@@ -265,6 +270,26 @@ User_DeclQuants (void)
 		&MFE_CAN_TorqueRequestTotalNm, DVA_IO_In);
     DDefUChar (NULL, "MFE_CAN.DriveActive", "boolean",
 		&MFE_CAN_DriveActive, DVA_IO_In);
+
+    /* CarMaker vehicle-physics truth: written by TorqueVect.mdl (Read CM Dict
+    ** the inertial sensor -> Write CM Dict these), read by IO_Out() into the
+    ** 0x503-0x506 CAN frames. Vehicle/Fr1 frame, SI units; the Speedgoat
+    ** applies the sensor mounting transform, not this side. See
+    ** VC_HIL/docs/carmaker_readcmdict_checklist.md. */
+    {
+	static const char *const PhysAxis[3] = { "x", "y", "z" };
+	for (i=0; i<3; i++) {
+	    char sbuf[48];
+	    sprintf (sbuf, "MFE_CAN.Physics.Acceleration.%s", PhysAxis[i]);
+	    DDefDouble (NULL, sbuf, "m/s2",  &MFE_CAN_PhysicsAcceleration[i], DVA_IO_Out);
+	    sprintf (sbuf, "MFE_CAN.Physics.AngularRate.%s", PhysAxis[i]);
+	    DDefDouble (NULL, sbuf, "rad/s", &MFE_CAN_PhysicsAngularRate[i], DVA_IO_Out);
+	    sprintf (sbuf, "MFE_CAN.Physics.Velocity.%s", PhysAxis[i]);
+	    DDefDouble (NULL, sbuf, "m/s",   &MFE_CAN_PhysicsVelocity[i], DVA_IO_Out);
+	    sprintf (sbuf, "MFE_CAN.Physics.Euler.%s", PhysAxis[i]);
+	    DDefDouble (NULL, sbuf, "rad",   &MFE_CAN_PhysicsEuler[i], DVA_IO_Out);
+	}
+    }
 }
 
 
