@@ -23,13 +23,15 @@ ai = u(1:4);
 % pedal calibration expects. Firmware reads the ADC directly with no pedal
 % filter (Core/Src/driverInputs.cpp convertInputs), so no smoothing is
 % applied here either.
-raw = min(max(double(ai(:)),0),5) / 5 * 65535;
+% Round to integer ADC counts, matching the host +virtualvcu/voltageToRaw.m.
+raw = round(min(max(double(ai(:)),0),5) / 5 * 65535);
 
-persistent state ticks dcLinkAccum appsErrorLatch resetSent wheelSpeedRadS
+persistent state ticks dcLinkAccum12 dcLinkAccum34 appsErrorLatch resetSent wheelSpeedRadS
 if isempty(state)
     state = uint8(0);
     ticks = uint32(0);
-    dcLinkAccum = 0;
+    dcLinkAccum12 = 0;
+    dcLinkAccum34 = 0;
     appsErrorLatch = false;
     resetSent = false;
     wheelSpeedRadS = zeros(4,1);
@@ -107,13 +109,20 @@ if rxPresent && ~rxExtended && ~rxRemote && rxLength == 8
     end
 end
 
-% The deploy bench has one simulated DC-link value feeding both physical
-% inverter pairs. Firmware requires each pair independently above 350 V.
-dcLinkFault = dcLinkAccum <= 350;
+% Two independent pair accumulators stand in for the DC-link 12 V and 34 V
+% pair voltages. The bench drives them identically, but the fault structure
+% matches firmware prechargeComplete(), which requires BOTH pairs above 350 V
+% (vcStateMachine.cpp:131-145). This bench has no received 0x400
+% system-status frame, so it cannot assert sys.valid; the host reference
+% (+virtualvcu/step.m) is stricter and also requires a decoded 0x400.
+dcLinkFault = dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350;
 enterFault = (state == 2 || state == 3) && dcLinkFault;
 enterFaultFromRtd = state == 4 && (dcLinkFault || shutdownFeedback);
-% Deliberate observable-fault deviation: firmware falls through from state 5
-% to LV_ON in one call; the bench holds state 5 while shutdown feedback is on.
+% Deviation: this fault-entry branch runs before the "elseif state == 5"
+% recovery, so ANY fault entry (DC-link-only included) parks state 5 for one
+% full 5 ms cycle before recovery is evaluated; firmware falls through
+% state 5 to LV_ON within a single call. shutdownFeedback additionally
+% latches the hold until it clears.
 holdFault = state == 5 && shutdownFeedback;
 if enterFault || enterFaultFromRtd || holdFault
     state = uint8(5); ticks = uint32(0);
@@ -233,14 +242,16 @@ payloads(46) = payloads(45);       % GRI_RELAY_2
 payloads(47) = payloads(45);       % COMET_RELAY
 payloads(48) = uint8(u(8) > 0.5); % FAN_RELAY, fan DI04
 
-% Existing bench plant: a deterministic 400 V ramp stands in for both DC-link
-% pairs. It is an internal plant signal, never a fabricated received CAN frame.
+% Existing bench plant: a deterministic 400 V ramp per pair. It is an internal
+% plant signal, never a fabricated received CAN frame.
 nominalDcLinkV = 400;
 rampVoltsPerTick = nominalDcLinkV/1500;
 if state >= 1 && state <= 4
-    dcLinkAccum = min(dcLinkAccum+rampVoltsPerTick,nominalDcLinkV);
+    dcLinkAccum12 = min(dcLinkAccum12+rampVoltsPerTick,nominalDcLinkV);
+    dcLinkAccum34 = min(dcLinkAccum34+rampVoltsPerTick,nominalDcLinkV);
 else
-    dcLinkAccum = 0;
+    dcLinkAccum12 = 0;
+    dcLinkAccum34 = 0;
 end
-dcLinkV = dcLinkAccum;
+dcLinkV = min(dcLinkAccum12,dcLinkAccum34);
 end

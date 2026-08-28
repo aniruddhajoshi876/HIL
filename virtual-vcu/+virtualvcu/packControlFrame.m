@@ -9,7 +9,9 @@ payload = zeros(1, 8, 'uint8');
 payload(1) = uint8(logical(enable)) + bitshift(uint8(logical(resetError)), 1);
 speed = int16(max(min(round(double(speedRpm)), 32767), -32768));
 torquePosNm = min(double(torquePosNm), c.maxTorqueNm);
-counts = int16(max(min(round(torquePosNm * 256), 32767), -32768));
+% ephorus_driver.cpp buildControlFrame truncates nm/(1/256) toward zero
+% (no rounding) before clampToI16.
+counts = int16(max(min(fix(torquePosNm * 256), 32767), -32768));
 payload(3:4) = typecast(speed, 'uint8');
 payload(5:6) = typecast(counts, 'uint8');
 payload(7:8) = uint8([0 0]);

@@ -137,7 +137,7 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
 | State sequence `LV_ON -> PRECHARGING -> ENABLE -> BUZZING -> RTD` (`vcStateMachine.cpp:9`) | `config.m:27`; `step.m`; deploy `state` machine |
 | RTD entry from ENABLE: `mainButton && brakeValidPct >= 0.25` (`vcStateMachine.cpp:333`) | `step.m:91`; deploy `state == 2 && mainButton && brakeValidPct >= 0.25` |
 | RTD `prechargeButton` press -> PRECHARGING (`mainEnable=false; osDelay(50)`) (`vcStateMachine.cpp:367-371`) | `step.m:96`; deploy `state == 4 && precharge -> state 1` (the 50 ms is not modeled) |
-| `prechargeComplete()` requires `dcLink12_v > 350` **and** `dcLink34_v > 350` and `sys.valid` (`vcStateMachine.cpp:131-146`) | `step.m:73-75` (needs a decoded `0x400`, both > 350); deploy `dcLinkAccum <= 350` on the bench-plant ramp |
+| `prechargeComplete()` requires `dcLink12_v > 350` **and** `dcLink34_v > 350` and `sys.valid` (`vcStateMachine.cpp:131-146`) | `step.m:73-75` (needs a decoded `0x400`, both > 350); deploy `dcLinkAccum12 <= 350 \|\| dcLinkAccum34 <= 350` on two bench-plant ramp accumulators |
 | ENABLE/BUZZING fault if `!prechargeComplete()`; RTD faults if `!prechargeComplete() || sdError` (`vcStateMachine.cpp:195-227`) | `step.m:78-81`; deploy `enterFault` / `enterFaultFromRtd` |
 | `allInvertersReady()` inverter-status fault gate **commented out** (`vcStateMachine.cpp:211-213`) | no readiness fault gate anywhere in the HIL |
 | PRECHARGING never faults (`vcStateMachine.cpp:198-199`) | deploy `enterFault` only for `state == 2 || state == 3` |
@@ -163,11 +163,13 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
   literal zeros for `vehicle_speed, vy, ax, ay, yaw_rate, SWA, fz_*`. The
   runtime `use_imu_vel_x/y = 1` overrides are still applied, matching
   `update_ctrls_inputs()` which sets them unconditionally.
-- **DC link**: `dcLinkAccum` is an existing internal bench-plant ramp
-  (0 -> 400 V over the precharge window), not a CAN receive claim. One scalar
-  feeds both simulated inverter-pair voltages. The host reference
-  (`step.m`) is stricter: it will not consider DC link healthy until a real
-  `0x400` payload has been decoded and both pair voltages exceed 350 V.
+- **DC link**: `dcLinkAccum12` / `dcLinkAccum34` are two internal bench-plant
+  ramps (0 -> 400 V over the precharge window), not a CAN receive claim. The
+  bench drives both identically, but the fault gate is
+  `dcLinkAccum12 <= 350 || dcLinkAccum34 <= 350`, so the structure matches
+  firmware `prechargeComplete()`. The host reference (`step.m`) is stricter:
+  it will not consider DC link healthy until a real `0x400` payload has been
+  decoded and both pair voltages exceed 350 V.
 
 ## Known deviations and firmware issues preserved
 
@@ -175,11 +177,14 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
    on the first RTD (reset) cycle (`vcComms.cpp:286-292`) and in
    `ERROR_SHUTDOWN` (`vcComms.cpp:314-317`). The Port-A CAN Write path is not
    gated per cycle; adding a per-frame enable is the correct future fix.
-2. **`ERROR_SHUTDOWN` recovery**: firmware falls through state 5 to `LV_ON` in
-   the same call (`vcStateMachine.cpp:375-383` `forceLvOn()`). The HIL holds
-   state 5 while `shutdownFeedback` is asserted so the fault is observable; a
-   DC-link-only fault does clear straight to `LV_ON` and can be
-   re-established by precharge.
+2. **`ERROR_SHUTDOWN` recovery**: firmware falls through state 5 to `LV_ON`
+   within a single call (`vcStateMachine.cpp:375-383` `forceLvOn()`). In the
+   HIL the fault-entry branch runs before the `elseif state == 5` recovery,
+   so **any** fault entry — DC-link-only included — parks state 5 for one
+   full 5 ms cycle before recovery is evaluated. `shutdownFeedback`
+   additionally latches the hold until it clears (deliberate, so the fault is
+   observable); a DC-link-only fault clears to `LV_ON` on the next cycle and
+   can be re-established by precharge.
 3. **Pedal task rate**: 5 ms unified HIL tick vs firmware's independent 15 ms
    driver-input task (see "Timing decision").
 4. **RTD -> PRECHARGING** does not model the firmware's `osDelay(50)`
@@ -203,16 +208,25 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
    (`vcStateMachine.cpp:186-188`) before `run()` re-evaluates the switch next
    cycle. The HIL drives the relays purely from the switch and ignores that
    one-cycle blip.
-9. **Generated-C release**: the vendored allocator C is R2025b-generated and
-   the HIL builds under R2024b. The C compiles cleanly (verified for the host
-   MEX); the Speedgoat link is covered by the checklist below.
-10. **`coder_posix_time.c`** is a portable `clock()` substitution for the
+9. **DC-link plant, not a receive path.** The deploy chart has no physical
+   `0x400` system-status receive path, so it cannot assert firmware's
+   `sys.valid` term. It stands in with two identical bench-plant ramp
+   accumulators (`dcLinkAccum12` / `dcLinkAccum34`) and gates the fault on
+   `either <= 350`, matching the *structure* of firmware
+   `prechargeComplete()` (`vcStateMachine.cpp:131-145`) even though the bench
+   models a single bus. The host reference `+virtualvcu/step.m:73-75` is
+   stricter: it requires a decoded `0x400` and both pair voltages > 350 V.
+   A real dual-pair `0x400` decode is a follow-up once that frame is wired.
+10. **Generated-C release**: the vendored allocator C is R2025b-generated and
+    the HIL builds under R2024b. The C compiles cleanly (verified for the host
+    MEX); the Speedgoat link is covered by the checklist below.
+11. **`coder_posix_time.c`** is a portable `clock()` substitution for the
     firmware's STM32 TIM2 timer; the generated code discards `toc`.
-11. **Outside RTD** the model's four periodic CAN Write blocks still publish
+12. **Outside RTD** the model's four periodic CAN Write blocks still publish
     disabled zero control payloads. Firmware queues no normal inverter
     control frames outside RTD. In RTD, reset and torque-cycle payload bytes
     are exact.
-12. **CAN RX sub-sampling (open item).** The base boundary's Port-A FIFO
+13. **CAN RX sub-sampling (open item).** The base boundary's Port-A FIFO
     reader publishes one frame's fields per base tick; the chart samples them
     through a 5 ms Rate Transition, so when several Ephorus `0x3X5` frames
     arrive inside one 5 ms window only the last is seen and
@@ -223,7 +237,7 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
     that could not be built or verified in this environment. On the current
     bench there is no wheel-speed feedback source, so this does not affect
     present operation.
-13. The base `VC_HIL/build/build_inverter_hil_model.m` builds a real-VCU
+14. The base `VC_HIL/build/build_inverter_hil_model.m` builds a real-VCU
     topology; this task is constrained to `virtual-vcu/`, so
     `build_controls_synced_virtual_vcu` builds the base artifact and then
     applies the virtual-VCU overlay. No base-builder file was changed.
@@ -239,8 +253,15 @@ rate, and the five Port-A CAN Write blocks run at `ts = 0.005`.
 - Removed a first-order pedal input filter from `virtualVcuDeployStep.m`;
   firmware `driverInputs.cpp` reads the ADC directly with no smoothing.
 - Torque count encoding switched from `round` to `fix` + int16 clamp to match
-  `ephorus_driver.cpp buildControlFrame`.
+  `ephorus_driver.cpp buildControlFrame`, in **both** `virtualVcuDeployStep.m`
+  and the host `+virtualvcu/packControlFrame.m` (`packPedalFrame.m` keeps
+  `round`: firmware `pctToByte` / `scalePhysicalToU16` explicitly add 0.5).
 - Removed a dead `isfinite(raw)` guard (raws are clamp-bounded).
+- `virtualVcuDeployStep.m` voltage->raw now rounds to integer ADC counts,
+  matching host `+virtualvcu/voltageToRaw.m`.
+- Split the deploy DC-link plant into two pair accumulators
+  (`dcLinkAccum12` / `dcLinkAccum34`) gated on `either <= 350`, so the fault
+  structure matches firmware `prechargeComplete()` (deviation 9).
 - Added tests: `prechargeEnableHeldClosedThroughEnable`,
   `allocatorThrottleIsNotGatedByAppsLatch`,
   `brakeTwoIsTransmittedAsRearPressure`.
