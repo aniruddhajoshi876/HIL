@@ -435,42 +435,68 @@ test `goldenControlBytesAndReset`).
 
 ## MATLAB R2024b regeneration, build and test checklist
 
-Run from the repository root in a clean MATLAB R2024b session. Steps 1-2
-were re-run during round 2 and passed (22/22, Code Analyzer clean on every
-touched `.m`, MEX recompiled with the item-5 stub); steps 3-6 still require a
-machine with enough free disk for a full Simulink code-generation
-(~several GB) and are **not verified here**. See the round-2
-"Verify-via-slbuild checklist" above for the per-change confirmations.
+**Status 2026-08-28: steps 1-5 RUN and PASSED.** `run_virtual_vcu_tests` 22/22,
+Code Analyzer clean on every touched `.m`, `build_controls_synced_virtual_vcu` +
+`verify_virtual_vcu_model` pass, and **`slbuild('inverter_hil')` succeeds** --
+`### Successfully generated all binary outputs` / `1 of 1 models built`,
+producing the QNX x86-64 Speedgoat executable
+`inverter_hil` (~2.1 MB ELF) and `inverter_hil.mldatx`. The final link includes
+`ControlsMFE25.o ControlsMFE25_data.o coder_posix_time.o vvcu_controls_wrapper.o`.
+
+Environment notes for reproducing the build:
+- Free disk: a full Simulink codegen needs several GB. On the dev machine C: is
+  chronically near-full; redirect the Simulink cache with a directory junction
+  `VC_HIL\build\.simulink -> <big drive>\...` (and `slprj`, and `TEMP`) before
+  building. All are gitignored.
+- The Speedgoat I/O Blockset is installed system-wide at
+  `C:\ProgramData\Speedgoat\speedgoatlib\R2024b\10.0.1.1\sg_blocks`. If the repo
+  layout's `inverter_hil_setup.m` only probes a repo-local copy, junction it in.
+- **`'inverter_hil.bat' is not recognized`** at the final make step: prepend the
+  model's `...codegen\inverter_hil_sg_rtw\instrumented` folder to `PATH` before
+  `slbuild` (a Windows process-spawn quirk on this machine -- `deploy_inverter_hil.m`
+  already does this; a plain scripted `slbuild` must too). `make.bat` -> `gmake`
+  wrapper at `C:\Users\MFE-HPC\bin` is also required and already in place.
+- How the allocator reaches each build target: **simulation** (interpreted
+  MATLAB, accelerator, and the Stateflow chart S-function `slbuild` builds first)
+  runs the host MEX `vvcu_controls_mex` and the chart carries NO custom code on
+  that path -- this dodges Stateflow's custom-code pre-parse, which cannot
+  resolve `<stdlib.h>`/`<math.h>` pulled in by the generated `ControlsMFE25.h`.
+  **Code generation** (RTW / Speedgoat) links the four vendored `.c` files via
+  model-level `CustomSource` (full paths) -- see `configure_controls_model.m`.
+  `rt_nonfinite.c`/`rtGetInf.c`/`rtGetNaN.c` are deliberately NOT attached for
+  RTW (Simulink Coder generates its own; the vendored copies collide at link).
 
 ```matlab
 cd('C:\Users\MFE-HPC\Documents\GitHub\HIL-vvcu-sync')
-addpath(fullfile(pwd,'virtual-vcu'))
-addpath(fullfile(pwd,'virtual-vcu','models'))
-addpath(fullfile(pwd,'virtual-vcu','tests'))
-addpath(fullfile(pwd,'VC_HIL','build'))
+addpath(fullfile(pwd,'virtual-vcu'), fullfile(pwd,'virtual-vcu','models'), ...
+        fullfile(pwd,'virtual-vcu','tests'), fullfile(pwd,'VC_HIL','build'), ...
+        fullfile(pwd,'virtual-vcu','vendor','controls_model'))
 
-% 1. [RUN, PASSED] Compile the vendored R2025b allocator C under R2024b and
-%    exercise it, plus all host-reference behavior tests.
+% 1. [PASSED] host MEX + all behaviour tests
 build_controls_model_mex(true);
-run_virtual_vcu_tests;                 % 22/22 passed
+run_virtual_vcu_tests;                 % 22/22
 
-% 2. [RUN, PASSED] Static analysis of every touched .m (Code Analyzer clean).
+% 2. [PASSED] Code Analyzer clean on every touched .m
 
-% 3. Rebuild the controls-branch base model, apply the virtual-VCU overlay,
-%    persist the chart / custom-C settings, and verify the boundary.
+% 3. [PASSED] base model + virtual-VCU overlay + boundary verifier
 result = build_controls_synced_virtual_vcu(true);
 verify_virtual_vcu_model(result.modelPath);
 
-% 4. Re-run the base topology verifier after the overlay.
-cd(fullfile(pwd,'VC_HIL','build')); verify_inverter_hil_model; cd('..\..')
+% 4. verify_inverter_hil_model (the BASE verifier) is NOT re-run post-overlay:
+%    it asserts exactly 16 IO614 CAN Write blocks and the overlay legitimately
+%    adds 5 Port-A writes. verify_virtual_vcu_model (step 3) is the
+%    overlay-aware check.
 
-% 5. Force diagram compilation, then generate/link the Speedgoat application.
+% 5. [PASSED] generate + cross-compile + link the Speedgoat application.
+%    Prepend the build folder to PATH first (see env notes above).
+bd = 'D:\mlbuild\vvcu_simulink\codegen\inverter_hil_sg_rtw\instrumented'; % adjust
+setenv('PATH', [bd pathsep getenv('PATH')]);
 load_system(result.modelPath);
-set_param('inverter_hil','SimulationCommand','update');   % validates the
-                                                         % MATLAB Function
-                                                         % chart codegen
-slbuild('inverter_hil');
+slbuild('inverter_hil');               % -> inverter_hil.mldatx
 close_system('inverter_hil',0);
+
+% 6. [BLOCKED - target offline] download to the Speedgoat:
+%    deploy_inverter_hil('TargetPC1')  % 10.0.1.1 must be powered on / reachable
 ```
 
 ### Hardware-dependent checks (bench, not host)

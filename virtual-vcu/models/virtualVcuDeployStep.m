@@ -16,7 +16,27 @@ function [payloads, dcLinkV, appsBrakeFault, torqueRequestNm] = virtualVcuDeploy
 % cycle through vvcu_controls_wrapper.c. Its output order is
 % TORQUEREQUESTNM=[tau1 tau2 tau3 tau4]=[FL FR RL RR]. Persistent state is
 % never output-aliased; all outputs are fixed-size local copies.
-coder.cinclude('vvcu_controls_wrapper.h');
+coder.extrinsic('vvcu_controls_mex');
+% Simulation paths (interpreted MATLAB, the accelerator MEX, and the Stateflow
+% chart S-function) run the allocator through the already-built host MEX
+% vvcu_controls_mex. Only the real code-generation target (RTW / Speedgoat)
+% links the vendored generated C directly through coder.ceval on
+% vvcu_controls_wrapper.c. This keeps the chart S-function -- which slbuild
+% builds first as a prerequisite -- free of any custom code, so it is not
+% subject to Stateflow's under-provisioned custom-code pre-parse (which cannot
+% resolve <stdlib.h>/<math.h> pulled in by the generated ControlsMFE25.h).
+generateCode = ~coder.target('MATLAB') && ~coder.target('Sfun') && ~coder.target('MEX');
+if generateCode
+    coder.cinclude('vvcu_controls_wrapper.h');
+    % For the RTW / Speedgoat build the vendored allocator .c files are
+    % attached at model level by configure_controls_model.m (CustomSource with
+    % full paths -- ControlsMFE25.c, ControlsMFE25_data.c, coder_posix_time.c,
+    % vvcu_controls_wrapper.c). rt_nonfinite/rtGetInf/rtGetNaN are deliberately
+    % NOT included: Simulink Coder generates its own for every model and the
+    % vendored copies would collide ("multiple definition of rtIsNaN") at link.
+    % The host MEX (build_controls_model_mex) still compiles all seven -- a
+    % standalone MEX has no MathWorks rt_* to collide with.
+end
 
 payloads = zeros(48,1,'uint8');
 torqueRequestNm = zeros(4,1);
@@ -44,10 +64,10 @@ if isempty(state)
     dcLink34Valid = false;
     appsErrorLatch = false;
     resetSent = false;
-    if coder.target('MATLAB')
-        vvcu_controls_mex('reset');
-    else
+    if generateCode
         coder.ceval('vvcu_controls_reset');
+    else
+        vvcu_controls_mex('reset');
     end
 end
 
@@ -201,10 +221,10 @@ else
     controlsInputs(28:31) = 0;
     controlsInputs(32) = 1;
     rawTau = zeros(4,1);
-    if coder.target('MATLAB')
-        rawTau = reshape(vvcu_controls_mex(controlsInputs),4,1);
-    else
+    if generateCode
         coder.ceval('vvcu_controls_step',coder.rref(controlsInputs),coder.wref(rawTau));
+    else
+        rawTau = reshape(vvcu_controls_mex(controlsInputs),4,1);
     end
     % Firmware caps only the upper positive limit. tau order remains FL/FR/RL/RR.
     for k = 1:4
