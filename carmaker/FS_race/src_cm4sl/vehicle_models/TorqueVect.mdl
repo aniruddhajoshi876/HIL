@@ -53,8 +53,8 @@ __MWOPC_PART_BEGIN__ /metadata/coreProperties.xml
   <cp:category>model</cp:category>
   <dcterms:created xsi:type="dcterms:W3CDTF">2026-08-14T20:14:57Z</dcterms:created>
   <cp:lastModifiedBy>MFE-HPC</cp:lastModifiedBy>
-  <dcterms:modified xsi:type="dcterms:W3CDTF">2026-08-28T19:48:20Z</dcterms:modified>
-  <cp:revision>5.242</cp:revision>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">2026-08-28T21:17:42Z</dcterms:modified>
+  <cp:revision>5.243</cp:revision>
   <cp:version>R2022a</cp:version>
 </cp:coreProperties>
 
@@ -122,13 +122,13 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
 <ModelInformation Version="1.0">
   <Model>
     <P Name="ModelUUID">70d1aeee-99f2-4ba2-a0b6-e3367b2cdb16</P>
-    <P Name="PreLoadFcn">run(&apos;Parameters\FSE_Parameters.m&apos;)</P>
+    <P Name="PreLoadFcn">run(fullfile(fileparts(get_param(bdroot,&apos;FileName&apos;)), &apos;Parameters&apos;, &apos;FSE_Parameters.m&apos;))</P>
     <P Name="LastSavedArchitecture">win64</P>
     <ConfigManagerSettings>
       <P Name="ModifiedByFormat">%&lt;Auto&gt;</P>
       <P Name="ModifiedDateFormat">%&lt;Auto&gt;</P>
-      <P Name="RTWModifiedTimeStamp">709832880</P>
-      <P Name="ModelVersionFormat">%&lt;AutoIncrement:5.242&gt;</P>
+      <P Name="RTWModifiedTimeStamp">709838259</P>
+      <P Name="ModelVersionFormat">%&lt;AutoIncrement:5.243&gt;</P>
     </ConfigManagerSettings>
     <EditorSettings>
       <P Name="LibraryLinkDisplay">none</P>
@@ -5590,287 +5590,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">b2c298c9-eb4d-4b78-a5c5-3134afe5e90f</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Atan2</Field>
-            <Field Name="SID_" Class="char">9101</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">26a741e2-acdd-4f9e-baa5-6c932bcced12</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS</Field>
-            <Field Name="SID_" Class="char">2306</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">8fec0bc0-34e2-4d41-a22a-42d360a528d2</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/P_max</Field>
-            <Field Name="SID_" Class="char">7</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">33a84708-79c2-42dc-85dc-a938e4718590</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/vehicle_speed</Field>
-            <Field Name="SID_" Class="char">5</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">8ab52e58-4c3a-46a0-bec6-dac1901f0da3</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/omega</Field>
-            <Field Name="SID_" Class="char">10</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">d1a64598-0860-421c-9c7c-d73a163b0f92</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/SWA</Field>
-            <Field Name="SID_" Class="char">2654</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">7dd991c6-9eb0-42b2-b914-3bf7cfa5a8e9</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/vx</Field>
-            <Field Name="SID_" Class="char">1</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">b980e86a-51f9-4521-8900-d00ffeeb880d</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Vy</Field>
-            <Field Name="SID_" Class="char">2655</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">9e17a179-5804-4776-827c-b657e0afe950</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/rThrottlePedal</Field>
-            <Field Name="SID_" Class="char">9146</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">d6732757-b310-4cd4-b369-6ff095ae1f34</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Demux</Field>
-            <Field Name="SID_" Class="char">18334</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">cdaa486c-b827-46ac-ba5e-22c20979b892</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Demux</Field>
-            <Field Name="SID_" Class="char">18334</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">2.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">c3e00a71-cda7-4cb1-a8d6-52c99b8f8ed4</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Lat</Field>
-            <Field Name="SID_" Class="char">2587</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">ac803f72-8b5f-4019-bf28-5ad7bba6e964</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Divide</Field>
-            <Field Name="SID_" Class="char">9098</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">29825f77-58f4-41dc-85ff-10e71b537c1a</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/vy_imu</Field>
-            <Field Name="SID_" Class="char">10</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">e8747c5a-c183-44c3-bd36-3141f16f2f97</Field>
+            <Field Name="UUID" Class="char">3b8668c0-c9c7-4175-99ec-78cb41edf9e2</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping</Field>
             <Field Name="SID_" Class="char">9160</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -5890,7 +5610,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">c2d94f95-8e79-4f25-bc86-df5fb1f2df3e</Field>
+            <Field Name="UUID" Class="char">dc047aff-a3e7-46a1-9467-8e8e8f07886c</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping</Field>
             <Field Name="SID_" Class="char">9160</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -5910,7 +5630,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">b47421c2-dadf-4776-a324-8d967f6faf28</Field>
+            <Field Name="UUID" Class="char">0a97d3f3-8542-4466-8380-f9dd64331020</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping</Field>
             <Field Name="SID_" Class="char">9160</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -5930,267 +5650,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">9ef072f4-c5e6-4445-a9d1-c4c1b0c77b63</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Lat/Sum1</Field>
-            <Field Name="SID_" Class="char">2631</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">69f1c87d-3237-4903-b244-913740099c10</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Long/Sum1</Field>
-            <Field Name="SID_" Class="char">78</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">431d2e52-cc34-402a-81d4-ea3c348eb320</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Long</Field>
-            <Field Name="SID_" Class="char">2345</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">a614d862-a45c-4f12-aeb9-c6da43438352</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Low-Pass Filter (Discrete or Continuous)</Field>
-            <Field Name="SID_" Class="char">18331</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">6ee0e35c-bae2-4a85-965d-5b3eb84be6c9</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function2</Field>
-            <Field Name="SID_" Class="char">9075</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">3dda835f-7388-4baf-99ce-b360560577fb</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
-            <Field Name="SID_" Class="char">18377</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">bd5d10f8-21b2-46c1-9970-95cd476eefbb</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
-            <Field Name="SID_" Class="char">18377</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">2.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">f905e54b-9c48-4a4f-a053-4c289f297d9d</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
-            <Field Name="SID_" Class="char">18377</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">3.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">630edcc9-7d71-4599-9911-254b6aad2f74</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
-            <Field Name="SID_" Class="char">18377</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">4.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">513ef691-8efe-435f-b019-02825c8dce32</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function4</Field>
-            <Field Name="SID_" Class="char">9081</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">8d1f6fd2-3b22-4fc3-ad25-6420ca11ad3e</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux2</Field>
-            <Field Name="SID_" Class="char">9235</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">a58f99ad-629b-4522-8e34-9c57d5c39f59</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux1</Field>
-            <Field Name="SID_" Class="char">9093</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">b321b94a-38b8-438b-a960-2e2c897cc41b</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux</Field>
-            <Field Name="SID_" Class="char">20</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">78b5e281-395e-48a1-86d8-e9172df140ac</Field>
+            <Field Name="UUID" Class="char">54f2b182-de71-4d26-813f-fc56cb8284af</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux7</Field>
             <Field Name="SID_" Class="char">9241</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -6210,9 +5670,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">87b80e26-b718-4ad4-8610-f50a46e8b124</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux6</Field>
-            <Field Name="SID_" Class="char">9240</Field>
+            <Field Name="UUID" Class="char">594116bc-5d20-4607-aba0-92aa18c7fbf4</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/vehicle_speed</Field>
+            <Field Name="SID_" Class="char">5</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6230,9 +5690,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">c6ca8bac-7ff4-4714-8c1d-68ae6d31c148</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux5</Field>
-            <Field Name="SID_" Class="char">9234</Field>
+            <Field Name="UUID" Class="char">b0e4fa90-2a4f-4934-87c1-df8ab8d6cd95</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS</Field>
+            <Field Name="SID_" Class="char">2306</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6250,147 +5710,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">9c878ae1-ee29-4cb4-b8e7-8163adbb55a9</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux4</Field>
-            <Field Name="SID_" Class="char">9239</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">b868e99e-227f-488e-b6e8-03de9f120f6c</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/Switch</Field>
-            <Field Name="SID_" Class="char">37</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">2a52b888-c6eb-4ccd-a246-65caf3e36c34</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP Normalized</Field>
-            <Field Name="SID_" Class="char">9228</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">8.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">73b0980a-7370-4c93-b375-861d696909e3</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP Normalized</Field>
-            <Field Name="SID_" Class="char">9228</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">9.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">2673f642-2ccd-42b6-a7df-77f9a18867b5</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP and FMINCON w// GRADIENT NORMALIZED</Field>
-            <Field Name="SID_" Class="char">9246</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">12.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">ba877a45-d974-4366-96b3-89f3b197f33e</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP and FMINCON w// GRADIENT NORMALIZED</Field>
-            <Field Name="SID_" Class="char">9246</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">13.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">e949b0cc-b22c-45f8-ad79-0d7453d70ca0</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping/Product3</Field>
-            <Field Name="SID_" Class="char">9153</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">a00cd064-7360-443b-9199-0b4014893206</Field>
+            <Field Name="UUID" Class="char">58f7ca83-cdd9-4975-8f54-afbce658efc3</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping/Switch</Field>
             <Field Name="SID_" Class="char">9155</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -6410,9 +5730,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">5d4cbb0f-6a99-4584-a03b-eb816742c246</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product1</Field>
-            <Field Name="SID_" Class="char">2763</Field>
+            <Field Name="UUID" Class="char">0c4026bd-4345-4b00-8bd9-410e2eddfd06</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Pedal Mapping/Product3</Field>
+            <Field Name="SID_" Class="char">9153</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6430,9 +5750,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">075d3aba-2abe-4676-8d84-bc631347864b</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product4</Field>
-            <Field Name="SID_" Class="char">18409</Field>
+            <Field Name="UUID" Class="char">e9ef90e2-b000-42e6-b81a-1e24d87b1db0</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/omega</Field>
+            <Field Name="SID_" Class="char">10</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6450,9 +5770,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">ab2d46d8-0447-4669-ab09-15ef2a122261</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product2</Field>
-            <Field Name="SID_" Class="char">9079</Field>
+            <Field Name="UUID" Class="char">ca24afac-6723-4b62-9e08-65601c674430</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/P_max</Field>
+            <Field Name="SID_" Class="char">7</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6470,9 +5790,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">12bebaad-5145-41ee-a23e-8703ac085609</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long/Transpose1</Field>
-            <Field Name="SID_" Class="char">1912</Field>
+            <Field Name="UUID" Class="char">42c5c996-985b-4144-8bc7-69ed8e01d370</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/Switch</Field>
+            <Field Name="SID_" Class="char">37</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6490,9 +5810,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">34bd33a8-7b46-4b72-abfd-25b6c817c323</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long</Field>
-            <Field Name="SID_" Class="char">41</Field>
+            <Field Name="UUID" Class="char">ecade7a0-8298-4fcc-9a7b-460be0a21a52</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Vy</Field>
+            <Field Name="SID_" Class="char">2655</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6510,9 +5830,129 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">497406de-ae66-4061-bf47-95482bbbf782</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long</Field>
-            <Field Name="SID_" Class="char">41</Field>
+            <Field Name="UUID" Class="char">68e941c4-1cb7-4a82-acec-151651d4abf1</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/SWA</Field>
+            <Field Name="SID_" Class="char">2654</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">7d4736d3-8960-45b4-b898-777be20df599</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/rThrottlePedal</Field>
+            <Field Name="SID_" Class="char">9146</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">48baba8a-9531-4115-925c-c0dad925db73</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Atan2</Field>
+            <Field Name="SID_" Class="char">9101</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">0de2d612-c592-43a4-a278-e7e13e6cd226</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP and FMINCON w// GRADIENT NORMALIZED</Field>
+            <Field Name="SID_" Class="char">9246</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">12.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">caaadb87-7c23-4e1a-abea-ca8a91f1a432</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP and FMINCON w// GRADIENT NORMALIZED</Field>
+            <Field Name="SID_" Class="char">9246</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">13.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">ce7f01a3-2db0-4cda-ae23-5b685ec97b04</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Demux</Field>
+            <Field Name="SID_" Class="char">18334</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">fd1deb0a-7ba6-423b-b952-41c19692b478</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Demux</Field>
+            <Field Name="SID_" Class="char">18334</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">2.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6530,9 +5970,9 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">ac19237a-9247-4523-be2e-609e65bdcb9e</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference and FF Lat</Field>
-            <Field Name="SID_" Class="char">2477</Field>
+            <Field Name="UUID" Class="char">ba6d4724-2c9d-4d61-bfe1-49e5fab03f3c</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Divide</Field>
+            <Field Name="SID_" Class="char">9098</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6550,9 +5990,149 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">0f75debf-27a5-41d9-8bb2-968fa8bb62ee</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference and FF Lat</Field>
-            <Field Name="SID_" Class="char">2477</Field>
+            <Field Name="UUID" Class="char">3870ed83-48ad-49e4-afbb-0e3b3d818eb5</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Lat/Sum1</Field>
+            <Field Name="SID_" Class="char">2631</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">4050977d-8757-4302-99c2-5ad3347ce8e1</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Lat</Field>
+            <Field Name="SID_" Class="char">2587</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">ccac4e92-f2e7-4223-a96d-7a7f50a4bf0a</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Long/Sum1</Field>
+            <Field Name="SID_" Class="char">78</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">89b65b22-145a-4a9f-8281-dd94839daa49</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Feedback Long</Field>
+            <Field Name="SID_" Class="char">2345</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">8a5451db-5313-466e-a8a8-fbc644b1e523</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Low-Pass Filter (Discrete or Continuous)</Field>
+            <Field Name="SID_" Class="char">18331</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">d482f656-a871-4eab-a6eb-5c0029c629b4</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function2</Field>
+            <Field Name="SID_" Class="char">9075</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">66bef630-01bc-49b6-8551-244ce729d6c0</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
+            <Field Name="SID_" Class="char">18377</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">91f668f3-9192-40bb-bd85-9fb3c7643595</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
+            <Field Name="SID_" Class="char">18377</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">2.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6570,9 +6150,49 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">4e997b0f-9bcb-4bf6-8b40-d41f2542f016</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Saturation Dynamic</Field>
-            <Field Name="SID_" Class="char">2780</Field>
+            <Field Name="UUID" Class="char">f550621f-c229-4c0d-b7e1-ae4ef0ac4dd5</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
+            <Field Name="SID_" Class="char">18377</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">3.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">505cf8e0-3519-4a44-b5b2-22582e89f23c</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function3</Field>
+            <Field Name="SID_" Class="char">18377</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">4.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">3c201019-82b0-48b0-ad36-d17ce94b70ae</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MATLAB Function4</Field>
+            <Field Name="SID_" Class="char">9081</Field>
             <Field Name="SubPath_" Class="char"/>
             <Field Name="OutputPortIndex_" Class="double">1.0</Field>
             <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
@@ -6590,227 +6210,7 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">80c6f8aa-a4bf-468c-b527-95d8610d77cc</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table</Field>
-            <Field Name="SID_" Class="char">9269</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">410fb5e2-f59c-4007-b381-09fad6e39120</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Saturation Dynamic4</Field>
-            <Field Name="SID_" Class="char">2376</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">f12d753f-2f01-47e8-a634-f7c711a3f217</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table3</Field>
-            <Field Name="SID_" Class="char">9321</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">0d6628cc-f214-4fe2-84cd-5469947dbd0a</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table2</Field>
-            <Field Name="SID_" Class="char">9320</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">652c7bbd-4259-4c10-82aa-24965687cc0e</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table1</Field>
-            <Field Name="SID_" Class="char">9319</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">ccfa1cf9-99bd-49c1-8bbd-c3f6430ecc71</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/Gain1</Field>
-            <Field Name="SID_" Class="char">9309</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">2a79f7e0-b889-424c-95bc-8bab983bee5a</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/Gain</Field>
-            <Field Name="SID_" Class="char">9306</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">a4290e1c-e970-4516-9ba0-61860cc59870</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Sum</Field>
-            <Field Name="SID_" Class="char">1913</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">25f046b4-553b-4489-b7d3-8137420f1e07</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/slip angles</Field>
-            <Field Name="SID_" Class="char">9270</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">c599e56d-34fd-499e-9093-beaf84633cbf</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/delta</Field>
-            <Field Name="SID_" Class="char">9</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">fe895a5a-b5fd-49e9-a383-85c1b6a98606</Field>
-            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/Gain</Field>
-            <Field Name="SID_" Class="char">79</Field>
-            <Field Name="SubPath_" Class="char"/>
-            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
-            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
-            <Field Name="SignalName_" Class="char"/>
-            <Field Name="SubSysPath_" Class="char"/>
-            <Field Name="Decimation_" Class="double">1.0</Field>
-            <Field Name="MaxPoints_" Class="double">0.0</Field>
-            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
-            <Field Name="IsFrameBased_" Class="double">0.0</Field>
-            <Field Name="HideInSDI_" Class="double">0.0</Field>
-            <Field Name="DomainType_" Class="char"/>
-            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
-              <MATStruct/>
-            </Array>
-            <Field Name="VisualType_" Class="char"/>
-          </MATStruct>
-          <MATStruct>
-            <Field Name="UUID" Class="char">73df7ae8-f597-4f27-b089-4b655810a0ec</Field>
+            <Field Name="UUID" Class="char">d49388d7-fbf9-45ef-af88-bede1aec55dc</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/MATLAB Function1</Field>
             <Field Name="SID_" Class="char">27</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -6830,7 +6230,607 @@ __MWOPC_PART_BEGIN__ /simulink/blockdiagram.xml
             <Field Name="VisualType_" Class="char"/>
           </MATStruct>
           <MATStruct>
-            <Field Name="UUID" Class="char">99f7fe81-2338-40b4-9de6-03e5c8c79564</Field>
+            <Field Name="UUID" Class="char">afd3ddae-dd7d-416c-a588-b90b79f0d86c</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/Gain</Field>
+            <Field Name="SID_" Class="char">79</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">c00d6594-d9c9-494b-b5cf-0b690f372482</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux1</Field>
+            <Field Name="SID_" Class="char">9093</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">2b2b8ca1-1855-4629-97c7-ef45ab7eba89</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux</Field>
+            <Field Name="SID_" Class="char">20</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">c6dd2175-a66e-4032-a810-17bd2b437879</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux6</Field>
+            <Field Name="SID_" Class="char">9240</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">598d8c40-d292-4401-8b43-70c39f7cc02c</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux5</Field>
+            <Field Name="SID_" Class="char">9234</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">fed46e80-7ade-45ca-bb74-188bfcbb9c5f</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux4</Field>
+            <Field Name="SID_" Class="char">9239</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">d962d4db-816f-453a-989b-77a06339c501</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Mux2</Field>
+            <Field Name="SID_" Class="char">9235</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">f6ee0038-f3a9-485c-9962-5b16701e7fdb</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP Normalized</Field>
+            <Field Name="SID_" Class="char">9228</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">8.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">50f54267-33e7-4374-b684-371fab64d733</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/MOLLS/Torque Allocation QP Normalized</Field>
+            <Field Name="SID_" Class="char">9228</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">9.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">51220c84-4853-4f2a-8d70-d33b245b6a3a</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product4</Field>
+            <Field Name="SID_" Class="char">18409</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">2fa335fd-c307-4091-8468-404d8c1c4af7</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product2</Field>
+            <Field Name="SID_" Class="char">9079</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">d3e733c3-d6ce-4b92-aa75-5ffa2a966f0b</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Product1</Field>
+            <Field Name="SID_" Class="char">2763</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">5f6ec681-553c-4d7f-a159-6431cd047cab</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long/Transpose1</Field>
+            <Field Name="SID_" Class="char">1912</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">f1c370fa-60d4-4838-90b2-ae51a6c85a4d</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long</Field>
+            <Field Name="SID_" Class="char">41</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">5ffb663d-c501-4b43-8a0d-832ebf60e547</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference Generator and FeedForward Long</Field>
+            <Field Name="SID_" Class="char">41</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">2.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">67a63c46-1544-45ee-a69a-c529cf8bed74</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference and FF Lat</Field>
+            <Field Name="SID_" Class="char">2477</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">2d4a9cdf-c267-4141-926b-874d3245501f</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Reference and FF Lat</Field>
+            <Field Name="SID_" Class="char">2477</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">2.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">614d656d-9009-477b-b63a-31e08e2ece4d</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Saturation Dynamic4</Field>
+            <Field Name="SID_" Class="char">2376</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">2a26c759-dd84-4cb9-8343-4448214d7ae6</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Saturation Dynamic</Field>
+            <Field Name="SID_" Class="char">2780</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">2e390ccd-8020-4a48-8f94-bfbcaa224995</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table3</Field>
+            <Field Name="SID_" Class="char">9321</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">eb3dee15-58de-48cb-a2a3-879b783e9a28</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table2</Field>
+            <Field Name="SID_" Class="char">9320</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">d733c4a1-44e2-4e84-9d35-e99c883f1fb5</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table1</Field>
+            <Field Name="SID_" Class="char">9319</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">d72691c3-1422-4351-8397-2b9c851f4822</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/2-D Lookup Table</Field>
+            <Field Name="SID_" Class="char">9269</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">21096461-c67b-40aa-a147-b66a3334e345</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/Gain1</Field>
+            <Field Name="SID_" Class="char">9309</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">32b1e57b-8f37-460f-87ff-33e056c0611f</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/Gain</Field>
+            <Field Name="SID_" Class="char">9306</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">60492ba8-9431-412e-a673-e5407dd0b51a</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Sum</Field>
+            <Field Name="SID_" Class="char">1913</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">02f5e607-6f95-4191-a2ab-654594906baf</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem/slip angles</Field>
+            <Field Name="SID_" Class="char">9270</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">ff472d18-bf3b-4167-891e-ba739256d340</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/vx</Field>
+            <Field Name="SID_" Class="char">1</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">c4ca6be8-9ad3-4432-a583-b6027d62decc</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/vy_imu</Field>
+            <Field Name="SID_" Class="char">10</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">f83dac33-e728-42d0-b9a8-594014784d47</Field>
+            <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/delta</Field>
+            <Field Name="SID_" Class="char">9</Field>
+            <Field Name="SubPath_" Class="char"/>
+            <Field Name="OutputPortIndex_" Class="double">1.0</Field>
+            <Field Name="LogicalPortIndex_" Class="double">0.0</Field>
+            <Field Name="SignalName_" Class="char"/>
+            <Field Name="SubSysPath_" Class="char"/>
+            <Field Name="Decimation_" Class="double">1.0</Field>
+            <Field Name="MaxPoints_" Class="double">0.0</Field>
+            <Field Name="TargetBufferedStreaming_" Class="double">0.0</Field>
+            <Field Name="IsFrameBased_" Class="double">0.0</Field>
+            <Field Name="HideInSDI_" Class="double">0.0</Field>
+            <Field Name="DomainType_" Class="char"/>
+            <Array PropName="DomainParams_" Type="Struct" Dimension="1*1">
+              <MATStruct/>
+            </Array>
+            <Field Name="VisualType_" Class="char"/>
+          </MATStruct>
+          <MATStruct>
+            <Field Name="UUID" Class="char">a6a87921-4a20-4767-924c-323257ac2090</Field>
             <Field Name="BlockPath_" Class="char">CarMaker/IPG Vehicle/PowerTrain/PTControl Example/PTControl_TV_MFE25_2022a1/Subsystem Reference/Subsystem Reference/MATLAB Function2</Field>
             <Field Name="SID_" Class="char">28</Field>
             <Field Name="SubPath_" Class="char"/>
@@ -14299,8 +14299,8 @@ Configuration</P>
 __MWOPC_PART_BEGIN__ /simulink/modelDictionary.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <MF0 version="1.1" defaultPackage="slid" packageUris="http://schema.mathworks.com/mf0/slid/R2020b_20191110">
-  <System type="System" uuid="a2508646-295c-4b6d-879b-116ab6fd80d4">
-    <Interface type="Interface" uuid="b575f687-277a-4874-b9ec-e1814b38475b"/>
+  <System type="System" uuid="2f70e2cc-2626-4a1c-8dc6-9f6b7ebcc45a">
+    <Interface type="Interface" uuid="f09f743b-e75a-4254-8fa9-ef1b0f5db763"/>
   </System>
 </MF0>
 __MWOPC_PART_BEGIN__ /simulink/plugins/SimscapeModelParametersPlugin.xml
@@ -14312,27 +14312,27 @@ __MWOPC_PART_BEGIN__ /simulink/plugins/SimscapeModelParametersPlugin.xml
 __MWOPC_PART_BEGIN__ /simulink/ScheduleCore.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sltp_graph version="1.1" packageUris="http://schema.mathworks.com/mf0/sltp_mm/R2021b_202106150630">
-  <sltp.mm.core.Context type="sltp.mm.core.Context" uuid="4dc3ed92-8edc-46b2-a3f8-d16bc610f6d4">
+  <sltp.mm.core.Context type="sltp.mm.core.Context" uuid="6cc86a81-9c2f-45b3-b1a8-bf46cd7d7575">
     <priorityDirection>HighNumberLast</priorityDirection>
     <editorState type="sltp.mm.core.EditorState" uuid="cbfbd03e-ec73-47e9-b75d-ff0abc06ad24">
       <isSynchronized>true</isSynchronized>
       <panelState type="sltp.mm.core.EditorPanelState" uuid="751795f6-a818-498d-878e-71287a0e9ce0"/>
     </editorState>
-    <rootTask type="sltp.mm.core.Task" uuid="5a9fbe44-8df8-411b-85fa-bf35650e3e18">
-      <context type="sltp.mm.core.Context" uuid="4dc3ed92-8edc-46b2-a3f8-d16bc610f6d4"/>
+    <rootTask type="sltp.mm.core.Task" uuid="fd5d98df-404d-41a9-824f-cff468b9d83d">
+      <context type="sltp.mm.core.Context" uuid="6cc86a81-9c2f-45b3-b1a8-bf46cd7d7575"/>
       <explicit>false</explicit>
       <name>Default</name>
       <priority>-2147483648</priority>
-      <subgraph type="sltp.mm.core.Graph" uuid="5e782635-b368-40f4-96ce-aac19b28b50a">
-        <tasks type="sltp.mm.core.Task" uuid="1d9edbb2-38c1-48ca-bb20-8850336a5fdb">
+      <subgraph type="sltp.mm.core.Graph" uuid="9a5eabe5-e315-4d2f-83bc-b6119b57eb18">
+        <tasks type="sltp.mm.core.Task" uuid="7f14ea2d-c6d1-4ce3-adf1-ac9c55ee9e91">
           <baseTask>true</baseTask>
-          <context type="sltp.mm.core.Context" uuid="4dc3ed92-8edc-46b2-a3f8-d16bc610f6d4"/>
+          <context type="sltp.mm.core.Context" uuid="6cc86a81-9c2f-45b3-b1a8-bf46cd7d7575"/>
           <explicit>false</explicit>
           <id>1</id>
           <isTimed>true</isTimed>
           <name>FiM</name>
           <priority>40</priority>
-          <rates type="sltp.mm.core.Rate" uuid="7f041136-cacb-4e15-8a16-909074f76984">
+          <rates type="sltp.mm.core.Rate" uuid="7eb942bb-3007-488a-b7ec-94b27d15c0e6">
             <annotation>FiM</annotation>
             <color>-2139062017</color>
             <hasBlocks>true</hasBlocks>
@@ -14343,7 +14343,7 @@ __MWOPC_PART_BEGIN__ /simulink/ScheduleCore.xml
             </rateSpec>
             <sti>0</sti>
           </rates>
-          <rates type="sltp.mm.core.Rate" uuid="6160fa2c-d86d-402a-a119-f58eb6d8ac7e">
+          <rates type="sltp.mm.core.Rate" uuid="67683e43-fdf6-4677-a939-53e436dc8029">
             <annotation>D1</annotation>
             <color>-436207361</color>
             <hasBlocks>true</hasBlocks>
@@ -14352,7 +14352,7 @@ __MWOPC_PART_BEGIN__ /simulink/ScheduleCore.xml
             </rateSpec>
             <sti>1</sti>
           </rates>
-          <rates type="sltp.mm.core.Rate" uuid="fc533941-9204-486f-a724-296e88474065">
+          <rates type="sltp.mm.core.Rate" uuid="77802c9e-8baf-4e85-9279-b9bd892a1fe8">
             <annotation>D2</annotation>
             <color>13697279</color>
             <hasBlocks>true</hasBlocks>
@@ -174520,9 +174520,10 @@ __MWOPC_PART_BEGIN__ /simulink/systems/system_root.xml
 <System>
   <P Name="Location">[-8, -8, 1928, 1040]</P>
   <P Name="SystemRect">[0.000000, 0.000000, 0.000000, 0.000000]</P>
+  <P Name="Open">on</P>
   <P Name="SetExecutionDomain">off</P>
   <P Name="ExecutionDomainType">Deduce</P>
-  <P Name="ZoomFactor">200</P>
+  <P Name="ZoomFactor">21</P>
   <P Name="ReportName">simulink-default.rpt</P>
   <P Name="SIDHighWatermark">28027</P>
   <P Name="SimulinkSubDomain">Simulink</P>
@@ -174637,10 +174638,10 @@ __MWOPC_PART_BEGIN__ /simulink/windowsInfo.xml
           <P Name="IsTabbed" Class="logical">1</P>
           <P Name="ViewObjType" Class="char">SimulinkTopLevel</P>
           <P Name="LoadSaveID" Class="char">0</P>
-          <P Name="Extents" Class="double">[1852.0, 836.0]</P>
-          <P Name="ZoomFactor" Class="double">2.0</P>
-          <P Name="Offset" Class="double">[-304.27903150920008, -179.91399379912036]</P>
-          <P Name="SceneRectInView" Class="double">[-304.27903150920008, -179.91399379912036, 926.0, 418.0]</P>
+          <P Name="Extents" Class="double">[1852.0, 88.0]</P>
+          <P Name="ZoomFactor" Class="double">0.21052631578947367</P>
+          <P Name="Offset" Class="double">[-796.4, -179.91399379912036]</P>
+          <P Name="SceneRectInView" Class="double">[-796.4, -179.91399379912036, 8797.0, 418.0]</P>
         </Object>
         <Object ObjectID="6">
           <P Name="IsActive" Class="logical">0</P>
@@ -178165,6 +178166,18 @@ __MWOPC_PART_BEGIN__ /simulink/windowsInfo.xml
       </Array>
       <Array PropName="DockComponentsInfo" Type="Simulink.DockComponentInfo" Dimension="1*2">
         <Object ObjectID="358">
+          <P Name="Type" Class="char">GLUE2:PropertyInspector</P>
+          <P Name="ID" Class="char">Property Inspector</P>
+          <P Name="Visible" Class="logical">0</P>
+          <P Name="CreateCallback" Class="char"/>
+          <P Name="UserData" Class="char"/>
+          <P Name="Floating" Class="logical">0</P>
+          <P Name="DockPosition" Class="char">Right</P>
+          <P Name="Width" Class="int32">640</P>
+          <P Name="Height" Class="int32">480</P>
+          <P Name="Minimized" Class="char">Unset</P>
+        </Object>
+        <Object ObjectID="359">
           <P Name="Type" Class="char">Simulink:Editor:ReferencedFiles</P>
           <P Name="ID" Class="char">Referenced Files</P>
           <P Name="Visible" Class="logical">1</P>
@@ -178177,20 +178190,8 @@ __MWOPC_PART_BEGIN__ /simulink/windowsInfo.xml
           <P Name="Height" Class="int32">480</P>
           <P Name="Minimized" Class="char">On</P>
         </Object>
-        <Object ObjectID="359">
-          <P Name="Type" Class="char">GLUE2:PropertyInspector</P>
-          <P Name="ID" Class="char">Property Inspector</P>
-          <P Name="Visible" Class="logical">0</P>
-          <P Name="CreateCallback" Class="char"/>
-          <P Name="UserData" Class="char"/>
-          <P Name="Floating" Class="logical">0</P>
-          <P Name="DockPosition" Class="char">Right</P>
-          <P Name="Width" Class="int32">640</P>
-          <P Name="Height" Class="int32">480</P>
-          <P Name="Minimized" Class="char">Unset</P>
-        </Object>
       </Array>
-      <P Name="WindowState" Class="char">AAAA/wAAAAD9AAAAAwAAAAAAAAC9AAADY/wCAAAABPsAAAAWAEQAbwBjAGsAVwBpAGQAZwBlAHQAMwEAAAAxAAAB+AAAAAAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAeQAAA2MAAABjAP////sAAABgAFMAaQBtAHUAbABpAG4AawA6AEUAZABpAHQAbwByADoAUgBlAGYAZQByAGUAbgBjAGUAZABGAGkAbABlAHMALwBSAGUAZgBlAHIAZQBuAGMAZQBkACAARgBpAGwAZQBzAAAAAAD/////AAAAjAD///8AAAABAAAAAAAAAAD8AgAAAAH7AAAAVABHAEwAVQBFADIAOgBQAHIAbwBwAGUAcgB0AHkASQBuAHMAcABlAGMAdABvAHIALwBQAHIAbwBwAGUAcgB0AHkAIABJAG4AcwBwAGUAYwB0AG8AcgAAAAAA/////wAAAawA////AAAAAwAAB2IAAALo/AEAAAAC/AAAAB4AAAdgAAAAAAD////6/////wEAAAAA+/////8AAAAAAP////8AAAFZAP///wAAB2IAAANjAAAAAQAAAAIAAAABAAAAAvwAAAADAAAAAAAAAAEAAAA2AGMAbwBsAGwAYQBwAHMAaQBiAGwAZQBQAGEAbgBlAGwAVABvAG8AbABCAGEAcgBMAGUAZgB0AwAAAAD/////AAAAAAAAAAAAAAABAAAAAQAAADgAYwBvAGwAbABhAHAAcwBpAGIAbABlAFAAYQBuAGUAbABUAG8AbwBsAEIAYQByAFIAaQBnAGgAdAIAAAAA/////wAAAAAAAAAAAAAAAwAAAAEAAAA6AGMAbwBsAGwAYQBwAHMAaQBiAGwAZQBQAGEAbgBlAGwAVABvAG8AbABCAGEAcgBCAG8AdAB0AG8AbQAAAAAA/////wAAAAAAAAAA</P>
+      <P Name="WindowState" Class="char">AAAA/wAAAAD9AAAAAwAAAAAAAAC9AAADY/wCAAAABPsAAAAWAEQAbwBjAGsAVwBpAGQAZwBlAHQAMwEAAAAxAAAB+AAAAAAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAeQAAA2MAAABjAP////sAAABgAFMAaQBtAHUAbABpAG4AawA6AEUAZABpAHQAbwByADoAUgBlAGYAZQByAGUAbgBjAGUAZABGAGkAbABlAHMALwBSAGUAZgBlAHIAZQBuAGMAZQBkACAARgBpAGwAZQBzAAAAAAD/////AAAAjAD///8AAAABAAAAAAAAAAD8AgAAAAH7AAAAVABHAEwAVQBFADIAOgBQAHIAbwBwAGUAcgB0AHkASQBuAHMAcABlAGMAdABvAHIALwBQAHIAbwBwAGUAcgB0AHkAIABJAG4AcwBwAGUAYwB0AG8AcgAAAAAA/////wAAAawA////AAAAAwAAB2IAAALo/AEAAAAC/AAAAB4AAAdgAAAAAAD////6/////wEAAAAA+/////8BAAAAHgAAB2IAAAFZAP///wAAB2IAAAB3AAAAAQAAAAIAAAABAAAAAvwAAAADAAAAAAAAAAEAAAA2AGMAbwBsAGwAYQBwAHMAaQBiAGwAZQBQAGEAbgBlAGwAVABvAG8AbABCAGEAcgBMAGUAZgB0AwAAAAD/////AAAAAAAAAAAAAAABAAAAAQAAADgAYwBvAGwAbABhAHAAcwBpAGIAbABlAFAAYQBuAGUAbABUAG8AbwBsAEIAYQByAFIAaQBnAGgAdAIAAAAA/////wAAAAAAAAAAAAAAAwAAAAEAAAA6AGMAbwBsAGwAYQBwAHMAaQBiAGwAZQBQAGEAbgBlAGwAVABvAG8AbABCAGEAcgBCAG8AdAB0AG8AbQAAAAAA/////wAAAAAAAAAA</P>
       <Array PropName="PersistedApps" Type="Cell" Dimension="0*1"/>
       <P Name="WindowUuid" Class="char">c73bbc86-f93a-40b8-88a9-676d863528b6</P>
     </Object>
