@@ -1,6 +1,6 @@
 VERSION "MFE26 real-VCU HIL / CarMaker two-bus contract"
 
-CM_ "CAN topology: two independent buses, Speedgoat the only node on both. Channel 2 / IO614 Port A is the VC bus (control frames 390/406/422/438 VC->SpeedgoatHIL; the nine inverter status frames 899/901/915/917/931/933/947/949/1024, the MTi vector sensor frames 52/50/118, the MTi scalar-group frames 6/5/17/1, and the Bosch LWS standard frame 688 all SpeedgoatHIL->VC; CarMaker is NOT on this bus). Channel 1 / IO614 Port B is the CarMaker bus (1280 CarMakerPedalDemand and 1283/1284/1285/1286 CarMaker physics CarMaker->SpeedgoatHIL; 1281/1282 SpeedgoatHIL->CarMaker). The Speedgoat interprets CarMaker's pedal demand and physics and republishes the per-inverter torque setpoints and ready bits CarMaker needs.";
+CM_ "CAN topology: two independent buses, Speedgoat the only node on both. Channel 2 / IO614 Port A is the VC bus (control frames 390/406/422/438 VC->SpeedgoatHIL; the nine inverter status frames 899/901/915/917/931/933/947/949/1024, the MTi vector sensor frames 52/50/118, the MTi scalar-group frames 6/5/17/1, and the Bosch LWS standard frame 688 all SpeedgoatHIL->VC; CarMaker is NOT on this bus). Channel 1 / IO614 Port B is the CarMaker bus (1280 CarMakerPedalDemand, 1283/1284/1285/1286 CarMaker physics, and 1287 CarMakerDriverSteering CarMaker->SpeedgoatHIL; 1281/1282 SpeedgoatHIL->CarMaker). The Speedgoat interprets CarMaker's pedal demand, physics, and driver steering, republishes the per-inverter torque setpoints and ready bits CarMaker needs, and turns 1287 into the Bosch LWS 0x2B0 frame it transmits to the VC. Frame 1287 stays on the CarMaker bus and is never forwarded to the VC bus.";
 
 NS_ :
     CM_
@@ -184,6 +184,14 @@ BO_ 1286 CarMakerPhysicsEuler: 8 CarMaker
  SG_ PhysicsGroupCounter : 48|8@1+ (1,0) [0|255] "" SpeedgoatHIL
  SG_ PhysicsIntegrity : 56|8@1+ (1,0) [0|255] "" SpeedgoatHIL
 
+BO_ 1287 CarMakerDriverSteering: 8 CarMaker
+ SG_ SteeringWheelAngleDeg : 0|16@1- (0.1,0) [-780|780] "deg" SpeedgoatHIL
+ SG_ SteeringWheelSpeedDegPerSec : 16|16@1- (0.5,0) [-3600|3600] "deg/s" SpeedgoatHIL
+ SG_ SteeringReserved : 32|16@1+ (1,0) [0|0] "" SpeedgoatHIL
+ SG_ SteeringAliveCounter : 48|8@1+ (1,0) [0|255] "" SpeedgoatHIL
+ SG_ SteeringIntegrity : 56|8@1+ (1,0) [0|255] "" SpeedgoatHIL
+
+CM_ BO_ 1287 "Channel-1 CarMaker-to-SpeedgoatHIL Fanatec / driver steering-wheel position, sent at 100 Hz alongside the physics group. Bytes 0..1 SteeringWheelAngleDeg, signed Intel int16 at 0.1 deg/bit; bytes 2..3 SteeringWheelSpeedDegPerSec, signed Intel int16 at 0.5 (deg/s)/bit; bytes 4..5 reserved, must be zero. Byte 6 is an own modulo-256 alive counter (NOT the 1283-1286 physics group counter). Byte 7 is CRC-8/SAE-J1850 over bytes 0..6 (poly 0x1D, init 0xFF, non-reflected, xorout 0xFF). Left-hand-positive (CarMaker / ISO 8855, matching the Bosch LWS). Angle is saturated to the Bosch LWS +/-780 deg range by TorqueVect.mdl before transmission; the SpeedgoatHIL LWS emulator, not CarMaker, packs the Bosch 0x2B0 frame. PROVISIONAL CAN ID 0x507 -- no authoritative vehicle-wide CAN ID registry exists; team approval still required. See VC_HIL/docs/carmaker_fanatec_lws_steering.md.";
 CM_ BO_ 1280 "Channel-1 CarMaker-bus frame. CRC-8/SAE-J1850 covers bytes 1..5: poly 0x1D, init 0xFF, RefIn=false, RefOut=false, xorout 0xFF. Exact ownership behavior is documented in VC_HIL/docs/can_pedal_demand_frame_spec.md.";
 CM_ BO_ 1281 "Speedgoat-to-CarMaker telemetry, cyclic 5 ms, no application CRC, counter, or timeout.";
 CM_ BO_ 1282 "Speedgoat-to-CarMaker telemetry, cyclic 5 ms. Reserved bits 4..63 must be zero. No application CRC, counter, or timeout.";
@@ -216,6 +224,7 @@ BA_ "GenMsgCycleTime" BO_ 1283 10;
 BA_ "GenMsgCycleTime" BO_ 1284 10;
 BA_ "GenMsgCycleTime" BO_ 1285 10;
 BA_ "GenMsgCycleTime" BO_ 1286 10;
+BA_ "GenMsgCycleTime" BO_ 1287 10;
 BA_ "GenMsgCycleTime" BO_ 52 10;
 BA_ "GenMsgCycleTime" BO_ 50 10;
 BA_ "GenMsgCycleTime" BO_ 118 10;

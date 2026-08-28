@@ -209,3 +209,20 @@ Before trusting the CAN path:
   (`build_inverter_hil_model.m`, the decoder, the selector) is R2024b and is
   already committed on branch `CAN` (`9637e80`), gated off by
   `defaultVehicleStateConfig.carMakerTruthEnabled = false`.
+
+---
+
+## 9. Fanatec / driver steering (0x507) — scripted, not hand-wired
+
+The steering-wheel passthrough into `MFE_CAN.Driver.SteeringAngleDeg` /
+`.SteeringSpeedDegPerSec` is **not** built by hand. Run
+`carmaker/FS_race/src_cm4sl/apply_torquevect_steering.m` in R2022a; it adds the
+port-free `MFE_CAN Driver Steering` subsystem (Read CM Dict → `180/pi` Gain →
+sign Gain → Saturation ±780 deg → Write CM Dict, for angle and speed) and is
+rerunnable with no duplicate blocks or lines. The one thing you still confirm in
+the **Read CM Dict quantity browser** is which source quantity the Fanatec wheel
+drives (`DM.Steer.Ang` default, or `VC.Steer.Ang` / `Driver.Steer.Ang` /
+`Steer.WhlAng`) — pass it as `apply_torquevect_steering('AngleQuantity', ...)`.
+Full signal path, sign convention, and the Speedgoat side (gated by
+`defaultVehicleStateConfig.carMakerSteeringEnabled = false`):
+`VC_HIL/docs/carmaker_fanatec_lws_steering.md`.

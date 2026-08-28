@@ -51,7 +51,9 @@ convention (`@1`).
 | `0x400` | System/DC-link status | Speedgoat -> real VCU | 5 ms |
 | `0x501` | Torque telemetry | Speedgoat -> CarMaker | 5 ms |
 | `0x502` | Ready telemetry | Speedgoat -> CarMaker | 5 ms |
-| `0x032`, `0x034`, `0x2B0` | Sensor payloads | Sensor/emulator -> real VCU | Sensor-defined |
+| `0x503`-`0x506` | CarMaker vehicle-physics truth | CarMaker -> Speedgoat | 10 ms |
+| `0x507` | `CarMakerDriverSteering` (Fanatec wheel angle/speed) | CarMaker -> Speedgoat | 10 ms |
+| `0x032`, `0x034`, `0x076`, `0x2B0` | Sensor payloads (MTi, Bosch LWS) | Sensor/emulator -> real VCU | Sensor-defined |
 
 Speedgoat transmits each status burst in this order:
 
@@ -236,6 +238,28 @@ together with a telemetry timeout before loaded operation.
 The aggregate CarMaker DBC reserves `0x032`, `0x034`, and `0x2B0` as
 eight-byte raw payloads. Field definitions belong to the dedicated IMU and
 steering-sensor protocol code. Do not infer fields from the raw DBC entries.
+
+## 11a. `0x507` CarMakerDriverSteering (CarMaker bus, PROVISIONAL ID)
+
+Fanatec / driver steering-wheel position, CarMaker -> Speedgoat on channel 1.
+Standard 11-bit, DLC 8, Intel/little-endian, 10 ms.
+
+| Bits | Signal | Encoding | Constraint |
+|---:|---|---|---|
+| 0..15 | `SteeringWheelAngleDeg` | signed i16, raw x 0.1 deg | \|angle\| <= 780 (Bosch LWS range); left-hand positive |
+| 16..31 | `SteeringWheelSpeedDegPerSec` | signed i16, raw x 0.5 deg/s | \|speed\| <= 3600 |
+| 32..47 | `SteeringReserved` | unsigned 16-bit | zero; decoder rejects otherwise |
+| 48..55 | `SteeringAliveCounter` | unsigned 8-bit | modulo 256; own counter, NOT the 0x503-0x506 group counter |
+| 56..63 | `SteeringIntegrity` | unsigned 8-bit | CRC-8/SAE-J1850 over bytes 0..6 (poly 0x1D, init 0xFF, non-reflected, xorout 0xFF) |
+
+The Speedgoat decodes and retains it (`decodeCarMakerSteeringFrame` /
+`receiveCarMakerSteering` / `carMakerSteeringSnapshot`), and
+`selectSteeringSource` feeds the fresh CarMaker angle, or the GUI steering dial
+on loss, into the Bosch LWS emulator that transmits `0x2B0`. `0x507` never
+reaches the VC bus. Gated by
+`defaultVehicleStateConfig.carMakerSteeringEnabled` (ships `false`).
+`0x507` is PROVISIONAL pending a CAN-ID-registry ratification. Full path:
+`VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
 
 ## 12. CarMaker CM4SL integration
 

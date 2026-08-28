@@ -89,6 +89,14 @@ for index = 1:numel(applied)
         applied(index).pressedV);
 end
 
+% Persist to disk explicitly. Relying on the ONCLEANUP close() alone left the
+% seeded NaN endpoints on disk when this ran immediately after
+% BUILD_INVERTER_HIL_MODEL (the model was still loaded with the dictionary
+% associated, and close() did not flush) -- the exact silent
+% calibration-wipe this script exists to prevent. SAVECHANGES makes the
+% write unconditional.
+saveChanges(dictionary);
+
 fprintf('Applied pedal calibration to %s:\n', dictionaryPath);
 for index = 1:numel(applied)
     fprintf('  AO%02d %-12s released %.6f V -> pressed %.6f V (%s)\n', ...
