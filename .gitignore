@@ -52,3 +52,6 @@ carmaker/FS_race/src_cm4sl/libcarmaker4sl.mexw64
 # SIM_START with "Tire: Can't read file".
 !carmaker/**/Examples/
 !carmaker/**/Examples/**
+
+# Session-local scratch: reports and helper scripts, never committed.
+/tmp/
