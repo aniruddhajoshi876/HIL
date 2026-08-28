@@ -143,10 +143,12 @@ end
 % rear pressure even though it is excluded from plausibility). In RTD the
 % throttle byte uses the interlock-gated torqueRequestPct; other states use
 % throttleValidPct.
-% DEVIATION: firmware skips 0x1F5 entirely on the first RTD (reset) cycle and
-% in ERROR_SHUTDOWN (vcComms.cpp run()). This fixed-rate bench re-packs the
-% pedal payload every 5 ms because the CAN Write path is not gated per cycle;
-% see docs/controls_branch_sync.md.
+% This chart re-packs the pedal payload every 5 ms; transmission is gated
+% downstream by "Port A TX Gate" (add_virtual_vcu_to_model.m), which
+% suppresses 0x1F5 in ERROR_SHUTDOWN to match firmware. RESIDUAL DEVIATION:
+% firmware also skips 0x1F5 on the first RTD reset-only cycle; the
+% state-keyed gate still sends that one frame. See
+% docs/controls_branch_sync.md deviation 1.
 pedalThrottle = throttleValidPct;
 if state == 4, pedalThrottle = torqueRequestPct; end
 frontBrake = uint16(round(650*b1));

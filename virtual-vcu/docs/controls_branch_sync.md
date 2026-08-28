@@ -379,22 +379,30 @@ next slbuild:
   compiles for the host MEX — re-verified this session) and that `slbuild`
   reports no unresolved `clock`/`clock_gettime`.
 - **D. `verify_virtual_vcu_model` additions.** It now asserts every Port-A
-  CAN write has `enableInput == 'on'` and that `Port A TX Gate` exists — run
+  CAN write has `enableInput == 'on'`, that `Port A TX Gate` exists, and
+  walks each write's port-1 (TX gate) and port-2 (CAN Pack) sources — run
   it after the overlay.
 - **E. Item 2 retention block.** `models/virtualVcuRxRetain.m` installed on
   `Virtual VCU/Virtual VCU RX Retain` (6 inputs from the `Port A RX * From`
   blocks, 1 output to `VCU Input Mux/9`), running at the 1 ms base rate.
-  Confirm the base-rate persistent survives across chart executions and that
-  the `From` tags (`EphorusRx*`) resolve. Host equiv:
+  `patch_virtual_vcu_inputs.m` re-asserts the script after wiring and after
+  a close/reopen (R2024b MATLAB Function template-reversion guard, same as
+  the chart). Confirm the base-rate persistent survives across chart
+  executions and that the `From` tags (`EphorusRx*`) resolve. Host equiv:
   `rxRetentionKeepsAllFourCornersInAWindow`.
-- **F. Items 8/9 transmission gating.** `Port A TX Gate` reads
-  `VirtualVcuStateId` and drives inport 2 of each `Port A CAN Write` through
-  `Port A TX Gate Rate Transition 1/2`. Bench check: with a CAN logger on
-  Port A, confirm **no** `0x186/0x196/0x1A6/0x1B6` outside RTD; `0x1F5`
+- **F. Items 8/9 transmission gating.** `enableInput` on every `Port A CAN
+  Write` moves the Tx-control input to **port 1** and the CAN Pack data to
+  **port 2** (base contract, `build_inverter_hil_model.m:769-776,1047-1052`);
+  the wiring and `verify_virtual_vcu_model` match that. `Port A TX Gate`
+  (MATLAB Function on `VirtualVcuStateId`) emits **uint32** 1/0 — control
+  enable = `state == 4` to writes 2..5 port 1, pedal enable = `state ~= 5`
+  to write 1 port 1 — each through `Port A TX Gate Rate Transition 1` / `2`
+  at 0.005 s. `verify_virtual_vcu_model` now walks each write's port-1 and
+  port-2 sources. `Port A Pedal TX Counter` takes the pedal enable as
+  input 2 and only counts transmitted ticks. Bench check: with a CAN logger
+  on Port A, confirm **no** `0x186/0x196/0x1A6/0x1B6` outside RTD; `0x1F5`
   present in LV_ON..BUZZING and absent in `ERROR_SHUTDOWN`; on RTD entry the
-  four reset frames then (next cycle) enable-bit-set torque frames. Confirm
-  the transmission-control input type the block expects (double 0/1 is fed;
-  the base model's own CAN writes use `enableInput` the same way). Host
+  four reset frames then (next cycle) enable-bit-set torque frames. Host
   equiv: `canFrameTransmissionGatingMatchesFirmwareStates`.
 
 ## Corrections applied to the Codex checkpoint (`d9e306e`)

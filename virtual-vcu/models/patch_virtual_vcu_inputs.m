@@ -173,11 +173,31 @@ deleteExistingLine(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1');
 deleteExistingLine(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1');
 add_line(path,'VCU Input Mux/1','VCU 5 ms Rate Transition/1','autorouting','on');
 add_line(path,'VCU 5 ms Rate Transition/1','Virtual VCU LV_ON/1','autorouting','on');
-chart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', ...
-    'Path', [path '/Virtual VCU LV_ON']);
-chart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
-    'virtualVcuDeployStep.m'));
+% Re-assert both MATLAB Function scripts AFTER every signal connection.
+% R2024b silently reverts a MATLAB Function block to its default passthrough
+% template when a downstream vector-width diagnostic is first evaluated
+% against a script installed before the block's inputs/outputs were wired
+% (see the same reassert pattern in add_virtual_vcu_to_model.m for the
+% chart / pedal TX counter). virtualVcuRxRetain's script was installed
+% above before its 6 inputs and its VCU Input Mux/9 output existed.
+reassertInputScripts(path);
 save_system(model, modelPath);
+% Persist once more after a close/reopen, mirroring add_virtual_vcu_to_model.
+close_system(model, 0);
+load_system(modelPath);
+reassertInputScripts(path);
+save_system(model, modelPath);
+end
+
+function reassertInputScripts(path)
+deployChart = sfroot().find('-isa', 'Stateflow.EMChart', '-and', ...
+    'Path', [path '/Virtual VCU LV_ON']);
+assert(~isempty(deployChart), 'virtualvcu:MissingChart', ...
+    'Virtual VCU LV_ON chart is missing.');
+deployChart(1).Script = fileread(fullfile(fileparts(mfilename('fullpath')), ...
+    'virtualVcuDeployStep.m'));
+setRxRetainScript([path '/Virtual VCU RX Retain'], ...
+    fileread(fullfile(fileparts(mfilename('fullpath')), 'virtualVcuRxRetain.m')));
 end
 
 function deleteExistingLine(path, src, dst)
