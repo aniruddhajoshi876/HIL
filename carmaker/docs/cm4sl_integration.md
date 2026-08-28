@@ -10,7 +10,6 @@
 | `IO.c` | `carmaker/FS_race/src_cm4sl/src/IO.c` |
 | `User.c` | `carmaker/FS_race/src_cm4sl/src/User.c` |
 | `User.h` | `carmaker/FS_race/src_cm4sl/inc/User.h` |
-| `security_cookie_stub.c` | `carmaker/FS_race/src_cm4sl/src/security_cookie_stub.c` |
 | `Makefile` | `carmaker/FS_race/src_cm4sl/Makefile` |
 | `TorqueVect.mdl` | `carmaker/FS_race/src_cm4sl/vehicle_models/TorqueVect.mdl` |
 | CAN contract (DBC) | `carmaker/config/MFE26_Inverter_CarMaker.dbc` |
@@ -112,8 +111,8 @@ cd carmaker\deploy
   **unpreserved difference** — the script refuses to overwrite it unless you
   answer `y` at the prompt or pass `-Force`.
 - Never deletes anything; only touches the manifest
-  (`IO.c`, `User.c`, `User.h`, `security_cookie_stub.c`, `Makefile`;
-  `TorqueVect.mdl` only with `-IncludeModel`).
+  (`IO.c`, `User.c`, `User.h`, `Makefile`; `TorqueVect.mdl` only with
+  `-IncludeModel`).
 - `-Verify` compares deployed vs canonical SHA-256 and exits non-zero on
   mismatch.
 

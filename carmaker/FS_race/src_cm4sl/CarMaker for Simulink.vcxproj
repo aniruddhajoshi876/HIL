@@ -54,7 +54,6 @@
     <ClCompile Include="src\CM_Vehicle.c" />
     <ClCompile Include="src\CM_Main.c" />
     <ClCompile Include="src\app_tmp.c" />
-    <ClCompile Include="src\security_cookie_stub.c" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

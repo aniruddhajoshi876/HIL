@@ -92,7 +92,6 @@ $Manifest = @(
     'src/IO.c'
     'src/User.c'
     'inc/User.h'
-    'src/security_cookie_stub.c'
     'Makefile'
 )
 if ($IncludeModel) { $Manifest += 'vehicle_models/TorqueVect.mdl' }

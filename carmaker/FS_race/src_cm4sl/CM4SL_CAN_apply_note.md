@@ -15,8 +15,22 @@ survive.** Edit them here, then deploy with
 | `IO.c` | PCANIO channel-1 traffic: `0x500` pedal demand out, `0x501`/`0x502` in, `0x503`-`0x506` CarMaker vehicle-physics out, and `0x507` CarMaker steering truth out. The truth frames are gated on the model-written validity quantities. |
 | `User.c` | `User_DeclQuants()` — registers `MFE_CAN.*` dictionary quantities, including `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}`, `MFE_CAN.Physics.Valid`, `MFE_CAN.Steering.WheelAngleRad` and `MFE_CAN.Steering.Valid` (all `DVA_IO_Out`). `User_TestRun_Start_atBegin()` clears the two validity flags at the start of every TestRun. |
 | `User.h` | Unchanged from IPG's baseline — the `MFE_CAN*` globals are defined in `IO.c` and re-declared `extern` in `User.c`. |
-| `security_cookie_stub.c` | Provides `__security_cookie` for the MinGW-w64 link (IPG's prebuilt `libcarmaker4sl.a` references it; MinGW does not supply it). Originated in the IPG-MFE working tree during CM4SL link bring-up; imported here 2026-08-27. |
-| `Makefile` | Adds `security_cookie_stub.cm4sl.o` to `OBJS`. Same origin as the stub. |
+| `Makefile` | Adds the four `src/*.cm4sl.o` objects to `OBJS`, plus `-Iinc`. |
+
+**`security_cookie_stub.c` was removed** (2026-08-28). It provided
+`__security_cookie` for a MinGW-w64 link, on the premise that IPG's
+prebuilt `libcarmaker4sl.a` references the symbol and MinGW does not
+supply it -- true for whatever toolchain it was validated against in the
+IPG-MFE working tree, but not for this repo's actual build: CarMaker's
+own bundled MinGW (`C:/msys-2023/mingw`, gcc 11.3.0) already defines
+`__security_cookie` in its `libmingw32.a` (confirmed with `nm`), so the
+stub collided with it -- `ld: ... multiple definition of
+'__security_cookie'` -- the first time a full `cmmake` link was actually
+run from this repo. Dropping the stub was verified sufficient: the link
+completes cleanly with no other errors. If a different machine's
+toolchain genuinely lacks the symbol, that will reproduce as the same
+undefined-reference error at link time and can be reintroduced with a
+toolchain-version guard at that point, rather than unconditionally.
 | `TorqueVect.mdl` | The CM4SL vehicle/controls model. See the reconciliation note in `carmaker/docs/cm4sl_integration.md` — the HIL and IPG copies have diverged and this file is **not** synced automatically. |
 
 ## Frames on channel 1

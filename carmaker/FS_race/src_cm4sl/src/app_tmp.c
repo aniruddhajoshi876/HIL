@@ -31,37 +31,38 @@
 extern const char *SetConnectedIO (const char *io);
 
 static const char *CompileLibs[] = {
-    /* C:/IPG/carmaker/win64-12.0.1/lib/libcarmaker4sl.a */
     /* C:/IPG/carmaker/win64-12.0.1/lib/libcar4sl.a */
-    /* C:/IPG/carmaker/win64-12.0.1/CM4SL/R2022a/libsupp4sl-win64.a */
+    /* C:/IPG/carmaker/win64-12.0.1/lib/libcarmaker4sl.a */
     /* C:/IPG/carmaker/win64-12.0.1/lib/libipgdriver.a */
     /* C:/IPG/carmaker/win64-12.0.1/lib/libipgroad.a */
     /* C:/IPG/carmaker/win64-12.0.1/lib/libipgtire.a */
-    /* C:/IPG/carmaker/win64-12.0.1/Matlab/R2022a/libmatsupp-win64.a */
-    "libcarmaker4sl.a	CarMaker win64 12.0.1 2023-05-24",
     "libcar4sl.a	CarMaker-Car win64 12.0.1 2023-05-24",
-    "libsupp4sl-win64.a	",
+    "libcarmaker4sl.a	CarMaker win64 12.0.1 2023-05-24",
     "libipgdriver.a	IPGDriver win64 12.0.1.2 2023-05-24",
     "libipgroad.a	IPGRoad win64 12.0.1 2023-05-24",
     "libipgtire.a	IPGTire win64 9.1 2023-03-24",
-    "libmatsupp-win64.a	MATSUPP win64 12.0.1 (R2022a) 2023-05-09",
     NULL
 };
 
 
 static const char *CompileFlags[] = {
-    "",
-    "Used compiler options are not available for MS Visual Studio builds.",
+    "-m64 -O3 -DNDEBUG -DWIN32 -DWIN64 -DCM_NUMVER=120001",
+    "-Iinc -IC:/IPG/carmaker/win64-12.0.1/include -Iinc",
+    "-Wall -Wimplicit -Wmissing-prototypes",
+    "-D__USE_MINGW_ANSI_STDIO -DUNICODE -DCM4SL",
+    "-U__STRICT_ANSI__",
+    "-I../../../lib/ipc-api/win64/include -Wall",
+    "-malign-double -fomit-frame-pointer",
     NULL
 };
 
 
 tAppStartInfo   AppStartInfo = {
     "Car_Generic ?.?",          /* App_Version         */
-    "6",          /* App_BuildVersion    */
+    "2",          /* App_BuildVersion    */
     "MFE-HPC",     /* App_CompileUser     */
     "shop_computer_s",         /* App_CompileSystem   */
-    "2026-08-17 23:59:29",  /* App_CompileTime */
+    "2026-08-28 17:07:25",  /* App_CompileTime */
 
     CompileFlags,                /* App_CompileFlags  */
     CompileLibs,                 /* App_Libs          */
