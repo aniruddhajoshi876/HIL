@@ -1,4 +1,7 @@
-/* Portable implementation of the timing API emitted by MATLAB Coder. */
+/* Timing API emitted by MATLAB Coder for the ControlsMFE25 tic/toc calls.
+ * The .c is a deliberate no-op stub: the generated model discards the toc
+ * return and nothing else reads the timekeeper state -- see coder_posix_time.c
+ * and docs/controls_branch_sync.md item 5. */
 
 #ifndef CODER_POSIX_TIME_H
 #define CODER_POSIX_TIME_H

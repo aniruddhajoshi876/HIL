@@ -17,7 +17,13 @@ Exact pinned-file SHA-256 values:
 
 `coder_posix_time.c/.h` are the sole platform-adapter substitutions. The
 firmware copy depends on STM32 TIM2/HAL and cannot compile for Windows MEX or
-Speedgoat. The replacement implements the same generated timing API with the C
-runtime clock. `ControlsMFE25.c` discards the `toc` result, so this substitution
-does not affect allocator outputs or states. `vvcu_controls_wrapper.*` and
-`vvcu_controls_mex.c` are HIL integration files, not generated model files.
+Speedgoat. The replacement is a **deliberate no-op stub**: `coderInitTimeFunctions`
+sets `freq = 1.0` and `coderTimeClockGettimeMonotonic` returns constant zeros,
+with no syscall. `ControlsMFE25.c` calls `ControlsMFE25_toc` once per step
+(line 6806 at commit `bcd6352`) and discards the return; the timekeeper's only
+state (`savedTime`, `DW->freq*`) is read solely by the timing functions
+themselves, so constant zeros cannot change allocator outputs or state
+evolution. Restore a real `clock_gettime`/`clock()` body (preserved in git
+history) only if a future allocator revision starts consuming the `toc` value.
+`vvcu_controls_wrapper.*` and `vvcu_controls_mex.c` are HIL integration files,
+not generated model files.
