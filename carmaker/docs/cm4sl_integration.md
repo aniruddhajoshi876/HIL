@@ -7,12 +7,12 @@
 
 | File | Repo location |
 |---|---|
-| `IO.c` | `carmaker/FS_race/src_cm4sl/IO.c` |
-| `User.c` | `carmaker/FS_race/src_cm4sl/User.c` |
-| `User.h` | `carmaker/FS_race/src_cm4sl/User.h` |
-| `security_cookie_stub.c` | `carmaker/FS_race/src_cm4sl/security_cookie_stub.c` |
+| `IO.c` | `carmaker/FS_race/src_cm4sl/src/IO.c` |
+| `User.c` | `carmaker/FS_race/src_cm4sl/src/User.c` |
+| `User.h` | `carmaker/FS_race/src_cm4sl/inc/User.h` |
+| `security_cookie_stub.c` | `carmaker/FS_race/src_cm4sl/src/security_cookie_stub.c` |
 | `Makefile` | `carmaker/FS_race/src_cm4sl/Makefile` |
-| `TorqueVect.mdl` | `carmaker/FS_race/src_cm4sl/TorqueVect.mdl` |
+| `TorqueVect.mdl` | `carmaker/FS_race/src_cm4sl/vehicle_models/TorqueVect.mdl` |
 | CAN contract (DBC) | `carmaker/config/MFE26_Inverter_CarMaker.dbc` |
 | Apply note | `carmaker/FS_race/src_cm4sl/CM4SL_CAN_apply_note.md` |
 | Read CM Dict checklist | `carmaker/docs/carmaker_readcmdict_checklist.md` |

@@ -3,6 +3,8 @@ clear all;
 close all;
 
 addpath('ModelUpdate'); % additional scripts and functions for update
+addpath('vehicle_models');
+addpath('vehicle_models/Parameters');
 SetGlobal;
 
 ValidProd       = {'CarMaker'}; % script only for CM4SL update
@@ -32,7 +34,7 @@ fprintf('Closing all open CM4SL/TM4SL models\n\n');
 bdclose('all');
 
 % select models
-FileListAll = [dir('*.slx')' dir('*.mdl')']; % scan for all simulink models with extension .mdl and .slx
+FileListAll = [dir(fullfile('vehicle_models','*.slx'))' dir(fullfile('vehicle_models','*.mdl'))']; % scan vehicle models
 FileList    = FileListAll(:);         % select single models if desired (default: update all)
 
 for iFile=1:numel(FileList)

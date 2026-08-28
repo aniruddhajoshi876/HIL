@@ -43,14 +43,16 @@ APP_NAME =		libcarmaker4sl.$(MAT_EXT)
 
 LD_LIBS =		$(CAR4SL_LIB) \
 			$(CARMAKER4SL_LIB) $(DRIVER_LIB) $(ROAD_LIB) $(TIRE_LIB)
-OBJS =			User.cm4sl.o CM_Main.cm4sl.o CM_Vehicle.cm4sl.o IO.cm4sl.o \
-			security_cookie_stub.cm4sl.o
+OBJS =			src/User.cm4sl.o src/CM_Main.cm4sl.o src/CM_Vehicle.cm4sl.o src/IO.cm4sl.o \
+			src/security_cookie_stub.cm4sl.o
 
 # Prepend local include/library directory to include path:
 # PREINC_CFLAGS +=	-I../include -I../lib/$(ARCH) -I../lib
+PREINC_CFLAGS +=	-Iinc
 
 # Append local include/library directory to include path:
 # INC_CFLAGS +=		-I../include -I../lib/$(ARCH) -I../lib
+INC_CFLAGS +=		-Iinc
 
 
 ### Linking with RTW-built Simulink models
@@ -67,14 +69,14 @@ OBJS =			User.cm4sl.o CM_Main.cm4sl.o CM_Vehicle.cm4sl.o IO.cm4sl.o \
 
 default:	$(APP_NAME)
 
-$(APP_NAME):	$(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK) app_tmp.cm4sl.o
+$(APP_NAME):	$(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK) src/app_tmp.cm4sl.o
 	$(QECHO) " LD     $@"
 ifneq ($(filter linux linux64, $(ARCH)), )
 	$Q $(CC) $(CFLAGS) $(LDFLAGS) -o $@ \
 		-shared -Wl,-Bsymbolic,--allow-shlib-undefined -u CarMaker4SL_CMLib \
 		$(OBJS_$(ARCH)) $(OBJS) \
 		$(LD_LIBS) $(SUPP4SL_LIB) $(MAT_LIBS) \
-		app_tmp.cm4sl.o $(LD_LIBS_OS)
+		src/app_tmp.cm4sl.o $(LD_LIBS_OS)
 endif
 ifneq ($(filter win32 win64, $(ARCH)), )
 	$Q $(CC) $(CFLAGS) $(LDFLAGS) -o $@ \
@@ -82,21 +84,21 @@ ifneq ($(filter win32 win64, $(ARCH)), )
 		-shared -Wl,-Bsymbolic,--allow-shlib-undefined \
 		$(OBJS_$(ARCH)) $(OBJS) \
 		$(LD_LIBS) $(SUPP4SL_LIB) $(MAT_LIBS) \
-		app_tmp.cm4sl.o $(LD_LIBS_OS)
+		src/app_tmp.cm4sl.o $(LD_LIBS_OS)
 endif
 
 clean:
 	-rm -f 	*~ *% *.o *.obj *.res *.$(SO_EXT) *.$(MAT_EXT) core
 
-app_tmp.c:	Makefile $(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK)
+src/app_tmp.c:	Makefile $(OBJS_$(ARCH)) $(OBJS) $(LD_LIBS_MK)
 	$(QECHO) " MK     $@"
 	$Q $(CREATE_INFO_CMD)
 
 depend .depend: Makefile
 	$(QECHO) " MK     $@"
 	@echo -n "" >.depend
-ifneq ($(wildcard *.c),)
-	$Q-$(CC)  $(CFLAGS)   $(CFLAGS_CM4SL)   $(DEPCFLAGS)   *.c   >>.depend 2>/dev/null
+ifneq ($(wildcard src/*.c),)
+	$Q-$(CC)  $(CFLAGS)   $(CFLAGS_CM4SL)   $(DEPCFLAGS)   src/*.c   >>.depend 2>/dev/null
 endif
 ifneq ($(wildcard *.cpp),)
 	$Q-$(CXX) $(CXXFLAGS) $(CXXFLAGS_CM4SL) $(DEPCXXFLAGS) *.cpp >>.depend 2>/dev/null

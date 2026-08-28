@@ -64,6 +64,8 @@ function cmenv (varargin)		% -*- Mode: Fundamental -*-
 
 	% Add path to the user's own compiled version of the CarMaker library.
 	try_addpath(fullfile(dirname(pwd), 'src_cm4sl'));
+	try_addpath(fullfile(dirname(pwd), 'src_cm4sl', 'vehicle_models'));
+	try_addpath(fullfile(dirname(pwd), 'src_cm4sl', 'vehicle_models', 'Parameters'));
 	try_addpath(fullfile(dirname(pwd), 'src_mm4sl'));
 	try_addpath(fullfile(dirname(pwd), 'src_tm4sl'));
 

@@ -89,13 +89,13 @@ if (-not (Test-Path $CanonDir)) {
 
 # --- Manifest ---------------------------------------------------------------
 $Manifest = @(
-    'IO.c'
-    'User.c'
-    'User.h'
-    'security_cookie_stub.c'
+    'src/IO.c'
+    'src/User.c'
+    'inc/User.h'
+    'src/security_cookie_stub.c'
     'Makefile'
 )
-if ($IncludeModel) { $Manifest += 'TorqueVect.mdl' }
+if ($IncludeModel) { $Manifest += 'vehicle_models/TorqueVect.mdl' }
 
 # --- Validate the destination ---------------------------------------------------
 try {
@@ -134,7 +134,7 @@ function Get-RawHash([string] $Path) {
 # --- Build the plan -------------------------------------------------------------
 $Plan = foreach ($name in $Manifest) {
     $src = Join-Path $CanonDir $name
-    $dst = Join-Path $DestDir  $name
+    $dst = Join-Path $DestDir (Split-Path $name -Leaf)
     if (-not (Test-Path $src)) { throw "Canonical file missing from the repo: $src" }
 
     $srcHash = Get-NormHash $src
@@ -145,7 +145,7 @@ $Plan = foreach ($name in $Manifest) {
         else                             { 'CONFLICT' }
 
     [pscustomobject]@{
-        File       = $name
+        File       = (Split-Path $name -Leaf)
         Status     = $status
         Source     = $src
         Dest       = $dst
