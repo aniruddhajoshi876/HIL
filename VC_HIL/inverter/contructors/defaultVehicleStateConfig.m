@@ -9,4 +9,7 @@ config.yawInertiaKgM2 = 120;
 config.frontAxleDistanceM = 0.75;
 config.rearAxleDistanceM = 0.75;
 config.steeringGain = 1;
+% Build-time safety gate. Enable only after the CarMaker truth path passes
+% the documented bench acceptance sequence.
+config.carMakerTruthEnabled = false;
 end
