@@ -12,8 +12,8 @@ survive.** Edit them here, then deploy with
 
 | File | Purpose |
 |---|---|
-| `IO.c` | PCANIO channel-1 traffic: `0x500` pedal demand out, `0x501`/`0x502` in, `0x503`-`0x506` CarMaker vehicle-physics out, and `0x507` CarMaker driver-steering out. |
-| `User.c` | `User_DeclQuants()` — registers `MFE_CAN.*` dictionary quantities, including `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}` and `MFE_CAN.Driver.{SteeringAngleDeg,SteeringSpeedDegPerSec}` (all `DVA_IO_Out`). |
+| `IO.c` | PCANIO channel-1 traffic: `0x500` pedal demand out, `0x501`/`0x502` in, `0x503`-`0x506` CarMaker vehicle-physics out, and `0x507` CarMaker steering truth out. The truth frames are gated on the model-written validity quantities. |
+| `User.c` | `User_DeclQuants()` — registers `MFE_CAN.*` dictionary quantities, including `MFE_CAN.Physics.{Acceleration,AngularRate,Velocity,Euler}.{x,y,z}`, `MFE_CAN.Physics.Valid`, `MFE_CAN.Steering.WheelAngleRad` and `MFE_CAN.Steering.Valid` (all `DVA_IO_Out`). `User_TestRun_Start_atBegin()` clears the two validity flags at the start of every TestRun. |
 | `User.h` | Unchanged from IPG's baseline — the `MFE_CAN*` globals are defined in `IO.c` and re-declared `extern` in `User.c`. |
 | `security_cookie_stub.c` | Provides `__security_cookie` for the MinGW-w64 link (IPG's prebuilt `libcarmaker4sl.a` references it; MinGW does not supply it). Originated in the IPG-MFE working tree during CM4SL link bring-up; imported here 2026-08-27. |
 | `Makefile` | Adds `security_cookie_stub.cm4sl.o` to `OBJS`. Same origin as the stub. |
@@ -26,27 +26,41 @@ survive.** Edit them here, then deploy with
 - `0x501` / `0x502` — Speedgoat → CarMaker. Per-inverter torque setpoints and
   ready bits.
 - `0x503`-`0x506` `CarMakerPhysics{Acceleration,AngularRate,Velocity,Euler}` —
-  CarMaker → Speedgoat. Three little-endian `int16` at bytes 0/2/4, a shared
-  modulo-256 group counter at byte 6, CRC-8/SAE-J1850 over bytes 0-6 at byte 7.
-  Sent every 10-ms cycle in `IO_Out()` right after `0x500`. Vehicle/Fr1 frame,
-  SI units — the Speedgoat applies the sensor mounting transform, not this
-  side. Scales match `carmaker/config/MFE26_Inverter_CarMaker.dbc`
+  CarMaker → Speedgoat. Three little-endian `int16` at bytes 0/2/4, the shared
+  modulo-256 truth-group counter at byte 6, CRC-8/SAE-J1850 over bytes 0-6 at
+  byte 7. Sent every 10-ms cycle in `IO_Out()` right after `0x500`. Vehicle/Fr1
+  frame, SI units — the Speedgoat applies the sensor mounting transform, not
+  this side. Scales match `carmaker/config/MFE26_Inverter_CarMaker.dbc`
   (`0.01` / `0.002` / `0.01` / `0.0001`).
 
   The values come from the `MFE_CAN.Physics.*` dictionary quantities, which
-  `TorqueVect.mdl` must populate with nine Read CM Dict → Write CM Dict
-  passthroughs — see `carmaker/docs/cm4sl_integration.md`.
+  `TorqueVect.mdl` populates through the `MFE_CAN CarMaker Truth` subsystem —
+  see `carmaker/docs/cm4sl_integration.md`.
 
-- `0x507` `CarMakerDriverSteering` — CarMaker → Speedgoat. Fanatec / driver
-  steering-wheel angle (`int16` LE, `0.1` deg/bit, bytes 0-1) and speed
-  (`int16` LE, `0.5` (deg/s)/bit, bytes 2-3); bytes 4-5 reserved zero; own
-  mod-256 alive counter at byte 6; CRC-8/SAE-J1850 over bytes 0-6 at byte 7.
-  Sent every 10-ms cycle in `IO_Out()` right after the physics group, from the
-  `MFE_CAN.Driver.SteeringAngleDeg` / `.SteeringSpeedDegPerSec` dictionary
-  quantities that `TorqueVect.mdl` populates (rad→deg, saturate ±780 deg — the
-  `apply_torquevect_steering.m` script builds the subsystem). The Speedgoat, not
-  CarMaker, turns this into the Bosch LWS `0x2B0`. PROVISIONAL CAN ID. Full
-  detail in `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
+- `0x507` `CarMakerSteeringTruth` — CarMaker → Speedgoat. Fanatec / driver
+  steering-wheel angle, `int16` LE at `0.001` **rad**/bit in bytes 0-1; bytes
+  2-5 reserved zero; **the same** modulo-256 truth-group counter as
+  `0x503`-`0x506` at byte 6; CRC-8/SAE-J1850 over bytes 0-6 at byte 7. Sent in
+  the same 10-ms cycle as the physics group, from the
+  `MFE_CAN.Steering.WheelAngleRad` dictionary quantity that `TorqueVect.mdl`
+  populates as a straight `Steer.WhlAng` passthrough — no unit conversion on
+  this side. No angular-speed field: the Speedgoat derives Bosch `LWS_SPEED`
+  from successive samples. The Speedgoat, not CarMaker, turns this into the
+  Bosch LWS `0x2B0`. PROVISIONAL CAN ID. Full detail in
+  `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
+
+## The validity gate
+
+`IO_Out()` transmits `0x503`-`0x507` **only** while the model-written
+`MFE_CAN.Physics.Valid` / `MFE_CAN.Steering.Valid` quantities are non-zero.
+Without the gate, a `TorqueVect.mdl` that has never been given the truth
+passthroughs still yields a well-formed stream of CRC-valid, counter-advancing,
+all-zero frames — downstream, indistinguishable from a stationary,
+straight-ahead vehicle. `User_TestRun_Start_atBegin()` clears both flags so the
+statement is per-TestRun rather than per-process, and `MFE_ReportTruthGate()`
+logs suppression once per transition (via `Log`, not `LogErrF`: an unpopulated
+model is an expected state, not an error, and a 100 Hz error stream would bury
+the CarMaker log).
 
 ## CRC — resolved
 

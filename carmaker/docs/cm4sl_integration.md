@@ -39,17 +39,32 @@ Two independent CAN buses on the Speedgoat IO614:
   |---|---|---|
   | `0x500` | CarMaker → SG | pedal demand (throttle/brake %, active, alive counter, CRC-8/J1850) |
   | `0x501` / `0x502` | SG → CarMaker | per-inverter torque setpoints / ready bits |
-  | `0x503`-`0x506` | CarMaker → SG | vehicle-physics truth: acceleration, angular rate, velocity, Euler — 3× little-endian `int16` @ bytes 0/2/4, shared mod-256 group counter @ byte 6, CRC-8/J1850 @ byte 7. 10 ms. |
-  | `0x507` | CarMaker → SG | Fanatec / driver steering-wheel angle (`int16` LE `0.1` deg/bit) + speed (`int16` LE `0.5` (deg/s)/bit), own mod-256 counter @ byte 6, CRC-8/J1850 @ byte 7. 10 ms. Speedgoat packs it into the Bosch LWS `0x2B0`. PROVISIONAL ID. See `VC_HIL/docs/carmaker_fanatec_lws_steering.md`. |
+  | `0x503`-`0x506` | CarMaker → SG | vehicle-physics truth: acceleration, angular rate, velocity, Euler — 3× little-endian `int16` @ bytes 0/2/4, shared mod-256 truth-group counter @ byte 6, CRC-8/J1850 @ byte 7. 10 ms. |
+  | `0x507` | CarMaker → SG | Fanatec / driver steering-wheel angle, `int16` LE `0.001` **rad**/bit @ bytes 0-1; bytes 2-5 reserved zero; **the same** mod-256 truth-group counter as `0x503`-`0x506` @ byte 6; CRC-8/J1850 @ byte 7. 10 ms. No speed field — the Speedgoat derives Bosch `LWS_SPEED` from successive samples. Speedgoat packs it into the Bosch LWS `0x2B0`. PROVISIONAL ID. See `VC_HIL/docs/carmaker_fanatec_lws_steering.md`. |
 
-`IO.c` (`IO_Out()`) sends `0x503`-`0x506` every 10-ms cycle right after `0x500`,
-reading the `MFE_CAN.Physics.*` dictionary quantities that `TorqueVect.mdl`
-populates. On the Speedgoat, `VC_HIL/inverter/rxCAN/decodeCarMakerPhysicsFrame.m`
-+ `receiveCarMakerPhysics.m` decode and coherently retain a physics group, and
+`IO.c` (`IO_Out()`) sends `0x503`-`0x507` every 10-ms cycle right after `0x500`,
+reading the `MFE_CAN.Physics.*` / `MFE_CAN.Steering.*` dictionary quantities
+that `TorqueVect.mdl` populates. All five frames are sampled in one cycle and
+stamped with one counter. On the Speedgoat,
+`VC_HIL/inverter/rxCAN/decodeCarMakerPhysicsFrame.m` + `receiveCarMakerPhysics.m`
+decode and coherently retain a physics group, and
 `VC_HIL/inverter/state-machine/selectVehicleObservation.m` substitutes it for
 the kinematic vehicle-state estimate — **only when
 `defaultVehicleStateConfig.carMakerTruthEnabled` is `true`.** It is `false` by
 default.
+
+### The validity gate
+
+`IO.c` transmits `0x503`-`0x507` **only** while the model-written
+`MFE_CAN.Physics.Valid` / `MFE_CAN.Steering.Valid` quantities are non-zero.
+Without that gate, a `TorqueVect.mdl` with no truth writers still produces a
+perfectly formed stream of CRC-valid, counter-advancing, **all-zero** frames
+from the moment the PCAN link comes up — and downstream those are
+indistinguishable from a genuinely stationary, straight-ahead vehicle. Both
+flags are cleared in `User_TestRun_Start_atBegin()`, so validity is a
+per-TestRun statement rather than a once-per-process one, and the model raises
+them again on its first execution. Suppression is logged once per transition,
+never per cycle: an unpopulated model is an expected state, not an error.
 
 ## CRC
 
@@ -114,46 +129,66 @@ cd carmaker\deploy
    `make -C IPG-MFE/FCM_Projects/FS_race/src_cm4sl`.
 5. `apply_cm4sl.ps1 -ProjectPath ... -Verify` to confirm.
 
-## Add the nine Read CM Dict → Write CM Dict passthroughs
+## The TorqueVect.mdl truth passthroughs
 
-`TorqueVect.mdl` must copy the CarMaker inertial sensor into the
-`MFE_CAN.Physics.*` quantities `IO.c` reads. Step-by-step (R2022a GUI):
-`carmaker/docs/carmaker_readcmdict_checklist.md`.
+`TorqueVect.mdl` must copy the CarMaker inertial sensor and the steering-wheel
+angle into the `MFE_CAN.*` quantities `IO.c` reads, and raise the two validity
+flags. This is scripted — run
+`carmaker/FS_race/src_cm4sl/apply_torquevect_cm_truth.m` in **R2022a**:
 
-| CarMaker source (confirm the exact leaf names in the R2022a Read CM Dict browser) | → target |
+```matlab
+cd  <repo>\carmaker\FS_race\src_cm4sl\vehicle_models
+cmenv
+load_system('TorqueVect')
+apply_torquevect_cm_truth('Model', 'TorqueVect')
+```
+
+It builds one port-free subsystem `MFE_CAN CarMaker Truth`, rerunnable with no
+duplicates, wired to nothing in the existing torque-vectoring path.
+
+| CarMaker source | → target |
 |---|---|
 | `Sensor.Inertial.Param_B00.Acc_B.{x,y,z}` | `MFE_CAN.Physics.Acceleration.{x,y,z}` |
 | `Sensor.Inertial.Param_B00.Omega_B.{x,y,z}` | `MFE_CAN.Physics.AngularRate.{x,y,z}` |
 | `Sensor.Inertial.Param_B00.Vel_B.{x,y,z}` | `MFE_CAN.Physics.Velocity.{x,y,z}` |
+| `Car.{Roll,Pitch,Yaw}` | `MFE_CAN.Physics.Euler.{x,y,z}` (optional) |
+| `Steer.WhlAng` **[rad]** | `MFE_CAN.Steering.WheelAngleRad` **[rad]** |
+| Constant `1` | `MFE_CAN.Physics.Valid` |
+| Constant `1` | `MFE_CAN.Steering.Valid` |
 
-**The `.x/.y/.z` leaf names and the `Sensor.Inertial.Param_B00` addressing are
-NOT verified.** The `Acc_B` / `Omega_B` / `Vel_B` stems are confirmed in
-`C:\IPG\carmaker\win64-12.0.1\include\Vehicle\MBSUtils.h`; the rest must be
-confirmed by selecting them in the R2022a Read CM Dict browser before enabling
-CarMaker-as-truth.
+Every one is a **straight Read CM Dict → Write CM Dict passthrough**: no Gain,
+no Saturation, no Memory or Unit Delay, no unit conversion, no MTi scaling and
+no IMU mounting transform. All of that belongs downstream of the Speedgoat's
+observation selector, so CarMaker truth and the internal kinematic model go
+through the same transform. Blocks inherit the CM4SL base step, so `IO_Out()`
+samples the current cycle rather than the previous one.
+
+`Steer.WhlAng` is radians and stays radians all the way to the Speedgoat
+decoder — the rad → deg conversion happens once, immediately before Bosch LWS
+encoding. Step-by-step R2022a GUI instructions, if you would rather wire it by
+hand: `carmaker/docs/carmaker_readcmdict_checklist.md`.
+
+### What is and is not confirmed
+
+- `Steer.WhlAng` (`rad`) and `Car.Roll` / `.Pitch` / `.Yaw` (`rad`) are present
+  in `C:\IPG\carmaker\win64-12.0.1\CM4SL\startup.dict`.
+- `Sensor.Inertial.Param_B00.*` are created **at runtime** by the vehicle's
+  inertial sensor instance (`Sensor.Param.1.Type = Inertial`,
+  `Sensor.Param.1.Name = Param_B00` in `MFE24_V3` and `MFE26_V1`). They are not
+  in `startup.dict`, so the R2022a Read CM Dict browser only lists them once a
+  TestRun using such a vehicle is loaded. **Confirm the `.x/.y/.z` leaf names
+  there before enabling CarMaker-as-truth.**
+- The `MFE_CAN.*` targets do not exist until the modified `User.c` is compiled,
+  so the Write browser will not list them either. Type the name and move on.
 
 Verify after wiring: plot each `MFE_CAN.Physics.*` against its
 `Sensor.Inertial.Param_B00.*` source; stationary ⇒
 `MFE_CAN.Physics.Acceleration.z ≈ +9.81` (a real MTi reports specific force —
 if it reads ≈ 0 you picked the `noGN` variant).
 
-## Add the Fanatec / driver steering passthrough (0x507)
-
-`TorqueVect.mdl` must also copy the steering-wheel angle into
-`MFE_CAN.Driver.SteeringAngleDeg` / `.SteeringSpeedDegPerSec` (degrees). This
-one is scripted: run
-`carmaker/FS_race/src_cm4sl/apply_torquevect_steering.m` in R2022a — it builds
-the port-free `MFE_CAN Driver Steering` subsystem (Read CM Dict →
-`180/pi` Gain → sign Gain → Saturation ±780 deg → Write CM Dict), rerunnable
-with no duplicates.
-
-| CarMaker source (CONFIRM against this rig — see doc) | → target |
-|---|---|
-| `DM.Steer.Ang` (default; or `VC.Steer.Ang` / `Driver.Steer.Ang` / `Steer.WhlAng`) | `MFE_CAN.Driver.SteeringAngleDeg` |
-| `DM.Steer.AngVel` (pair the matching `*.AngVel`) | `MFE_CAN.Driver.SteeringSpeedDegPerSec` |
-
-Full path, sign convention, provisional CAN ID `0x507`, Speedgoat selector, and
-the physical acceptance procedure: `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
+Full steering path, sign convention, provisional CAN ID `0x507`, the Speedgoat
+selector and its no-silent-fallback stale policy, and the physical acceptance
+procedure: `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
 
 ## Enable CarMaker as the IMU truth source
 

@@ -212,17 +212,56 @@ Before trusting the CAN path:
 
 ---
 
-## 9. Fanatec / driver steering (0x507) — scripted, not hand-wired
+## 9. The whole passthrough set is scripted — prefer the script
 
-The steering-wheel passthrough into `MFE_CAN.Driver.SteeringAngleDeg` /
-`.SteeringSpeedDegPerSec` is **not** built by hand. Run
-`carmaker/FS_race/src_cm4sl/apply_torquevect_steering.m` in R2022a; it adds the
-port-free `MFE_CAN Driver Steering` subsystem (Read CM Dict → `180/pi` Gain →
-sign Gain → Saturation ±780 deg → Write CM Dict, for angle and speed) and is
-rerunnable with no duplicate blocks or lines. The one thing you still confirm in
-the **Read CM Dict quantity browser** is which source quantity the Fanatec wheel
-drives (`DM.Steer.Ang` default, or `VC.Steer.Ang` / `Driver.Steer.Ang` /
-`Steer.WhlAng`) — pass it as `apply_torquevect_steering('AngleQuantity', ...)`.
-Full signal path, sign convention, and the Speedgoat side (gated by
-`defaultVehicleStateConfig.carMakerSteeringEnabled = false`):
+Everything in sections 1-8 above, plus the Fanatec steering passthrough and the
+two validity writers, is built in one shot by
+`carmaker/FS_race/src_cm4sl/apply_torquevect_cm_truth.m` (R2022a):
+
+```matlab
+cd  <repo>\carmaker\FS_race\src_cm4sl\vehicle_models
+cmenv
+load_system('TorqueVect')
+apply_torquevect_cm_truth('Model', 'TorqueVect')
+```
+
+It adds the port-free `MFE_CAN CarMaker Truth` subsystem — thirteen straight
+Read CM Dict → Write CM Dict passthroughs and two Constant → Write CM Dict
+validity writers — and is rerunnable with no duplicate blocks or lines. The
+hand-wiring steps above remain accurate if you need to inspect or repair one
+chain, but the script is the canonical route and is what the committed
+`TorqueVect.mdl` was built with.
+
+### Steering (0x507)
+
+| Source | Unit | Target |
+|---|---|---|
+| `Steer.WhlAng` | `rad` | `MFE_CAN.Steering.WheelAngleRad` |
+
+A **straight passthrough** — no `180/pi` Gain, no Saturation. Radians is the
+`0x507` wire unit, and the Speedgoat converts to degrees once, immediately
+before Bosch LWS encoding. No angular-speed quantity is transported: the
+Speedgoat derives Bosch `LWS_SPEED` from successive 10 ms samples of this angle.
+
+`Steer.WhlAng` is confirmed present with unit `rad` in
+`C:\IPG\carmaker\win64-12.0.1\CM4SL\startup.dict`. It is the **applied**
+steering-wheel position, after the CarMaker cockpit has scaled the active
+Fanatec `Device.0` axis 0. Do not substitute a road-wheel angle
+(`Car.SteerAngleFL` / `.FR`), the IPGDriver output, or vehicle yaw.
+
+### Validity
+
+| Source | Target |
+|---|---|
+| Constant `1` | `MFE_CAN.Physics.Valid` |
+| Constant `1` | `MFE_CAN.Steering.Valid` |
+
+These live in the same subsystem as the passthroughs, so they are raised if and
+only if that subsystem has executed. `IO.c` refuses to transmit `0x503`-`0x507`
+while they are zero — which is what stops an unedited model from putting a
+stream of CRC-valid, counter-advancing, all-zero frames on the bus that look
+exactly like a stationary, straight-ahead vehicle.
+
+Full signal path, sign convention, provisional CAN ID, and the Speedgoat side
+(shipping in manual mode, `defaultVehicleStateConfig.steeringSourceMode = 0`):
 `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
