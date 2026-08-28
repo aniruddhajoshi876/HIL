@@ -311,22 +311,29 @@ classdef TestGuiFormatting < matlab.unittest.TestCase
                 testCase.verifyFalse(rows(index).highlight);
             end
 
-            % Nine Ephorus status frames, four synchronized sensor frames,
-            % then the deliberate LWS configuration command path.
+            % Nine Ephorus status frames, then the nine synchronized sensor
+            % frames: three MTi vectors, the LWS standard frame, the
+            % deliberate LWS configuration command path, and the four MTi
+            % scalar-group frames (group counter, sample time, status word,
+            % error code) the sensor appends to every inertial group.
             % Order is load-bearing, not cosmetic: APPLYLIVETXFRAMES matches
             % payload rows to these observations positionally, so a
             % re-ordering here would silently label every sensor row with
-            % another frame's bytes.
+            % another frame's bytes. The scalar frames append AFTER the LWS
+            % frames so indices 1-5 stay put for the positional consumers in
+            % TARGETSESSION.
             txRows = inverterhilgui.live_telemetry.canRowModel(snapshot.can.tx, 1.0);
-            testCase.verifyEqual(numel(txRows), 14);
+            testCase.verifyEqual(numel(txRows), 18);
             testCase.verifyEqual({txRows.id}, {'0x383', '0x385', '0x393', ...
                 '0x395', '0x3A3', '0x3A5', '0x3B3', '0x3B5', '0x400', ...
-                '0x034', '0x032', '0x076', '0x2B0', '0x7C0'});
-            testCase.verifyEqual({txRows(10:14).name}, ...
+                '0x034', '0x032', '0x076', '0x2B0', '0x7C0', ...
+                '0x006', '0x005', '0x011', '0x001'});
+            testCase.verifyEqual({txRows(10:18).name}, ...
                 {'MTI ACCEL', 'MTI RATE', 'MTI VELOCITY', ...
-                'LWS STEERING', 'LWS CONFIG'});
+                'LWS STEERING', 'LWS CONFIG', ...
+                'MTI GROUP', 'MTI SAMPLE', 'MTI STATUS', 'MTI ERROR'});
             % Sensor rows obey the same no-invented-values rule as the rest.
-            for index = 10:14
+            for index = 10:18
                 testCase.verifyEqual(txRows(index).live, 'NO DATA');
                 testCase.verifyEqual(txRows(index).value, '--');
             end

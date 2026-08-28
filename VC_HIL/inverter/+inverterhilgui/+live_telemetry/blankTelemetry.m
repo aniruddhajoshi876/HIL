@@ -96,24 +96,27 @@ snapshot.can.rx = blankCanObservations( ...
 statusIds = protocol().statusCycleIds;
 statusNames = {'3X3 INV1', '3X5 INV1', '3X3 INV2', '3X5 INV2', ...
     '3X3 INV3', '3X5 INV3', '3X3 INV4', '3X5 INV4', 'GENERAL'};
-% The four synchronized sensor frames and Bosch config frame use the same CAN
+% The synchronized sensor frames and Bosch config frame use the same CAN
 % interface and must appear in the TX table too, in the SAME order the model
-% writes them (BUILD_INVERTER_HIL_MODEL's SENSORIDS), because
+% writes them (BUILD_INVERTER_HIL_MODEL's SENSORIDS then SCALARIDS), because
 % APPLYLIVETXFRAMES indexes payload rows positionally against this list.
-% IMUTXIDS/LWSTXIDS split the former combined SENSORTXIDS by sensor; the
-% concatenation order here (IMU first, then LWS) reproduces the original
-% list and must not change.
-sensorIds = [imuTxIds(), lwsTxIds()];
+% IMUTXIDS/LWSTXIDS split the former combined SENSORTXIDS by sensor;
+% IMUSCALARTXIDS adds the four MTi scalar-group frames. The concatenation
+% order here -- IMU vectors, then LWS, then MTi scalars -- reproduces the
+% model's transmit order and keeps indices 1-5 stable for the positional
+% consumers in TARGETSESSION; it must not change.
+sensorIds = [imuTxIds(), lwsTxIds(), imuScalarTxIds()];
 sensorNames = {'MTI ACCEL', 'MTI RATE', 'MTI VELOCITY', ...
-    'LWS STEERING', 'LWS CONFIG'};
+    'LWS STEERING', 'LWS CONFIG', ...
+    'MTI GROUP', 'MTI SAMPLE', 'MTI STATUS', 'MTI ERROR'};
 snapshot.can.tx = blankCanObservations( ...
     [uint32(statusIds(:)); uint32(sensorIds(:))]', ...
     [statusNames, sensorNames]);
 
 % One flag per CAN Write block in the model: the nine Ephorus status frames
-% plus the four sensor frames and one config frame. Sized from the shared
-% ID lists rather than a
-% literal so it cannot drift out of step with the model again.
+% plus the nine sensor frames (three MTi vectors, LWS standard, LWS config,
+% four MTi scalar-group frames). Sized from the shared ID lists rather than
+% a literal so it cannot drift out of step with the model again.
 snapshot.can.diagnostics.writeSucceeded = ...
     false(1, numel(statusIds) + numel(sensorIds));
 snapshot.can.diagnostics.writeKnown = false;

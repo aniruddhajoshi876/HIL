@@ -2135,8 +2135,9 @@ classdef inverter_hil_app < matlab.apps.AppBase
             if showWrites && isfield(diagnostics, 'writeKnown') && ...
                     diagnostics.writeKnown
                 % Denominator comes from the flag vector itself, not a
-                % literal 9: the model has fourteen VC-bus CAN Write blocks
-                % (nine Ephorus, four sensor, one LWS config).
+                % literal 9: the model has eighteen VC-bus CAN Write blocks
+                % (nine Ephorus, three MTi vectors, LWS standard, LWS config,
+                % four MTi scalar-group frames).
                 writeText = sprintf('%d/%d OK', ...
                     sum(diagnostics.writeSucceeded), ...
                     numel(diagnostics.writeSucceeded));

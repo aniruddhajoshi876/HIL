@@ -261,6 +261,15 @@ classdef targetSession < handle
             %   (..., INV_CTRL_DIS=DIO12, INV_CTRL_EN=DIO13) -- see
             %   PINOUTS.MD section 4.3. The mapping below corrects that
             %   transposition explicitly rather than copying by index.
+            % Sensor DLC list: three MTi vectors, LWS standard, LWS config,
+            % then the four MTi scalar-group frames (IMUSCALARTXIDS). The
+            % scalar frames append after the LWS frames so indices 1-5 stay
+            % put for the positional reads further down. Computed first so
+            % the count/age arrays below size themselves off it.
+            [~, imuDlcInit] = imuTxIds();
+            [~, lwsDlcInit] = lwsTxIds();
+            [~, imuScalarDlcInit] = imuScalarTxIds();
+            sensorDlcInit = [imuDlcInit, lwsDlcInit, imuScalarDlcInit];
             snapshot = struct('known', false, 'pins', [], ...
                 'pedalsAppliedV', nan(1, 4), 'analogInV', nan(1, 4), 'io', ...
                 struct('healthy', false, 'healthyKnown', false), ...
@@ -272,8 +281,8 @@ classdef targetSession < handle
                 'txPayloads', zeros(9, 8, 'uint8'), ...
                 'txPayloadsKnown', false, ...
                 'txMessageCount', NaN, ...
-                'sensorTxCounts', nan(1, 5), ...
-                'sensorAgesS', nan(1, 5), ...
+                'sensorTxCounts', nan(1, numel(sensorDlcInit)), ...
+                'sensorAgesS', nan(1, numel(sensorDlcInit)), ...
                 'lwsCalibrationState', NaN, ...
                 'canPedals', [NaN NaN], 'canPedalsKnown', false, ...
                 'canPedalsDriving', false);
@@ -281,9 +290,6 @@ classdef targetSession < handle
             % dashboard uses, so an unread sensor is dashes here too rather
             % than a zero that looks like a real measurement.
             blank = inverterhilgui.live_telemetry.blankTelemetry();
-            [~, imuDlcInit] = imuTxIds();
-            [~, lwsDlcInit] = lwsTxIds();
-            sensorDlcInit = [imuDlcInit, lwsDlcInit];
             snapshot.steering = blank.steering;
             snapshot.imu = blank.imu;
             snapshot.sensorPayloads = ...
@@ -351,13 +357,13 @@ classdef targetSession < handle
                 % reads as "no overrun" rather than being reported backwards.
                 writeIds = {'383', '385', '393', '395', '3A3', '3A5', ...
                     '3B3', '3B5', '400'};
-                % The four sensor frames and LWS config frame are transmitted
-                % by CAN Write blocks too --
-                % so an overrunning sensor write reported as healthy. Their
-                % blocks are named "CAN Write Sensor 0x..." (see
-                % BUILD_INVERTER_HIL_MODEL), hence the separate loop rather
-                % than one combined ID list.
-                sensorIds = [imuTxIds(), lwsTxIds()];
+                % The nine sensor frames (three MTi vectors, LWS standard,
+                % LWS config, four MTi scalar-group frames) are transmitted
+                % by CAN Write blocks too -- else an overrunning sensor write
+                % is reported as healthy. Their blocks are all named
+                % "CAN Write Sensor 0x..." (see BUILD_INVERTER_HIL_MODEL),
+                % hence the separate loop rather than one combined ID list.
+                sensorIds = [imuTxIds(), lwsTxIds(), imuScalarTxIds()];
                 writeNoOverrun = false(1, numel(writeIds) + numel(sensorIds));
                 for k = 1:numel(writeIds)
                     writeBlock = sprintf('%s/CAN Write 0x%s', hw, ...
@@ -503,23 +509,34 @@ classdef targetSession < handle
                 catch
                     % Leave the blank IMU block: dashes, never zeros.
                 end
-                % Four encoded sensor payloads and the most recent LWS
-                % config payload leave SYNCHRONIZED SENSOR PAYLOADS on
-                % ports 1-5, in INVERTERHIL.SENSORTXIDS order. These are the
-                % exact bytes handed to the CAN Pack /
-                % CAN Write pairs, so the TX table shows what is genuinely
-                % on the wire rather than a host-side re-encode.
+                % Sensor payloads leave the model on two producers, in the
+                % combined [imuTxIds, lwsTxIds, imuScalarTxIds] order:
+                %   frames 1-5 (MTi accel/rate/velocity, LWS standard, LWS
+                %     config) -- SYNCHRONIZED SENSOR PAYLOADS ports 1-5, with
+                %     the target-selected wire DLCs on ports 14-18;
+                %   frames 6-9 (MTi group counter, sample time, status word,
+                %     error code) -- SCALAR SENSOR PAYLOADS ports 1-4, no
+                %     runtime DLC (the scalar frames carry no malformed
+                %     fault, so their nominal length always stands).
+                % These are the exact bytes handed to the CAN Pack / CAN
+                % Write pairs, so the TX table shows what is genuinely on the
+                % wire rather than a host-side re-encode.
                 try
                     [~, imuDlc] = imuTxIds();
                     [~, lwsDlc] = lwsTxIds();
-                    sensorDlc = double([imuDlc, lwsDlc]);
-                    % Ports 14-18 are the target-selected wire DLCs. These
-                    % differ from the nominal contract only during malformed
-                    % injection; reading them is what makes the GUI report
-                    % the actual short frame rather than the nominal length.
-                    for k = 1:numel(sensorDlc)
+                    [~, imuScalarDlc] = imuScalarTxIds();
+                    sensorDlc = double([imuDlc, lwsDlc, imuScalarDlc]);
+                    vectorFrameCount = numel(imuDlc) + numel(lwsDlc);
+                    syncBlock = [hw '/Synchronized Sensor Payloads'];
+                    scalarBlock = [hw '/Scalar Sensor Payloads'];
+                    % Ports 14-18 of SYNCHRONIZED SENSOR PAYLOADS are the
+                    % target-selected wire DLCs. They differ from the nominal
+                    % contract only during malformed injection; reading them
+                    % is what makes the GUI report the actual short frame
+                    % rather than the nominal length.
+                    for k = 1:vectorFrameCount
                         runtimeDlc = obj.Backend.getsignal( ...
-                            [hw '/Synchronized Sensor Payloads'], 13 + k);
+                            syncBlock, 13 + k);
                         if isnumeric(runtimeDlc) && isscalar(runtimeDlc) && ...
                                 isfinite(double(runtimeDlc)) && ...
                                 runtimeDlc >= 0 && runtimeDlc <= 8
@@ -528,8 +545,12 @@ classdef targetSession < handle
                     end
                     rows = zeros(numel(sensorDlc), 8, 'uint8');
                     for k = 1:numel(sensorDlc)
-                        raw = obj.Backend.getsignal( ...
-                            [hw '/Synchronized Sensor Payloads'], k);
+                        if k <= vectorFrameCount
+                            raw = obj.Backend.getsignal(syncBlock, k);
+                        else
+                            raw = obj.Backend.getsignal( ...
+                                scalarBlock, k - vectorFrameCount);
+                        end
                         raw = uint8(raw(:))';
                         take = min(numel(raw), sensorDlc(k));
                         rows(k, 1:take) = raw(1:take);
@@ -537,14 +558,19 @@ classdef targetSession < handle
                     snapshot.sensorPayloads = rows;
                     snapshot.sensorPayloadLengths = sensorDlc;
                     snapshot.sensorPayloadsKnown = true;
-                    % Ports 11 and 12 are target-maintained counters and
-                    % target-clock ages. They are never reconstructed from
-                    % this host's poll cadence. Port 13 is the enforced LWS
-                    % reset/wait/zero/result-check sequencer state.
-                    counts = double(obj.Backend.getsignal( ...
-                        [hw '/Synchronized Sensor Payloads'], 11));
-                    ages = double(obj.Backend.getsignal( ...
-                        [hw '/Synchronized Sensor Payloads'], 12));
+                    % SYNCHRONIZED SENSOR PAYLOADS ports 11/12 and SCALAR
+                    % SENSOR PAYLOADS ports 9/10 are target-maintained
+                    % counters and target-clock ages, never reconstructed
+                    % from this host's poll cadence. Port 13 of the former is
+                    % the enforced LWS reset/wait/zero sequencer state.
+                    counts = [reshape(double(obj.Backend.getsignal( ...
+                        syncBlock, 11)), 1, []), ...
+                        reshape(double(obj.Backend.getsignal( ...
+                        scalarBlock, 9)), 1, [])];
+                    ages = [reshape(double(obj.Backend.getsignal( ...
+                        syncBlock, 12)), 1, []), ...
+                        reshape(double(obj.Backend.getsignal( ...
+                        scalarBlock, 10)), 1, [])];
                     if numel(counts) == numel(sensorDlc)
                         snapshot.sensorTxCounts = reshape(counts, 1, []);
                     end
@@ -970,7 +996,8 @@ can = struct('known', false, 'carMakerKnown', false, 'diagnostics', struct( ...
     'transmitOverrun', [], ...
     'receiveOverrun', [], ...
     'errorWarning', [], ...
-    'writeSucceeded', false(1, 9 + numel(imuTxIds()) + numel(lwsTxIds())), ...
+    'writeSucceeded', false(1, 9 + numel(imuTxIds()) + numel(lwsTxIds()) + ...
+    numel(imuScalarTxIds())), ...
     'writeKnown', false), ...
     'carMakerDiagnostics', struct( ...
     'busLoadPercent', NaN, ...

@@ -143,14 +143,16 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 'speedgoatlib_IO614/CAN Status '; ...
                 'speedgoatlib_IO614/CAN Status '};
             % Nine inverter status frames, two CarMaker telemetry frames,
-            % four synchronized sensor frames, and the Bosch configuration
-            % frame: 16 CAN Write/CAN Pack pairs in total.
+            % four synchronized sensor frames (three MTi vectors + the LWS
+            % standard frame), the Bosch configuration frame, and the four
+            % MTi scalar-group frames (group counter, sample time, status
+            % word, error code): 20 CAN Write/CAN Pack pairs in total.
             expected = [expected; repmat( ...
-                {'speedgoatlib_IO614/CAN Write '}, 16, 1)];
+                {'speedgoatlib_IO614/CAN Write '}, 20, 1)];
             % Added from canlib, but the link resolves to the underlying
             % shared CAN message library that canlib forwards to.
             expected = [expected; repmat( ...
-                {'canmsglib/CAN Pack'}, 16, 1)];
+                {'canmsglib/CAN Pack'}, 20, 1)];
             for index = 1:numel(expected)
                 testCase.verifyNotEqual(getSimulinkBlockHandle(expected{index}), -1, ...
                     sprintf('Installed library path is absent: [%s].', ...
@@ -163,7 +165,7 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
                 blocks, 'UniformOutput', false);
             linked = blocks(~cellfun(@isempty, references));
             references = references(~cellfun(@isempty, references));
-            testCase.verifyNumElements(linked, 42);
+            testCase.verifyNumElements(linked, 50);
             testCase.verifyEqual(sort(references(:)), sort(expected(:)));
             for index = 1:numel(linked)
                 testCase.verifyEqual(get_param(linked{index}, 'LinkStatus'), ...
@@ -420,6 +422,47 @@ classdef TestModelArtifacts < matlab.unittest.TestCase
             testCase.verifyNumElements(ports.Outport, 18, ...
                 ['Payload/control, target count/age/state, and runtime DLC ' ...
                 'outputs must all be published.']);
+
+            % The four MTi scalar-group frames (0x006 group counter, 0x005
+            % microsecond sample time, 0x011 status word, 0x001 error code)
+            % come from their own small producer, not from the fragile
+            % 18-output chart above. They carry no malformed-DLC fault, so
+            % they use the Ephorus-status write pattern (BusOutput off,
+            % useBusIn off, Tx Control gate) rather than the Bus Assignment
+            % path the vector frames need.
+            scalarIds = uint32(hex2dec({'006', '005', '011', '001'}));
+            scalarDlc = [2 4 4 1];
+            for index = 1:numel(scalarIds)
+                pack = sprintf('%s/CAN Pack Sensor 0x%03X', ...
+                    testCase.Hardware, scalarIds(index));
+                writer = sprintf('%s/CAN Write Sensor 0x%03X', ...
+                    testCase.Hardware, scalarIds(index));
+                assignment = sprintf('%s/Sensor DLC Assignment 0x%03X', ...
+                    testCase.Hardware, scalarIds(index));
+                testCase.verifyNotEqual(getSimulinkBlockHandle(pack), -1);
+                testCase.verifyNotEqual(getSimulinkBlockHandle(writer), -1);
+                testCase.verifyEqual( ...
+                    getSimulinkBlockHandle(assignment), -1, ...
+                    'Scalar frames must not have a runtime DLC assignment.');
+                testCase.verifyEqual(str2double(get_param(pack, ...
+                    'MsgLength')), scalarDlc(index));
+                testCase.verifyEqual(get_param(pack, 'BusOutput'), 'off');
+                testCase.verifyEqual(get_param(writer, 'useBusIn'), 'off');
+                testCase.verifyEqual(get_param(writer, 'enableInput'), 'on');
+                testCase.verifyEqual(get_param(writer, 'channel'), '2');
+                testCase.verifyEqual(get_param(writer, 'UserData'), ...
+                    scalarIds(index));
+                testCase.verifyEqual(get_param(writer, 'ts'), '0.005');
+            end
+            scalarProducer = [testCase.Hardware '/Scalar Sensor Payloads'];
+            testCase.verifyNotEqual( ...
+                getSimulinkBlockHandle(scalarProducer), -1);
+            scalarPorts = get_param(scalarProducer, 'PortHandles');
+            testCase.verifyNumElements(scalarPorts.Inport, 1, ...
+                'Scalar producer is gated only by the IMU dropout flag.');
+            testCase.verifyNumElements(scalarPorts.Outport, 10, ...
+                ['Four scalar payloads, four Tx Control gates, and the ' ...
+                'target count/age vectors must all be published.']);
         end
 
         function dictionaryContractAndSafeDefaultsAreExact(testCase)
