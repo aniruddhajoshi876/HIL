@@ -10,5 +10,10 @@ bank.hasPublished = false;
 bank.lastCompleteTickMs = uint32(0);
 bank.acceptedCount = uint32(0);
 bank.rejectedCount = uint32(0);
+% Partial groups discarded because a newer group started before they
+% completed. Distinct from rejectedCount: no frame was faulty, the group just
+% never finished. A rising count here is the signature of frame loss on the
+% CarMaker bus, which is exactly what a bench operator wants to see.
+bank.abandonedGroupCount = uint32(0);
 bank.lastRejectCode = uint8(0);
 end
