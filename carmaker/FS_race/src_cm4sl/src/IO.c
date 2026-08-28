@@ -87,17 +87,28 @@ double MFE_CAN_PhysicsAngularRate[3];
 double MFE_CAN_PhysicsVelocity[3];
 double MFE_CAN_PhysicsEuler[3];
 
+/* Model-written validity flag for the physics group above. TorqueVect.mdl
+** raises MFE_CAN.Physics.Valid once its CarMaker-truth passthroughs have
+** executed; until then the four arrays are still zero-initialised. IO_Out()
+** suppresses 0x503-0x506 while this is clear, so the Speedgoat never sees a
+** counter-advancing, CRC-valid all-zero group that is indistinguishable from
+** a genuinely stationary vehicle. */
+double MFE_CAN_PhysicsValid;
+
 /* Fanatec / driver steering-wheel position sent to the Speedgoat on channel 1
-** as the internal 0x507 CarMakerDriverSteering transport frame (see
+** as the internal 0x507 CarMakerSteeringTruth transport frame (see
 ** VC_HIL/docs/carmaker_fanatec_lws_steering.md). Written by TorqueVect.mdl
-** through the MFE_CAN.Driver.Steering* dictionary quantities: a Read CM Dict
-** of the CarMaker steering-wheel angle -> rad-to-deg -> saturation to the
-** Bosch LWS +/-780 deg range -> Write CM Dict. DEGREES is the CarMaker ->
-** Speedgoat contract unit; the Speedgoat, not this side, packs the Bosch LWS
-** 0x2B0 frame. This frame stays on the CarMaker <-> Speedgoat bus and is
-** never forwarded onto the real VCU bus. */
-double MFE_CAN_DriverSteeringAngleDeg;
-double MFE_CAN_DriverSteeringSpeedDegPerSec;
+** through MFE_CAN.Steering.WheelAngleRad: a Read CM Dict of Steer.WhlAng ->
+** Write CM Dict, with no unit conversion in between. RADIANS is the
+** CarMaker -> Speedgoat contract unit -- Steer.WhlAng's own dictionary unit
+** -- so this side applies no scaling the Speedgoat would have to undo. The
+** Speedgoat converts to degrees, derives steering-wheel angular speed from
+** successive samples, and packs the Bosch LWS 0x2B0 frame; none of that
+** happens here. This frame stays on the CarMaker <-> Speedgoat bus and is
+** never forwarded onto the real VCU bus. MFE_CAN_SteeringValid gates it
+** exactly as MFE_CAN_PhysicsValid gates the physics group. */
+double MFE_CAN_SteeringWheelAngleRad;
+double MFE_CAN_SteeringValid;
 
 /* Aggregates of the four per-inverter values above, maintained here rather
 ** than as extra Simulink blocks so the vehicle model keeps a single scalar
@@ -108,9 +119,20 @@ unsigned char MFE_CAN_DriveActive;
 
 static int MFE_PCAN_Initialized;
 static unsigned char MFE_PCAN_AliveCounter;
-static unsigned char MFE_PCAN_PhysicsGroupCounter;
-static unsigned char MFE_PCAN_SteeringCounter;
+/* One modulo-256 counter shared by the CarMaker-truth frames 0x503-0x506 and
+** 0x507. All of them are sampled in the same IO_Out() cycle, so a single
+** counter is what lets the Speedgoat prove they describe one instant instead
+** of correlating two independent sequences. It advances once per output
+** cycle in which any truth frame is actually transmitted. */
+static unsigned char MFE_PCAN_TruthCounter;
 static int MFE_PCAN_Ready;
+
+/* Edge-latched suppression reporting. An unpopulated model is an EXPECTED
+** state for the first cycles of every run, and for the whole run when the
+** TorqueVect truth passthroughs have not been applied, so it is reported on
+** the transition only -- never once per 10 ms cycle. */
+static int MFE_PCAN_PhysicsSuppressed;
+static int MFE_PCAN_SteeringSuppressed;
 
 
 /*** I/O configuration */
@@ -570,23 +592,27 @@ MFE_SendPhysicsFrame (unsigned id, const double value[3], double scale,
 }
 
 
-/* Pack and send the internal 0x507 CarMakerDriverSteering transport frame:
-** steering-wheel angle (int16 LE, 0.1 deg/bit) at bytes 0-1, steering-wheel
-** speed (int16 LE, 0.5 deg/s/bit) at bytes 2-3, reserved zero at bytes 4-5,
-** an own modulo-256 alive counter at byte 6, and CRC-8/SAE-J1850 over
-** bytes 0-6 at byte 7 -- the same integrity scheme the 0x500 and 0x503-0x506
-** frames use. Scales match carmaker/config/MFE26_Inverter_CarMaker.dbc; the
-** value is decoded by the Speedgoat, never by CarMaker. This frame is not
-** part of the 0x503-0x506 physics group and carries its own counter. */
+/* Pack and send the internal 0x507 CarMakerSteeringTruth transport frame:
+** steering-wheel angle (int16 LE, 0.001 rad/bit) at bytes 0-1, reserved zero
+** at bytes 2-5, the shared truth-group counter at byte 6, and
+** CRC-8/SAE-J1850 over bytes 0-6 at byte 7 -- the same integrity scheme the
+** 0x500 and 0x503-0x506 frames use. Scale and layout match
+** carmaker/config/MFE26_Inverter_CarMaker.dbc BO_ 1287; the value is decoded
+** by the Speedgoat, never by CarMaker.
+**
+** 0.001 rad/count spans +/-32.767 rad (+/-1877 deg) in an int16, which
+** covers the current +/-105 deg Fanatec range, the disabled +/-450 deg
+** Device.1 range, and the Bosch LWS +/-780 deg measuring range with room to
+** spare. No angular-speed field is transmitted: the Speedgoat derives
+** steering-wheel angular speed from successive 10 ms samples of this angle
+** (Bosch LWS_SPEED), so a transported rate would be a second, redundant
+** source of the same quantity. */
 static void
-MFE_SendSteeringFrame (double angleDeg, double speedDegPerSec,
-		       unsigned char counter)
+MFE_SendSteeringFrame (double angleRad, unsigned char counter)
 {
     CAN_Msg Msg;
     unsigned short angleRaw =
-	(unsigned short)MFE_PhysicsRoundSaturate(angleDeg, 0.1);
-    unsigned short speedRaw =
-	(unsigned short)MFE_PhysicsRoundSaturate(speedDegPerSec, 0.5);
+	(unsigned short)MFE_PhysicsRoundSaturate(angleRad, 0.001);
 
     memset(&Msg, 0, sizeof(Msg));
     Msg.MsgId    = 0x507;
@@ -595,8 +621,8 @@ MFE_SendSteeringFrame (double angleDeg, double speedDegPerSec,
     Msg.FrameLen = 8;
     Msg.Data[0]  = angleRaw & 0xff;
     Msg.Data[1]  = (angleRaw >> 8) & 0xff;
-    Msg.Data[2]  = speedRaw & 0xff;
-    Msg.Data[3]  = (speedRaw >> 8) & 0xff;
+    Msg.Data[2]  = 0;
+    Msg.Data[3]  = 0;
     Msg.Data[4]  = 0;
     Msg.Data[5]  = 0;
     Msg.Data[6]  = counter;
@@ -606,6 +632,23 @@ MFE_SendSteeringFrame (double angleDeg, double speedDegPerSec,
 	LogErrF(EC_General,
 		"PCAN-USB FD channel %d: steering CAN 0x507 send failed",
 		MFE_PCAN_CHANNEL);
+}
+
+
+/* Report a truth-frame suppression / recovery transition exactly once per
+** edge. An unpopulated model is an expected state, not an error, so this
+** uses Log() rather than LogErrF() and never fires per cycle. Returns the
+** new suppression state so the caller can store it. */
+static int
+MFE_ReportTruthGate (int suppressedNow, int suppressedBefore, const char *what)
+{
+    if (suppressedNow && !suppressedBefore)
+	Log("CarMaker truth: %s suppressed -- the TorqueVect validity quantity "
+	    "is not set, so the values are still zero-initialised. Apply "
+	    "apply_torquevect_cm_truth.m and rerun.\n", what);
+    else if (!suppressedNow && suppressedBefore)
+	Log("CarMaker truth: %s populated by the model, transmitting.\n", what);
+    return suppressedNow;
 }
 
 
@@ -629,6 +672,8 @@ IO_Out (unsigned CycleNo)
     CAN_Msg Msg;
     int throttle;
     int brake;
+    int physicsValid;
+    int steeringValid;
 
 #if defined(XENO)
     IOConf_Out(CycleNo);
@@ -663,28 +708,51 @@ IO_Out (unsigned CycleNo)
 	LogErrF(EC_General, "PCAN-USB FD channel %d: CAN send failed",
 		MFE_PCAN_CHANNEL);
 
-    /* Vehicle-physics group: four consecutive frames on the same 10-ms cycle
-    ** sharing one modulo-256 counter, sent right after 0x500. Scales match
-    ** carmaker/config/MFE26_Inverter_CarMaker.dbc; the values are decoded by
-    ** the Speedgoat, never by CarMaker. */
-    MFE_SendPhysicsFrame(0x503, MFE_CAN_PhysicsAcceleration, 0.01,
-			 MFE_PCAN_PhysicsGroupCounter);
-    MFE_SendPhysicsFrame(0x504, MFE_CAN_PhysicsAngularRate,  0.002,
-			 MFE_PCAN_PhysicsGroupCounter);
-    MFE_SendPhysicsFrame(0x505, MFE_CAN_PhysicsVelocity,     0.01,
-			 MFE_PCAN_PhysicsGroupCounter);
-    MFE_SendPhysicsFrame(0x506, MFE_CAN_PhysicsEuler,        0.0001,
-			 MFE_PCAN_PhysicsGroupCounter);
-    MFE_PCAN_PhysicsGroupCounter++;
+    /* CarMaker-truth frames. Both groups are SAMPLED HERE, in one cycle, and
+    ** share MFE_PCAN_TruthCounter so the Speedgoat can prove 0x503-0x506 and
+    ** 0x507 describe the same instant.
+    **
+    ** Both are gated on a model-written validity quantity. Without the gate
+    ** IO_Out would transmit counter-advancing, CRC-valid, all-zero frames
+    ** from the moment the PCAN link comes up -- before TorqueVect.mdl has
+    ** written anything, or for the whole run if the truth passthroughs were
+    ** never applied to the model. Those frames are indistinguishable
+    ** downstream from a genuinely stationary, straight-ahead vehicle, which
+    ** is exactly the failure this gate exists to prevent. Suppression is
+    ** reported on the transition only, never once per cycle. */
+    physicsValid  = (MFE_CAN_PhysicsValid  != 0.0);
+    steeringValid = (MFE_CAN_SteeringValid != 0.0);
+
+    MFE_PCAN_PhysicsSuppressed = MFE_ReportTruthGate(
+	!physicsValid, MFE_PCAN_PhysicsSuppressed, "physics 0x503-0x506");
+    MFE_PCAN_SteeringSuppressed = MFE_ReportTruthGate(
+	!steeringValid, MFE_PCAN_SteeringSuppressed, "steering 0x507");
+
+    if (physicsValid) {
+	/* Four consecutive frames on the same 10-ms cycle sharing one
+	** modulo-256 counter, sent right after 0x500. Scales match
+	** carmaker/config/MFE26_Inverter_CarMaker.dbc; the values are decoded
+	** by the Speedgoat, never by CarMaker. */
+	MFE_SendPhysicsFrame(0x503, MFE_CAN_PhysicsAcceleration, 0.01,
+			     MFE_PCAN_TruthCounter);
+	MFE_SendPhysicsFrame(0x504, MFE_CAN_PhysicsAngularRate,  0.002,
+			     MFE_PCAN_TruthCounter);
+	MFE_SendPhysicsFrame(0x505, MFE_CAN_PhysicsVelocity,     0.01,
+			     MFE_PCAN_TruthCounter);
+	MFE_SendPhysicsFrame(0x506, MFE_CAN_PhysicsEuler,        0.0001,
+			     MFE_PCAN_TruthCounter);
+    }
 
     /* Fanatec / driver steering-wheel position: one internal transport frame
     ** on the same 10-ms (100 Hz) cycle, sent right after the physics group.
     ** Kept on the CarMaker <-> Speedgoat bus; the Speedgoat turns this into
     ** the Bosch LWS 0x2B0 frame for the real VCU. */
-    MFE_SendSteeringFrame(MFE_CAN_DriverSteeringAngleDeg,
-			  MFE_CAN_DriverSteeringSpeedDegPerSec,
-			  MFE_PCAN_SteeringCounter);
-    MFE_PCAN_SteeringCounter++;
+    if (steeringValid)
+	MFE_SendSteeringFrame(MFE_CAN_SteeringWheelAngleRad,
+			      MFE_PCAN_TruthCounter);
+
+    if (physicsValid || steeringValid)
+	MFE_PCAN_TruthCounter++;
 
 }
 

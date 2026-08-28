@@ -109,9 +109,10 @@ extern double MFE_CAN_PhysicsAcceleration[3];
 extern double MFE_CAN_PhysicsAngularRate[3];
 extern double MFE_CAN_PhysicsVelocity[3];
 extern double MFE_CAN_PhysicsEuler[3];
+extern double MFE_CAN_PhysicsValid;
 
-extern double MFE_CAN_DriverSteeringAngleDeg;
-extern double MFE_CAN_DriverSteeringSpeedDegPerSec;
+extern double MFE_CAN_SteeringWheelAngleRad;
+extern double MFE_CAN_SteeringValid;
 
 
 
@@ -294,19 +295,32 @@ User_DeclQuants (void)
 	}
     }
 
-    /* Fanatec / driver steering-wheel position: written by TorqueVect.mdl
-    ** (Read CM Dict the CarMaker steering-wheel angle -> rad-to-deg ->
-    ** optional sign -> saturate to +/-780 deg -> Write CM Dict these), read
-    ** by IO_Out() into the internal 0x507 CarMakerDriverSteering transport
-    ** frame. DEGREES and deg/s; left-hand-positive, matching CarMaker /
-    ** ISO 8855 and the Bosch LWS. DVA_IO_Out (model writes, IO reads), like
-    ** MFE_CAN.Physics.* above. See
+    /* Model-written validity flag for the physics group. TorqueVect.mdl
+    ** writes a constant 1 here from the same subsystem that writes the twelve
+    ** MFE_CAN.Physics.* quantities, so it is raised if and only if that
+    ** subsystem has executed at least once. IO_Out() refuses to transmit
+    ** 0x503-0x506 while it is zero: an unwritten model leaves the arrays
+    ** zero-initialised, and a CRC-valid, counter-advancing all-zero group is
+    ** indistinguishable downstream from a stationary vehicle. DVA_IO_Out --
+    ** the model writes it, the IO layer reads it. */
+    DDefDouble (NULL, "MFE_CAN.Physics.Valid", "-",
+		&MFE_CAN_PhysicsValid, DVA_IO_Out);
+
+    /* Fanatec / driver steering-wheel position: written by TorqueVect.mdl as
+    ** a straight Read CM Dict (Steer.WhlAng) -> Write CM Dict passthrough,
+    ** read by IO_Out() into the internal 0x507 CarMakerSteeringTruth
+    ** transport frame. RADIANS, the unit Steer.WhlAng itself carries -- no
+    ** conversion happens on the CarMaker side, so the Speedgoat has nothing
+    ** to undo. Left-hand-positive, matching CarMaker / ISO 8855 and the Bosch
+    ** LWS. DVA_IO_Out (model writes, IO reads), like MFE_CAN.Physics.* above.
+    ** MFE_CAN.Steering.Valid gates transmission exactly as
+    ** MFE_CAN.Physics.Valid does for the physics group. See
     ** VC_HIL/docs/carmaker_fanatec_lws_steering.md and
     ** carmaker/docs/carmaker_readcmdict_checklist.md. */
-    DDefDouble (NULL, "MFE_CAN.Driver.SteeringAngleDeg", "deg",
-		&MFE_CAN_DriverSteeringAngleDeg, DVA_IO_Out);
-    DDefDouble (NULL, "MFE_CAN.Driver.SteeringSpeedDegPerSec", "deg/s",
-		&MFE_CAN_DriverSteeringSpeedDegPerSec, DVA_IO_Out);
+    DDefDouble (NULL, "MFE_CAN.Steering.WheelAngleRad", "rad",
+		&MFE_CAN_SteeringWheelAngleRad, DVA_IO_Out);
+    DDefDouble (NULL, "MFE_CAN.Steering.Valid", "-",
+		&MFE_CAN_SteeringValid, DVA_IO_Out);
 }
 
 
@@ -415,6 +429,15 @@ User_TestRun_Start_atBegin (void)
     for (i=0; i<N_USEROUTPUT; i++)
 	User.Out[i] = 0.0;
 
+    /* Clear the CarMaker-truth validity flags at the start of every TestRun.
+    ** They live in the CM4SL DLL and would otherwise stay raised for the rest
+    ** of the process once any run had set them -- so a later run with the
+    ** truth passthroughs removed from TorqueVect.mdl would keep transmitting
+    ** stale, zero-initialised 0x503-0x507 frames that IO_Out believes are
+    ** model-written. Clearing here makes validity a per-TestRun statement.
+    ** The model raises them again on its first execution of the run. */
+    MFE_CAN_PhysicsValid  = 0.0;
+    MFE_CAN_SteeringValid = 0.0;
 
     if (IO_None)
 	return rv;

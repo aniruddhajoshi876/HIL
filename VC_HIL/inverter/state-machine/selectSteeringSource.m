@@ -1,32 +1,51 @@
-function [angleDeg, speedDegPerSec, source, carMakerFresh] = ...
-        selectSteeringSource(guiAngleDeg, carMakerSnapshot, enabled)
+function [angleDeg, source, steeringValid, carMakerFresh] = ...
+        selectSteeringSource(guiAngleDeg, carMakerSnapshot, mode)
 %SELECTSTEERINGSOURCE Choose the steering-wheel angle fed to the Bosch LWS
-%   emulator and the shared vehicle state: CarMaker's 0x507 transport value
-%   when enabled and fresh, otherwise the GUI steering dial.
+%   emulator and the shared vehicle state. There is no implicit source: the
+%   caller states which one it wants, and the answer carries a validity flag.
 %
-%   SOURCE  0  GUI steering dial (CarMaker steering disabled)
-%           1  CarMaker / Fanatec via the 0x507 transport frame
-%           2  GUI steering dial, fallback because CarMaker steering is
-%              enabled but not fresh (never received, stale, or a
-%              frozen-but-repeating sender)
+%   MODE (DEFAULTVEHICLESTATECONFIG.STEERINGSOURCEMODE when omitted)
+%     0  MANUAL   the GUI steering dial. Must be selected deliberately. This
+%                 is the shipping default and the documented rollback.
+%     1  CARMAKER the Fanatec wheel, via CarMaker Steer.WhlAng and the 0x507
+%                 CarMakerSteeringTruth transport frame.
 %
-%   Stale policy: fall back to the GUI dial, NOT to neutral steering or an
-%   injected LWS fault. This is a development-bench policy chosen to match
-%   the pedal-demand path (PEDALFALLBACKZEROHOLD / the pedal source switch
-%   both fall back to GUI control on loss of CAN authority) and the existing
-%   "GUI dial fallback" the LWS emulator already relies on. The GUI fault-
-%   injection controls remain the way to force neutral / faulted steering.
+%   SOURCE (what the frame on the wire actually came from)
+%     0  MANUAL      GUI dial, manual mode. STEERINGVALID true.
+%     1  CARMAKER    CarMaker / Fanatec truth, fresh. STEERINGVALID true.
+%     2  UNAVAILABLE CarMaker mode selected but the truth is not usable --
+%                    never received, stale, frozen-but-repeating counter, or
+%                    non-finite. STEERINGVALID FALSE. ANGLEDEG is zero and
+%                    carries no meaning; the caller must not encode it as a
+%                    measurement.
 %
-%   The returned ANGLEDEG is always saturated to the Bosch LWS +/-780 deg
-%   range so a downstream range check cannot fail regardless of source.
+%   STALE POLICY -- deliberate, and different from the pedal path.
+%   When CarMaker mode is selected and the truth goes stale, this does NOT
+%   fall back to the GUI dial. Silently swapping in a different physical
+%   source would make the VCU see a plausible, well-formed steering angle
+%   that no longer corresponds to the wheel the driver is holding, and
+%   nothing on the wire would say so. That is the one failure a HIL bench
+%   must not be able to produce.
+%
+%   Instead the selector reports STEERINGVALID false and the LWS emulator
+%   encodes the Bosch failure state -- LWS_ANGLE 0x7FFF, LWS_SPEED 0xFF,
+%   status TRIM=1 OK=0 CAL=0 -- at the normal 100 Hz. The frame keeps
+%   flowing, so the VCU distinguishes "sensor reports itself broken" from
+%   "bus went quiet", and the VCU's existing plausibility handling sees a
+%   state the datasheet defines. Suppressing 0x2B0 entirely was the
+%   alternative; it stays available as the existing GUI dropout injection,
+%   which is the right tool for testing bus silence specifically.
+%
+%   Getting the GUI dial back is a mode change to MANUAL, which is explicit,
+%   visible in the telemetry, and auditable.
 if ~isscalar(guiAngleDeg) || ~isreal(guiAngleDeg)
     error('inverterhil:InvalidSteeringSelect', 'guiAngleDeg must be a real scalar.');
 end
 config = defaultVehicleStateConfig();
-if nargin < 3 || isempty(enabled)
-    enabled = config.carMakerSteeringEnabled;
+if nargin < 3 || isempty(mode)
+    mode = config.steeringSourceMode;
 end
-enabled = logical(enabled);
+mode = uint8(mode);
 
 limitDeg = 780;
 guiAngleDeg = double(guiAngleDeg);
@@ -35,25 +54,28 @@ if ~isfinite(guiAngleDeg)
 end
 guiAngleDeg = min(limitDeg, max(-limitDeg, guiAngleDeg));
 
-carMakerUsable = enabled && ...
-    logical(carMakerSnapshot.fresh) && ...
+carMakerUsable = logical(carMakerSnapshot.fresh) && ...
     logical(carMakerSnapshot.hasValue) && ...
     isfinite(double(carMakerSnapshot.angleDeg)) && ...
-    isfinite(double(carMakerSnapshot.speedDegPerSec)) && ...
     abs(double(carMakerSnapshot.angleDeg)) <= limitDeg;
-carMakerFresh = enabled && logical(carMakerSnapshot.fresh);
+carMakerFresh = mode == uint8(1) && logical(carMakerSnapshot.fresh);
 
-if carMakerUsable
-    angleDeg = min(limitDeg, max(-limitDeg, double(carMakerSnapshot.angleDeg)));
-    speedDegPerSec = double(carMakerSnapshot.speedDegPerSec);
-    source = uint8(1);
-elseif enabled
-    angleDeg = guiAngleDeg;
-    speedDegPerSec = 0;
-    source = uint8(2);
+if mode == uint8(1)
+    if carMakerUsable
+        % Radians on the wire, degrees from here on: this is the single
+        % rad -> deg boundary, applied once at decode and carried through
+        % the retainer, so no consumer re-derives 180/pi.
+        angleDeg = min(limitDeg, max(-limitDeg, double(carMakerSnapshot.angleDeg)));
+        source = uint8(1);
+        steeringValid = true;
+    else
+        angleDeg = 0;
+        source = uint8(2);
+        steeringValid = false;
+    end
 else
     angleDeg = guiAngleDeg;
-    speedDegPerSec = 0;
     source = uint8(0);
+    steeringValid = true;
 end
 end

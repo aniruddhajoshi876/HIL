@@ -1,13 +1,22 @@
 function [bank, accepted, reason] = receiveCarMakerSteering(bank, frame, tickMs)
 %RECEIVECARMAKERSTEERING Retain the most recent valid 0x507 steering frame and
-%   prove alive-counter advancement. Modelled on RECEIVEPEDALDEMANDFRAME:
-%   presence alone never proves a live sender; COUNTERADVANCED is set only
-%   when the modulo-256 alive counter is exactly the previous value plus one.
-%   A structurally valid frame always replaces the retained value and
-%   refreshes its timestamp (including a non-advancing counter), so a sender
-%   that restarts is picked up again; SELECTSTEERINGSOURCE / the snapshot are
-%   what gate on COUNTERADVANCED so a frozen-but-repeating sender is treated
-%   as stale.
+%   prove counter advancement. Modelled on RECEIVEPEDALDEMANDFRAME: presence
+%   alone never proves a live sender; COUNTERADVANCED is set only when the
+%   modulo-256 truth-group counter has moved FORWARD (see
+%   COUNTERFORWARDDISTANCE).
+%
+%   Rejection policy, in order:
+%     injected_drop         GUI fault injection, or an empty FIFO pop.
+%     <decoder reason>      ID / DLC / RTR / extended / reserved / CRC / range.
+%     duplicate_counter     forward distance 0 -- a frozen-but-repeating
+%                           sender. The value is NOT refreshed, so the age
+%                           keeps growing and the snapshot goes stale.
+%     out_of_order_counter  forward distance in the backward half-window --
+%                           a reordered or replayed frame.
+%
+%   A frame that is forward but has skipped counters IS accepted: the sender
+%   is demonstrably alive and the newest value is the one worth having. What
+%   must never happen is a duplicate or a rewind being mistaken for liveness.
 required = {'id', 'dlc', 'payload', 'isExtended', 'isRemote', 'drop'};
 for k = 1:numel(required)
     if ~isfield(frame, required{k}), error('inverterhil:MalformedFrame', ...
@@ -28,14 +37,29 @@ if ~accepted
     bank.lastRejectCode = uint8(2); return;
 end
 if bank.hasValue
-    bank.counterAdvanced = decoded.aliveCounter == ...
-        uint8(mod(double(bank.aliveCounter) + 1, 256));
+    distance = counterForwardDistance(bank.groupCounter, decoded.groupCounter);
+    if distance == uint8(0)
+        % Frozen-but-repeating sender. Deliberately does NOT refresh
+        % lastValidTickMs: a sender stuck on one counter must age out.
+        accepted = false; reason = 'duplicate_counter';
+        bank.counterAdvanced = false;
+        bank.rejectedCount = bank.rejectedCount + uint32(1);
+        bank.lastRejectCode = uint8(3); return;
+    end
+    if distance >= uint8(128)
+        accepted = false; reason = 'out_of_order_counter';
+        bank.counterAdvanced = false;
+        bank.rejectedCount = bank.rejectedCount + uint32(1);
+        bank.lastRejectCode = uint8(4); return;
+    end
+    bank.counterAdvanced = true;
 else
+    % First frame of a session: retained, but one frame is not liveness.
     bank.counterAdvanced = false;
 end
+bank.angleRad = decoded.angleRad;
 bank.angleDeg = decoded.angleDeg;
-bank.speedDegPerSec = decoded.speedDegPerSec;
-bank.aliveCounter = decoded.aliveCounter;
+bank.groupCounter = decoded.groupCounter;
 bank.hasValue = true;
 bank.lastValidTickMs = tickMs;
 bank.acceptedCount = bank.acceptedCount + uint32(1);
