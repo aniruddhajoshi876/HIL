@@ -51,6 +51,15 @@ snapshot.steering.calibrationState = NaN;
 % Whether the transmitted LWS frame was genuinely read and decoded this
 % poll, as opposed to the fields above still being their no-data defaults.
 snapshot.steering.known = false;
+% Which steering source the target selected this tick: the GUI dial, or
+% CarMaker's 0x507 CarMakerDriverSteering value (see SELECTSTEERINGSOURCE and
+% defaultVehicleStateConfig.carMakerSteeringEnabled). Empty / NaN / [] with a
+% KNOWN flag, like every other no-data field here.
+snapshot.steering.source = '';
+snapshot.steering.sourceKnown = false;
+snapshot.steering.carMakerFresh = [];
+snapshot.steering.carMakerAgeMs = NaN;
+snapshot.steering.carMakerAngleDeg = NaN;
 
 snapshot.imu.accelerationMps2 = nan(1, 3);
 snapshot.imu.rateOfTurnRadPerS = nan(1, 3);

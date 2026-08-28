@@ -40,6 +40,7 @@ Two independent CAN buses on the Speedgoat IO614:
   | `0x500` | CarMaker → SG | pedal demand (throttle/brake %, active, alive counter, CRC-8/J1850) |
   | `0x501` / `0x502` | SG → CarMaker | per-inverter torque setpoints / ready bits |
   | `0x503`-`0x506` | CarMaker → SG | vehicle-physics truth: acceleration, angular rate, velocity, Euler — 3× little-endian `int16` @ bytes 0/2/4, shared mod-256 group counter @ byte 6, CRC-8/J1850 @ byte 7. 10 ms. |
+  | `0x507` | CarMaker → SG | Fanatec / driver steering-wheel angle (`int16` LE `0.1` deg/bit) + speed (`int16` LE `0.5` (deg/s)/bit), own mod-256 counter @ byte 6, CRC-8/J1850 @ byte 7. 10 ms. Speedgoat packs it into the Bosch LWS `0x2B0`. PROVISIONAL ID. See `VC_HIL/docs/carmaker_fanatec_lws_steering.md`. |
 
 `IO.c` (`IO_Out()`) sends `0x503`-`0x506` every 10-ms cycle right after `0x500`,
 reading the `MFE_CAN.Physics.*` dictionary quantities that `TorqueVect.mdl`
@@ -135,6 +136,24 @@ Verify after wiring: plot each `MFE_CAN.Physics.*` against its
 `Sensor.Inertial.Param_B00.*` source; stationary ⇒
 `MFE_CAN.Physics.Acceleration.z ≈ +9.81` (a real MTi reports specific force —
 if it reads ≈ 0 you picked the `noGN` variant).
+
+## Add the Fanatec / driver steering passthrough (0x507)
+
+`TorqueVect.mdl` must also copy the steering-wheel angle into
+`MFE_CAN.Driver.SteeringAngleDeg` / `.SteeringSpeedDegPerSec` (degrees). This
+one is scripted: run
+`carmaker/FS_race/src_cm4sl/apply_torquevect_steering.m` in R2022a — it builds
+the port-free `MFE_CAN Driver Steering` subsystem (Read CM Dict →
+`180/pi` Gain → sign Gain → Saturation ±780 deg → Write CM Dict), rerunnable
+with no duplicates.
+
+| CarMaker source (CONFIRM against this rig — see doc) | → target |
+|---|---|
+| `DM.Steer.Ang` (default; or `VC.Steer.Ang` / `Driver.Steer.Ang` / `Steer.WhlAng`) | `MFE_CAN.Driver.SteeringAngleDeg` |
+| `DM.Steer.AngVel` (pair the matching `*.AngVel`) | `MFE_CAN.Driver.SteeringSpeedDegPerSec` |
+
+Full path, sign convention, provisional CAN ID `0x507`, Speedgoat selector, and
+the physical acceptance procedure: `VC_HIL/docs/carmaker_fanatec_lws_steering.md`.
 
 ## Enable CarMaker as the IMU truth source
 

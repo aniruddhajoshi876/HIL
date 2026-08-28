@@ -87,6 +87,18 @@ double MFE_CAN_PhysicsAngularRate[3];
 double MFE_CAN_PhysicsVelocity[3];
 double MFE_CAN_PhysicsEuler[3];
 
+/* Fanatec / driver steering-wheel position sent to the Speedgoat on channel 1
+** as the internal 0x507 CarMakerDriverSteering transport frame (see
+** VC_HIL/docs/carmaker_fanatec_lws_steering.md). Written by TorqueVect.mdl
+** through the MFE_CAN.Driver.Steering* dictionary quantities: a Read CM Dict
+** of the CarMaker steering-wheel angle -> rad-to-deg -> saturation to the
+** Bosch LWS +/-780 deg range -> Write CM Dict. DEGREES is the CarMaker ->
+** Speedgoat contract unit; the Speedgoat, not this side, packs the Bosch LWS
+** 0x2B0 frame. This frame stays on the CarMaker <-> Speedgoat bus and is
+** never forwarded onto the real VCU bus. */
+double MFE_CAN_DriverSteeringAngleDeg;
+double MFE_CAN_DriverSteeringSpeedDegPerSec;
+
 /* Aggregates of the four per-inverter values above, maintained here rather
 ** than as extra Simulink blocks so the vehicle model keeps a single scalar
 ** demand and a single gate, exactly as the superseded XCP path provided.
@@ -97,6 +109,7 @@ unsigned char MFE_CAN_DriveActive;
 static int MFE_PCAN_Initialized;
 static unsigned char MFE_PCAN_AliveCounter;
 static unsigned char MFE_PCAN_PhysicsGroupCounter;
+static unsigned char MFE_PCAN_SteeringCounter;
 static int MFE_PCAN_Ready;
 
 
@@ -557,6 +570,45 @@ MFE_SendPhysicsFrame (unsigned id, const double value[3], double scale,
 }
 
 
+/* Pack and send the internal 0x507 CarMakerDriverSteering transport frame:
+** steering-wheel angle (int16 LE, 0.1 deg/bit) at bytes 0-1, steering-wheel
+** speed (int16 LE, 0.5 deg/s/bit) at bytes 2-3, reserved zero at bytes 4-5,
+** an own modulo-256 alive counter at byte 6, and CRC-8/SAE-J1850 over
+** bytes 0-6 at byte 7 -- the same integrity scheme the 0x500 and 0x503-0x506
+** frames use. Scales match carmaker/config/MFE26_Inverter_CarMaker.dbc; the
+** value is decoded by the Speedgoat, never by CarMaker. This frame is not
+** part of the 0x503-0x506 physics group and carries its own counter. */
+static void
+MFE_SendSteeringFrame (double angleDeg, double speedDegPerSec,
+		       unsigned char counter)
+{
+    CAN_Msg Msg;
+    unsigned short angleRaw =
+	(unsigned short)MFE_PhysicsRoundSaturate(angleDeg, 0.1);
+    unsigned short speedRaw =
+	(unsigned short)MFE_PhysicsRoundSaturate(speedDegPerSec, 0.5);
+
+    memset(&Msg, 0, sizeof(Msg));
+    Msg.MsgId    = 0x507;
+    Msg.FrameFmt = 0;
+    Msg.RTR      = 0;
+    Msg.FrameLen = 8;
+    Msg.Data[0]  = angleRaw & 0xff;
+    Msg.Data[1]  = (angleRaw >> 8) & 0xff;
+    Msg.Data[2]  = speedRaw & 0xff;
+    Msg.Data[3]  = (speedRaw >> 8) & 0xff;
+    Msg.Data[4]  = 0;
+    Msg.Data[5]  = 0;
+    Msg.Data[6]  = counter;
+    Msg.Data[7]  = GetCRC_J1850_User(Msg.Data, 7, 0xff, 0xff);
+
+    if (PCANIO_Send(MFE_PCAN_DEVICE, MFE_PCAN_CHANNEL, &Msg) != 0)
+	LogErrF(EC_General,
+		"PCAN-USB FD channel %d: steering CAN 0x507 send failed",
+		MFE_PCAN_CHANNEL);
+}
+
+
 /*
 ** IO_Out ()
 **
@@ -624,6 +676,15 @@ IO_Out (unsigned CycleNo)
     MFE_SendPhysicsFrame(0x506, MFE_CAN_PhysicsEuler,        0.0001,
 			 MFE_PCAN_PhysicsGroupCounter);
     MFE_PCAN_PhysicsGroupCounter++;
+
+    /* Fanatec / driver steering-wheel position: one internal transport frame
+    ** on the same 10-ms (100 Hz) cycle, sent right after the physics group.
+    ** Kept on the CarMaker <-> Speedgoat bus; the Speedgoat turns this into
+    ** the Bosch LWS 0x2B0 frame for the real VCU. */
+    MFE_SendSteeringFrame(MFE_CAN_DriverSteeringAngleDeg,
+			  MFE_CAN_DriverSteeringSpeedDegPerSec,
+			  MFE_PCAN_SteeringCounter);
+    MFE_PCAN_SteeringCounter++;
 
 }
 
