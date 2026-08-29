@@ -1,0 +1,18 @@
+APPLICATION	CarMaker 12.0.1 - Car_Generic #3 (win64-12.0.1)
+COMPILED	MFE-HPC@shop_computer_s 2026-08-28 17:23:53
+ 
+		I/O Configuration: default
+		PCAN-USB FD: channel index 0 accepted by PCANIO
+		PCAN-USB FD: CAN link ready on channel 0
+		PCAN-USB FD channel 0 initialized: 1 Mbit/s classic CAN (No Error)
+SIM_START	HIL/CAN_Bringup	2026-08-29 00:32:46
+TIME	0.001
+		CarMaker truth: physics 0x503-0x506 suppressed -- the TorqueVect validity quantity is not set, so the values are still zero-initialised. Apply apply_torquevect_cm_truth.m and rerun.
+		CarMaker truth: steering 0x507 suppressed -- the TorqueVect validity quantity is not set, so the values are still zero-initialised. Apply apply_torquevect_cm_truth.m and rerun.
+TIME	0.000
+SIMULATE	HIL/CAN_Bringup
+
+		CarMaker truth: physics 0x503-0x506 populated by the model, transmitting.
+		CarMaker truth: steering 0x507 populated by the model, transmitting.
+TIME	15.776
+SIM_END		HIL/CAN_Bringup	15.773s	79.3747m

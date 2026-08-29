@@ -1,6 +1,6 @@
 #INFOFILE1.1 (UTF-8) - Do not remove this line!
-TestRig.StartTime1970Str = 2026-08-18 00:02:09
-TestRig.StartTime1970 = 1787025729
+TestRig.StartTime1970Str = 2026-08-29 00:32:46
+TestRig.StartTime1970 = 1787977966
 CarMaker.Library = win64 12.0.1 #1
 CarMaker.Compiled = jetbrains@66e0c34c4bd1 2023-05-24 12:29:03
 CarMaker.CompileFlags:
@@ -258,22 +258,25 @@ TrfFollow.Models:
 TrfLaneChange.Models:
 	HDMbased            	v1 (compat. v1)
 Application.Version = CarMaker 12.0.1 - Car_Generic
-Application.BuildVersion = 6
-Application.CompileTime = 2026-08-17 23:59:29
+Application.BuildVersion = 3
+Application.CompileTime = 2026-08-28 17:23:53
 Application.CompileUser = MFE-HPC
 Application.CompileSystem = shop_computer_s
 Application.CompileFlags:
-	""
-	Used compiler options are not available for MS Visual Studio builds.
+	-m64 -O3 -DNDEBUG -DWIN32 -DWIN64 -DCM_NUMVER=120001
+	-Iinc -IC:/IPG/carmaker/win64-12.0.1/include -Iinc
+	-Wall -Wimplicit -Wmissing-prototypes
+	-D__USE_MINGW_ANSI_STDIO -DUNICODE -DCM4SL
+	-U__STRICT_ANSI__
+	-I../../../lib/ipc-api/win64/include -Wall
+	-malign-double -fomit-frame-pointer
 
 Application.Libs:
-	libcarmaker4sl.a	CarMaker win64 12.0.1 2023-05-24
 	libcar4sl.a	CarMaker-Car win64 12.0.1 2023-05-24
-	"libsupp4sl-win64.a	"
+	libcarmaker4sl.a	CarMaker win64 12.0.1 2023-05-24
 	libipgdriver.a	IPGDriver win64 12.0.1.2 2023-05-24
 	libipgroad.a	IPGRoad win64 12.0.1 2023-05-24
 	libipgtire.a	IPGTire win64 9.1 2023-03-24
-	libmatsupp-win64.a	MATSUPP win64 12.0.1 (R2022a) 2023-05-09
 
 Application.Version.Driver = 12.0.1.2
 Application.Version.Road = 12.0.1

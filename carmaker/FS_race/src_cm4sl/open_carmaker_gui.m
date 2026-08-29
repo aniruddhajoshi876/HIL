@@ -9,13 +9,17 @@ function open_carmaker_gui()
 %     SLDD:sldd:VarDeletedBaseWithoutValueRecorded
 %     Variable 'Kp' has been deleted from base workspace.
 %
-%   (and the same for Ki, Kd, kp, ki, kd) -- TorqueVect's pre-existing
-%   torque-vectoring PID controller blocks are parameterized by base
-%   workspace variables that MFE25-Controls' Control_FL_Combined_Run.m
-%   defines. Nothing about that is specific to the CarMaker-truth /
-%   Speedgoat work in this repo; it is how this model has always needed to
-%   be brought up. Skipping this step and opening the model by hand is
-%   exactly what produces those errors.
+%   (and the same for Ki, Kd, kp, ki, kd, N, velocity_lookup) --
+%   TorqueVect's pre-existing torque-vectoring PID controller blocks are
+%   parameterized by base workspace variables. Current MFE25-Controls
+%   initializes the newer gain-scheduled parameters but no longer creates
+%   the lower-case legacy compatibility names, so those are restored below.
+%   The lower-case values (kp/ki/kd, N, velocity_lookup) come from MFE25-
+%   Controls' last tracked pre-removal behavior. The upper-case values
+%   (Kp/Ki/Kd) are a provisional controls-development baseline recovered
+%   from the older MFE23 full control loop; they still require vehicle
+%   tuning. Nothing about this dependency is specific to the CarMaker-truth
+%   / Speedgoat work.
 %
 %   Body is the user's own verbatim, previously-tested procedure:
 %     1. Add MFE25-Controls' vehicle + controls model folders to path.
@@ -86,6 +90,37 @@ combinedRunFile = fullfile(mfeControlsRoot, '02 Controls Model', 'Control_FL_Com
 fileText = fileread(combinedRunFile);
 stopIdx = strfind(fileText, '%% Run Full Control Loop');
 evalin('base', fileText(1:stopIdx(1) - 1));
+
+% Compatibility for TorqueVect's legacy Full Control Loop PID paths
+% (CarMaker/.../PTControl_TV_MFE25/Full Control Loop/TC 1..4). Those blocks
+% read the un-suffixed base names kp/ki/kd, N and velocity_lookup. MFE25-
+% Controls commit 2a61010 removed all of them from Control_FL_Combined_Run.m
+% in the same edit that switched to pid_kp_*/pid_ki_*/pid_kd_* and the
+% *_long/*_lat suffixes, so a clean session no longer defines them and the
+% model fails to compile ("Variable 'N' has been deleted from base
+% workspace", etc). Values below are that file's state at 2a61010^:
+%   - kp/ki/kd: the longitudinal section set [3000 300 300]/[6000 600 600]/
+%     [1 5 1.2], then the lateral section overwrote all three with [1 1 1];
+%     running the documented sections in order leaves [1 1 1].
+%   - velocity_lookup: [0 10 50], set once in the longitudinal section and
+%     never overwritten (the lateral section uses velocity_lookup_lat).
+%   - N: no un-suffixed N ever existed; the same section defined N_long = 100
+%     (and N_lat = 1). The TC 1..4 loops are the per-wheel longitudinal
+%     traction-control PIDs, so N_long's 100 is the match. Provisional --
+%     retune with the rest of this legacy controller before relying on it.
+assignin('base', 'kp', [1, 1, 1]);
+assignin('base', 'ki', [1, 1, 1]);
+assignin('base', 'kd', [1, 1, 1]);
+assignin('base', 'N', 100);
+assignin('base', 'velocity_lookup', [0, 10, 50]);
+
+% Provisional scalar calibration for the older, upper-case PID masks.
+% MFE23-Controllers/MFE_WIP_scripts/full_control_loop.slx contains the oldest
+% numeric match found: Kp = 1500 and Ki/s = 6000/s. It has no numeric Kd, so
+% use zero derivative until this legacy controller is retuned and validated.
+assignin('base', 'Kp', 1500);
+assignin('base', 'Ki', 6000);
+assignin('base', 'Kd', 0);
 
 % That script defines "cd = 1.7" (drag coefficient), which shadows the
 % built-in cd() function -- clear it before using cd() again.
