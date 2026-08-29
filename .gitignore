@@ -1,0 +1,16 @@
+.claude/
+tmp/
+
+# MATLAB/Simulink generated artifacts
+slprj/
+*.slxc
+*.autosave
+
+# CarMaker/CM4SL generated artifacts
+*.autobackup
+*.o
+*.cm4sl.o
+*.mexw64
+.depend
+.version_win64
+Release/
