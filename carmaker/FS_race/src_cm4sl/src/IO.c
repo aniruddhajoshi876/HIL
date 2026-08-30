@@ -77,6 +77,18 @@ static const int MFE_PCAN_CHANNEL_CANDIDATES[] = { 0, 1, 0x51 };
 double MFE_CAN_InverterTorqueSetpointNm[4];
 unsigned char MFE_CAN_InverterReady[4];
 
+/* Simulation time (s, SimCore.Time) at which the last 0x501
+** CarMakerInverterTorqueSetpoint frame was accepted. The frame carries no
+** counter, CRC or timeout of its own, and the four setpoint quantities above
+** simply hold their last value when the stream stops -- indistinguishable
+** downstream from the VC genuinely commanding a constant torque. This
+** timestamp is the freshness signal HIL_torquevectoring.mdl needs to zero the
+** applied motor torque on a command dropout: the model reads it as the
+** MFE_CAN.InverterTorque.RxTimeS dictionary quantity and compares it with its
+** own clock. Reset to a large negative value at the start of every TestRun
+** (User_TestRun_Start_atBegin), so "no frame yet" reads as "very stale". */
+double MFE_CAN_InverterTorqueRxTimeS = -1000.0;
+
 /* CarMaker vehicle-physics truth sent to the Speedgoat on channel 1 as the
 ** 0x503-0x506 frames (see VC_HIL/docs/carmaker_imu_truth_source_plan.md).
 ** Written by TorqueVect.mdl through the MFE_CAN.Physics.* dictionary
@@ -518,6 +530,12 @@ IO_In (unsigned CycleNo)
 	    if (raw & 0x8000)
 		raw -= 0x10000;
 	    MFE_CAN_InverterTorqueSetpointNm[3] = raw / 32.0;
+
+	    /* Stamp the group receive time so HIL_torquevectoring.mdl can
+	    ** detect a stale command and fall back to zero torque. All four
+	    ** setpoints arrive in this one frame, so a single timestamp
+	    ** covers the group. */
+	    MFE_CAN_InverterTorqueRxTimeS = SimCore.Time;
 
 	    MFE_CAN_TorqueRequestTotalNm =
 		MFE_CAN_InverterTorqueSetpointNm[0]

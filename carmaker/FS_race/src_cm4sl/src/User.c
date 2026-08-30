@@ -104,6 +104,7 @@ extern double MFE_CAN_InverterTorqueSetpointNm[4];
 extern unsigned char MFE_CAN_InverterReady[4];
 extern double MFE_CAN_TorqueRequestTotalNm;
 extern unsigned char MFE_CAN_DriveActive;
+extern double MFE_CAN_InverterTorqueRxTimeS;
 
 extern double MFE_CAN_PhysicsAcceleration[3];
 extern double MFE_CAN_PhysicsAngularRate[3];
@@ -275,6 +276,15 @@ User_DeclQuants (void)
     DDefUChar (NULL, "MFE_CAN.DriveActive", "boolean",
 		&MFE_CAN_DriveActive, DVA_IO_In);
 
+    /* Simulation time of the last accepted 0x501 torque-setpoint frame.
+    ** HIL_torquevectoring.mdl (the external-VC bridge model) reads this and
+    ** subtracts it from its own clock: once the command is older than the
+    ** model's freshness window the bridge zeros the applied motor torque.
+    ** The internal-controls TorqueVect.mdl ignores it. DVA_IO_In -- IO_In
+    ** writes it, the model reads it. */
+    DDefDouble (NULL, "MFE_CAN.InverterTorque.RxTimeS", "s",
+		&MFE_CAN_InverterTorqueRxTimeS, DVA_IO_In);
+
     /* CarMaker vehicle-physics truth: written by TorqueVect.mdl (Read CM Dict
     ** the inertial sensor -> Write CM Dict these), read by IO_Out() into the
     ** 0x503-0x506 CAN frames. Vehicle/Fr1 frame, SI units; the Speedgoat
@@ -438,6 +448,12 @@ User_TestRun_Start_atBegin (void)
     ** The model raises them again on its first execution of the run. */
     MFE_CAN_PhysicsValid  = 0.0;
     MFE_CAN_SteeringValid = 0.0;
+
+    /* "No torque command received yet" for this run. A large negative value
+    ** makes the very first freshness check in HIL_torquevectoring.mdl read as
+    ** stale, so the bridge starts from the zero-torque fallback until a real
+    ** 0x501 frame arrives. */
+    MFE_CAN_InverterTorqueRxTimeS = -1000.0;
 
     if (IO_None)
 	return rv;
