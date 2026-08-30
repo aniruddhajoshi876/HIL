@@ -1,41 +1,58 @@
 function open_carmaker_gui()
-%OPEN_CARMAKER_GUI Initialize the CM4SL/CarMaker environment for TorqueVect
-%and launch the real CarMaker GUI. R2022a only.
+%OPEN_CARMAKER_GUI Initialize the CM4SL/CarMaker environment for the
+%external-VC bridge model HIL_torquevectoring.mdl and launch the real
+%CarMaker GUI. R2022a only.
 %
-%   This is the environment INITIALIZER for TorqueVect.mdl, not just a GUI
-%   launcher. Opening TorqueVect.mdl directly, without running this first,
-%   reliably fails to compile with errors like:
+%   ARCHITECTURE this launcher sets up
+%     The vehicle controller runs on the real VC as code-generated controls.
+%     CM4SL is only the simulated plant and the CAN bridge:
 %
-%     SLDD:sldd:VarDeletedBaseWithoutValueRecorded
-%     Variable 'Kp' has been deleted from base workspace.
+%       CarMaker sensors -> CM4SL truth CAN (0x503-0x507)
+%                        -> VC runs the code-generated controls model
+%                        -> VC CAN motor-torque commands
+%                        -> Speedgoat republishes them as 0x501 / 0x502
+%                        -> IO.c decodes -> MFE_CAN.Inverter*TorqueSetpointNm
+%                        -> HIL_torquevectoring.mdl: validate / saturate /
+%                           zero-torque fallback
+%                        -> CarMaker motors / wheels
 %
-%   (and the same for Ki, Kd, kp, ki, kd, N, velocity_lookup) --
-%   TorqueVect's pre-existing torque-vectoring PID controller blocks are
-%   parameterized by base workspace variables. Current MFE25-Controls
-%   initializes the newer gain-scheduled parameters but no longer creates
-%   the lower-case legacy compatibility names, so those are restored below.
-%   The lower-case values (kp/ki/kd, N, velocity_lookup) come from MFE25-
-%   Controls' last tracked pre-removal behavior. The upper-case values
-%   (Kp/Ki/Kd) are a provisional controls-development baseline recovered
-%   from the older MFE23 full control loop; they still require vehicle
-%   tuning. Nothing about this dependency is specific to the CarMaker-truth
-%   / Speedgoat work.
+%     HIL_torquevectoring.mdl does NOT compute torque vectoring. The original
+%     TorqueVect.mdl is kept unchanged next to it as the internal-controls
+%     model and as the reference for the CarMaker interface blocks, actuator
+%     mapping, wheel ordering, units and drivetrain conversions. This launcher
+%     opens the bridge model; to work on the internal-controls model, open
+%     TorqueVect.mdl and follow the older procedure.
+%
+%   This is the environment INITIALIZER, not just a GUI launcher. Opening
+%   HIL_torquevectoring.mdl directly, without running this first, fails to
+%   compile: T_i_max (the per-motor torque limit the bridge saturates to) is
+%   a base-workspace variable that MFE25-Controls' Control_FL_Combined_Run.m
+%   defines.
+%
+%   NOT NEEDED ANY MORE: the legacy torque-vectoring PID names
+%   Kp/Ki/Kd/kp/ki/kd/N/velocity_lookup. Those parameterised TorqueVect.mdl's
+%   Full Control Loop / TC 1..4 blocks, which HIL_torquevectoring.mdl does not
+%   contain. Verified: with those names cleared from the base workspace and
+%   only T_i_max present, HIL_torquevectoring.mdl compiles (model compile +
+%   term) clean. If you ever hit "Variable 'Kp' has been deleted from base
+%   workspace" here, you opened TorqueVect.mdl, not the bridge model.
 %
 %   Body is the user's own verbatim, previously-tested procedure:
 %     1. Add MFE25-Controls' vehicle + controls model folders to path.
 %     2. Run Control_FL_Combined_Run.m from "Model Parameters" through
 %        "Other Controller and Optimization Parameters" ONLY -- never the
-%        whole file, and never "Run Full Control Loop" onward.
+%        whole file, and never "Run Full Control Loop" onward. This is what
+%        defines T_i_max.
 %     3. `clear cd` -- that section defines `cd = 1.7` (a drag
 %        coefficient), which shadows the builtin cd() function otherwise.
 %     4. Add THIS repo's own src_cm4sl (the HIL copy -- resolved from this
 %        script's own location, so it is correct on whichever branch is
 %        checked out; never IPG-MFE or any other project) to path.
-%     5. Run cmenv, then open TorqueVect.mdl and click its own
-%        "Open CarMaker GUI" block, which launches the real CarMaker
-%        engine process (window title "CarMaker for Simulink ... online",
-%        process name HIL.exe, plus a companion Movie.exe) and links this
-%        MATLAB session to it.
+%     5. Run cmenv, then open HIL_torquevectoring.mdl and click its own
+%        "Open CarMaker GUI" block, which launches the real CarMaker engine
+%        process (window title "CarMaker for Simulink ... online", process
+%        name HIL.exe, plus a companion Movie.exe) and links this MATLAB
+%        session to it.
 %
 %   PRECONDITIONS THIS CHECKS, before touching anything above:
 %     - Running in R2022a (CM4SL only ships up to R2022a/R2022b for this
@@ -54,9 +71,6 @@ function open_carmaker_gui()
 %   cockpit device configuration, TestRun selection, Start). Those are
 %   manual GUI steps once the CarMaker window is up, or a separate
 %   cmguicmd('LoadTestRun "...")') call after this function returns.
-%
-%   Untracked by design (matches this file's own prior history in this
-%   repo): a session-convenience script, not a build deliverable.
 
 if ~strncmp(version('-release'), '2022', 4)
     error('open_carmaker_gui:wrongRelease', ...
@@ -86,41 +100,15 @@ addpath(genpath(fullfile(mfeControlsRoot, '02 Controls Model')));
 
 % 2. Run only "Model Parameters" through "Other Controller and Optimization
 %    Parameters" from Control_FL_Combined_Run.m -- never the whole file.
+%    This is the sole source of T_i_max (the per-motor torque limit, 21 N*m,
+%    that HIL_torquevectoring.mdl's bridge saturates the VC command to). It
+%    also creates the *_long / *_lat / pid_* controller parameters; the
+%    bridge model uses none of those, only T_i_max, but running the block
+%    whole is the user's tested procedure so it stays as-is.
 combinedRunFile = fullfile(mfeControlsRoot, '02 Controls Model', 'Control_FL_Combined_Run.m');
 fileText = fileread(combinedRunFile);
 stopIdx = strfind(fileText, '%% Run Full Control Loop');
 evalin('base', fileText(1:stopIdx(1) - 1));
-
-% Compatibility for TorqueVect's legacy Full Control Loop PID paths
-% (CarMaker/.../PTControl_TV_MFE25/Full Control Loop/TC 1..4). Those blocks
-% read the un-suffixed base names kp/ki/kd, N and velocity_lookup. MFE25-
-% Controls commit 2a61010 removed all of them from Control_FL_Combined_Run.m
-% in the same edit that switched to pid_kp_*/pid_ki_*/pid_kd_* and the
-% *_long/*_lat suffixes, so a clean session no longer defines them and the
-% model fails to compile ("Variable 'N' has been deleted from base
-% workspace", etc). Values below are that file's state at 2a61010^:
-%   - kp/ki/kd: the longitudinal section set [3000 300 300]/[6000 600 600]/
-%     [1 5 1.2], then the lateral section overwrote all three with [1 1 1];
-%     running the documented sections in order leaves [1 1 1].
-%   - velocity_lookup: [0 10 50], set once in the longitudinal section and
-%     never overwritten (the lateral section uses velocity_lookup_lat).
-%   - N: no un-suffixed N ever existed; the same section defined N_long = 100
-%     (and N_lat = 1). The TC 1..4 loops are the per-wheel longitudinal
-%     traction-control PIDs, so N_long's 100 is the match. Provisional --
-%     retune with the rest of this legacy controller before relying on it.
-assignin('base', 'kp', [1, 1, 1]);
-assignin('base', 'ki', [1, 1, 1]);
-assignin('base', 'kd', [1, 1, 1]);
-assignin('base', 'N', 100);
-assignin('base', 'velocity_lookup', [0, 10, 50]);
-
-% Provisional scalar calibration for the older, upper-case PID masks.
-% MFE23-Controllers/MFE_WIP_scripts/full_control_loop.slx contains the oldest
-% numeric match found: Kp = 1500 and Ki/s = 6000/s. It has no numeric Kd, so
-% use zero derivative until this legacy controller is retuned and validated.
-assignin('base', 'Kp', 1500);
-assignin('base', 'Ki', 6000);
-assignin('base', 'Kd', 0);
 
 % That script defines "cd = 1.7" (drag coefficient), which shadows the
 % built-in cd() function -- clear it before using cd() again.
@@ -134,7 +122,9 @@ cd(hilSrcCm4sl);
 % 4. Establish the real CarMaker link
 cmenv;
 
-% 5. Open the model and launch the CarMaker GUI
-open_system('TorqueVect');
-open_system('TorqueVect/Open CarMaker GUI');
+% 5. Open the external-VC bridge model and launch the CarMaker GUI.
+%    (TorqueVect.mdl -- the internal-controls model -- is intentionally NOT
+%    opened here; open it by hand when working on local controls.)
+open_system('HIL_torquevectoring');
+open_system('HIL_torquevectoring/Open CarMaker GUI');
 end
